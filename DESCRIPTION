@@ -1,0 +1,23 @@
+Package: signatureSearch
+Title: Signature Search and Functional Enrichment Analysis
+Version: 0.0.4
+Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu", role = c("aut", "cre"))
+Description: This package can be used to do Gene Expression Signature Search (GESS) and downstream Functional Enrichment Analysis (FEA).
+Depends: R (>= 3.5.0), SummarizedExperiment, HDF5Array, GSEABase
+Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), R.utils,
+        S4Vectors, cmapR, data.table, magrittr, RSQLite, dplyr, readr,
+        igraph, scales, methods, plyr, qvalue, stats, stats4, tidyr,
+        utils, org.Hs.eg.db, reshape2, fgsea, visNetwork, drugbankR,
+        tools, batchtools, DelayedArray, Biobase, GSEAlm, Category, Matrix (>= 1.0.9),
+        parallel, annotate, genefilter, DESeq, bigmemory, bigmemoryExtras (>= 1.1.2), reactome.db
+Suggests: AnnotationHub, KEGG.db, knitr, testthat, topGO,
+        rmarkdown, BiocStyle
+License: Artistic-2.0
+Encoding: UTF-8
+LazyData: true
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
+NeedsCompilation: no
+Packaged: 2018-08-24 18:22:55 UTC; yduan004
+Author: Yuzhu Duan [aut, cre]
+Maintainer: Yuzhu Duan <yduan004@ucr.edu>

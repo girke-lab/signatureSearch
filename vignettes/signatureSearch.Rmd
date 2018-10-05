@@ -1,0 +1,297 @@
+---
+title: _signatureSearch_ package
+author: "Author: Yuzhu Duan (yduan004@ucr.edu)"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  html_document:
+    toc: true
+    toc_float:
+        collapsed: false
+        smooth_scroll: true
+    toc_depth: 4
+    fig_caption: yes
+    code_folding: show
+    number_sections: true
+  pdf_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{GESS and FEA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+fontsize: 15pt
+bibliography: bibtex.bib
+---
+
+<style>
+pre code, pre, code {
+  white-space: pre !important;
+  overflow-x: auto !important;
+  word-break: keep-all !important;
+  word-wrap: initial !important;
+}
+</style>
+
+```{r setup0, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(width=200)
+```
+
+```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
+suppressPackageStartupMessages({
+  library(signatureSearch)
+  library(HDF5Array)
+})
+```
+
+# Methods for GESS
+
+## Get longevity related query signature from Peters et al. (2015)
+
+The query signature are 150 up and 150 down regulated gene sets from 1,497 age-related genes after differential expression analysis
+```{r peter_sig, eval=FALSE}
+## Obtain 150 up and 150 down regulated gene sets from Peters
+Peters <- read.delim("~/insync/project/longevityTools_eDRUG/data/PMID26490707_S1.xls", comment="#", check.names=FALSE)    
+#Peters <- read.delim("/rhome/tgirke/Projects/longevity/longevityTools/vignettes/data/PMID26490707_S1.xls", comment="#", check.names=FALSE)
+Peters <- Peters[!duplicated(Peters[,"NEW-Entrez-ID"]),]         
+query <- Peters$Zscore; names(query) <- Peters[,"NEW-Entrez-ID"]
+upset <- head(names(query[order(-query)]), 150)
+downset <- tail(names(query[order(-query)]), 150)
+
+# Load public CMAP, LINCS and LINCS_sub database
+se_cmap <- loadHDF5SummarizedExperiment("~/insync/project/lincs_gse92742_dataset_analysis/data/cmap")
+se_lincs <- loadHDF5SummarizedExperiment("~/insync/project/lincs_gse92742_dataset_analysis/data/lincs42")
+se_lincs_sub <- loadHDF5SummarizedExperiment("~/insync/project/lincs_gse92742_dataset_analysis/data/lincs42_sub")
+
+# Load public CMAP_expr, LINCS_expr and LINCS_sub_expr database
+se_cmap_expr <- loadHDF5SummarizedExperiment("~/insync/project/lincs_gse92742_dataset_analysis/data/cmap_expr")
+se_lincs_expr <- loadHDF5SummarizedExperiment("~/insync/project/lincs_gse92742_dataset_analysis/data/lincs42_expr")
+se_lincs_sub_expr <- loadHDF5SummarizedExperiment("~/insync/project/lincs_gse92742_dataset_analysis/data/lincs42_sub_expr")
+```
+
+## Searching with CMAP method for GESS
+
+Generate "qSig" object for GESS_CMAP method and search against CMAP, LINCS, LINCS_sub reference database
+```{r gess_cmap, eval=FALSE}
+# Search against CMAP reference database
+qsig_cmap_against_cmap <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "CMAP", refdb = se_cmap)
+cmap_against_cmap <- gess_cmap(qSig=qsig_cmap_against_cmap, chunk_size=5000)
+
+# Search against LINCS reference database
+qsig_cmap_against_lincs <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "CMAP", refdb = se_lincs)
+cmap_against_lincs <- gess_cmap(qSig=qsig_cmap_against_lincs, chunk_size=5000)
+
+# Search against LINCS_sub reference database
+qsig_cmap_against_lincs_sub <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "CMAP", refdb = se_lincs_sub)
+cmap_against_lincs_sub <- gess_cmap(qSig=qsig_cmap_against_lincs_sub, chunk_size=5000)
+```
+
+```{r show_cmap_res, eval=FALSE}
+cmap_against_cmap <- readRDS("~/insync/project/GESS_and_FEA/results/cmap_against_cmap.rds")
+cmap_against_cmap@result
+cmap_against_lincs <- readRDS("~/insync/project/GESS_and_FEA/results/cmap_against_lincs.rds")
+cmap_against_lincs@result
+cmap_against_lincs_sub <- readRDS("~/insync/project/GESS_and_FEA/results/cmap_against_lincs_sub.rds")
+cmap_against_lincs_sub@result
+```
+
+## Searching with LINCS method for GESS
+
+Generate "qSig" object for GESS_LINCS method and search against CMAP, LINCS, LINCS_sub reference database
+```{r gess_lincs, eval=FALSE}
+# Search against CMAP reference database
+qsig_lincs_against_cmap <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "LINCS", refdb = se_cmap)
+lincs_against_cmap <- gess_lincs(qsig_lincs_against_cmap, sortby="WTCS")
+
+# Search against LINCS reference database
+qsig_lincs_against_lincs <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "LINCS", refdb = se_lincs)
+lincs_against_lincs <- gess_lincs(qSig=qsig_lincs_against_lincs, ES_NULL="Default", taurefList="Default", sortby="NCS", chunk_size=5000)
+
+# Search against LINCS_sub reference database
+qsig_lincs_against_lincs_sub <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "LINCS", refdb = se_lincs_sub)
+lincs_against_lincs_sub <- gess_lincs(qsig_lincs_against_lincs_sub, sortby="NCS")
+```
+
+```{r show_lincs_res, eval=FALSE}
+lincs_against_cmap <- readRDS("~/insync/project/GESS_and_FEA/results/lincs_against_cmap.rds")
+lincs_against_cmap@result
+lincs_against_lincs <- readRDS("~/insync/project/GESS_and_FEA/results/lincs_against_lincs.rds")
+lincs_against_lincs@result
+lincs_against_lincs_sub <- readRDS("~/insync/project/GESS_and_FEA/results/lincs_against_lincs_sub.rds")
+lincs_against_lincs_sub@result
+```
+
+## Searching with gCMAP method for GESS
+
+Generate "qSig" object for GESS_gCMAP method and search against CMAP, LINCS, LINCS_sub reference database
+```{r gess_gcmap, eval=FALSE}
+query <- as.matrix(assay(se_lincs)[,"sirolimus__MCF7__trt_cp"])
+
+# Search against CMAP reference database
+qsig_gcmap_against_cmap <- qSig(qsig = as.matrix(query), gess_method = "gCMAP", refdb = se_cmap)
+gcmap_against_cmap <- gess_gcmap(qSig=qsig_gcmap_against_cmap, higher=1, lower=-1, chunk_size=5000)
+
+# Search against LINCS reference database
+qsig_gcmap_against_lincs <- qSig(qsig = as.matrix(query), gess_method = "gCMAP", refdb = se_lincs)
+gcmap_against_lincs <- gess_gcmap(qSig=qsig_gcmap_against_lincs, higher=1, lower=-1, chunk_size=5000)
+
+# Search against LINCS_sub reference database
+qsig_gcmap_against_lincs_sub <- qSig(qsig = as.matrix(query), gess_method = "gCMAP", refdb = se_lincs_sub)
+gcmap_against_lincs_sub <- gess_gcmap(qsig_gcmap_against_lincs_sub, higher=1, lower=-1, chunk_size=5000)
+```
+
+```{r show_gcmap_res, eval=FALSE}
+gcmap_against_cmap <- readRDS("~/insync/project/GESS_and_FEA/results/gcmap_against_cmap.rds")
+gcmap_against_cmap@result
+gcmap_against_lincs <- readRDS("~/insync/project/GESS_and_FEA/results/gcmap_against_lincs.rds")
+gcmap_against_lincs@result
+gcmap_against_lincs_sub <- readRDS("~/insync/project/GESS_and_FEA/results/gcmap_against_lincs_sub.rds")
+gcmap_against_lincs_sub@result
+```
+
+## Searching with Fisher method for GESS
+
+Generate "qSig" object for GESS_fisher method and search against CMAP, LINCS, LINCS_sub reference database
+```{r gess_fisher, eval=FALSE}
+query <- as.matrix(assay(se_lincs)[,"sirolimus__MCF7__trt_cp"])
+
+# Search against CMAP reference database
+qsig_fisher_against_cmap <- qSig(qsig = as.matrix(query), gess_method = "Fisher", refdb = se_cmap)
+fisher_against_cmap <- gess_fisher(qSig=qsig_fisher_against_cmap, higher=1, lower=-1, chunk_size=5000)
+
+# Search against LINCS reference database
+qsig_fisher_against_lincs <- qSig(qsig = as.matrix(query), gess_method = "Fisher", refdb = se_lincs)
+fisher_against_lincs <- gess_fisher(qSig=qsig_fisher_against_lincs, higher=1, lower=-1, chunk_size=5000)
+
+# Search against LINCS_sub reference database
+qsig_fisher_against_lincs_sub <- qSig(qsig = as.matrix(query), gess_method = "Fisher", refdb = se_lincs_sub)
+fisher_against_lincs_sub <- gess_fisher(qSig=qsig_fisher_against_lincs_sub, higher=1, lower=-1, chunk_size=5000)
+```
+
+```{r show_fisher_res, eval=FALSE}
+fisher_against_cmap <- readRDS("~/insync/project/GESS_and_FEA/results/fisher_against_cmap.rds")
+fisher_against_cmap@result
+fisher_against_lincs <- readRDS("~/insync/project/GESS_and_FEA/results/fisher_against_lincs.rds")
+fisher_against_lincs@result
+fisher_against_lincs_sub <- readRDS("~/insync/project/GESS_and_FEA/results/fisher_against_lincs_sub.rds")
+fisher_against_lincs_sub@result
+```
+
+## Searching with Spearman method for GESS
+
+Generate "qSig" object for GESS_SP method and search against CMAP, LINCS, LINCS_sub reference database
+
+Genome-wide Spearman correlation
+```{r gess_sp, eval=FALSE}
+# Use genome-wide expression data of sirolimus treatment in MCF7 cells in CMAP_expr database as query
+query <- as.matrix(assay(se_cmap_expr)[,"sirolimus__MCF7__trt_cp"])
+
+# Search against CMAP_expr reference database
+qsig_sp_against_cmap <- qSig(qsig = as.matrix(query), gess_method = "SP", refdb = se_cmap_expr)
+sp_against_cmap <- gess_sp(qSig=qsig_sp_against_cmap, chunk_size=5000)
+
+# Search against LINCS_expr reference database
+qsig_sp_against_lincs <- qSig(qsig = as.matrix(query), gess_method = "SP", refdb = se_lincs_expr)
+sp_against_lincs <- gess_sp(qSig=qsig_sp_against_lincs, chunk_size=5000)
+
+# Search against LINCS_sub_expr reference database
+qsig_sp_against_lincs_sub <- qSig(qsig = as.matrix(query), gess_method = "SP", refdb = se_lincs_sub_expr)
+sp_against_lincs_sub <- gess_sp(qSig=qsig_sp_against_lincs_sub, chunk_size=5000)
+```
+
+```{r show_sp_res, eval=FALSE}
+sp_against_cmap <- readRDS("~/insync/project/GESS_and_FEA/results/sp_against_cmap.rds")
+sp_against_cmap@result
+sp_against_lincs <- readRDS("~/insync/project/GESS_and_FEA/results/sp_against_lincs.rds")
+sp_against_lincs@result
+sp_against_lincs_sub <- readRDS("~/insync/project/GESS_and_FEA/results/sp_against_lincs_sub.rds")
+sp_against_lincs_sub@result
+```
+
+Spearman sub correlatioin
+```{r gess_spsub, eval=FALSE}
+# Subset expression values of 150 up and down gene sets from "sirolimus__MCF7__trt_cp" signature.
+
+## get 150 up and down gene sets from "sirolimus__MCF7__trt_cp" signature.
+sig <- sort(as.matrix(assay(se_lincs)[,"sirolimus__MCF7__trt_cp"]), decreasing = TRUE)
+upset <- names(head(sig, 150)); downset <- names(tail(sig,150))
+## get expression values of genes in up and down set
+query <- as.matrix(assay(se_cmap_expr)[,"sirolimus__MCF7__trt_cp"])
+query_sub <- query[c(upset, downset)]
+
+# Search against CMAP_expr reference database
+qsig_spsub_against_cmap <- qSig(qsig = as.matrix(query_sub), gess_method = "SP", refdb = se_cmap_expr)
+spsub_against_cmap <- gess_sp(qSig=qsig_spsub_against_cmap, chunk_size=5000)
+
+# Search against LINCS_expr reference database
+qsig_spsub_against_lincs <- qSig(qsig = as.matrix(query_sub), gess_method = "SP", refdb = se_lincs_expr)
+spsub_against_lincs <- gess_sp(qSig=qsig_spsub_against_lincs, chunk_size=5000)
+
+# Search against LINCS_sub_expr reference database
+qsig_spsub_against_lincs_sub <- qSig(qsig = as.matrix(query_sub), gess_method = "SP", refdb = se_lincs_sub_expr)
+spsub_against_lincs_sub <- gess_sp(qSig=qsig_spsub_against_lincs_sub, chunk_size=5000)
+```
+
+```{r show_spsub_res, eval=FALSE}
+spsub_against_cmap <- readRDS("~/insync/project/GESS_and_FEA/results/spsub_against_cmap.rds")
+spsub_against_cmap@result
+spsub_against_lincs <- readRDS("~/insync/project/GESS_and_FEA/results/spsub_against_lincs.rds")
+spsub_against_lincs@result
+spsub_against_lincs_sub <- readRDS("~/insync/project/GESS_and_FEA/results/spsub_against_lincs_sub.rds")
+spsub_against_lincs_sub@result
+```
+
+# Methods for FEA
+
+## hyperG method for DSEA
+
+Subset top 100 ranking drugs in GESS result as query for hypergeometric test for DSEA, here choose `lincs_res_vs_lincs` as GESS result.
+```{r dsea_hyperG, eval=FALSE}
+drugs <- unique(lincs_res_vs_lincs@result$Pert[1:100])
+# GO annotation system
+hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
+
+# KEGG annotation system
+hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
+```
+
+## GSEA method for DSEA
+
+Use ranked drug list in GESS result as query for GSEA for DSEA, the scores are similarity scores of corresponding GESS methods. Zeros are removed. Here choose `lincs_res_vs_lincs` as GESS result.
+```{r dsea_gsea, eval=FALSE}
+dl <- abs(lincs_res_vs_lincs@result$NCS); names(dl) <- lincs_res_vs_lincs@result$Pert
+dl <- dl[dl>0]
+dl <- dl[!duplicated(names(dl))]
+# GO annotation system
+gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.1, minGSSize=5, maxGSSize=500)
+
+# KEGG annotation system
+gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.1, minGSSize=5, maxGSSize=500)
+```
+
+```{r show_dsea_res, eval=FALSE}
+hyperG_res <- readRDS("~/insync/project/GESS_and_FEA/results/hyperG_res.rds")
+hyperG_res@result
+hyperG_k_res <- readRDS("~/insync/project/GESS_and_FEA/results/hyperG_k_res.rds")
+hyperG_k_res@result
+
+gsea_res <- readRDS("~/insync/project/GESS_and_FEA/results/gsea_res.rds")
+gsea_res@result
+gsea_k_res <- readRDS("~/insync/project/GESS_and_FEA/results/gsea_k_res.rds")
+gsea_k_res@result
+```
+
+# Visulization
+
+## Construct drug-target interaction networks in interested GO categories
+
+Build drug-target networks in top ranking GO categories in `hyperG_res`
+```{r dtnet_go, eval=FALSE}
+dtnetplot(drugs = hyperG_res@drug, set = "GO:0030169", ont = "MF")
+```
+
+## Construct drug-target interaction networks in interested KEGG pathways or defined other gene/protein sets
+
+Build drug-target networks in top ranking KEGG pathways in `hyperG_k_res`
+```{r dtnet_kegg, eval=FALSE}
+dtnetplot(drugs = hyperG_k_res@drug, set = "hsa04979")
+```
