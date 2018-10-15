@@ -5,7 +5,7 @@
 \title{GSEA_internal}
 \usage{
 GSEA_internal(geneList, exponent, nPerm, minGSSize, maxGSSize, pvalueCutoff,
-  pAdjustMethod, seed = FALSE, USER_DATA)
+  pAdjustMethod, verbose, seed = FALSE, USER_DATA, by = "fgsea")
 }
 \arguments{
 \item{geneList}{order ranked geneList}
@@ -22,13 +22,20 @@ GSEA_internal(geneList, exponent, nPerm, minGSSize, maxGSSize, pvalueCutoff,
 
 \item{pAdjustMethod}{p value adjustment method}
 
+\item{verbose}{print message or not}
+
 \item{seed}{set seed inside the function to make result reproducible. FALSE by default.}
 
 \item{USER_DATA}{annotation data}
+
+\item{by}{one of 'fgsea' or 'DOSE'}
 }
 \value{
-feaResult object
+gseaResult object
 }
 \description{
 generic function for gene set enrichment analysis
+}
+\author{
+Yu Guangchuang
 }

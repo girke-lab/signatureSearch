@@ -16,7 +16,9 @@ This class represents the result of functional enrichment analysis.
 
 \item{\code{ontology}}{biological ontology}
 
-\item{\code{drug}}{Drug IDs}
+\item{\code{drugs}}{Drug IDs}
+
+\item{\code{targets}}{Target IDs of drugs in DrugBank/LINCS/STITCH databases or target list with scores.}
 
 \item{\code{universe}}{background genes or drugs. For TSEA, it is all the genes in the corresponding annotation system (GO/KEGG). For DSEA, it is all the drugs
 in the correspoinding annotation system (GO/KEGG) after drug-to-functional category mapping}

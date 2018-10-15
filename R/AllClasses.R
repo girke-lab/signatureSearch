@@ -35,7 +35,8 @@ setClass("qSig", slots = c(
 ##' @slot result data.frame from FEA analysis
 ##' @slot organism only "human" supported
 ##' @slot ontology biological ontology
-##' @slot drug Drug IDs
+##' @slot drugs Drug IDs
+##' @slot targets Target IDs of drugs in DrugBank/LINCS/STITCH databases or target list with scores.
 ##' @slot universe background genes or drugs. For TSEA, it is all the genes in the corresponding annotation system (GO/KEGG). For DSEA, it is all the drugs
 ##' in the correspoinding annotation system (GO/KEGG) after drug-to-functional category mapping
 ##' @slot refSets gene sets or drug sets in the corresponding annotation system
@@ -47,7 +48,8 @@ setClass("feaResult",
              result         = "data.frame",
              organism       = "character",
              ontology       = "character",
-             drug           = "character",
+             drugs          = "character",
+             targets        = "ANY",
              universe       = "character",
              refSets        = "list"
              )

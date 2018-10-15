@@ -1,6 +1,4 @@
-##' interal method for enrichment analysis
-##'
-##' using the hypergeometric model
+##' interal method for enrichment analysis by using the hypergeometric model, which also support query gene set with duplications
 ##' @title enrich.internal
 ##' @param gene a vector of SYMBOL gene id.
 ##' @param pvalueCutoff Cutoff value of pvalue.
@@ -168,7 +166,8 @@ enricher_internal <- function(gene,
     Over <- as_tibble(Over)
     x <- new("feaResult",
              result         = Over,
-             drug           = as.character(gene),
+             drugs          = as.character(gene),
+             targets        = as.character(gene),
              universe       = extID,
              refSets        = geneSets,
              organism       = "UNKNOWN",

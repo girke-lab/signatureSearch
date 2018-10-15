@@ -5,14 +5,18 @@
 \alias{result}
 \alias{result}
 \alias{result,gessResult-method}
+\alias{result}
+\alias{result,feaResult-method}
 \title{result method}
 \usage{
 result(x)
 
 \S4method{result}{gessResult}(x)
+
+\S4method{result}{feaResult}(x)
 }
 \arguments{
-\item{x}{gessResult object}
+\item{x}{\code{gessResult} or \code{feaResult} object}
 }
 \value{
 tibble
@@ -21,4 +25,6 @@ tibble
 result generic
 
 get 'result' slot of gessResult object
+
+get 'result' slot of feaResult object
 }

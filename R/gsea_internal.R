@@ -1,4 +1,4 @@
-##' @importFrom fgsea fgsea
+#' @importFrom fgsea fgsea
 GSEA_fgsea <- function(geneList,
                        exponent,
                        nPerm,
@@ -6,17 +6,18 @@ GSEA_fgsea <- function(geneList,
                        maxGSSize,
                        pvalueCutoff,
                        pAdjustMethod,
+                       verbose,
                        seed=FALSE,
                        USER_DATA) {
-    message("preparing geneSet collections...")
+
+    if(verbose)
+        message("preparing geneSet collections...")
 
     geneSets <- getGeneSet(USER_DATA)
-    idx <- get_geneSet_index(geneSets, minGSSize, maxGSSize)
-    geneSets <- geneSets[idx]
-    
     check_gene_id(geneList, geneSets)
 
-    message("GSEA analysis...")
+    if(verbose)
+        message("GSEA analysis...")
 
     tmp_res <- fgsea(pathways=geneSets,
                  stats=geneList,
@@ -27,21 +28,29 @@ GSEA_fgsea <- function(geneList,
                  nproc = 1)
 
     p.adj <- p.adjust(tmp_res$pval, method=pAdjustMethod)
+    qvalues <- calculate_qvalue(tmp_res$pval)
 
     Description <- TERM2NAME(tmp_res$pathway, USER_DATA)
 
+    params <- list(pvalueCutoff = pvalueCutoff,
+                   nPerm = nPerm,
+                   pAdjustMethod = pAdjustMethod,
+                   exponent = exponent,
+                   minGSSize = minGSSize,
+                   maxGSSize = maxGSSize
+                   )
     ledge <- sapply(tmp_res$leadingEdge, paste0, collapse='/')
-    ledge_rank_list <- sapply(tmp_res$leadingEdge, function(x) which(names(geneList) %in% x))
-    ledge_rank <- sapply(ledge_rank_list, paste0, collapse='/')
+    ledge_rank <- sapply(tmp_res$ledge_rank, paste0, collapse='/')
     message("ledge_rank included")
     res <- data.frame(
         ID = as.character(tmp_res$pathway),
         Description = Description,
         setSize = tmp_res$size,
-        ES = tmp_res$ES,
+        enrichmentScore = tmp_res$ES,
         NES = tmp_res$NES,
         pvalue = tmp_res$pval,
         p.adjust = p.adj,
+        qvalues = qvalues,
         leadingEdge = ledge,
         ledge_rank = ledge_rank,
         stringsAsFactors = FALSE
@@ -56,23 +65,41 @@ GSEA_fgsea <- function(geneList,
     if (nrow(res) == 0) {
         message("no term enriched under specific pvalueCutoff...")
         return(
-            new("feaResult",
+            new("gseaResult",
                 result     = res,
-                refSets   = geneSets,
-                drug = names(geneList),
-                universe = names(geneList)
+                geneSets   = geneSets,
+                geneList   = geneList,
+                params     = params,
+                readable   = FALSE
                 )
         )
     }
 
     row.names(res) <- res$ID
-    message("done...")
-    res <- as_tibble(res)
-    new("feaResult",
+    # observed_info <- lapply(geneSets[res$ID], function(gs)
+    #     gseaScores(geneSet=gs,
+    #                geneList=geneList,
+    #                exponent=exponent)
+    #     )
+
+    # if (verbose)
+    #     message("leading edge analysis...")
+    # 
+    # ledge <- leading_edge(observed_info)
+    # 
+    # res$rank <- ledge$rank
+    # res$leading_edge <- ledge$leading_edge
+    # res$core_enrichment <- sapply(ledge$core_enrichment, paste0, collapse='/')
+
+    if (verbose)
+        message("done...")
+
+    new("gseaResult",
         result     = res,
-        refSets   = geneSets,
-        drug = names(geneList),
-        universe = names(geneList)
+        geneSets   = geneSets,
+        geneList   = geneList,
+        params     = params,
+        readable   = FALSE
         )
 }
 
@@ -87,9 +114,12 @@ GSEA_fgsea <- function(geneList,
 ##' @param maxGSSize maximal size of each geneSet for analyzing
 ##' @param pvalueCutoff p value Cutoff
 ##' @param pAdjustMethod p value adjustment method
+##' @param verbose print message or not
 ##' @param seed set seed inside the function to make result reproducible. FALSE by default.
 ##' @param USER_DATA annotation data
-##' @return feaResult object
+##' @param by one of 'fgsea' or 'DOSE'
+##' @return gseaResult object
+##' @author Yu Guangchuang
 GSEA_internal <- function(geneList,
                  exponent,
                  nPerm,
@@ -97,22 +127,33 @@ GSEA_internal <- function(geneList,
                  maxGSSize,
                  pvalueCutoff,
                  pAdjustMethod,
+                 verbose,
                  seed=FALSE,
-                 USER_DATA) {
+                 USER_DATA,
+                 by="fgsea") {
 
+    by <- match.arg(by, c("fgsea", "DOSE"))
     if (is.unsorted(-geneList))
-        geneList <- sort(geneList, decreasing = TRUE)
-    
-    res <- GSEA_fgsea(geneList     = geneList,
+        stop("geneList should be a decreasing sorted vector...")
+    if (by == 'fgsea') {
+        .GSEA <- GSEA_fgsea
+    } else {
+        .GSEA <- GSEA_fgsea
+    }
+
+    res <- .GSEA(geneList          = geneList,
                  exponent          = exponent,
                  nPerm             = nPerm,
                  minGSSize         = minGSSize,
                  maxGSSize         = maxGSSize,
                  pvalueCutoff      = pvalueCutoff,
                  pAdjustMethod     = pAdjustMethod,
+                 verbose           = verbose,
                  seed              = seed,
                  USER_DATA         = USER_DATA)
     res@organism <- "UNKNOWN"
+    res@setType <- "UNKNOWN"
+    res@keytype <- "UNKNOWN"
     return(res)
 }
 

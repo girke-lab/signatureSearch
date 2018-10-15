@@ -28,8 +28,5 @@ enricher_internal(gene, pvalueCutoff, pAdjustMethod = "BH", universe = NULL,
 A \code{feaResult} instance.
 }
 \description{
-interal method for enrichment analysis
-}
-\details{
-using the hypergeometric model
+interal method for enrichment analysis by using the hypergeometric model, which also support query gene set with duplications
 }

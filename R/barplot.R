@@ -1,4 +1,4 @@
-##' ggplot theme of DOSE2
+##' ggplot theme of DOSE
 ##'
 ##' @title theme_dose
 ##' @importFrom ggplot2 theme_bw

@@ -242,14 +242,69 @@ spsub_against_lincs_sub@result
 
 # Methods for FEA
 
+## dup_hyperG method for TSEA
+
+Subset top 100 ranking drugs in GESS result, get their target set (with duplication) as query for dup_hypergeometric test for TSEA.
+Here choose `lincs_res_vs_lincs` as GESS result.
+```{r tsea_dup_hyperG, eval=FALSE}
+lincs_against_lincs <- readRDS("~/insync/project/GESS_and_FEA/results/lincs_against_lincs.rds")
+drugs <- unique(result(lincs_against_lincs)$pert[1:100])
+# GO annotation system
+dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", type = "GO", ont="MF", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
+# KEGG annotation system
+dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", type = "KEGG", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
+```
+
+## m_GSEA method for TSEA
+
+Subset top 100 ranking drugs in GESS result as query, m_GSEA method internally get their target set and ranked target list with scores as query for TSEA. 
+The scores represent weight of targets in the target set. Here choose `lincs_res_vs_lincs` as GESS result.
+```{r tsea_mgsea, eval=FALSE}
+# GO annotation system
+geneSets <- readRDS("~/insync/project/GESS_and_FEA/data/geneSets_470.rds")
+geneList <- readRDS("~/insync/project/GESS_and_FEA/data/geneList.rds")
+tmp_res <- fgsea2(pathways=geneSets, stats=geneList, nperm=1000, minSize=5, maxSize=500, gseaParam=1, nproc = 1)
+
+mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.9, minGSSize=5, maxGSSize=500)
+# KEGG annotation system
+mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.5, minGSSize=5, maxGSSize=500)
+```
+
+## mabs method for TSEA
+
+Subset top 100 ranking drugs in GESS result as query, mabs method internally get their target set and ranked target list with scores as query for TSEA. 
+The scores represent weight of targets in the target set. Here choose `lincs_res_vs_lincs` as GESS result.
+```{r tsea_mabs, eval=FALSE}
+# GO annotation system
+mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.05, minGSSize=5, maxGSSize=500)
+# KEGG annotation system
+mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.5, minGSSize=5, maxGSSize=500)
+```
+
+```{r show_tsea_res, eval=FALSE}
+dup_hyperG_res <- readRDS("~/insync/project/GESS_and_FEA/results/dup_hyperG_res.rds")
+dup_hyperG_res@result
+dup_hyperG_k_res <- readRDS("~/insync/project/GESS_and_FEA/results/dup_hyperG_k_res.rds")
+dup_hyperG_k_res@result
+
+mgsea_res <- readRDS("~/insync/project/GESS_and_FEA/results/mgsea_res.rds")
+mgsea_res@result
+mgsea_k_res <- readRDS("~/insync/project/GESS_and_FEA/results/mgsea_k_res.rds")
+mgsea_k_res@result
+
+mabs_res <- readRDS("~/insync/project/GESS_and_FEA/results/mabs_res.rds")
+mabs_res@result
+mabs_k_res <- readRDS("~/insync/project/GESS_and_FEA/results/mabs_k_res.rds")
+mabs_k_res@result
+```
+
 ## hyperG method for DSEA
 
 Subset top 100 ranking drugs in GESS result as query for hypergeometric test for DSEA, here choose `lincs_res_vs_lincs` as GESS result.
 ```{r dsea_hyperG, eval=FALSE}
-drugs <- unique(lincs_res_vs_lincs@result$Pert[1:100])
+drugs <- unique(result(lincs_against_lincs)$pert[1:100])
 # GO annotation system
 hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
-
 # KEGG annotation system
 hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
 ```
@@ -258,7 +313,7 @@ hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", pvalueCutoff=0.1, pAdj
 
 Use ranked drug list in GESS result as query for GSEA for DSEA, the scores are similarity scores of corresponding GESS methods. Zeros are removed. Here choose `lincs_res_vs_lincs` as GESS result.
 ```{r dsea_gsea, eval=FALSE}
-dl <- abs(lincs_res_vs_lincs@result$NCS); names(dl) <- lincs_res_vs_lincs@result$Pert
+dl <- abs(lincs_against_lincs@result$NCS); names(dl) <- lincs_against_lincs@result$Pert
 dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]
 # GO annotation system
@@ -267,6 +322,7 @@ gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000, 
 # KEGG annotation system
 gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.1, minGSSize=5, maxGSSize=500)
 ```
+
 
 ```{r show_dsea_res, eval=FALSE}
 hyperG_res <- readRDS("~/insync/project/GESS_and_FEA/results/hyperG_res.rds")

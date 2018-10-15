@@ -249,3 +249,17 @@ get_geneSet_index <- function(geneSets, minGSSize, maxGSSize) {
 # 
 #     return(ont)
 # }
+
+calculate_qvalue <- function(pvals) {
+  if (length(pvals) == 0)
+    return(numeric(0))
+  
+  qobj <- tryCatch(qvalue(pvals, lambda=0.05, pi0.method="bootstrap"), error=function(e) NULL)
+  
+  if (class(qobj) == "qvalue") {
+    qvalues <- qobj$qvalues
+  } else {
+    qvalues <- NA
+  }
+  return(qvalues)
+}

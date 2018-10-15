@@ -27,7 +27,7 @@ dsea_hyperG(drugs, type = "GO", ont = "BP", pvalueCutoff = 0.05,
 \item{maxGSSize}{maximal size of drugs annotated for testing}
 }
 \value{
-A \code{feaResult} instance.
+\code{feaResult} object
 }
 \description{
 Drug GO Enrichment Analysis of drug sets.

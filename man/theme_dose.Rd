@@ -10,5 +10,5 @@ theme_dose(font.size = 14)
 \item{font.size}{font size}
 }
 \description{
-ggplot theme of DOSE2
+ggplot theme of DOSE
 }

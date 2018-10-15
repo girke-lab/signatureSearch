@@ -1,18 +1,20 @@
 Package: signatureSearch
 Title: Signature Search and Functional Enrichment Analysis
-Version: 0.0.4
+Version: 0.0.5
 Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu", role = c("aut", "cre"))
 Description: This package can be used to do Gene Expression Signature Search (GESS) and downstream Functional Enrichment Analysis (FEA).
-Depends: R (>= 3.5.0), SummarizedExperiment, HDF5Array, GSEABase
+Depends: R (>= 3.5.0), SummarizedExperiment, HDF5Array, GSEABase, Rcpp
 Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), R.utils,
-        S4Vectors, cmapR, data.table, magrittr, RSQLite, dplyr, readr,
-        igraph, scales, methods, plyr, qvalue, stats, stats4, tidyr,
-        utils, org.Hs.eg.db, reshape2, fgsea, visNetwork, drugbankR,
+        S4Vectors, cmapR, data.table, magrittr, RSQLite, dplyr, readr, fgsea,
+        igraph, scales, methods, plyr, qvalue, stats, stats4, tidyr, graphics,
+        utils, org.Hs.eg.db, reshape2, visNetwork, drugbankR, BiocParallel, fastmatch,
         tools, batchtools, DelayedArray, Biobase, GSEAlm, Category, Matrix (>= 1.0.9),
         parallel, annotate, genefilter, DESeq, bigmemory, bigmemoryExtras (>= 1.1.2), reactome.db
 Suggests: AnnotationHub, KEGG.db, knitr, testthat, topGO,
         rmarkdown, BiocStyle
 License: Artistic-2.0
+SystemRequirements: C++11
+LinkingTo: Rcpp
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
@@ -21,3 +23,5 @@ NeedsCompilation: no
 Packaged: 2018-08-24 18:22:55 UTC; yduan004
 Author: Yuzhu Duan [aut, cre]
 Maintainer: Yuzhu Duan <yduan004@ucr.edu>
+URL: https://github.com/yduan004/signatureSearch/
+BugReports: https://github.com/yduan004/signatureSearch/issues

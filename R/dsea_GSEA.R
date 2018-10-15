@@ -47,7 +47,7 @@ dsea_GSEA <- function(drugList,
       
       if (is.null(res))
         return(res)
-      
+      res@targets <- NULL
       res@organism <- get_organism(OrgDb = "org.Hs.eg.db")
       res@ontology <- ont
       
@@ -73,6 +73,7 @@ dsea_GSEA <- function(drugList,
 
       if (is.null(res))
         return(res)
+      res@targets <- NULL
       res@organism <- species
       res@ontology <- "KEGG"
       return(res)

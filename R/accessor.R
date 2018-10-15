@@ -99,10 +99,19 @@ dim.gessResult <- function(x) {
 ##' @docType methods
 ##' @rdname result-methods
 ##' @method result gessResult
-##' @param x gessResult object
+##' @param x \code{gessResult} or \code{feaResult} object
 ##' @return tibble
 ##' @aliases result,gessResult-method
 setMethod("result", signature(x="gessResult"),
+          function(x) x@result)
+
+##' get 'result' slot of feaResult object
+##' @name result
+##' @docType methods
+##' @rdname result-methods
+##' @method result feaResult
+##' @aliases result,feaResult-method
+setMethod("result", signature(x="feaResult"),
           function(x) x@result)
 
 ## Constructor for "gessResult"

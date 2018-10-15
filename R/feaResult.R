@@ -8,16 +8,20 @@ setMethod("show", signature(object="feaResult"),
               cat("#\n# Functional Enrichment Analysis \n#\n")
               cat("#...@organism", "\t", object@organism, "\n")
               cat("#...@ontology", "\t", object@ontology, "\n")
-              cat("#...@drug", "\t")
-              str(object@drug)
+              cat("#...@drugs", "\t")
+              str(object@drugs)
+              cat("#...@targets", "\t")
+              str(object@targets)
+              cat("#...@universe", "\t")
+              str(object@universe)
               cat(paste0("#...", nrow(object@result)), "enriched terms found\n")
               str(object@result)
-              cat("#...Citation\n")
-              citation_msg <- paste("  Guangchuang Yu, Li-Gen Wang, Yanyan Han and Qing-Yu He.",
-                                    "  clusterProfiler: an R package for comparing biological themes among",
-                                    "  gene clusters. OMICS: A Journal of Integrative Biology",
-                                    "  2012, 16(5):284-287", sep="\n", collapse="\n")
-              cat(citation_msg, "\n\n")
+              # cat("#...Citation\n")
+              # citation_msg <- paste("  Guangchuang Yu, Li-Gen Wang, Yanyan Han and Qing-Yu He.",
+              #                       "  clusterProfiler: an R package for comparing biological themes among",
+              #                       "  gene clusters. OMICS: A Journal of Integrative Biology",
+              #                       "  2012, 16(5):284-287", sep="\n", collapse="\n")
+              # cat(citation_msg, "\n\n")
           })
 
 ##' plot method generics
