@@ -9,7 +9,7 @@ tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000, exponent = 1,
   maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do target set enrichment analysis.}
+\item{drugs}{query drug set used to do target set enrichment analysis (TSEA), Can be top ranking drugs in GESS result.}
 
 \item{type}{can be `GO` or `KEGG`}
 
@@ -19,7 +19,7 @@ tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000, exponent = 1,
 
 \item{exponent}{weight of each step}
 
-\item{pAdjustMethod}{p value adjustment method for p values in target set enrichment result}
+\item{pAdjustMethod}{p value adjustment method for p values in TSEA result}
 
 \item{pvalueCutoff}{p value Cutoff}
 

@@ -5,11 +5,11 @@ Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu", role = c("aut", "
 Description: This package can be used to do Gene Expression Signature Search (GESS) and downstream Functional Enrichment Analysis (FEA).
 Depends: R (>= 3.5.0), SummarizedExperiment, HDF5Array, GSEABase, Rcpp
 Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), R.utils,
-        S4Vectors, cmapR, data.table, magrittr, RSQLite, dplyr, readr, fgsea,
-        igraph, scales, methods, plyr, qvalue, stats, stats4, tidyr, graphics,
+        S4Vectors, data.table, magrittr, RSQLite, dplyr, fgsea,
+        igraph, scales, methods, qvalue, stats, stats4, graphics,
         utils, org.Hs.eg.db, reshape2, visNetwork, drugbankR, BiocParallel, fastmatch,
-        tools, batchtools, DelayedArray, Biobase, GSEAlm, Category, Matrix (>= 1.0.9),
-        parallel, annotate, genefilter, DESeq, bigmemory, bigmemoryExtras (>= 1.1.2), reactome.db
+        tools, batchtools, DelayedArray, Biobase, Matrix (>= 1.0.9),
+        parallel, annotate
 Suggests: AnnotationHub, KEGG.db, knitr, testthat, topGO,
         rmarkdown, BiocStyle
 License: Artistic-2.0

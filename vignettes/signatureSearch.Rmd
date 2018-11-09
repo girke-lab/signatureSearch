@@ -3,6 +3,8 @@ title: _signatureSearch_ package
 author: "Author: Yuzhu Duan (yduan004@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
+  pdf_document:
+    toc: true
   html_document:
     toc: true
     toc_float:
@@ -12,12 +14,10 @@ output:
     fig_caption: yes
     code_folding: show
     number_sections: true
-  pdf_document:
-    toc: true
 vignette: >
   %\VignetteIndexEntry{GESS and FEA}
-  %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
 fontsize: 15pt
 bibliography: bibtex.bib
 ---
@@ -68,6 +68,11 @@ se_lincs_expr <- loadHDF5SummarizedExperiment("~/insync/project/lincs_gse92742_d
 se_lincs_sub_expr <- loadHDF5SummarizedExperiment("~/insync/project/lincs_gse92742_dataset_analysis/data/lincs42_sub_expr")
 ```
 
+View cell type information in LINCS database
+```{r cell_info, eval=FALSE}
+cell_info <- metadata(se_lincs)$cell_info
+cell_info
+```
 ## Searching with CMAP method for GESS
 
 Generate "qSig" object for GESS_CMAP method and search against CMAP, LINCS, LINCS_sub reference database

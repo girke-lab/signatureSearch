@@ -85,9 +85,9 @@ cmapEnrich <- function(se, upset, downset, chunk_size=5000) {
 #' 4 min for querying with a single signature ~100,000 CMAP/LINCS database signatures for gess_cmap method, while it is ~10 min for gess_lincs method.
 #' 
 #' @title gess_cmap
-#' @param qSig `qSig` object, The 'gess_method' slot of 'qSig' should be 'CMAP'
+#' @param qSig `qSig` object, The 'gess_method' slot should be 'CMAP'. The GEPs will be internally rank transformed.
 #' @param chunk_size size of chunk per processing
-#' @return gessResult object, "a list of drugs in reference database ranked by their similarity to query signature
+#' @return `gessResult` object, represents a list of drugs in reference database ranked by their similarity to query signature
 #' @importFrom utils download.file
 #' @importFrom R.utils gunzip
 #' @importFrom tools file_path_as_absolute

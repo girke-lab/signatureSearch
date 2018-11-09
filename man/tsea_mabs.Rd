@@ -9,7 +9,7 @@ tsea_mabs(drugs, type = "GO", ont = "MF", nPerm = 1000,
   maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do target set enrichment analysis.}
+\item{drugs}{query drug set used to do target set enrichment analysis (TSEA), Can be top ranking drugs in GESS result.}
 
 \item{type}{can be `GO` or `KEGG`}
 

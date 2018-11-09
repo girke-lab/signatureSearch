@@ -7,12 +7,12 @@
 gess_cmap(qSig, chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{`qSig` object, The 'gess_method' slot of 'qSig' should be 'CMAP'}
+\item{qSig}{`qSig` object, The 'gess_method' slot should be 'CMAP'. The GEPs will be internally rank transformed.}
 
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-gessResult object, "a list of drugs in reference database ranked by their similarity to query signature
+`gessResult` object, represents a list of drugs in reference database ranked by their similarity to query signature
 }
 \description{
 CMAP method for GESS

@@ -4,7 +4,7 @@
 \alias{gess_gcmap}
 \title{gess_gcmap}
 \usage{
-gess_gcmap(qSig, higher, lower, chunk_size = 5000)
+gess_gcmap(qSig, higher, lower, add_bs_score = FALSE, chunk_size = 5000)
 }
 \arguments{
 \item{qSig}{`qSig` object, The 'gess_method' slot of 'qSig' should be 'gCMAP'}
@@ -14,6 +14,8 @@ At least one of 'lower' and 'higher' must be specified.}
 
 \item{lower}{The lower threshold. If not 'NULL', genes with a score smaller than 'lower' will be included in the gene set with sign -1. 
 At least one of 'lower' and 'higher' must be specified.}
+
+\item{add_bs_score}{TRUE or FALSE. If true, bootstrap scores are added to measure the robustness of the result rankings.}
 
 \item{chunk_size}{size of chunk per processing}
 }

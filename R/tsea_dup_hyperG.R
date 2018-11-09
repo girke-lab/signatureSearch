@@ -1,8 +1,8 @@
 #' drug targets GO/KEGG enrichment analysis by using `dup_hyperG` test or modified `gsea` method
 #' @title tsea_dup_hyperG
-#' @param drugs query drug set used to do target set enrichment analysis
+#' @param drugs query drug set used to do target set enrichment analysis (TSEA), Can be top ranking drugs in GESS result. 
 #' @param universe background genes/targets. If set as `Default`, it represents all the annotated genes/targets in
-#' the corresponding annotation system. If "type" is "GO", universe should be gene SYMBOL ids. If "type" is "KEGG",
+#' the corresponding annotation system (e.g. GO or KEGG). If "type" is "GO", universe should be gene SYMBOL ids. If "type" is "KEGG",
 #' universe should be gene entrez ids.
 #' @param type can be `GO` or `KEGG`
 #' @param ont if type is `GO`, set ontology, can be `BP`,`MF`,`CC` or `ALL`

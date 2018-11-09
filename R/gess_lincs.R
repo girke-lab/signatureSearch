@@ -161,14 +161,12 @@ lincsEnrich <- function(se, upset, downset, sortby="NCS", type=1, output="all", 
 #' LINCS method for GESS
 #' 
 #' @title gess_lincs
-#' @param qSig `qSig` object, The 'gess_method' slot of 'qSig' should be 'LINCS'
-#' @param ES_NULL path to the ES_NULL file. ES null distribution is generated with random queryies for computing nominal P-values for ES by 
+#' @param qSig `qSig` object, The 'gess_method' slot should be 'LINCS'
+#' @param ES_NULL path to the ES_NULL file. ES null distribution is generated with random queries for computing nominal P-values for ES by 
 #' `randQueryES_slurm` or `randQueryES_local` function. 
-#' If `ES_NULL` is set as `Default`, it uses the ES_null distribution that we generated against LINCS database. Only applicable when 
-#' `refdb_name` slot of `qSig` is `LINCS_de`
+#' If `ES_NULL` is set as `Default`, it uses the ES_null distribution that we generated against LINCS database.
 #' @param taurefList path to the "taurefList.rds" file generated with `queryReferenceDB` function. 
 #' If set as `Default`, it uses the "taurefList.rds" file that we generated against LINCS database.
-#' Only meaningful when `refdb_name` slot of `qSig` is `LINCS_de`
 #' @param sortby rank the GESS result by one of the following scores: `WTCS`, `NCS`, `Tau`, `NCSct` or `NA` 
 #' @param chunk_size size of chunk per processing
 #' @return data.frame of GESS result, a list of drugs in reference database ranked by their similarity to query signature

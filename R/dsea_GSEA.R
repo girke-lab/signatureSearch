@@ -3,7 +3,7 @@
 ##'
 ##' @title dsea_GSEA
 ##' @param drugList ranked lists of all drugs in the GESS result. The scores of the corresponding GESS method can be used for ranking the drugs as it is 
-##' required by the GSEA algorithm. The drugs with zero scores are excluded in the GESS results of CMAP, gCMAP and CMAP-LINCS methods
+##' required by the GSEA algorithm. The drugs with zero scores are excluded in the GESS results of CMAP, gCMAP and LINCS methods
 ##' @param type one of "GO" or "KEGG"
 ##' @param ont one of "BP", "MF", "CC" or "GO"
 ##' @param exponent weight of each step

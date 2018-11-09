@@ -10,7 +10,7 @@ dsea_GSEA(drugList, type = "GO", ont = "BP", exponent = 1, nPerm = 1000,
 }
 \arguments{
 \item{drugList}{ranked lists of all drugs in the GESS result. The scores of the corresponding GESS method can be used for ranking the drugs as it is 
-required by the GSEA algorithm. The drugs with zero scores are excluded in the GESS results of CMAP, gCMAP and CMAP-LINCS methods}
+required by the GSEA algorithm. The drugs with zero scores are excluded in the GESS results of CMAP, gCMAP and LINCS methods}
 
 \item{type}{one of "GO" or "KEGG"}
 

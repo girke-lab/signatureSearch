@@ -2,7 +2,7 @@
 ##' Given a vector of drugs, this function will return the enriched GO categories with hypergeometric test after FDR control.
 ##'
 ##'
-##' @param drugs a vector of drug name.
+##' @param drugs query drug set used to do drug set enrichment analysis (DSEA), Can be top ranking drugs in GESS result. 
 ##' @param type one of "GO" or "KEGG"
 ##' @param ont One of "MF", "BP", and "CC" or "ALL".
 ##' @param pvalueCutoff Cutoff value of p value.
@@ -229,3 +229,6 @@ prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
   build_Anno(kegg$KEGGPATHID2EXTID,
              kegg$KEGGPATHID2NAME)
 }
+
+## get rid of "Undefined global functions or variables" note
+cell = drug_name = from = . = NULL

@@ -1,12 +1,12 @@
 
 #' drug targets GO/KEGG enrichment analysis by using `mGSEA` method
 #' @title tsea_mGSEA
-#' @param drugs query drug set used to do target set enrichment analysis.
+#' @param drugs query drug set used to do target set enrichment analysis (TSEA), Can be top ranking drugs in GESS result. 
 #' @param type can be `GO` or `KEGG`
 #' @param ont if type is `GO`, set ontology, can be `BP`,`MF`,`CC` or `ALL`
 #' @param nPerm permutation numbers used to calculate p value
 #' @param exponent weight of each step
-#' @param pAdjustMethod p value adjustment method for p values in target set enrichment result
+#' @param pAdjustMethod p value adjustment method for p values in TSEA result
 #' @param pvalueCutoff p value Cutoff
 #' @param minGSSize minimum size of each gene set in annotation system
 #' @param maxGSSize maximum size of each gene set in annotation system

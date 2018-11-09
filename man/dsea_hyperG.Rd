@@ -10,7 +10,7 @@ dsea_hyperG(drugs, type = "GO", ont = "BP", pvalueCutoff = 0.05,
   maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{a vector of drug name.}
+\item{drugs}{query drug set used to do drug set enrichment analysis (DSEA), Can be top ranking drugs in GESS result.}
 
 \item{type}{one of "GO" or "KEGG"}
 

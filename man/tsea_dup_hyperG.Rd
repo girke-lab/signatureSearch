@@ -9,10 +9,10 @@ tsea_dup_hyperG(drugs, universe = "Default", type = "GO", ont = "MF",
   minGSSize = 2, maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do target set enrichment analysis}
+\item{drugs}{query drug set used to do target set enrichment analysis (TSEA), Can be top ranking drugs in GESS result.}
 
 \item{universe}{background genes/targets. If set as `Default`, it represents all the annotated genes/targets in
-the corresponding annotation system. If "type" is "GO", universe should be gene SYMBOL ids. If "type" is "KEGG",
+the corresponding annotation system (e.g. GO or KEGG). If "type" is "GO", universe should be gene SYMBOL ids. If "type" is "KEGG",
 universe should be gene entrez ids.}
 
 \item{type}{can be `GO` or `KEGG`}

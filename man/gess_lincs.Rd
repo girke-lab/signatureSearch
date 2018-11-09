@@ -8,16 +8,14 @@ gess_lincs(qSig, ES_NULL = "Default", taurefList = "Default",
   sortby = "NCS", chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{`qSig` object, The 'gess_method' slot of 'qSig' should be 'LINCS'}
+\item{qSig}{`qSig` object, The 'gess_method' slot should be 'LINCS'}
 
-\item{ES_NULL}{path to the ES_NULL file. ES null distribution is generated with random queryies for computing nominal P-values for ES by 
+\item{ES_NULL}{path to the ES_NULL file. ES null distribution is generated with random queries for computing nominal P-values for ES by 
 `randQueryES_slurm` or `randQueryES_local` function. 
-If `ES_NULL` is set as `Default`, it uses the ES_null distribution that we generated against LINCS database. Only applicable when 
-`refdb_name` slot of `qSig` is `LINCS_de`}
+If `ES_NULL` is set as `Default`, it uses the ES_null distribution that we generated against LINCS database.}
 
 \item{taurefList}{path to the "taurefList.rds" file generated with `queryReferenceDB` function. 
-If set as `Default`, it uses the "taurefList.rds" file that we generated against LINCS database.
-Only meaningful when `refdb_name` slot of `qSig` is `LINCS_de`}
+If set as `Default`, it uses the "taurefList.rds" file that we generated against LINCS database.}
 
 \item{sortby}{rank the GESS result by one of the following scores: `WTCS`, `NCS`, `Tau`, `NCSct` or `NA`}
 

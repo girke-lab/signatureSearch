@@ -6,6 +6,7 @@
 #' At least one of 'lower' and 'higher' must be specified.
 #' @param lower The lower threshold. If not 'NULL', genes with a score smaller than 'lower' will be included in the gene set with sign -1. 
 #' At least one of 'lower' and 'higher' must be specified.
+#' @param add_bs_score TRUE or FALSE. If true, bootstrap scores are added to measure the robustness of the result rankings.
 #' @param chunk_size size of chunk per processing
 #' @return gessResult object represents a list of drugs in reference database ranked by their similarity to query signature
 #' @importFrom utils download.file
@@ -14,7 +15,7 @@
 #' @import SummarizedExperiment
 #' @export
 #' 
-gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
+gess_gcmap <- function(qSig, higher, lower, add_bs_score = FALSE, chunk_size=5000){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(qSig@gess_method != "gCMAP"){

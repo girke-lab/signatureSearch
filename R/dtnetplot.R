@@ -2,7 +2,7 @@
 ##' dtnetplot
 ##' @title dtnetplot
 ##' @param drugs drugs used to build d-t network 
-##' @param set character, could be GO term ID, KEGG pathway ID or a character vector of gene set with gene SYMBOLs.
+##' @param set could be GO term ID, KEGG pathway ID or a character vector of gene set with gene SYMBOLs.
 ##' @param ont if the `set` is GO term ID, `ont` is the ontology that GO term is belong to. One of "BP", "MF", "CC" or "ALL"
 ##' @param ... additional parameters
 ##' @return visNetwork plot

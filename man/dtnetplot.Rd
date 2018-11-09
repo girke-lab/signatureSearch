@@ -9,7 +9,7 @@ dtnetplot(drugs, set, ont = NULL, ...)
 \arguments{
 \item{drugs}{drugs used to build d-t network}
 
-\item{set}{character, could be GO term ID, KEGG pathway ID or a character vector of gene set with gene SYMBOLs.}
+\item{set}{could be GO term ID, KEGG pathway ID or a character vector of gene set with gene SYMBOLs.}
 
 \item{ont}{if the `set` is GO term ID, `ont` is the ontology that GO term is belong to. One of "BP", "MF", "CC" or "ALL"}
 
