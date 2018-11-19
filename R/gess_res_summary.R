@@ -34,22 +34,23 @@ cell_rank_sum <- function(gessResult){
   return(res)
 }
 
-#' Append two columns (NCSgrp1, NCSgrp2) to gess_lincs result
-#' @title ncs_grp
-#' @param tib tibble object from result(gessResult), the 'gessResult' object is from 'gess_lincs' method
+#' Append two columns (score_column_grp1, score_column_grp2) to GESS result
+#' @title sim_score_grp
+#' @param tib tibble object from result(gessResult)
 #' @param grp1 character vector, group 1 of cell types, e.g., tumor cell types
 #' @param grp2 character vector, group 2 of cell types, e.g., normal cell types
+#' @param score_column character, column name of similairity scores to be grouped 
 #' @return tibble
 #' @export
 
-ncs_grp <- function(tib, grp1, grp2){
-  ## Summary across group of cell lines (NCSgrp)
+sim_score_grp <- function(tib, grp1, grp2, score_column){
+  ## Summary across group of cell lines
   ctgrouping <- paste(tib$pert, tib$type, sep="__")
   
   tib_grp1 <- dplyr::filter(tib, cell %in% grp1)
   ctgrouping1 <- paste(tib_grp1$pert, tib_grp1$type, sep="__")
-  ncs1 <- tib_grp1$NCS
-  qmax1 <- tapply(ncs1, ctgrouping1, function(x) { 
+  cs1 <- tib_grp1[[score_column]]
+  qmax1 <- tapply(cs1, ctgrouping1, function(x) { 
     q <- quantile(x, probs=c(0.33, 0.67))
     ifelse(abs(q[2]) >= abs(q[1]), q[2], q[1])
   })
@@ -57,12 +58,16 @@ ncs_grp <- function(tib, grp1, grp2){
   
   tib_grp2 <- filter(tib, cell %in% grp2)
   ctgrouping2 <- paste(tib_grp2$pert, tib_grp2$type, sep="__")
-  ncs2 <- tib_grp2$NCS
-  qmax2 <- tapply(ncs2, ctgrouping2, function(x) { 
+  cs2 <- tib_grp2[[score_column]]
+  qmax2 <- tapply(cs2, ctgrouping2, function(x) { 
     q <- quantile(x, probs=c(0.33, 0.67))
     ifelse(abs(q[2]) >= abs(q[1]), q[2], q[1])
   })
   qmax2 <- qmax2[ctgrouping]
-  tib %<>% dplyr::mutate(qmax1, qmax2) %>% dplyr::rename(qmax1="NCSgrp1", qmax2="NCSgrp2")
+  name_grp1 <- paste0(score_column, "_grp1")
+  name_grp2 <- paste0(score_column, "_grp2")
+  cname <- colnames(tib)
+  tib %<>% dplyr::mutate(qmax1, qmax2)
+  colnames(tib) <- c(cname, name_grp1, name_grp2)
   return(tib)
 }
