@@ -4,7 +4,7 @@
 \name{signatureSearch}
 \alias{signatureSearch}
 \alias{signatureSearch-package}
-\title{signatureSearch.}
+\title{signatureSearch}
 \description{
-signatureSearch.
+signatureSearch
 }

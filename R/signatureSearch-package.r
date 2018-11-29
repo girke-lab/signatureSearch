@@ -1,4 +1,4 @@
-#' signatureSearch.
+#' signatureSearch
 #'
 #' @name signatureSearch
 #' @docType package

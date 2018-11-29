@@ -14,10 +14,6 @@ output:
     fig_caption: yes
     code_folding: show
     number_sections: true
-vignette: >
-  %\VignetteIndexEntry{GESS and FEA}
-  %\usepackage[utf8]{inputenc}
-  %\VignetteEngine{knitr::rmarkdown}
 fontsize: 15pt
 bibliography: bibtex.bib
 ---
