@@ -21,17 +21,17 @@
 #' Here we take the mean expression values of compound treament samples at 10 uM, 24h as signature of that compound treatment in cells.
 #' The Level5 file (GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx) contains moderate z-scores from compound or genetic treatments 
 #' from DE analysis. The compound treatment are at different concentation, time and also includes duplications. Here, we only subset thoese 
-#' compound treatments that are at 10 uM, 24h, and eliminate the technical duplications.
+#' treatments that are at 10 uM, 24h, and eliminate the technical duplications.
 #' Note, the gctx files for LINCS database is very large (~25 Gb), it is recommended to use biocluster and request enough memory (100Gb works) to run the analysis   
 #' 
 #' @param annot data.frame or path to the tabular file containing sample annotation information, which means column annotation for database 
 #' in `file` parameter. The row names of the data.frame in `annot` should match the column names of data.frame in `file`. For LINCS database, 
 #' if `file` is Level3, the `annot` should be path to the "GSE92742_Broad_LINCS_inst_info.txt" file. 
 #' If `file` is Level5, the `annot` should be path to the "GSE92742_Broad_LINCS_sig_info.txt" file. In addition, the cell type information will be
-#' automatically added.
-#' @param type one of `CMAP`, `LINCS` or `Custom`. If `type` is `CMAP`, `file` should be the path to the downloaded `logMA.tsv`. If `type` is `LINCS`, 
-#' `file` should be the path to the downloaded Level3 or Level5 gctx file at GSE92742
-#' @param dest_path path to store the reference database, which is the hdf5 backed \code{SummarizedExperiment} object
+#' automatically added to metadata.
+#' @param type one of `CMAP`, `LINCS` or `Custom`. If `type` is `CMAP`, `file` should be the path to the downloaded `logMA.tsv` or `CMAP_expr.tsv`. 
+#' If `type` is `LINCS`, `file` should be the path to the downloaded Level3 or Level5 gctx file at GSE92742
+#' @param dest_path path/directory to store the reference database, which is the hdf5 backed \code{SummarizedExperiment} object
 #' @return hdf5 backed \code{SummarizedExperiment} object
 #' @importFrom readr read_tsv
 #' @importFrom cmapR parse.gctx
