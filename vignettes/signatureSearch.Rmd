@@ -3,8 +3,6 @@ title: _signatureSearch_ package
 author: "Author: Yuzhu Duan (yduan004@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  pdf_document:
-    toc: true
   html_document:
     toc: true
     toc_float:
@@ -14,6 +12,8 @@ output:
     fig_caption: yes
     code_folding: show
     number_sections: true
+  pdf_document:
+    toc: true
 fontsize: 15pt
 bibliography: bibtex.bib
 ---
@@ -46,7 +46,7 @@ This project is about optimizing signature search and enrichment methods for the
 
 ## Gene Expression Signature Databases
 
-\cite{Lamb2006-du} generated a GES database, initially including 164 drugs screened against four mammalian cell lines \citep{Lamb2006-du}. A few years later it was extended to 1,309 drugs and eight cell lines. In 2017, the database was increased to 19,811 drugs by the Library of Network-Based Cellular Signatures (LINCS) Consortium \citep{Subramanian2017-fu}, while the number of cell types represented in the database has increased to over 70 normal and cancer cell lines. The number of compound dosages and time points considered in the assays has also been increased by 10-20 fold. The initial database used Affymetrix Gene Chips as expression platform. To scale from a few thousand to many hundred thousand GESs, the LINCS Consortium uses now the more economic L1000 assay. This bead-based technology is a low cost, high-throughput reduced representation expression profiling assay. It measures the expression of 978 landmark genes and 80 control genes by detecting fluorescent intensity of beads after capturing the ligation-mediated amplification products of mRNAs \citep{Peck2006-rf}. The expression of 11,350 additional genes is imputed from the landmark genes by using as training data a collection of 12,063 Affymetrix gene chips \citep{Edgar2002-di}. In the \cite{Subramanian2017-fu} paper the authors use a subset of the LINCS database, referred to as Touchstone, containing 2,837 drug treatments of nine cell lines that can be searched on their project's website (CLUE). The substantial scale-up of the LINCS project provides now many new opportunities to explore MOAs for a vast number of small molecules.
+[@Lamb2006-du] generated a GES database, initially including 164 drugs screened against four mammalian cell lines [@Lamb2006-du]. A few years later it was extended to 1,309 drugs and eight cell lines. In 2017, the database was increased to 19,811 drugs by the Library of Network-Based Cellular Signatures (LINCS) Consortium [@Subramanian2017-fu], while the number of cell types represented in the database has increased to over 70 normal and cancer cell lines. The number of compound dosages and time points considered in the assays has also been increased by 10-20 fold. The initial database used Affymetrix Gene Chips as expression platform. To scale from a few thousand to many hundred thousand GESs, the LINCS Consortium uses now the more economic L1000 assay. This bead-based technology is a low cost, high-throughput reduced representation expression profiling assay. It measures the expression of 978 landmark genes and 80 control genes by detecting fluorescent intensity of beads after capturing the ligation-mediated amplification products of mRNAs @Peck2006-rf. The expression of 11,350 additional genes is imputed from the landmark genes by using as training data a collection of 12,063 Affymetrix gene chips [@Edgar2002-di]. In the [@Subramanian2017-fu] paper the authors use a subset of the LINCS database, referred to as Touchstone, containing 2,837 drug treatments of nine cell lines that can be searched on their project's website (CLUE). The substantial scale-up of the LINCS project provides now many new opportunities to explore MOAs for a vast number of small molecules.
 
 # Terminology
 
@@ -54,7 +54,7 @@ Gene Expression Signatures (GESs): can be Gene Expression Profiles (GEPs), which
 
 # Database
 
-The CMAP and LINCS differential expression databases can be built with `build_db` funciton or directly downloaded at [CMAP](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap.tar.gz), [LINCS](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42.tar.gz). The databases are stored as HDF5 backed `SummarizedExperiment` object. Untar the downloaded file by "tar -xzvf file.tar.gz" command, then load the \code{SummarizedExperiment} object via `loadHDF5SummarizedExperiment` function in `HDF5Array` package. The 'assays' slot of the loaded SummarizedExperiment object represents the logFC or Z scores generated from differential expression (DE) analysis. 
+The CMAP and LINCS differential expression databases can be built with `build_db` funciton or directly downloaded at [CMAP](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap.tar.gz), [LINCS](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42.tar.gz). The databases are stored as HDF5 backed `SummarizedExperiment` object. Untar the downloaded file by "tar -xzvf file.tar.gz" command, then load the `SummarizedExperiment` object via `loadHDF5SummarizedExperiment` function in `HDF5Array` package. The 'assays' slot of the loaded SummarizedExperiment object represents the logFC or Z scores generated from differential expression (DE) analysis. 
 
 The CMAP and LINCS expression databases can also be built with `build_db` funciton or directly downloaded at [CMAP_expr](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap_expr.tar.gz), [LINCS_expr](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42_expr.tar.gz). They stores the mean experssion values of drug treatment samples in different cells.
 
@@ -88,7 +88,7 @@ cell_info
 ## Searching with CMAP method for GESS
 
 Generate "qSig" object for GESS_CMAP method and search against lincs_sub reference database
-```{r gess_cmap, eval=TRUE}
+```{r gess_cmap, eval=FALSE}
 qsig_cmap_against_lincs_sub <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "CMAP", refdb = lincs_sub)
 cmap_against_lincs_sub <- gess_cmap(qSig=qsig_cmap_against_lincs_sub, chunk_size=5000)
 cmap_against_lincs_sub
@@ -100,13 +100,14 @@ Generate "qSig" object for GESS_LINCS method and search against lincs_sub refere
 ```{r gess_lincs, eval=TRUE}
 qsig_lincs_against_lincs_sub <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "LINCS", refdb = lincs_sub)
 lincs_against_lincs_sub <- gess_lincs(qsig_lincs_against_lincs_sub, sortby="NCS")
+lincs_against_lincs_sub
 result(lincs_against_lincs_sub)
 ```
 
 ## Searching with gCMAP method for GESS
 
 Generate "qSig" object for GESS_gCMAP method and search against lincs_sub reference database
-```{r gess_gcmap, eval=TRUE}
+```{r gess_gcmap, eval=FALSE}
 qsig_gcmap_against_lincs_sub <- qSig(qsig = query_mat, gess_method = "gCMAP", refdb = lincs_sub)
 gcmap_against_lincs_sub <- gess_gcmap(qsig_gcmap_against_lincs_sub, higher=1, lower=-1, chunk_size=5000)
 result(gcmap_against_lincs_sub)
@@ -115,7 +116,7 @@ result(gcmap_against_lincs_sub)
 ## Searching with Fisher method for GESS
 
 Generate "qSig" object for GESS_fisher method and search against lincs_sub reference database
-```{r gess_fisher, eval=TRUE}
+```{r gess_fisher, eval=FALSE}
 qsig_fisher_against_lincs_sub <- qSig(qsig = query_mat, gess_method = "Fisher", refdb = lincs_sub)
 fisher_against_lincs_sub <- gess_fisher(qSig=qsig_fisher_against_lincs_sub, higher=1, lower=-1, chunk_size=5000)
 result(fisher_against_lincs_sub)
@@ -126,14 +127,14 @@ result(fisher_against_lincs_sub)
 Generate "qSig" object for GESS_Cor method and search against lincs_sub reference database
 
 ### Genome-wide Spearman correlation
-```{r gess_sp, eval=TRUE}
+```{r gess_sp, eval=FALSE}
 qsig_sp_against_lincs_sub <- qSig(qsig = as.matrix(query), gess_method = "Cor", refdb = lincs_sub)
 sp_against_lincs_sub <- gess_cor(qSig=qsig_sp_against_lincs_sub, method="spearman", chunk_size=5000)
 result(sp_against_lincs_sub)
 ```
 
 ### Spearman_sub correlatioin
-```{r gess_spsub, eval=TRUE}
+```{r gess_spsub, eval=FALSE}
 # Subset z-scores of 150 up and down gene sets from "sirolimus__HEPG2__trt_cp" signature.
 query_mat_sub <- as.matrix(query_mat[c(upset, downset),])
 qsig_spsub_against_lincs_sub <- qSig(qsig = query_mat_sub, gess_method = "Cor", refdb = lincs_sub)
@@ -148,7 +149,7 @@ Choose GESS result `lincs_against_lincs_sub` as input for the downstream functio
 ## dup_hyperG method for TSEA
 
 Subset top 100 ranking drugs in GESS result, get their target set (with duplication) as query for duplication support hypergeometric test for TSEA.
-```{r tsea_dup_hyperG, eval=TRUE}
+```{r tsea_dup_hyperG, eval=FALSE}
 drugs <- unique(result(lincs_against_lincs_sub)$pert[1:100])
 # GO annotation system
 dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", type = "GO", ont="MF", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
@@ -164,7 +165,7 @@ result(dup_hyperG_k_res)
 
 Subset top 100 ranking drugs in GESS result as query, m_GSEA method internally get their target set and turn it to scored ranked target list as query for TSEA. 
 The scores represent weight of targets in the target set.
-```{r tsea_mgsea, eval=TRUE}
+```{r tsea_mgsea, eval=FALSE}
 # GO annotation system
 geneSets <- readRDS("~/insync/project/GESS_and_FEA/data/geneSets_470.rds")
 geneList <- readRDS("~/insync/project/GESS_and_FEA/data/geneList.rds")
@@ -183,7 +184,7 @@ result(mgsea_k_res)
 
 Subset top 100 ranking drugs in GESS result as query, mabs method internally get their target set and ranked target list with scores as query for TSEA. 
 The scores represent weight of targets in the target set.
-```{r tsea_mabs, eval=TRUE}
+```{r tsea_mabs, eval=FALSE}
 # GO annotation system
 mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.05, minGSSize=5, maxGSSize=500)
 result(mabs_res)
@@ -195,7 +196,8 @@ result(mabs_k_res)
 ## hyperG method for DSEA
 
 Subset top 100 ranking drugs in GESS result as query for hypergeometric test for DSEA.
-```{r dsea_hyperG, eval=FALSE}
+```{r dsea_hyperG, eval=TRUE}
+drugs <- unique(result(lincs_against_lincs_sub)$pert[1:100])
 # GO annotation system
 hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
 hyperG_res
@@ -210,15 +212,15 @@ result(hyperG_k_res)
 
 Use ranked drug list in GESS result as query for GSEA for DSEA, the scores are similarity scores of corresponding GESS methods. Zeros are removed.
 ```{r dsea_gsea, eval=FALSE}
-dl <- abs(lincs_against_lincs@result$NCS); names(dl) <- lincs_against_lincs@result$Pert
+dl <- abs(result(lincs_against_lincs_sub)$NCS); names(dl) <- result(lincs_against_lincs_sub)$pert
 dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]
 # GO annotation system
-gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.1, minGSSize=5, maxGSSize=500)
+gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=1, minGSSize=5, maxGSSize=500)
 gsea_res
 result(gsea_res)
 # KEGG annotation system
-gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.1, minGSSize=5, maxGSSize=500)
+gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=1, minGSSize=5, maxGSSize=500)
 gsea_k_res
 result(gsea_k_res)
 ```
@@ -229,12 +231,12 @@ result(gsea_k_res)
 
 Build drug-target networks in top ranking GO categories in `hyperG_res`
 ```{r dtnet_go, eval=TRUE}
-dtnetplot(drugs = hyperG_res@drug, set = "GO:0030169", ont = "MF")
+dtnetplot(drugs = hyperG_res@drugs, set = "GO:0043548", ont = "MF")
 ```
 
 ## Construct drug-target interaction networks in interested KEGG pathways or defined other gene/protein sets
 
 Build drug-target networks in top ranking KEGG pathways in `hyperG_k_res`
 ```{r dtnet_kegg, eval=TRUE}
-dtnetplot(drugs = hyperG_k_res@drug, set = "hsa04979")
+dtnetplot(drugs = hyperG_k_res@drugs, set = "hsa05323")
 ```

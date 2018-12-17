@@ -65,42 +65,26 @@ GSEA_fgsea <- function(geneList,
     if (nrow(res) == 0) {
         message("no term enriched under specific pvalueCutoff...")
         return(
-            new("gseaResult",
-                result     = res,
-                geneSets   = geneSets,
-                geneList   = geneList,
-                params     = params,
-                readable   = FALSE
-                )
+          new("feaResult",
+              result    = as_tibble(res),
+              refSets   = geneSets,
+              targets   = geneList,
+              universe  = names(geneList)
+          )
         )
     }
 
     row.names(res) <- res$ID
-    # observed_info <- lapply(geneSets[res$ID], function(gs)
-    #     gseaScores(geneSet=gs,
-    #                geneList=geneList,
-    #                exponent=exponent)
-    #     )
-
-    # if (verbose)
-    #     message("leading edge analysis...")
-    # 
-    # ledge <- leading_edge(observed_info)
-    # 
-    # res$rank <- ledge$rank
-    # res$leading_edge <- ledge$leading_edge
-    # res$core_enrichment <- sapply(ledge$core_enrichment, paste0, collapse='/')
 
     if (verbose)
         message("done...")
 
-    new("gseaResult",
-        result     = res,
-        geneSets   = geneSets,
-        geneList   = geneList,
-        params     = params,
-        readable   = FALSE
-        )
+    new("feaResult",
+        result    = as_tibble(res),
+        refSets   = geneSets,
+        targets   = geneList,
+        universe  = names(geneList)
+    )
 }
 
 ##' generic function for gene set enrichment analysis
@@ -127,7 +111,7 @@ GSEA_internal <- function(geneList,
                  maxGSSize,
                  pvalueCutoff,
                  pAdjustMethod,
-                 verbose,
+                 verbose=TRUE,
                  seed=FALSE,
                  USER_DATA,
                  by="fgsea") {
@@ -152,8 +136,6 @@ GSEA_internal <- function(geneList,
                  seed              = seed,
                  USER_DATA         = USER_DATA)
     res@organism <- "UNKNOWN"
-    res@setType <- "UNKNOWN"
-    res@keytype <- "UNKNOWN"
     return(res)
 }
 

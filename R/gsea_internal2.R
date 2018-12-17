@@ -71,7 +71,7 @@ GSEA_fgsea2 <- function(geneList,
         message("no term enriched under specific pvalueCutoff...")
         return(
             new("feaResult",
-                result     = res,
+                result    = as_tibble(res),
                 refSets   = geneSets,
                 targets   = geneList,
                 universe  = names(geneList)
