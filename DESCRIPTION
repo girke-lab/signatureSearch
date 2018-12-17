@@ -9,7 +9,7 @@ Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), R.utils,
         igraph, scales, methods, qvalue, stats, stats4, graphics,
         utils, org.Hs.eg.db, reshape2, visNetwork, drugbankR, BiocParallel, fastmatch,
         tools, batchtools, DelayedArray, Biobase, Matrix (>= 1.0.9),
-        parallel, annotate
+        parallel, annotate, readr, cmapR
 Suggests: AnnotationHub, KEGG.db, knitr, testthat, topGO,
         rmarkdown, BiocStyle
 License: Artistic-2.0

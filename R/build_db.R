@@ -22,7 +22,7 @@
 #' The Level5 file (GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx) contains moderate z-scores from compound or genetic treatments 
 #' from DE analysis. The compound treatment are at different concentation, time and also includes duplications. Here, we only subset thoese 
 #' compound treatments that are at 10 uM, 24h, and eliminate the technical duplications.
-#' Note, the gctx files for LINCS database is very large (~25 Gb), it is recommended to use biocluster and request enough memory to run the analysis   
+#' Note, the gctx files for LINCS database is very large (~25 Gb), it is recommended to use biocluster and request enough memory (100Gb works) to run the analysis   
 #' 
 #' @param annot data.frame or path to the tabular file containing sample annotation information, which means column annotation for database 
 #' in `file` parameter. The row names of the data.frame in `annot` should match the column names of data.frame in `file`. For LINCS database, 
@@ -33,6 +33,8 @@
 #' `file` should be the path to the downloaded Level3 or Level5 gctx file at GSE92742
 #' @param dest_path path to store the reference database, which is the hdf5 backed \code{SummarizedExperiment} object
 #' @return hdf5 backed \code{SummarizedExperiment} object
+#' @importFrom readr read_tsv
+#' @importFrom cmapR parse.gctx
 #' @export
 
 build_db <- function(df=NULL, file=NULL, annot=NULL, type, dest_path){
@@ -42,17 +44,80 @@ build_db <- function(df=NULL, file=NULL, annot=NULL, type, dest_path){
     colnames(df)=pert_cell_factor
     cmap <- SummarizedExperiment(assays = list(score=as.matrix(df)))
     ## Save 'cmap' as an HDF5-based SummarizedExperiment object:
-    h5_cmap <- saveHDF5SummarizedExperiment(cmap, dest_path)
-    return(h5_cmap)
+    cmap <- saveHDF5SummarizedExperiment(cmap, dest_path)
+    return(cmap)
   }
   if (type == "LINCS"){
     if (grepl("Level5", file)){
-      
-      
+      # $ srun --partition=girkelab --mem=50gb --time=12:00:00 --pty bash -l
+      meta42 <- suppressWarnings(read_tsv(annot))
+      txt <- names(table(meta42$pert_idose))
+      dose10 <- txt[grep("10 .M", txt)]
+      dose <- dose10[dose10 != "10 nM"]
+      meta42 %<>% dplyr::filter(pert_type=="trt_cp" & pert_idose==dose & pert_itime=="24 h")
+      meta42 %<>% 
+        bind_cols(alt_id=paste(meta42$pert_iname, meta42$cell_id, sep="_")) %>% 
+        bind_cols(pert_cell_factor=paste(meta42$pert_iname, meta42$cell_id, meta42$pert_type, sep="__")) %>%
+        distinct(alt_id, .keep_all=TRUE) # eliminate technical duplicates
+      # dim(meta42) # 45956 X 14
+      lincs42_mat <- cmapR::parse.gctx(file, cid=meta42$sig_id, matrix_only=TRUE)
+      lincs42_mat <- lincs42_mat@mat
+      colnames(lincs42_mat) = meta42$pert_cell_factor 
+
+      gif_tmp <- tempfile(fileext=".txt")
+      download.file("http://biocluster.ucr.edu/~yduan004/LINCS_db/GSE92742_Broad_LINCS_gene_info.txt", gif_tmp, quiet=TRUE)
+      geneInfo <- suppressMessages(read_tsv(gif_tmp))
+      unlink(gif_tmp)
+      geneInfo <- as(geneInfo, "DataFrame")
+      geneInfo$pr_gene_id <- as.character(geneInfo$pr_gene_id)
+      rownames(geneInfo) <- geneInfo$pr_gene_id
+      geneInfo <- geneInfo[rownames(lincs42_mat),]
+      meta42 <- as(meta42, "DataFrame")
+      rownames(meta42) <- meta42$pert_cell_factor
+      lincs42 <- SummarizedExperiment(assays = list(z_score = lincs42_mat), rowData = geneInfo, colData = meta42)
+      # Add cell info to lincs42 database
+      cif_tmp <- tempfile(fileext=".tsv") 
+      download.file("http://biocluster.ucr.edu/~yduan004/LINCS_db/cell_info.tsv", cif_tmp, quiet=TRUE)
+      cell_info <- read_tsv(cif_tmp)
+      unlink(cif_tmp)
+      metadata(lincs42)$cell_info = cell_info
+      # Save 'lincs42' as an HDF5-based SummarizedExperiment object:
+      lincs42 <- saveHDF5SummarizedExperiment(lincs42, dest_path)
+      return(lincs42)
     }
     if (grepl("Level3", file)){
-      
-      
+      inst42 <- read_tsv(annot)
+      inst42 %<>% filter(pert_type=="trt_cp" & pert_dose==10 & pert_dose_unit=="um" & pert_time==24 & pert_time_unit=="h") # filter rows by cmp, concentration, and treatment time 
+      inst42 %<>% 
+	      bind_cols(alt_id=paste(inst42$pert_iname, inst42$cell_id, sep="_")) %>% # create pert_cell column as alt_id
+	      bind_cols(pert_cell_factor=paste(inst42$pert_iname, inst42$cell_id, inst42$pert_type, sep="__")) # grouping by perturbation and cell type
+      # dim(inst42) # 169,795 X 13
+      lincs42_mat3 <- cmapR::parse.gctx(file, cid=inst42$inst_id, matrix_only=TRUE)
+      lincs42_mat3 <- lincs42_mat3@mat # 12328 X 169795
+      pert_cell_list <- split(inst42$inst_id, inst42$pert_cell_factor)
+      lincs_drug_cell_expr <- sapply(names(pert_cell_list), function(x) rowMeans(as.data.frame(lincs42_mat3[,pert_cell_list[[x]]]))) # 12328 X 38824
+
+      gif_tmp <- tempfile(fileext=".txt")
+      download.file("http://biocluster.ucr.edu/~yduan004/LINCS_db/GSE92742_Broad_LINCS_gene_info.txt", gif_tmp, quiet=TRUE)
+      geneInfo <- suppressMessages(read_tsv(gif_tmp))
+      unlink(gif_tmp)
+      geneInfo <- as(geneInfo, "DataFrame")
+      geneInfo$pr_gene_id <- as.character(geneInfo$pr_gene_id)
+  	  rownames(geneInfo) <- geneInfo$pr_gene_id
+  	  geneInfo <- geneInfo[rownames(lincs_drug_cell_expr),]
+  	  inst42_uniq <- inst42[!duplicated(inst42$pert_cell_factor),] # 38824 X 13
+  	  inst42_uniq <- as(inst42_uniq, "DataFrame")
+  	  rownames(inst42_uniq) <- inst42_uniq$pert_cell_factor
+      lincs42_expr <- SummarizedExperiment(assays = list(expr = lincs_drug_cell_expr), rowData = geneInfo, colData = inst42_uniq[colnames(lincs_drug_cell_expr),])
+  	  # Add cell info to lincs42_expr database
+      cif_tmp <- tempfile(fileext=".tsv") 
+      download.file("http://biocluster.ucr.edu/~yduan004/LINCS_db/cell_info.tsv", cif_tmp, quiet=TRUE)
+      cell_info <- read_tsv(cif_tmp)
+      unlink(cif_tmp)
+      metadata(lincs42_expr)$cell_info = cell_info
+      # Save 'lincs42_expr' as an HDF5-based SummarizedExperiment object:
+	    lincs42_expr <- saveHDF5SummarizedExperiment(lincs42_expr, dest_path)
+      return(lincs42_expr)
     }
   }
   if(type == "Custom"){
@@ -62,8 +127,7 @@ build_db <- function(df=NULL, file=NULL, annot=NULL, type, dest_path){
     }
     col_anno <- as(annot, "DataFrame")
     se <- SummarizedExperiment(assays = list(score=as.matrix(df)), colData = col_anno)
-    ## Save 'cmap' as an HDF5-based SummarizedExperiment object:
-    h5_se <- saveHDF5SummarizedExperiment(se, dest_path)
-    return(h5_se)
+    se <- saveHDF5SummarizedExperiment(se, dest_path)
+    return(se)
   }
 }
