@@ -46,7 +46,7 @@ This project is about optimizing signature search and enrichment methods for the
 
 ## Gene Expression Signature Databases
 
-[@Lamb2006-du] generated a GES database, initially including 164 drugs screened against four mammalian cell lines [@Lamb2006-du]. A few years later it was extended to 1,309 drugs and eight cell lines. In 2017, the database was increased to 19,811 drugs by the Library of Network-Based Cellular Signatures (LINCS) Consortium [@Subramanian2017-fu], while the number of cell types represented in the database has increased to over 70 normal and cancer cell lines. The number of compound dosages and time points considered in the assays has also been increased by 10-20 fold. The initial database used Affymetrix Gene Chips as expression platform. To scale from a few thousand to many hundred thousand GESs, the LINCS Consortium uses now the more economic L1000 assay. This bead-based technology is a low cost, high-throughput reduced representation expression profiling assay. It measures the expression of 978 landmark genes and 80 control genes by detecting fluorescent intensity of beads after capturing the ligation-mediated amplification products of mRNAs @Peck2006-rf. The expression of 11,350 additional genes is imputed from the landmark genes by using as training data a collection of 12,063 Affymetrix gene chips [@Edgar2002-di]. In the [@Subramanian2017-fu] paper the authors use a subset of the LINCS database, referred to as Touchstone, containing 2,837 drug treatments of nine cell lines that can be searched on their project's website (CLUE). The substantial scale-up of the LINCS project provides now many new opportunities to explore MOAs for a vast number of small molecules.
+@Lamb2006-du generated a GES database, initially including 164 drugs screened against four mammalian cell lines [@Lamb2006-du]. A few years later it was extended to 1,309 drugs and eight cell lines. In 2017, the database was increased to 19,811 drugs by the Library of Network-Based Cellular Signatures (LINCS) Consortium [@Subramanian2017-fu], while the number of cell types represented in the database has increased to over 70 normal and cancer cell lines. The number of compound dosages and time points considered in the assays has also been increased by 10-20 fold. The initial database used Affymetrix Gene Chips as expression platform. To scale from a few thousand to many hundred thousand GESs, the LINCS Consortium uses now the more economic L1000 assay. This bead-based technology is a low cost, high-throughput reduced representation expression profiling assay. It measures the expression of 978 landmark genes and 80 control genes by detecting fluorescent intensity of beads after capturing the ligation-mediated amplification products of mRNAs [@Peck2006-rf]. The expression of 11,350 additional genes is imputed from the landmark genes by using as training data a collection of 12,063 Affymetrix gene chips [@Edgar2002-di]. In the @Subramanian2017-fu paper the authors use a subset of the LINCS database, referred to as Touchstone, containing 2,837 drug treatments of nine cell lines that can be searched on their project's website (CLUE). The substantial scale-up of the LINCS project provides now many new opportunities to explore MOAs for a vast number of small molecules.
 
 # Terminology
 
@@ -54,11 +54,11 @@ Gene Expression Signatures (GESs): can be Gene Expression Profiles (GEPs), which
 
 # Database
 
-The CMAP and LINCS differential expression databases can be built with `build_db` funciton or directly downloaded at [CMAP](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap.tar.gz), [LINCS](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42.tar.gz). The databases are stored as HDF5 backed `SummarizedExperiment` object. Untar the downloaded file by "tar -xzvf file.tar.gz" command, then load the `SummarizedExperiment` object via `loadHDF5SummarizedExperiment` function in `HDF5Array` package. The 'assays' slot of the loaded SummarizedExperiment object represents the logFC or Z scores generated from differential expression (DE) analysis. 
+The CMAP and LINCS differential expression databases can be built with `build_db` funciton or directly downloaded at [CMAP](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap.tar.gz), [LINCS](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42.tar.gz). The databases are stored as HDF5 backed `SummarizedExperiment` object. Untar the downloaded file by `tar -xzvf file.tar.gz` command, then load the `SummarizedExperiment` object via `loadHDF5SummarizedExperiment` function in `HDF5Array` package. The 'assays' slot of the loaded SummarizedExperiment object represents the logFC or Z scores generated from differential expression (DE) analysis. 
 
-The CMAP and LINCS expression databases can also be built with `build_db` funciton or directly downloaded at [CMAP_expr](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap_expr.tar.gz), [LINCS_expr](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42_expr.tar.gz). They stores the mean experssion values of drug treatment samples in different cells.
+The CMAP and LINCS expression databases can also be built with `build_db` funciton or directly downloaded at [CMAP_expr](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap_expr.tar.gz), [LINCS_expr](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42_expr.tar.gz). They stores the mean experssion values of drug treatment samples in cells.
 
-The custom database can also be build via `build_db` function if a `data.frame` representing genoime-wide GEPs (log2FC, Z-scores, intensity values, etc.) of compound or genetic treatments in cells is provided.
+The custom database can also be build via `build_db` function if a `data.frame` representing genoime-wide GEPs of compound or genetic treatments in cells is provided.
 
 # Methods for GESS
 
@@ -149,7 +149,7 @@ Choose GESS result `lincs_against_lincs_sub` as input for the downstream functio
 ## dup_hyperG method for TSEA
 
 Subset top 100 ranking drugs in GESS result, get their target set (with duplication) as query for duplication support hypergeometric test for TSEA.
-```{r tsea_dup_hyperG, eval=FALSE}
+```{r tsea_dup_hyperG, eval=TRUE}
 drugs <- unique(result(lincs_against_lincs_sub)$pert[1:100])
 # GO annotation system
 dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", type = "GO", ont="MF", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
@@ -211,7 +211,7 @@ result(hyperG_k_res)
 ## GSEA method for DSEA
 
 Use ranked drug list in GESS result as query for GSEA for DSEA, the scores are similarity scores of corresponding GESS methods. Zeros are removed.
-```{r dsea_gsea, eval=FALSE}
+```{r dsea_gsea, eval=TRUE}
 dl <- abs(result(lincs_against_lincs_sub)$NCS); names(dl) <- result(lincs_against_lincs_sub)$pert
 dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]

@@ -33,7 +33,16 @@ dsea_GSEA <- function(drugList,
       stop("The names of the query drug list for dsea_GSEA need to be unique!")
     
     if(type=="GO"){
-      GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", ont, keytype="SYMBOL")
+      # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", ont, keytype="SYMBOL")
+      # download GO_DATA_drug and save it locally to save time
+      ext_path <- system.file("extdata", package="signatureSearch")
+      godata_drug_path <- paste0(ext_path,"/GO_DATA_drug.rds")
+      if(file.exists(godata_drug_path)){
+        GO_DATA_drug <- readRDS(godata_drug_path)
+      } else {
+        download.file("http://biocluster.ucr.edu/~yduan004/fea/GO_DATA_drug.rds", godata_drug_path, quiet = TRUE)
+        GO_DATA_drug <- readRDS(godata_drug_path)
+      }
       
       res <-  GSEA_internal(geneList = drugList,
                             exponent = exponent,

@@ -30,7 +30,17 @@ dsea_hyperG <- function(drugs,
     if(type == "GO"){
       ont %<>% toupper
       ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
-      GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", ont, keytype="SYMBOL")
+
+      # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", ont, keytype="SYMBOL")
+      # download GO_DATA_drug and save it locally to save time
+      ext_path <- system.file("extdata", package="signatureSearch")
+      godata_drug_path <- paste0(ext_path,"/GO_DATA_drug.rds")
+      if(file.exists(godata_drug_path)){
+        GO_DATA_drug <- readRDS(godata_drug_path)
+      } else {
+        download.file("http://biocluster.ucr.edu/~yduan004/fea/GO_DATA_drug.rds", godata_drug_path, quiet = TRUE)
+        GO_DATA_drug <- readRDS(godata_drug_path)
+      }
       
       # get all the drugs in the corresponding annotation system as universe
       ext2path <- get("EXTID2PATHID", envir = GO_DATA_drug)
