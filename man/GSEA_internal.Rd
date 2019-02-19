@@ -5,7 +5,7 @@
 \title{GSEA_internal}
 \usage{
 GSEA_internal(geneList, exponent, nPerm, minGSSize, maxGSSize, pvalueCutoff,
-  pAdjustMethod, verbose, seed = FALSE, USER_DATA, by = "fgsea")
+  pAdjustMethod, verbose = TRUE, seed = FALSE, USER_DATA, by = "fgsea")
 }
 \arguments{
 \item{geneList}{order ranked geneList}

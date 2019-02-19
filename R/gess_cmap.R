@@ -109,8 +109,10 @@ gess_cmap <- function(qSig, chunk_size=5000){
     unlist(strsplit(as.character(res$set[i]), "__")))), stringsAsFactors=FALSE)
   colnames(new) = c("pert", "cell", "type")
   res <- cbind(new, res[,-1])
-  res <- as_tibble(res)
-  x <- gessResult(result = res,
+  # add target column
+  target <- suppressMessages(get_targets(res$pert))
+  res <- left_join(res, target, by=c("pert"="drug_name"))
+  x <- gessResult(result = as_tibble(res),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,
                   refdb = qSig@refdb)

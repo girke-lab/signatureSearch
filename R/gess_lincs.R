@@ -186,6 +186,9 @@ gess_lincs <- function(qSig, ES_NULL="Default", taurefList="Default", sortby="NC
   downset <- qSig@qsig[[2]]
   se <- qSig@refdb 
   res <- lincsEnrich(se=se, upset=upset, downset=downset, ES_NULL=ES_NULL, taurefList=taurefList, sortby=sortby, chunk_size=chunk_size)
+  # add target column
+  target <- suppressMessages(get_targets(res$pert))
+  res <- left_join(res, target, by=c("pert"="drug_name"))
   x <- gessResult(result = as_tibble(res),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,

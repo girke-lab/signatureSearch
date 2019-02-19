@@ -50,11 +50,11 @@ This project is about optimizing signature search and enrichment methods for the
 
 # Terminology
 
-Gene Expression Signatures (GESs): can be Gene Expression Profiles (GEPs), which can be genome-wide profile from differential expression analysis (log2FC or Z-scores) or gene expression intensity values from perturbagen treatment in cell culture, or Differentially Expressed Gene sets (DEGs) from a treatment.
+Gene Expression Signatures (GESs): can be gene expression profiles (GEPs), which can be genome-wide profile from differential expression analysis ($log_2$ ratios or z-scores) or gene expression intensity values from perturbagen treatment in cell culture, or differentially expressed gene sets (DEGs) from a treatment.
 
 # Database
 
-The CMAP and LINCS differential expression databases can be built with `build_db` funciton or directly downloaded at [CMAP](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap.tar.gz), [LINCS](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42.tar.gz). The databases are stored as HDF5 backed `SummarizedExperiment` object. Untar the downloaded file by `tar -xzvf file.tar.gz` command, then load the `SummarizedExperiment` object via `loadHDF5SummarizedExperiment` function in `HDF5Array` package. The 'assays' slot of the loaded SummarizedExperiment object represents the logFC or Z scores generated from differential expression (DE) analysis. 
+The CMAP and LINCS differential expression databases can be built with `build_db` funciton or directly downloaded at [CMAP](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap.tar.gz), [LINCS](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42.tar.gz). The databases are stored as HDF5 backed `SummarizedExperiment` object. Untar the downloaded file by `tar -xzvf file.tar.gz` command, then load the `SummarizedExperiment` object via `loadHDF5SummarizedExperiment` function in `HDF5Array` package. The 'assays' slot of the loaded SummarizedExperiment object represents the $log_2$ ratios or z-scores generated from differential expression (DE) analysis. 
 
 The CMAP and LINCS expression databases can also be built with `build_db` funciton or directly downloaded at [CMAP_expr](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap_expr.tar.gz), [LINCS_expr](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42_expr.tar.gz). They stores the mean experssion values of drug treatment samples in cells.
 
@@ -167,9 +167,9 @@ Subset top 100 ranking drugs in GESS result as query, m_GSEA method internally g
 The scores represent weight of targets in the target set.
 ```{r tsea_mgsea, eval=FALSE}
 # GO annotation system
-geneSets <- readRDS("~/insync/project/GESS_and_FEA/data/geneSets_470.rds")
-geneList <- readRDS("~/insync/project/GESS_and_FEA/data/geneList.rds")
-tmp_res <- fgsea2(pathways=geneSets, stats=geneList, nperm=1000, minSize=5, maxSize=500, gseaParam=1, nproc = 1)
+# geneSets <- readRDS("~/insync/project/GESS_and_FEA/data/geneSets_470.rds")
+# geneList <- readRDS("~/insync/project/GESS_and_FEA/data/geneList.rds")
+# tmp_res <- fgsea2(pathways=geneSets, stats=geneList, nperm=1000, minSize=5, maxSize=500, gseaParam=1, nproc = 1)
 
 mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=1, minGSSize=5, maxGSSize=500)
 mgsea_res

@@ -42,6 +42,9 @@ gess_gcmap <- function(qSig, higher, lower, add_bs_score = FALSE, chunk_size=500
   resultDF[,"effect"] <-.connnectivity_scale(resultDF$effect)
   resultDF <- resultDF[order(abs(resultDF$effect), decreasing=TRUE), ]
   row.names(resultDF) <- NULL
+  # add target column
+  target <- suppressMessages(get_targets(resultDF$pert))
+  resultDF <- left_join(resultDF, target, by=c("pert"="drug_name"))
   x <- gessResult(result = as_tibble(resultDF),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,
