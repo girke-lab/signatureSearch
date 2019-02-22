@@ -40,7 +40,8 @@ GSEA_fgsea <- function(geneList,
                    maxGSSize = maxGSSize
                    )
     ledge <- sapply(tmp_res$leadingEdge, paste0, collapse='/')
-    ledge_rank <- sapply(tmp_res$ledge_rank, paste0, collapse='/')
+    ledge_rank <- sapply(tmp_res$leadingEdge, function(x) match(x, names(geneList)))
+    ledge_rank2 <- sapply(ledge_rank, paste, collapse="/")
     message("ledge_rank included")
     res <- data.frame(
         ID = as.character(tmp_res$pathway),
@@ -52,7 +53,7 @@ GSEA_fgsea <- function(geneList,
         p.adjust = p.adj,
         qvalues = qvalues,
         leadingEdge = ledge,
-        ledge_rank = ledge_rank,
+        ledge_rank = ledge_rank2,
         stringsAsFactors = FALSE
     )
 

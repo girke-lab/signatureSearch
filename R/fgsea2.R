@@ -28,6 +28,7 @@ calcGseaStat2 <- function(stats, selectedStats, gseaParam=1,
   
   m <- length(S)
   N <- length(r)
+  # Set minimum value in stats as weight for genes in set S that have zero scores
   coef <- min(r[r!=0])
   NR <- (sum(abs(r[S])^p) + coef*sum(r[S]==0))
   rAdj <- abs(r[S])^p

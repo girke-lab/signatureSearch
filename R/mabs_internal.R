@@ -90,18 +90,17 @@ mabs_internal <- function(geneList,
     res <- res[!is.na(res$pvalue),]
     res <- res[ res$pvalue <= pvalueCutoff, ]
     res <- res[ res$p.adjust <= pvalueCutoff, ]
-    idx <- order(res$Nmabs, decreasing = TRUE)
+    idx <- order(res$p.adjust)
     res <- res[idx, ]
     row.names(res) <- res$ID
     if (nrow(res) == 0) {
         message("no term enriched under specific pvalueCutoff...")
-        res = new("mabsResult",
-                result     = res,
-                geneSets   = geneSets,
-                geneList   = geneList,
-                params     = params,
-                readable   = TRUE
-                )
+        res = new("feaResult",
+                result    = as_tibble(res),
+                refSets   = geneSets,
+                targets   = geneList,
+                universe = names(geneList)
+        )
     }
     message("done...")
 

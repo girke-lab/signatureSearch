@@ -163,7 +163,7 @@ NumericVector gseaStats1(
         blockSummit[block] = blockEnd[block];
     }
 
-    double statEps = 1/0.;
+    double statEps = 1e-5;
 
     for (int i = 0; i < k; ++i) {
         int t = selectedStats[i] - 1;
@@ -270,8 +270,6 @@ NumericVector gseaStats1(
                 if (nextDist <= curDist) {
                     break;
                 }
-		//std::cout << "break point1 !!!!\n";
-
                 curDist = nextDist;
                 curSummit = nextSummit;
             }
@@ -372,23 +370,7 @@ NumericVector calcRandomGseaStatCumulative(
 ) {
 
     IntegerVector selectedStats = combination(n, k, rng);
-
-    int flag = 0;
-    for (int i =0 ; i < selectedStats.size(); i++){
-    	if(stats[selectedStats[i]] != 0) flag=1;
-    }
-    if (!flag) {
-	    // std::cout << "all 0\n";
-	    std::vector<int> res;
-	    res.reserve(selectedStats.size());
-	    for (int i = 0; i < selectedStats.size(); i++) res[i] = -1;
-	    return wrap(res);
-    } else {
-	    // std::cout << "not all 0\n";
-	    // for (int i = 0; i < selectedStats.size(); i++) cout <<  stats[selectedStats[i]] << ",";
-    	    
-        return calcGseaStatCumulative(stats, selectedStats, gseaParam);
-    }
+    return calcGseaStatCumulative(stats, selectedStats, gseaParam);
 }
 
 List calcGseaStatCumulativeBatch(

@@ -31,10 +31,16 @@ gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
   }
   resultDF <- resultDF[order(resultDF$padj), ]
   row.names(resultDF) <- NULL
+  
+  new <- as.data.frame(t(sapply(1:nrow(resultDF), function(i)
+    unlist(strsplit(as.character(resultDF$set[i]), "__")))), stringsAsFactors=FALSE)
+  colnames(new) = c("pert", "cell", "type")
+  resultDF <- cbind(new, resultDF[,-1])
   # add target column
   target <- suppressMessages(get_targets(resultDF$pert))
-  resultDF <- left_join(resultDF, target, by=c("pert"="drug_name"))
-  x <- gessResult(result = as_tibble(resultDF),
+  res <- left_join(resultDF, target, by=c("pert"="drug_name"))
+  
+  x <- gessResult(result = as_tibble(res),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,
                   refdb = qSig@refdb)

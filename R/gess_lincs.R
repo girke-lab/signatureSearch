@@ -70,7 +70,7 @@
                          Tau = tau,
                          TauRefSize=tauRefSize,
                          NCSct = qmax,
-                         NCSct_group=ctgrouping,
+                         #NCSct_group=ctgrouping,
                          N_upset = length(upset),
                          N_downset = length(downset), stringsAsFactors = FALSE)
   row.names(resultDF) <- NULL

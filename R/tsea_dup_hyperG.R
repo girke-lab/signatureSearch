@@ -22,7 +22,7 @@ tsea_dup_hyperG <- function(drugs, universe = "Default",
   drugs <- unique(tolower(drugs))
   message("The query drugs [", length(drugs),"] are: \n", paste0(drugs, collapse =" \ "))
   targets <- get_targets(drugs, database = "all")
-  gnset <- na.omit(unlist(lapply(targets$t_gn_sym, function(i) unlist(strsplit(as.character(i), split = ";")))))
+  gnset <- na.omit(unlist(lapply(targets$t_gn_sym, function(i) unlist(strsplit(as.character(i), split = "; ")))))
   
   # tmpfile <- tempfile(fileext=".txt")
   # download.file("http://biocluster.ucr.edu/~yduan004/db_lincs_sti_univ_gnset.txt", tmpfile, quiet = TRUE)

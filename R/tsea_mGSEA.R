@@ -22,7 +22,7 @@ tsea_mGSEA <- function(drugs,
   drugs <- unique(tolower(drugs))
   #message("The query drugs [", length(drugs),"] are: \n", paste0(drugs, collapse =" \ "))
   targets <- get_targets(drugs, database = "all")
-  gnset <- na.omit(unlist(lapply(targets$t_gn_sym, function(i) unlist(strsplit(as.character(i), split = ";")))))
+  gnset <- na.omit(unlist(lapply(targets$t_gn_sym, function(i) unlist(strsplit(as.character(i), split = "; ")))))
   # give scores to gnset
   tar_tab <- table(gnset)
   tar_dup <- as.numeric(tar_tab); names(tar_dup) <- names(tar_tab)
@@ -67,20 +67,19 @@ tsea_mGSEA <- function(drugs,
       universe <- readLines(univ_tar_path)
     }
     
-    tar_diff <- setdiff(universe, gnset)
+    # convert gnset symbol to entrez
+    gnset_entrez <- suppressMessages(AnnotationDbi::select(org.Hs.eg.db, keys = gnset, keytype = "SYMBOL", columns = "ENTREZID"))
+    gnset_entrez2 <- as.character(na.omit(gnset_entrez$ENTREZID))
+    # give scores to gnset_entrez2
+    tar_tab <- table(gnset_entrez2)
+    tar_dup <- as.numeric(tar_tab); names(tar_dup) <- names(tar_tab)
+    tar_weight <- sort(tar_dup/sum(tar_dup), decreasing = T)
+    
+    tar_diff <- setdiff(universe, gnset_entrez2)
     tar_diff_weight <- rep(0, length(tar_diff)); names(tar_diff_weight)=tar_diff
     tar_total_weight = c(tar_weight, tar_diff_weight)
     
-    sym_entrez <- suppressMessages(AnnotationDbi::select(org.Hs.eg.db, keys = names(tar_total_weight), keytype = "SYMBOL", columns = "ENTREZID"))
-    ttw_entr <- NULL
-    for(i in seq_along(tar_total_weight)){
-      item = tar_total_weight[i]
-      if(length(sym_entrez[sym_entrez$SYMBOL==names(item),"ENTREZID"])>0){
-        names(item) <- sym_entrez[sym_entrez$SYMBOL==names(item),"ENTREZID"][1]
-        ttw_entr = c(ttw_entr, item)
-      }
-    }
-    gsekk <- gseKEGG2(geneList=ttw_entr, organism='hsa', keyType='kegg', nPerm = nPerm, 
+    gsekk <- gseKEGG2(geneList=tar_total_weight, organism='hsa', keyType='kegg', nPerm = nPerm, 
                                        minGSSize = minGSSize, maxGSSize=maxGSSize, pvalueCutoff=pvalueCutoff, 
                                        pAdjustMethod = pAdjustMethod, verbose = TRUE)
     gsekk@drugs = drugs

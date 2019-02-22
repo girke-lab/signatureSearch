@@ -13,6 +13,7 @@
 ##' @export 
 
 get_targets <- function(drugs, database="all"){
+  drugs_orig <- drugs
   drugs <- unique(tolower(drugs))
   ext_path <- system.file("extdata", package="signatureSearch")
   dtlink_path <- paste0(ext_path,"/dtlink_db_lincs_sti.db")
@@ -37,6 +38,8 @@ get_targets <- function(drugs, database="all"){
   drugs_notar_db <- setdiff(drugs, names(dtlist_db))
   dtlist_db_drugs <- dtlist_db[intersect(names(dtlist_db), drugs)]
   res_db <- list2slash(dtlist_db_drugs)
+  idx_db <- match(res_db$drug_name, drugs)
+  res_db$drug_name = drugs_orig[idx_db]
   if(database=="DrugBank"){
     if(length(drugs_notar_db) > 0)
       message("No targets found in DrugBank database for ", length(drugs_notar_db)," drugs: \n",paste(drugs_notar_db, collapse = " / "))
@@ -48,6 +51,8 @@ get_targets <- function(drugs, database="all"){
   drugs_notar_lincs <- setdiff(drugs, names(dtlist_lincs))
   dtlist_lincs_drugs <- dtlist_lincs[intersect(names(dtlist_lincs), drugs)]
   res_lincs <- list2slash(dtlist_lincs_drugs)
+  idx_lincs <- match(res_lincs$drug_name, drugs)
+  res_lincs$drug_name = drugs_orig[idx_lincs]
   if(database=="LINCS"){
     if(length(drugs_notar_lincs) > 0)
       message("No targets found in LINCS database for ", length(drugs_notar_lincs), " drugs: \n",paste(drugs_notar_lincs, collapse = " / "))
@@ -59,6 +64,8 @@ get_targets <- function(drugs, database="all"){
   drugs_notar_sti <- setdiff(drugs, names(dtlist_sti))
   dtlist_sti_drugs <- dtlist_sti[intersect(names(dtlist_sti), drugs)]
   res_sti <- list2slash(dtlist_sti_drugs)
+  idx_sti <- match(res_sti$drug_name, drugs)
+  res_sti$drug_name = drugs_orig[idx_sti]
   if(database=="STITCH"){
     if(length(drugs_notar_sti) > 0)
       message("No targets found in STITCH database for ", length(drugs_notar_sti), " drugs: \n",paste(drugs_notar_sti, collapse = " / "))
@@ -70,6 +77,8 @@ get_targets <- function(drugs, database="all"){
   drugs_notar <- setdiff(drugs, names(dtlist))
   dtlist_drugs <- dtlist[intersect(names(dtlist), drugs)]
   res <- list2slash(dtlist_drugs)
+  idx <- match(res$drug_name, drugs)
+  res$drug_name = drugs_orig[idx]
   if(database=="all"){
     if(length(drugs_notar) > 0)
       message("No targets found in DrugBank/LINCS/STITCH database for ", length(drugs_notar), " drugs: \n",paste(drugs_notar, collapse = " / "), "\n")
@@ -80,7 +89,7 @@ get_targets <- function(drugs, database="all"){
 slash2link <- function(slash){
   res <- data.frame()
   for(i in 1:dim(slash)[1]){
-    tar <- unlist(strsplit(as.character(slash[i,2]), ";"))
+    tar <- unlist(strsplit(as.character(slash[i,2]), "; "))
     tmp <- data.frame(drug_name=slash[i,1], t_gn_sym=tar, stringsAsFactors = FALSE)
     res <- rbind(res, tmp)
   }
@@ -89,7 +98,7 @@ slash2link <- function(slash){
 }
 
 list2slash <- function(list){
-  tar <- sapply(list, function(x) paste0(x, collapse = ";"))
+  tar <- sapply(list, function(x) paste0(x, collapse = "; "))
   drug <- names(list)
   res <- data.frame(drug_name=drug, t_gn_sym=tar, stringsAsFactors = FALSE, row.names = NULL)
   res <- res[res$t_gn_sym != "",]

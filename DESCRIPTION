@@ -1,6 +1,6 @@
 Package: signatureSearch
 Title: Signature Search and Functional Enrichment Analysis
-Version: 0.0.5
+Version: 0.0.6
 Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu", role = c("aut", "cre"))
 Description: This package can be used to do Gene Expression Signature Search (GESS) and downstream Functional Enrichment Analysis (FEA).
 Depends: R (>= 3.5.0), SummarizedExperiment, HDF5Array, GSEABase, Rcpp
