@@ -6,7 +6,7 @@ output:
   html_document:
     toc: true
     toc_float:
-        collapsed: false
+        collapsed: true
         smooth_scroll: true
     toc_depth: 4
     fig_caption: yes
@@ -35,6 +35,7 @@ options(width=200)
 ```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
 suppressPackageStartupMessages({
   library(signatureSearch)
+  library(ggplot2)
 })
 ```
 
@@ -42,7 +43,13 @@ suppressPackageStartupMessages({
 
 This project is about optimizing signature search and enrichment methods for the discovery of novel modes of action (MOA) of bioactive compounds from reference databases, such as LINCS, containing the genome-wide gene expression signatures (GESs) from tens of thousands of drug and genetic perturbations. The methods can be divided into two major classes. First, gene expression signature search (GESS) methods are used to identify drugs that induce GESs similar to those of query GESs of interest. The queries can be drug- or disease-related GESs. Since the MOA of most drugs in the corresponding reference databases are known, the resulting associations are useful to gain insights into pharmacological and disease mechanisms and to develop novel drug repurposing approaches. Second, functional enrichment analysis (FEA) methods using Gene Ontology (GO) or pathway annotations have been developed to functionally interpret the vast number of GESS results. The latter are composed of lists of drugs ranked by the similarity metric of the corresponding GESS method making the functional interpretation of their top ranking drugs challenging. Importantly, the FEA methods developed by this study also support the reconstruction of drug-target networks to guide the interpretation of the results.
 
-@Lamb2006-du generated a GES database, initially including 164 drugs screened against four mammalian cell lines [@Lamb2006-du]. A few years later it was extended to 1,309 drugs and eight cell lines. In 2017, the database was increased to 19,811 drugs by the Library of Network-Based Cellular Signatures (LINCS) Consortium [@Subramanian2017-fu], while the number of cell types represented in the database has increased to over 70 normal and cancer cell lines. The number of compound dosages and time points considered in the assays has also been increased by 10-20 fold. The initial database used Affymetrix Gene Chips as expression platform. To scale from a few thousand to many hundred thousand GESs, the LINCS Consortium uses now the more economic L1000 assay. This bead-based technology is a low cost, high-throughput reduced representation expression profiling assay. It measures the expression of 978 landmark genes and 80 control genes by detecting fluorescent intensity of beads after capturing the ligation-mediated amplification products of mRNAs [@Peck2006-rf]. The expression of 11,350 additional genes is imputed from the landmark genes by using as training data a collection of 12,063 Affymetrix gene chips [@Edgar2002-di]. The substantial scale-up of the LINCS project provides now many new opportunities to explore MOAs for a vast number of small molecules.
+@Lamb2006-du generated a GES database, initially including 164 drugs screened against four mammalian cell lines [@Lamb2006-du]. A few years later it was extended to 1,309 drugs and eight cell lines. In 2017, the database was increased to 19,811 drugs by the Library of Network-Based Cellular Signatures (LINCS) Consortium [@Subramanian2017-fu], while the number of cell types represented in the database has increased to over 70 normal and cancer cell lines. The number of compound dosages and time points considered in the assays has also been increased by 10-20 fold. The initial database used Affymetrix Gene Chips as expression platform. To scale from a few thousand to many hundred thousand GESs, the LINCS Consortium uses now the more economic L1000 assay. This bead-based technology is a low cost, high-throughput reduced representation expression profiling assay. It measures the expression of 978 landmark genes and 80 control genes by detecting fluorescent intensity of beads after capturing the ligation-mediated amplification products of mRNAs [@Peck2006-rf]. The expression of 11,350 additional genes is imputed from the landmark genes by using as training data a collection of 12,063 Affymetrix gene chips [@Edgar2002-di]. The substantial scale-up of the LINCS project provides now many new opportunities to explore MOAs for a vast number of small molecules. Figure 1 illustrates the entire GESS/FEA workflow.
+
+<center>
+![](images/gess_fea_wf.png){width=18cm}
+</center>
+
+Figure 1: Overview of GESS and FEA methods. GES queries are used to search a drug-based GES reference database for drugs inducing GESs similar to the query. To interpret the results mechanistically, the GESS results are subjected to functional enrichment analysis (FEA) including drug and target enrichment analyses (DSEA, TSEA). Both identify enriched functional categories (GO terms and/or KEGG pathways) in the GESS results. Subsequently, drug-target networks are reconstructed for visualization and interpretation.
 
 # Terminology
 
@@ -55,6 +62,16 @@ The CMAP and LINCS differential expression databases can be built with `build_db
 The CMAP and LINCS expression databases can also be built with `build_db` funciton or directly downloaded at [CMAP_expr](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap_expr.tar.gz), [LINCS_expr](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42_expr.tar.gz). They stores the mean experssion values of drug treatment samples in cells.
 
 The custom database can also be built via `build_db` function if a `data.frame` representing genoime-wide GEPs of compound or genetic treatments in cells is provided.
+
+# Implementation of \emph{signatureSearch} package
+
+It is necessary to integrate the GESS and FEA methods into an R/Bioconductor package since it enables efficient testing across large and extendable number of statistical methods and expression data types, simplifies development of automated analysis workflows, the usage of generic data objects and classes improves maintainability and reproducibility, the integration with existing R/Bioconductor ecosystem maximizes extensibility and reusability by other groups. Figure 2 shows the workflow design of the package. The expression profiles from RNA-Seq, Affymetrix chips or other technology can be used to build the reference database and stored as HDF5 backed SummarizedExperiment object. The query signature and reference database were built into \emph{qSig} object and 5 methods are supported for searching. Since the reference database could contain hundreds of thousands of signatures, it is volumized searched for efficient memory usage and faster time performance. The search results are stored in \emph{gessResult} object and can be functionally annotated by TSEA and DSEA methods. The enrichment results are stored in \emph{feaResult} object and the drug target networks can be built for visualization. 
+
+<center>
+![](images/ss_workflow.png)
+</center>
+
+Figure 2: Workflow of _signatureSearch_ package. The expression profiles from RNA-Seq, Affymetrix chips or other technology can be used to build the reference database and stored as HDF5 backed SummarizedExperiment object. The query signature and reference database are built into \emph{qSig} object and 5 GESS methods (CMAP, LINCS, gCMAP, Fisher, and Spearman) are supported for searching. The search results are stored in \emph{gessResult} object and can be functionally annotated by TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA) methods. The enrichment results are stored in \emph{feaResult} object and the drug target networks can be built for visualization.
 
 # Methods for GESS
 
@@ -120,7 +137,7 @@ sp <- gess_cor(qSig=qsig_sp, method="spearman")
 result(sp)
 ```
 
-### Spearman_sub correlatioin
+### Spearman_sub correlation
 ```{r gess_spsub, eval=TRUE}
 # Subset z-scores of 150 up and down gene sets from "vorinostat__MCF7__trt_cp" signature.
 query_mat_sub <- as.matrix(query_mat[c(upset, downset),])
@@ -128,6 +145,15 @@ qsig_spsub <- qSig(qsig = query_mat_sub, gess_method = "Cor", refdb = sample_db)
 spsub <- gess_cor(qSig=qsig_spsub, method="spearman")
 result(spsub)
 ```
+
+## GESS result visulization
+If the signature database contains drug treatments in different cell types, including normal and tumor, the GESS result can be visualized by summarizing rankings/scores of selected drugs across difference cells. The sample databased used in this vignette only contains treatments in MCF7 cell, so there is no need to summarize the result. I used the same `vorinostat` query signature to search the full LINCS database by LINCS method, Figure 3 shows the visualization of summary GESS result.
+
+<center>
+![](images/vis_gess_res.png)
+</center>
+
+Figure 3: Summary of NCS scores across cell types of selected drugs in vorinostat GESS result.
 
 # Methods for FEA
 
@@ -180,11 +206,11 @@ Subset top 10 ranking drugs in GESS result as query for hypergeometric test for 
 ```{r dsea_hyperG, eval=TRUE}
 drugs <- unique(result(lincs)$pert[1:10])
 # GO annotation system
-hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", pvalueCutoff=0.05, qvalueCutoff = 0.1, minGSSize = 10)
+hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", pvalueCutoff = 0.05, qvalueCutoff = 0.1, minGSSize = 10)
 hyperG_res
 result(hyperG_res)
 # KEGG annotation system
-hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", pvalueCutoff=0.2, qvalueCutoff = 0.2, minGSSize = 10)
+hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", pvalueCutoff = 1, qvalueCutoff = 1, minGSSize = 10, maxGSSize = 2000)
 hyperG_k_res
 result(hyperG_k_res)
 ```
@@ -204,6 +230,15 @@ result(gsea_res)
 gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.5, minGSSize=5)
 gsea_k_res
 result(gsea_k_res)
+```
+
+## Compare consistency of enriched terms from 5 FEA methods
+```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
+comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res=NULL, hyperG_res, gsea_res, Ntop=20, type="GO")
+```
+
+```{r cmp_enrich_k, eval=TRUE, fig.width=8}
+comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_res=NULL, hyperG_k_res, gsea_k_res, Ntop=20, type="KEGG")
 ```
 
 # Visulization

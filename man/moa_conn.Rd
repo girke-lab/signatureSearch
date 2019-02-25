@@ -2,7 +2,7 @@
 % Please edit documentation in R/moa_conn.R
 \name{moa_conn}
 \alias{moa_conn}
-\title{Get MOA categories ranked by their connectivity to query signature}
+\title{MOA connectivity}
 \usage{
 moa_conn(gess_tb, moa_cats = "default", cells = "normal")
 }
@@ -19,5 +19,5 @@ cell types. "all": all the 30 cell types in LINCS database; "normal": normal cel
 data.frame
 }
 \description{
-MOA connectivity
+Get MOA categories ranked by their connectivity to query signature in selected cells
 }
