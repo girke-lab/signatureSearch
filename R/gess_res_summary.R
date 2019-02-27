@@ -35,6 +35,7 @@ cell_rank_sum <- function(gessResult){
 }
 
 #' Append two columns (score_column_grp1, score_column_grp2) to GESS result
+#' 
 #' @title sim_score_grp
 #' @param tib tibble object from result(gessResult)
 #' @param grp1 character vector, group 1 of cell types, e.g., tumor cell types

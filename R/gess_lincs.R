@@ -189,6 +189,7 @@ gess_lincs <- function(qSig, ES_NULL="Default", taurefList="Default", sortby="NC
   # add target column
   target <- suppressMessages(get_targets(res$pert))
   res <- left_join(res, target, by=c("pert"="drug_name"))
+  
   x <- gessResult(result = as_tibble(res),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,

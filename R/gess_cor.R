@@ -54,8 +54,9 @@ gess_cor <- function(qSig, method, chunk_size=5000){
   row.names(resultDF) <- NULL
   # add target column
   target <- suppressMessages(get_targets(resultDF$pert))
-  resultDF <- left_join(resultDF, target, by=c("pert"="drug_name"))
-  x <- gessResult(result = as_tibble(resultDF),
+  res <- left_join(resultDF, target, by=c("pert"="drug_name"))
+  
+  x <- gessResult(result = as_tibble(res),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,
                   refdb = qSig@refdb)

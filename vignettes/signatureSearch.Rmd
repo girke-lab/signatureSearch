@@ -75,14 +75,14 @@ Figure 2: Workflow of _signatureSearch_ package. The expression profiles from RN
 
 # Methods for GESS
 
-As an example of running GESS/FEA workflow, 95 GEPs randomly sampled from LINCS DE database and 5 GEPs from `HDAC inhibitors` (`vorinostat`, `rhamnetin`, `trichostatin A`, `valproic acid`, and `HC toxin`) treatments in MCF7 cell were combined to generate a sample reference database. The query signature is the vorinostat treatment drawn from the sample database.  
+As an example of running GESS/FEA workflow, 95 GEPs randomly sampled from LINCS DE database and 5 GEPs from `HDAC inhibitors` (`vorinostat`, `rhamnetin`, `trichostatin A`, `pyroxamide`, and `HC toxin`) treatments in human SKB (muscle) cell were combined to generate a sample reference database. The query signature is the vorinostat treatment drawn from the sample database.  
 
 ## Load database and get query signature
 ```{r db_sig, eval=TRUE}
 db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
 sample_db <- loadHDF5SummarizedExperiment(db_dir)
-# get "vorinostat__MCF7__trt_cp" signature drawn from sample database
-query_mat <- as.matrix(assay(sample_db[,"vorinostat__MCF7__trt_cp"]))
+# get "vorinostat__SKB__trt_cp" signature drawn from sample database
+query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
@@ -105,7 +105,6 @@ Generate "qSig" object for GESS_LINCS method and search against reference databa
 qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "LINCS", refdb = sample_db)
 lincs <- gess_lincs(qsig_lincs, sortby="NCS")
 result(lincs)
-#saveRDS(lincs, "~/insync/project/lincs_against_sample_db.rds")
 ```
 
 ## Searching with gCMAP method for GESS
@@ -139,7 +138,7 @@ result(sp)
 
 ### Spearman_sub correlation
 ```{r gess_spsub, eval=TRUE}
-# Subset z-scores of 150 up and down gene sets from "vorinostat__MCF7__trt_cp" signature.
+# Subset z-scores of 150 up and down gene sets from "vorinostat__SKB__trt_cp" signature.
 query_mat_sub <- as.matrix(query_mat[c(upset, downset),])
 qsig_spsub <- qSig(qsig = query_mat_sub, gess_method = "Cor", refdb = sample_db)
 spsub <- gess_cor(qSig=qsig_spsub, method="spearman")
@@ -147,13 +146,16 @@ result(spsub)
 ```
 
 ## GESS result visulization
-If the signature database contains drug treatments in different cell types, including normal and tumor, the GESS result can be visualized by summarizing rankings/scores of selected drugs across difference cells. The sample databased used in this vignette only contains treatments in MCF7 cell, so there is no need to summarize the result. I used the same `vorinostat` query signature to search the full LINCS database by LINCS method, Figure 3 shows the visualization of summary GESS result.
+If the signature database contains drug treatments in different cell types, including normal and tumor, the GESS result can be visualized by summarizing rankings/scores of selected drugs across difference cells. The sample databased used in this vignette only contains treatments in SKB cell, so there is no need to summarize the result. I used the same `vorinostat` query signature to search the full LINCS database by LINCS method, Figure 3 shows visualization of the summary GESS result.
 
 <center>
-![](images/vis_gess_res.png)
+![](images/vorinostat_SKB_lincs_gess_res_vis.png)
 </center>
 
-Figure 3: Summary of NCS scores across cell types of selected drugs in vorinostat GESS result.
+Figure 3: Summary of NCS scores across cell types of selected drugs in vorinostat GESS result searching against LINCS database. Drugs 1 to 10 from left to right: top 10 drugs in the above lincs result searching against sample database. The other drugs are HDAC inhibitors not selected in the sample database.
+
+## Conclusion
+4/5 HDAC inhibitors (vorinostat, trichostatin-a, HC-toxin, pyroxamide) were found by CMAP, LINCS, Fisher and Spearman correlation methods in their top 10 results, demonstrating their ability to cluster drugs in the same MOA category. Specifically, LINCS and Spearman correlation (both genome-wide and sub) methods could discover another HDAC inhibitor (APHA-compound-8) in the database, which is promising as a discovery tool.
 
 # Methods for FEA
 
@@ -174,9 +176,9 @@ dup_hyperG_k_res
 result(dup_hyperG_k_res)
 ```
 
-## m_GSEA method for TSEA
+## mGSEA method for TSEA
 
-Subset top 10 ranking drugs in GESS result as query, m_GSEA method internally get their target set and turn it to scored ranked target list as query for TSEA. 
+Subset top 10 ranking drugs in GESS result as query, mGSEA method internally get their target set and turn it to scored ranked target list as query for TSEA. 
 The scores represent weight of targets in the target set.
 ```{r tsea_mgsea, eval=TRUE}
 mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, nPerm=1000, pvalueCutoff=1, minGSSize=5)
@@ -191,7 +193,7 @@ result(mgsea_k_res)
 ## mabs method for TSEA
 
 Subset top 10 ranking drugs in GESS result as query, mabs method internally get their target set and ranked target list with scores, which represent weight of targets. 
-```{r tsea_mabs, eval=FALSE}
+```{r tsea_mabs, eval=TRUE}
 # GO annotation system
 mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, pvalueCutoff=0.05, minGSSize=5)
 result(mabs_res)
@@ -232,15 +234,17 @@ gsea_k_res
 result(gsea_k_res)
 ```
 
-## Compare consistency of enriched terms from 5 FEA methods
+## Consistency Comparison of enriched terms from 5 FEA methods
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
-comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res=NULL, hyperG_res, gsea_res, Ntop=20, type="GO")
+comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, Ntop=20, type="GO")
 ```
 
 ```{r cmp_enrich_k, eval=TRUE, fig.width=8}
-comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_res=NULL, hyperG_k_res, gsea_k_res, Ntop=20, type="KEGG")
+comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_k_res, hyperG_k_res, gsea_k_res, Ntop=20, type="KEGG")
 ```
 
+## Conclusion
+The consistency of the enriched GO terms/KEGG pathways from the five functional enrichment methods is pretty good. All of them could discovery the histone deacetylase pathways that the query drug vorinostat is involved in. Since each method have their advantages and disadvantages, it is reasonable to combine and re-rank their enrichment results to increase confidence.  
 # Visulization
 
 ## Construct drug-target interaction networks in interesting GO categories
@@ -249,7 +253,7 @@ Build drug-target networks in top ranking GO categories
 ```{r dtnet_go, eval=TRUE}
 dtnetplot(drugs = dup_hyperG_res@drugs, set = "GO:0032041", ont = "MF", desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 dtnetplot(drugs = dup_hyperG_res@drugs, set = "GO:0051059", ont = "MF", desc="NF-kappaB binding")
-dtnetplot(drugs = hyperG_res@drugs, set = "GO:0001106", ont = "MF", desc="RNA polymerase II transcription corepressor activity")
+dtnetplot(drugs = drugs, set = "GO:0016811", ont = "MF", desc="hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in linear amides")
 ```
 
 ## Construct drug-target interaction networks in interested KEGG pathways or defined other gene/protein sets
@@ -257,6 +261,6 @@ dtnetplot(drugs = hyperG_res@drugs, set = "GO:0001106", ont = "MF", desc="RNA po
 Build drug-target networks in top ranking KEGG pathways
 ```{r dtnet_kegg, eval=TRUE}
 dtnetplot(drugs = dup_hyperG_k_res@drugs, set = "hsa05034", desc="Alcoholism")
-dtnetplot(drugs = dup_hyperG_k_res@drugs, set = "hsa04330", desc="Notch signaling pathway")
-dtnetplot(drugs = dup_hyperG_k_res@drugs, set = "hsa04213", desc="Longevity regulating pathway - multiple species")
+dtnetplot(drugs = dup_hyperG_k_res@drugs, set = "hsa05203", desc="Viral carcinogenesis")
+dtnetplot(drugs = drugs, set = "hsa04213", desc="Longevity regulating pathway - multiple species")
 ```

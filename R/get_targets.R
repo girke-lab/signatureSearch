@@ -13,7 +13,7 @@
 ##' @export 
 
 get_targets <- function(drugs, database="all"){
-  drugs_orig <- drugs
+  drugs_orig <- unique(drugs)
   drugs <- unique(tolower(drugs))
   ext_path <- system.file("extdata", package="signatureSearch")
   dtlink_path <- paste0(ext_path,"/dtlink_db_lincs_sti.db")
@@ -98,9 +98,12 @@ slash2link <- function(slash){
 }
 
 list2slash <- function(list){
+  if(length(list)==0){
+    return(data.frame(drug_name=NULL, t_gn_sym=NULL))
+  }
   tar <- sapply(list, function(x) paste0(x, collapse = "; "))
   drug <- names(list)
   res <- data.frame(drug_name=drug, t_gn_sym=tar, stringsAsFactors = FALSE, row.names = NULL)
-  res <- res[res$t_gn_sym != "",]
+  res <- res[res$t_gn_sym != "", ]
   return(res)
 }

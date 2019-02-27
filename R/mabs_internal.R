@@ -39,23 +39,21 @@ mabs_internal <- function(geneList,
     
     message("calculating permutation scores...")
     
-    permScores <- lapply(1:nPerm, function(i) {
-        perm.mabs_score(geneList, selected.gs)
+    # get 1000 permutation matrix of geneList
+    perm_mat <- replicate(nPerm, sample(geneList))
+    permScores <- sapply(selected.gs, function(gs){
+      colMeans(abs(perm_mat[gs,]))
     })
 
-    permScores <- do.call("cbind", permScores)
-
-    rownames(permScores) <- names(selected.gs)
-
-    median <- apply(permScores, 1, median)
-    sd <- apply(permScores, 1, sd)
+    median <- apply(permScores, 2, median)
+    sd <- apply(permScores, 2, sd)
 
     Nmabs <- (observedScore - median)/sd
     
     message("calculating p values...")
     
     pvals <- sapply(seq_along(observedScore), function(i) {
-        sum(permScores[i,]>observedScore[i]) / nPerm
+        sum(permScores[,i]>observedScore[i]) / nPerm
     })
     
     p.adj <- p.adjust(pvals, method=pAdjustMethod)
@@ -65,14 +63,6 @@ mabs_internal <- function(geneList,
     Description <- TERM2NAME(gs.name, USER_DATA)
 
     geneID <- sapply(selected.gs, function(x) paste0(intersect(x, names(geneList)[geneList>0]), collapse = "/"))
-      
-    params <- list(pvalueCutoff = pvalueCutoff,
-                   nPerm = nPerm,
-                   pAdjustMethod = pAdjustMethod,
-                   minGSSize = minGSSize,
-                   maxGSSize = maxGSSize
-                   )
-
 
     res <- data.frame(
         ID = as.character(gs.name),
@@ -90,7 +80,8 @@ mabs_internal <- function(geneList,
     res <- res[!is.na(res$pvalue),]
     res <- res[ res$pvalue <= pvalueCutoff, ]
     res <- res[ res$p.adjust <= pvalueCutoff, ]
-    idx <- order(res$p.adjust)
+    # order by mabs
+    idx <- order(-res$mabs)
     res <- res[idx, ]
     row.names(res) <- res$ID
     if (nrow(res) == 0) {
@@ -115,27 +106,9 @@ mabs_internal <- function(geneList,
 }
 
 mabs_score <- function(geneList, geneSet) {
-    mabs <- mean(geneList[geneSet])
+    mabs <- mean(abs(geneList[geneSet]))
     return(mabs)
 }
-
-perm.geneList <- function(geneList) {
-    ## perm.idx <- sample(seq_along(geneList), length(geneList), replace=FALSE)
-    perm.idx <- sample.int(length(geneList))
-    perm.geneList <- geneList
-    names(perm.geneList) <- names(geneList)[perm.idx]
-    return(perm.geneList)
-}
-
-perm.mabs_score <- function(geneList, geneSets) {
-    geneList <- perm.geneList(geneList)
-    res <- sapply(1:length(geneSets), function(i)
-                  mabs_score(geneSet=geneSets[[i]],
-                             geneList=geneList)
-                  )
-    return(res)
-}
-
 
 geneSet_filter <- function(geneSets, geneList, minGSSize, maxGSSize) {
     geneSets <- sapply(geneSets, intersect, names(geneList))
