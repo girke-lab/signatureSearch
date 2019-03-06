@@ -1,4 +1,5 @@
 ##' GO Enrichment Analysis of a gene set.
+##' 
 ##' Given a vector of genes, this function will return the enrichment GO
 ##' categories after FDR control.
 ##'
@@ -7,95 +8,90 @@
 ##' @param keytype keytype of input gene
 ##' @param ont One of "MF", "BP", and "CC" subontologies.
 ##' @param pvalueCutoff Cutoff value of pvalue.
-##' @param pAdjustMethod one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
+##' @param pAdjustMethod one of "holm", "hochberg", "hommel", 
+##' "bonferroni", "BH", "BY", "fdr", "none"
 ##' @param universe background genes
 ##' @param qvalueCutoff qvalue cutoff
-##' @param minGSSize minimal size of genes annotated by Ontology term for testing.
+##' @param minGSSize minimal size of genes annotated by Ontology term 
 ##' @param maxGSSize maximal size of genes annotated for testing
 ##' @param pool If ont='ALL', whether pool 3 GO sub-ontologies
 ##' @return A \code{feaResult} instance.
 ##' @seealso \code{\link{feaResult-class}}
-##' @export
+
 enrichGO <- function(gene,
                      OrgDb,
-                     keytype = "ENTREZID",
+                     keytype = "SYMBOL",
                      ont="MF",
                      pvalueCutoff=0.05,
                      pAdjustMethod="BH",
                      universe,
                      qvalueCutoff = 0.2,
-                     minGSSize = 10,
+                     minGSSize = 5,
                      maxGSSize = 500,
                      pool=FALSE) {
-
-    ont %<>% toupper
-    ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
-    # GO_DATA <- get_GO_data(OrgDb, ont, keytype)
-    # download GO_DATA and save it locally to save time
-    ext_path <- system.file("extdata", package="signatureSearch")
-    godata_path <- paste0(ext_path,"/GO_DATA.rds")
-    if(file.exists(godata_path)){
-      GO_DATA <- readRDS(godata_path)
-    } else {
-      download.file("http://biocluster.ucr.edu/~yduan004/fea/GO_DATA.rds", godata_path, quiet = TRUE)
-      GO_DATA <- readRDS(godata_path)
-    }
+  
+  ont %<>% toupper
+  ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
+  GO_DATA <- get_GO_data(OrgDb, ont, keytype)
+  # # download GO_DATA and save it locally to save time
+  # ext_path <- system.file("extdata", package="signatureSearch")
+  # godata_path <- paste0(ext_path,"/GO_DATA.rds")
+  # if(file.exists(godata_path)){
+  #   GO_DATA <- readRDS(godata_path)
+  # } else {
+  #   download.file("http://biocluster.ucr.edu/~yduan004/fea/GO_DATA.rds", 
+  #   godata_path, quiet = TRUE)
+  #   GO_DATA <- readRDS(godata_path)
+  # }
+  
+  if (missing(universe))
+    universe <- NULL
+  
+  if (ont == "ALL" && !pool) {
+    lres <- lapply(c("BP", "CC", "MF"), function(ont)
+      suppressMessages(enrichGO(gene, OrgDb, keytype, ont,
+                                pvalueCutoff, pAdjustMethod, universe,
+                                qvalueCutoff, minGSSize, maxGSSize
+      ))
+    )
     
-    if (missing(universe))
-        universe <- NULL
-
-    if (ont == "ALL" && !pool) {
-        lres <- lapply(c("BP", "CC", "MF"), function(ont)
-            suppressMessages(enrichGO(gene, OrgDb, keytype, ont,
-                     pvalueCutoff, pAdjustMethod, universe,
-                     qvalueCutoff, minGSSize, maxGSSize
-                     ))
-            )
-
-        lres <- lres[!sapply(lres, is.null)]
-        if (length(lres) == 0)
-            return(NULL)
-
-        df <- do.call('rbind', lapply(lres, as.data.frame))
-        geneSets <- lres[[1]]@geneSets
-        if (length(lres) > 1) {
-            for (i in 2:length(lres)) {
-                geneSets <- append(geneSets, lres[[i]]@geneSets)
-            }
-        }
-        res <- lres[[1]]
-        res@result <- df
-        res@refSets <- geneSets
-    } else {
-        res <- enricher_internal(gene,
-                                 pvalueCutoff=pvalueCutoff,
-                                 pAdjustMethod=pAdjustMethod,
-                                 universe = universe,
-                                 qvalueCutoff = qvalueCutoff,
-                                 minGSSize = minGSSize,
-                                 maxGSSize = maxGSSize,
-                                 USER_DATA = GO_DATA
-                                 )
-
-        if (is.null(res))
-            return(res)
+    lres <- lres[!vapply(lres, is.null, logical(1))]
+    if (length(lres) == 0)
+      return(NULL)
+    
+    df <- do.call('rbind', lapply(lres, as.data.frame))
+    refSets <- lres[[1]]@refSets
+    if (length(lres) > 1) {
+      for (i in 2:length(lres)) {
+        refSets <- append(refSets, lres[[i]]@refSets)
+      }
     }
-    res@organism <- get_organism(OrgDb)
-    res@ontology <- ont
-
-    if (ont == "ALL") {
-        res <- add_GO_Ontology(res, GO_DATA)
-    }
-    return(res)
+    res <- lres[[1]]
+    res@result <- df
+    res@refSets <- refSets
+  } else {
+    res <- enricher_internal(gene,
+                             pvalueCutoff=pvalueCutoff,
+                             pAdjustMethod=pAdjustMethod,
+                             universe = universe,
+                             qvalueCutoff = qvalueCutoff,
+                             minGSSize = minGSSize,
+                             maxGSSize = maxGSSize,
+                             USER_DATA = GO_DATA
+    )
+    
+    if (is.null(res))
+      return(res)
+  }
+  res@organism <- get_organism(OrgDb)
+  res@ontology <- ont
+  
+  if (ont == "ALL") {
+    res <- add_GO_Ontology(res, GO_DATA)
+  }
+  return(res)
 }
 
-#' get environment containing GO data
-#' @title get_GO_data
-#' @param OrgDb Organism annotation package, e.g., `org.Hs.eg.db` for human
-#' @param ont GO ontology
-#' @param keytype keytype
-#' @return environment
-#' @export
 get_GO_data <- function(OrgDb, ont, keytype) {
   GO_Env <- get_GO_Env()
   use_cached <- FALSE
@@ -127,7 +123,7 @@ get_GO_data <- function(OrgDb, ont, keytype) {
     kk <- keys(OrgDb, keytype=keytype)
     goAnno <- suppressMessages(
       AnnotationDbi::select(OrgDb, keys=kk, keytype=keytype,
-             columns=c("GOALL", "ONTOLOGYALL")))
+                            columns=c("GOALL", "ONTOLOGYALL")))
     
     goAnno <- unique(goAnno[!is.na(goAnno$GOALL), ])
     
@@ -153,10 +149,10 @@ get_GO_data <- function(OrgDb, ont, keytype) {
 
 
 get_GO_Env <- function () {
-    if (!exists(".GO_clusterProfiler_Env", envir = .GlobalEnv)) {
-        pos <- 1
-        envir <- as.environment(pos)
-        assign(".GO_clusterProfiler_Env", new.env(), envir=envir)
-    }
-    get(".GO_clusterProfiler_Env", envir = .GlobalEnv)
+  if (!exists(".GO_clusterProfiler_Env", envir = .GlobalEnv)) {
+    pos <- 1
+    envir <- as.environment(pos)
+    assign(".GO_clusterProfiler_Env", new.env(), envir=envir)
+  }
+  get(".GO_clusterProfiler_Env", envir = .GlobalEnv)
 }

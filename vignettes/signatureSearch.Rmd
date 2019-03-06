@@ -16,6 +16,10 @@ output:
     toc: true
 fontsize: 15pt
 bibliography: bibtex.bib
+vignette: >
+  %\VignetteIndexEntry{signatureSearch}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 <style>
@@ -35,6 +39,7 @@ options(width=200)
 ```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
 suppressPackageStartupMessages({
   library(signatureSearch)
+  library(HDF5Array)
   library(ggplot2)
 })
 ```
@@ -72,6 +77,15 @@ It is necessary to integrate the GESS and FEA methods into an R/Bioconductor pac
 </center>
 
 Figure 2: Workflow of _signatureSearch_ package. The expression profiles from RNA-Seq, Affymetrix chips or other technology can be used to build the reference database and stored as HDF5 backed SummarizedExperiment object. The query signature and reference database are built into \emph{qSig} object and 5 GESS methods (CMAP, LINCS, gCMAP, Fisher, and Spearman) are supported for searching. The search results are stored in \emph{gessResult} object and can be functionally annotated by TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA) methods. The enrichment results are stored in \emph{feaResult} object and the drug target networks can be built for visualization.
+
+# Installation
+
+To install this package, start R (version "3.6") and enter:
+```{r install, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("signatureSearch", version = "3.9")
+```
 
 # Methods for GESS
 
@@ -182,11 +196,9 @@ Subset top 10 ranking drugs in GESS result as query, mGSEA method internally get
 The scores represent weight of targets in the target set.
 ```{r tsea_mgsea, eval=TRUE}
 mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, nPerm=1000, pvalueCutoff=1, minGSSize=5)
-mgsea_res
 result(mgsea_res)
 # KEGG annotation system
 mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, nPerm=1000, pvalueCutoff=1, minGSSize=2)
-mgsea_k_res
 result(mgsea_k_res)
 ```
 
@@ -209,11 +221,9 @@ Subset top 10 ranking drugs in GESS result as query for hypergeometric test for 
 drugs <- unique(result(lincs)$pert[1:10])
 # GO annotation system
 hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", pvalueCutoff = 0.05, qvalueCutoff = 0.1, minGSSize = 10)
-hyperG_res
 result(hyperG_res)
 # KEGG annotation system
 hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", pvalueCutoff = 1, qvalueCutoff = 1, minGSSize = 10, maxGSSize = 2000)
-hyperG_k_res
 result(hyperG_k_res)
 ```
 
@@ -226,11 +236,9 @@ dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]
 # GO annotation system
 gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.2, minGSSize=5)
-gsea_res
 result(gsea_res)
 # KEGG annotation system
 gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.5, minGSSize=5)
-gsea_k_res
 result(gsea_k_res)
 ```
 
@@ -245,14 +253,15 @@ comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_k_res, hyperG_k_res, gsea_k_res
 
 ## Conclusion
 The consistency of the enriched GO terms/KEGG pathways from the five functional enrichment methods is pretty good. All of them could discovery the histone deacetylase pathways that the query drug vorinostat is involved in. Since each method have their advantages and disadvantages, it is reasonable to combine and re-rank their enrichment results to increase confidence.  
+
 # Visulization
 
 ## Construct drug-target interaction networks in interesting GO categories
 
 Build drug-target networks in top ranking GO categories
 ```{r dtnet_go, eval=TRUE}
-dtnetplot(drugs = dup_hyperG_res@drugs, set = "GO:0032041", ont = "MF", desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
-dtnetplot(drugs = dup_hyperG_res@drugs, set = "GO:0051059", ont = "MF", desc="NF-kappaB binding")
+dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF", desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
+dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF", desc="NF-kappaB binding")
 dtnetplot(drugs = drugs, set = "GO:0016811", ont = "MF", desc="hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in linear amides")
 ```
 
@@ -260,7 +269,7 @@ dtnetplot(drugs = drugs, set = "GO:0016811", ont = "MF", desc="hydrolase activit
 
 Build drug-target networks in top ranking KEGG pathways
 ```{r dtnet_kegg, eval=TRUE}
-dtnetplot(drugs = dup_hyperG_k_res@drugs, set = "hsa05034", desc="Alcoholism")
-dtnetplot(drugs = dup_hyperG_k_res@drugs, set = "hsa05203", desc="Viral carcinogenesis")
+dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034", desc="Alcoholism")
+dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05203", desc="Viral carcinogenesis")
 dtnetplot(drugs = drugs, set = "hsa04213", desc="Longevity regulating pathway - multiple species")
 ```

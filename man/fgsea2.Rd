@@ -18,7 +18,7 @@ fgsea2(pathways, stats, nperm, minSize = 1, maxSize = Inf, nproc = 1,
 
 \item{maxSize}{Maximal size of a gene set to test. All pathways above the threshold are excluded.}
 
-\item{nproc}{If not equal to zero sets BPPARAM to use nproc workers (default = 0).}
+\item{nproc}{If not equal to zero sets BPPARAM to use nproc workers (default = 1).}
 
 \item{gseaParam}{GSEA parameter value, all gene-level statis are raised to the power of `gseaParam`
 before calculation of GSEA enrichment scores.}

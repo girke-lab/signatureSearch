@@ -6,8 +6,7 @@
 \usage{
 gseKEGG2(geneList, organism = "hsa", keyType = "kegg", exponent = 1,
   nproc = 1, nPerm = 1000, minGSSize = 10, maxGSSize = 500,
-  pvalueCutoff = 0.05, pAdjustMethod = "BH", verbose = TRUE,
-  use_internal_data = FALSE, seed = FALSE, by = "fgsea")
+  pvalueCutoff = 0.05, pAdjustMethod = "BH", verbose = TRUE)
 }
 \arguments{
 \item{geneList}{order ranked geneList}
@@ -31,19 +30,11 @@ gseKEGG2(geneList, organism = "hsa", keyType = "kegg", exponent = 1,
 \item{pAdjustMethod}{pvalue adjustment method}
 
 \item{verbose}{print message or not}
-
-\item{use_internal_data}{logical, use KEGG.db or latest online KEGG data}
-
-\item{seed}{logical}
-
-\item{by}{one of 'fgsea' or 'DOSE'}
 }
 \value{
 feaResult object
 }
 \description{
-Gene Set Enrichment Analysis of KEGG (drug targets score list as geneList)
-}
-\author{
-Yu Guangchuang
+Modified Gene Set Enrichment Analysis (GSEA) of KEGG pathways.
+The GSEA method is modified to accept geneList with large portion of zeros
 }

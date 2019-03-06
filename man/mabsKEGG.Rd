@@ -5,11 +5,11 @@
 \title{mabsKEGG}
 \usage{
 mabsKEGG(geneList, organism = "hsa", keyType = "kegg", nPerm = 1000,
-  minGSSize = 10, maxGSSize = 500, pvalueCutoff = 0.05,
-  pAdjustMethod = "BH", use_internal_data = FALSE)
+  minGSSize = 5, maxGSSize = 500, pvalueCutoff = 0.05,
+  pAdjustMethod = "BH")
 }
 \arguments{
-\item{geneList}{order ranked geneList}
+\item{geneList}{scored ranked geneList}
 
 \item{organism}{supported organism listed in 'http://www.genome.jp/kegg/catalog/org_list.html'}
 
@@ -24,12 +24,10 @@ mabsKEGG(geneList, organism = "hsa", keyType = "kegg", nPerm = 1000,
 \item{pvalueCutoff}{pvalue Cutoff}
 
 \item{pAdjustMethod}{pvalue adjustment method}
-
-\item{use_internal_data}{logical, use KEGG.db or latest online KEGG data}
 }
 \value{
 mabsResult object
 }
 \description{
-meanAbs Analysis of KEGG
+meanAbs analysis of KEGG
 }

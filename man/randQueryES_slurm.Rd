@@ -7,7 +7,8 @@
 randQueryES_slurm(se, N_queries = 1000, dest_ES_NULL_path, partition)
 }
 \arguments{
-\item{se}{SummarizedExperiment object loaded from HDF5 backend LICNS GSE92742 database via `loadHDF5SummarizedExperiment(dbpath)` function
+\item{se}{SummarizedExperiment object loaded from HDF5 backend LICNS GSE92742 database 
+ via `loadHDF5SummarizedExperiment(dbpath)` function
 `dbpath` is the direcotry path to the `lincs42` database}
 
 \item{N_queries}{number of random queries}

@@ -6,20 +6,24 @@
 \usage{
 tsea_dup_hyperG(drugs, universe = "Default", type = "GO", ont = "MF",
   pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.05,
-  minGSSize = 2, maxGSSize = 500)
+  minGSSize = 5, maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do target set enrichment analysis (TSEA), Can be top ranking drugs in GESS result.}
+\item{drugs}{query drug set used to do target set enrichment analysis (TSEA).
+Can be top ranking drugs in GESS result.}
 
-\item{universe}{background genes/targets. If set as `Default`, it represents all the annotated genes/targets in
-the corresponding annotation system (e.g. GO or KEGG). If "type" is "GO", universe should be gene SYMBOL ids. If "type" is "KEGG",
+\item{universe}{background genes/targets. If set as `Default`, 
+it represents all the annotated genes/targets in
+the corresponding annotation system (e.g. GO or KEGG). 
+If "type" is "GO", universe should be gene SYMBOL ids. If "type" is "KEGG",
 universe should be gene entrez ids.}
 
-\item{type}{can be `GO` or `KEGG`}
+\item{type}{one of `GO` or `KEGG`}
 
-\item{ont}{if type is `GO`, set ontology, can be `BP`,`MF`,`CC` or `ALL`}
+\item{ont}{if type is `GO`, set ontology. One of `BP`,`MF`,`CC` or `ALL`}
 
-\item{pAdjustMethod}{p value adjustment method for p values in target set enrichment result}
+\item{pAdjustMethod}{p value adjustment method for p values 
+in the enrichment result}
 
 \item{pvalueCutoff}{p value Cutoff}
 
@@ -33,7 +37,7 @@ universe should be gene entrez ids.}
 feaResult object
 }
 \description{
-drug targets GO/KEGG enrichment analysis by using `dup_hyperG` test or modified `gsea` method
+drug targets GO/KEGG enrichment analysis by using `dup_hyperG` method
 }
 \author{
 Yuzhu Duan (yduan004@ucr.edu)

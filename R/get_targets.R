@@ -4,7 +4,6 @@
 ##' @param drugs character vector, a list of drug names
 ##' @param database one of "DrugBank", "LINCS", "STITCH" or "all"  
 ##' @return data.frame of drugs and target symbols
-##' @importFrom drugbankR queryDB
 ##' @importFrom RSQLite dbConnect
 ##' @importFrom RSQLite dbGetQuery
 ##' @importFrom utils download.file
@@ -42,7 +41,8 @@ get_targets <- function(drugs, database="all"){
   res_db$drug_name = drugs_orig[idx_db]
   if(database=="DrugBank"){
     if(length(drugs_notar_db) > 0)
-      message("No targets found in DrugBank database for ", length(drugs_notar_db)," drugs: \n",paste(drugs_notar_db, collapse = " / "))
+      message("No targets found in DrugBank database for ", length(drugs_notar_db),
+              " drugs: \n",paste(drugs_notar_db, collapse = " / "))
     return(res_db)
   }
   
@@ -55,7 +55,8 @@ get_targets <- function(drugs, database="all"){
   res_lincs$drug_name = drugs_orig[idx_lincs]
   if(database=="LINCS"){
     if(length(drugs_notar_lincs) > 0)
-      message("No targets found in LINCS database for ", length(drugs_notar_lincs), " drugs: \n",paste(drugs_notar_lincs, collapse = " / "))
+      message("No targets found in LINCS database for ", length(drugs_notar_lincs), 
+              " drugs: \n",paste(drugs_notar_lincs, collapse = " / "))
     return(res_lincs)
   }
   
@@ -68,7 +69,8 @@ get_targets <- function(drugs, database="all"){
   res_sti$drug_name = drugs_orig[idx_sti]
   if(database=="STITCH"){
     if(length(drugs_notar_sti) > 0)
-      message("No targets found in STITCH database for ", length(drugs_notar_sti), " drugs: \n",paste(drugs_notar_sti, collapse = " / "))
+      message("No targets found in STITCH database for ", length(drugs_notar_sti), 
+              " drugs: \n",paste(drugs_notar_sti, collapse = " / "))
     return(res_sti)
   }
   
@@ -81,14 +83,15 @@ get_targets <- function(drugs, database="all"){
   res$drug_name = drugs_orig[idx]
   if(database=="all"){
     if(length(drugs_notar) > 0)
-      message("No targets found in DrugBank/LINCS/STITCH database for ", length(drugs_notar), " drugs: \n",paste(drugs_notar, collapse = " / "), "\n")
+      message("No targets found in DrugBank/LINCS/STITCH database for ", length(drugs_notar), 
+              " drugs: \n",paste(drugs_notar, collapse = " / "), "\n")
     return(res)
   }
 }
 
 slash2link <- function(slash){
   res <- data.frame()
-  for(i in 1:dim(slash)[1]){
+  for(i in seq_len(nrow(slash))){
     tar <- unlist(strsplit(as.character(slash[i,2]), "; "))
     tmp <- data.frame(drug_name=slash[i,1], t_gn_sym=tar, stringsAsFactors = FALSE)
     res <- rbind(res, tmp)
@@ -101,7 +104,7 @@ list2slash <- function(list){
   if(length(list)==0){
     return(data.frame(drug_name=NULL, t_gn_sym=NULL))
   }
-  tar <- sapply(list, function(x) paste0(x, collapse = "; "))
+  tar <- vapply(list, function(x) paste0(x, collapse = "; "), FUN.VALUE = character(1))
   drug <- names(list)
   res <- data.frame(drug_name=drug, t_gn_sym=tar, stringsAsFactors = FALSE, row.names = NULL)
   res <- res[res$t_gn_sym != "", ]

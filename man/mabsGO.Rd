@@ -5,11 +5,11 @@
 \title{mabsGO}
 \usage{
 mabsGO(geneList, ont = "BP", OrgDb, keyType = "SYMBOL", nPerm = 1000,
-  minGSSize = 10, maxGSSize = 500, pvalueCutoff = 0.05,
+  minGSSize = 5, maxGSSize = 500, pvalueCutoff = 0.05,
   pAdjustMethod = "BH")
 }
 \arguments{
-\item{geneList}{order ranked geneList}
+\item{geneList}{scored ranked geneList}
 
 \item{ont}{one of "BP", "MF", "CC" or "ALL"}
 

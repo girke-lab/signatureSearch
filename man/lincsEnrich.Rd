@@ -4,9 +4,9 @@
 \alias{lincsEnrich}
 \title{lincsEnrich}
 \usage{
-lincsEnrich(se, upset, downset, sortby = "NCS", type = 1, output = "all",
-  ES_NULL = "Default", taurefList = "Default", minTauRefSize = 500,
-  chunk_size = 5000)
+lincsEnrich(se, upset, downset, sortby = "NCS", type = 1,
+  output = "all", ES_NULL = "Default", taurefList = "Default",
+  minTauRefSize = 500, chunk_size = 5000)
 }
 \arguments{
 \item{se}{SummarizedExperiment object}

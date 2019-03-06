@@ -2,13 +2,17 @@
 #' 
 #' @title gess_gcmap
 #' @param qSig `qSig` object, The 'gess_method' slot of 'qSig' should be 'gCMAP'
-#' @param higher The 'higher' threshold. If not 'NULL', genes with a score larger than 'higher' will be included in the gene set with sign +1. 
+#' @param higher The 'higher' threshold. If not 'NULL', genes with a score 
+#' larger than 'higher' will be included in the gene set with sign +1. 
 #' At least one of 'lower' and 'higher' must be specified.
-#' @param lower The lower threshold. If not 'NULL', genes with a score smaller than 'lower' will be included in the gene set with sign -1. 
+#' @param lower The lower threshold. If not 'NULL', genes with a score smaller 
+#' than 'lower' will be included in the gene set with sign -1. 
 #' At least one of 'lower' and 'higher' must be specified.
-#' @param add_bs_score TRUE or FALSE. If true, bootstrap scores are added to measure the robustness of the result rankings.
+#' @param add_bs_score TRUE or FALSE. If true, bootstrap scores are added to 
+#' measure the robustness of the result rankings.
 #' @param chunk_size size of chunk per processing
-#' @return gessResult object represents a list of drugs in reference database ranked by their similarity to query signature
+#' @return gessResult object represents a list of drugs in reference database
+#' ranked by their similarity to query signature
 #' @importFrom utils download.file
 #' @importFrom R.utils gunzip
 #' @import HDF5Array
@@ -26,11 +30,11 @@ gess_gcmap <- function(qSig, higher, lower, add_bs_score = FALSE, chunk_size=500
   dmat <- assay(se)
   ceil <- ceiling(ncol(dmat)/chunk_size)
   resultDF <- data.frame()
-  for(i in 1:ceil){
+  for(i in seq_len(ceil)){
     dmat_sub <- dmat[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(dmat))]
     mat <- as(dmat_sub, "matrix")
-    cmap <- induceCMAPCollection(mat, higher=higher, lower=lower)
-    c <- connectivity_score(experiment=as.matrix(query), query=cmap)
+    cmap <- gCMAP::induceCMAPCollection(mat, higher=higher, lower=lower)
+    c <- connectivity_score_raw(experiment=as.matrix(query), query=cmap)
     resultDF <- rbind(resultDF, data.frame(c))
   }
   ## Apply scaling of scores to full data set
@@ -43,8 +47,9 @@ gess_gcmap <- function(qSig, higher, lower, add_bs_score = FALSE, chunk_size=500
   resultDF <- resultDF[order(abs(resultDF$effect), decreasing=TRUE), ]
   row.names(resultDF) <- NULL
   
-  new <- as.data.frame(t(sapply(1:nrow(resultDF), function(i)
-    unlist(strsplit(as.character(resultDF$set[i]), "__")))), stringsAsFactors=FALSE)
+  new <- as.data.frame(t(vapply(seq_len(nrow(resultDF)), function(i)
+    unlist(strsplit(as.character(resultDF$set[i]), "__")),
+    FUN.VALUE = character(3))), stringsAsFactors=FALSE)
   colnames(new) = c("pert", "cell", "type")
   resultDF <- cbind(new, resultDF[,-1])
   # add target column

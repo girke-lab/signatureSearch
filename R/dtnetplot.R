@@ -82,7 +82,7 @@ dtnetplot <- function(drugs, set, ont = NULL, ...) {
   # Use visNetwork to plot
   lnodes <- data.frame(label = c("drugs", "targets"),
                        shape = c("box", "circle"), color = c("orange", "#FF5C32"),
-                       title = "Groups", id = 1:2)
+                       title = "Groups", id = seq_len(2))
   nodes <- data.frame(id = c(drugs_tar, go_gene), label = c(drugs_tar, go_gene),
                       group = c(rep("drugs", length(drugs_tar)), rep("targets", length(go_gene))),
                       shape = c(rep("box", length(drugs_tar)), rep("circle", length(go_gene))), 
@@ -91,5 +91,5 @@ dtnetplot <- function(drugs, set, ont = NULL, ...) {
   edges <- dtlink_go; colnames(edges) = c("from", "to")
   visNetwork(nodes, edges, height = "500px", width = "100%") %>%
     visLegend(width = 0.05, position = "right", addNodes = lnodes, useGroups = FALSE) %>%
-    visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T), nodesIdSelection = TRUE)
+    visOptions(highlightNearest = list(enabled = TRUE, degree = 1, hover = TRUE), nodesIdSelection = TRUE)
 }

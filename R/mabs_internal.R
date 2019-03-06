@@ -1,4 +1,3 @@
-
 ##' generic function for meanAbs analysis
 ##'
 ##' @title mabs_internal
@@ -9,8 +8,6 @@
 ##' @param pvalueCutoff p value Cutoff
 ##' @param pAdjustMethod p value adjustment method
 ##' @param USER_DATA annotation data
-##' @importFrom stats p.adjust
-##' @importFrom qvalue qvalue
 ##' @return mabsResult object
 ##' @author Yuzhu Duan
 mabs_internal <- function(geneList,
@@ -29,9 +26,9 @@ mabs_internal <- function(geneList,
   
     message("calculating observed meanAbs scores...")
 
-    observedScore <- sapply(selected.gs, function(gs)
-        mabs_score(geneSet=gs, geneList=geneList)
-        )
+    observedScore <- vapply(selected.gs, function(gs)
+        mabs_score(geneSet=gs, geneList=geneList),
+        FUN.VALUE = numeric(1))
     
     # exclude gene sets that have no intersect with drug targets
     selected.gs <- selected.gs[observedScore != 0]
@@ -41,9 +38,9 @@ mabs_internal <- function(geneList,
     
     # get 1000 permutation matrix of geneList
     perm_mat <- replicate(nPerm, sample(geneList))
-    permScores <- sapply(selected.gs, function(gs){
-      colMeans(abs(perm_mat[gs,]))
-    })
+    permScores <- vapply(selected.gs, function(gs){
+      colMeans(abs(perm_mat[gs,]))},
+      FUN.VALUE = numeric(ncol(perm_mat)))
 
     median <- apply(permScores, 2, median)
     sd <- apply(permScores, 2, sd)
@@ -52,9 +49,9 @@ mabs_internal <- function(geneList,
     
     message("calculating p values...")
     
-    pvals <- sapply(seq_along(observedScore), function(i) {
+    pvals <- vapply(seq_along(observedScore), function(i) {
         sum(permScores[,i]>observedScore[i]) / nPerm
-    })
+    }, FUN.VALUE = numeric(1))
     
     p.adj <- p.adjust(pvals, method=pAdjustMethod)
     qvalues <- calculate_qvalue(pvals)
@@ -62,12 +59,14 @@ mabs_internal <- function(geneList,
     gs.name <- names(selected.gs)
     Description <- TERM2NAME(gs.name, USER_DATA)
 
-    geneID <- sapply(selected.gs, function(x) paste0(intersect(x, names(geneList)[geneList>0]), collapse = "/"))
+    geneID <- vapply(selected.gs, function(x) 
+      paste0(intersect(x, names(geneList)[geneList>0]), collapse = "/"),
+      FUN.VALUE = character(1))
 
     res <- data.frame(
         ID = as.character(gs.name),
         Description = Description,
-        setSize = sapply(selected.gs, length),
+        setSize = vapply(selected.gs, length, FUN.VALUE = integer(1)),
         mabs = observedScore,
         Nmabs = Nmabs,
         pvalue = pvals,
@@ -111,13 +110,14 @@ mabs_score <- function(geneList, geneSet) {
 }
 
 geneSet_filter <- function(geneSets, geneList, minGSSize, maxGSSize) {
-    geneSets <- sapply(geneSets, intersect, names(geneList))
+    geneSets <- lapply(geneSets, intersect, names(geneList))
 
     gs.idx <- get_geneSet_index(geneSets, minGSSize, maxGSSize)
     nGeneSet <- sum(gs.idx)
 
     if ( nGeneSet == 0 ) {
-        msg <- paste0("No gene set have size between [", minGSSize, ", ", maxGSSize, "]...")
+        msg <- paste0("No gene set have size between [", 
+                      minGSSize, ", ", maxGSSize, "]...")
         message(msg)
         message("--> return NULL...")
         return(NULL)

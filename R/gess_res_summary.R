@@ -6,8 +6,8 @@
 #' @export
 cell_rank_sum <- function(gessResult){
   if(!is(gessResult, "gessResult")) stop("The 'gessResult' should be an object of 'gessResult' class")
-  tb <- result(gessResult)[,c(1:2)]
-  tb <- bind_cols(rank = 1:nrow(tb), tb)
+  tb <- result(gessResult)[,c(seq_len(2))]
+  tb <- bind_cols(rank = seq_len(nrow(tb)), tb)
   # rank_sum <- matrix(NA, nrow = length(unique(tb$pert)), ncol = length(unique(tb$cell)))
   # rownames(rank_sum)=as.character(unique(tb$pert))
   # colnames(rank_sum)=as.character(unique(tb$cell))
@@ -18,13 +18,12 @@ cell_rank_sum <- function(gessResult){
   # }
   dl <- split(as.data.frame(tb)[,c("rank","cell")], tb$pert)
   cell_name=unique(tb$cell)
-  dl_num <- sapply(dl, function(x){
+  dl_num <- lapply(dl, function(x){
     num <- x$rank
     names(num) <- as.character(x$cell)
     num2 <- num[cell_name]
     names(num2) <- cell_name
-    return(num2)
-  }, simplify = FALSE)
+    return(num2)})
   mat <- t(as.data.frame(dl_num, check.names=FALSE))
   mat <- as.data.frame(mat)
   min <- apply(mat,1,min, na.rm=TRUE)

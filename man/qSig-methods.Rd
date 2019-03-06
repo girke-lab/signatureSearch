@@ -3,17 +3,17 @@
 \docType{methods}
 \name{qSig}
 \alias{qSig}
-\alias{qSig}
 \alias{qSig,list,character,SummarizedExperiment-method}
-\alias{qSig}
 \alias{qSig,matrix,character,SummarizedExperiment-method}
 \title{qSig method}
 \usage{
 qSig(qsig, gess_method, refdb)
 
-\S4method{qSig}{list,character,SummarizedExperiment}(qsig, gess_method, refdb)
+\S4method{qSig}{list,character,SummarizedExperiment}(qsig, gess_method,
+  refdb)
 
-\S4method{qSig}{matrix,character,SummarizedExperiment}(qsig, gess_method, refdb)
+\S4method{qSig}{matrix,character,SummarizedExperiment}(qsig, gess_method,
+  refdb)
 }
 \arguments{
 \item{qsig}{When 'gess_method' is “CMAP” or “LINCS”, it should be a list of two elements, which are up and down regulated gene sets of entrez ids.
@@ -46,8 +46,4 @@ untar the file by "tar -xzvf file.tar.gz" command, then load the \code{Summarize
 }
 \description{
 qSig generic
-
-qSig method
-
-qSig method
 }

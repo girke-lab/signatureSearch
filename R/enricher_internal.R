@@ -1,4 +1,6 @@
-##' interal method for enrichment analysis by using the hypergeometric model, which also support query gene set with duplications
+##' Interal method for enrichment analysis by using the hypergeometric model, 
+##' which also support query gene set with duplications
+##' 
 ##' @title enrich.internal
 ##' @param gene a vector of SYMBOL gene id.
 ##' @param pvalueCutoff Cutoff value of pvalue.
@@ -29,7 +31,7 @@ enricher_internal <- function(gene,
         message("--> No gene can be mapped....")
 
         p2e <- get("PATHID2EXTID", envir=USER_DATA)
-        sg <- unlist(p2e[1:10])
+        sg <- unlist(p2e[seq_len(10)])
         sg <- sample(sg, min(length(sg), 6))
         message("--> Expected input gene ID: ", paste0(sg, collapse=','))
 
@@ -43,8 +45,7 @@ enricher_internal <- function(gene,
                                    termID=qTermID)
     qExtID2TermID.df <- unique(qExtID2TermID.df)
 
-    qTermID2ExtID <- with(qExtID2TermID.df,
-                          split(as.character(extID), as.character(termID)))
+    qTermID2ExtID <- split(as.character(qExtID2TermID.df$extID), as.character(qExtID2TermID.df$termID))
 
     ## Get all the genes that have GO annotation, intersect with universe, get extID as universe
     extID <- ALLEXTID(USER_DATA)
@@ -86,13 +87,13 @@ enricher_internal <- function(gene,
     N <- length(extID)
     
     # k: White balls drawn. number of overlapped genes in qGene and genes in every GO term of termID2ExtID
-    k <- sapply(termID2ExtID, function(x) sum(qGene %in% x))
+    k <- vapply(termID2ExtID, function(x) sum(qGene %in% x), FUN.VALUE = integer(1))
   
     # n: balls drawn. length of qGene
     n <- length(qGene)
     
     # M:  White balls.
-    M <- sapply(termID2ExtID, length)
+    M <- vapply(termID2ExtID, length, FUN.VALUE = integer(1))
 
     args.df <- data.frame(numWdrawn=k-1, ## White balls drawn
                           numW=M,        ## White balls
@@ -122,15 +123,15 @@ enricher_internal <- function(gene,
     p.adj <- p.adjust(Over$pvalue, method=pAdjustMethod)
     qobj <- tryCatch(qvalue(p=Over$pvalue, lambda=0.05, pi0.method="bootstrap"), error=function(e) NULL)
 
-    if (class(qobj) == "qvalue") {
+    if (is(qobj, "qvalue")) {
         qvalues <- qobj$qvalues
     } else {
         qvalues <- NA
     }
     
     ## Obtain genes matching at GO nodes of termID2ExtID
-    geneID <- sapply(termID2ExtID, function(x) { qGene[qGene %in% x] } )
-    geneID <- sapply(geneID, function(x) { paste(x, collapse="/") } )
+    geneID <- lapply(termID2ExtID, function(x) { qGene[qGene %in% x] } )
+    geneID <- vapply(geneID, function(x) { paste(x, collapse="/") }, FUN.VALUE = character(1) )
     geneID[geneID==""] <- "NA"
     geneID <- geneID[qTermID]
     Over <- data.frame(Over,

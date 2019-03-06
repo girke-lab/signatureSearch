@@ -50,7 +50,7 @@ add_GO_Ontology <- function(obj, GO_DATA) {
 
 check_gene_id <- function(geneList, geneSets) {
   if (all(!names(geneList) %in% unique(unlist(geneSets)))) {
-    sg <- unlist(geneSets[1:10])
+    sg <- unlist(geneSets[seq_len(10)])
     sg <- sample(sg, min(length(sg), 6))
     message("--> Expected input gene ID: ", paste0(sg, collapse=','))
     stop("--> No gene can be mapped....")
@@ -65,7 +65,7 @@ EXTID2TERMID <- function(gene, USER_DATA) {
   EXTID2PATHID <- get("EXTID2PATHID", envir = USER_DATA)
   
   qExtID2Path <- EXTID2PATHID[gene]
-  len <- sapply(qExtID2Path, length)
+  len <- vapply(qExtID2Path, length, integer(1))
   notZero.idx <- len != 0
   qExtID2Path <- qExtID2Path[notZero.idx]
   
@@ -86,9 +86,9 @@ TERMID2EXTID <- function(term, USER_DATA) {
 
 TERM2NAME <- function(term, USER_DATA) {
   PATHID2NAME <- get("PATHID2NAME", envir = USER_DATA)
-  if (is.null(PATHID2NAME) || is.na(PATHID2NAME)) {
-    return(as.character(term))
-  }
+  # if (is.null(PATHID2NAME) || is.na(PATHID2NAME)) {
+  #   return(as.character(term))
+  # }
   return(PATHID2NAME[term])
 }
 
@@ -100,7 +100,7 @@ get_geneSet_index <- function(geneSets, minGSSize, maxGSSize) {
   
   ## index of geneSets in used.
   ## logical
-  geneSet_size <- sapply(geneSets, length)
+  geneSet_size <- vapply(geneSets, length, integer(1))
   idx <-  minGSSize <= geneSet_size & geneSet_size <= maxGSSize
   return(idx)
 }
@@ -111,7 +111,7 @@ calculate_qvalue <- function(pvals) {
   
   qobj <- tryCatch(qvalue(pvals, lambda=0.05, pi0.method="bootstrap"), error=function(e) NULL)
   
-  if (class(qobj) == "qvalue") {
+  if (is(qobj, "qvalue")) {
     qvalues <- qobj$qvalues
   } else {
     qvalues <- NA

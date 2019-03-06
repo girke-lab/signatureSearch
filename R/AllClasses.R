@@ -19,7 +19,8 @@ setClass("qSig", slots = c(
   gess_method = "character",
   refdb = "SummarizedExperiment"
 ))
-  
+
+
 ## Defining the validity method for "qSig"
 # setValidity("qSig", function(object) {
 #      TRUE
@@ -73,3 +74,8 @@ setClass("gessResult",
            gess_method = "character",
            refdb = "SummarizedExperiment"
          ))
+
+## Constructor for "gessResult"
+gessResult <- function(result, qsig, gess_method, refdb)
+  new("gessResult", result=result, qsig=qsig, 
+      gess_method=gess_method, refdb=refdb)

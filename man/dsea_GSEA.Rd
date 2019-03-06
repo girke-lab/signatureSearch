@@ -4,13 +4,16 @@
 \alias{dsea_GSEA}
 \title{dsea_GSEA}
 \usage{
-dsea_GSEA(drugList, type = "GO", ont = "BP", exponent = 1, nPerm = 1000,
-  minGSSize = 10, maxGSSize = 500, pvalueCutoff = 0.05,
-  pAdjustMethod = "BH")
+dsea_GSEA(drugList, type = "GO", ont = "BP", exponent = 1,
+  nPerm = 1000, minGSSize = 10, maxGSSize = 500,
+  pvalueCutoff = 0.05, pAdjustMethod = "BH")
 }
 \arguments{
-\item{drugList}{ranked lists of all drugs in the GESS result. The scores of the corresponding GESS method can be used for ranking the drugs as it is 
-required by the GSEA algorithm. The drugs with zero scores are excluded in the GESS results of CMAP, gCMAP and LINCS methods}
+\item{drugList}{ranked lists of all drugs in the GESS result. 
+The scores of the corresponding GESS method can be used for 
+ranking the drugs as it is required by the GSEA algorithm. 
+The drugs with zero scores are excluded in the GESS results 
+of CMAP, gCMAP and LINCS methods}
 
 \item{type}{one of "GO" or "KEGG"}
 

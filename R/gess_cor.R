@@ -5,7 +5,7 @@ cor_sig_search <- function(query, refdb, method){
   query2 <- as.matrix(query[common_gene,])
   colnames(query2) <- colnames(query)
   refdb <- refdb[common_gene,]
-  for(i in 1:ncol(query2)){
+  for(i in seq_len(ncol(query2))){
     cor <- as.numeric(cor(query2[,i], refdb, method = method))
     names(cor) <- colnames(refdb)
     trend=cor
@@ -39,15 +39,16 @@ gess_cor <- function(qSig, method, chunk_size=5000){
   dmat <- assay(se)
   ceil <- ceiling(ncol(dmat)/chunk_size)
   resultDF <- data.frame()
-  for(i in 1:ceil){
+  for(i in seq_len(ceil)){
     dmat_sub <- dmat[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(dmat))]
     mat <- as(dmat_sub, "matrix")
     cor_res <- cor_sig_search(query=query, refdb=mat, method=method)
     resultDF <- rbind(resultDF, data.frame(cor_res))
   }
   set = resultDF$set
-  new <- as.data.frame(t(sapply(1:length(set), function(i)
-    unlist(strsplit(as.character(set[i]), "__")))), stringsAsFactors=FALSE)
+  new <- as.data.frame(t(vapply(seq_along(set), function(i)
+    unlist(strsplit(as.character(set[i]), "__")),
+    FUN.VALUE = character(3))), stringsAsFactors=FALSE)
   colnames(new) = c("pert", "cell", "type")
   resultDF <- data.frame(new, resultDF[,-1])
   resultDF <- resultDF[order(abs(resultDF$cor_score), decreasing = TRUE), ]

@@ -4,24 +4,24 @@
 \alias{tsea_mGSEA}
 \title{tsea_mGSEA}
 \usage{
-tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000, exponent = 1,
-  pAdjustMethod = "BH", pvalueCutoff = 0.05, minGSSize = 2,
-  maxGSSize = 500)
+tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000,
+  exponent = 1, pAdjustMethod = "BH", pvalueCutoff = 0.05,
+  minGSSize = 2, maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do target set enrichment analysis (TSEA), Can be top ranking drugs in GESS result.}
+\item{drugs}{query drug set used to do TSEA. Can be top ranking drugs in GESS result.}
 
-\item{type}{can be `GO` or `KEGG`}
+\item{type}{onoe of `GO` or `KEGG`}
 
-\item{ont}{if type is `GO`, set ontology, can be `BP`,`MF`,`CC` or `ALL`}
+\item{ont}{if type is `GO`, set ontology, one of `BP`,`MF`,`CC` or `ALL`}
 
 \item{nPerm}{permutation numbers used to calculate p value}
 
 \item{exponent}{weight of each step}
 
-\item{pAdjustMethod}{p value adjustment method for p values in TSEA result}
+\item{pAdjustMethod}{p value adjustment method for p values in the enrichment result}
 
-\item{pvalueCutoff}{p value Cutoff}
+\item{pvalueCutoff}{p value cutoff}
 
 \item{minGSSize}{minimum size of each gene set in annotation system}
 

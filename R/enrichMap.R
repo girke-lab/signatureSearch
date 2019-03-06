@@ -26,7 +26,7 @@ enrichMap <- function(x, n = 50, fixed=TRUE, vertex.label.font=1, ...) {
     if (nrow(y) < n) {
         n <- nrow(y)
     }
-    y <- y[1:n,]
+    y <- y[seq_len(n),]
 
     if (n == 0) {
         stop("no enriched term found...")
@@ -45,7 +45,7 @@ enrichMap <- function(x, n = 50, fixed=TRUE, vertex.label.font=1, ...) {
         w <- matrix(NA, nrow=n, ncol=n)
         colnames(w) <- rownames(w) <- y$Description
 
-        for (i in 1:n) {
+        for (i in seq_len(n)) {
             for (j in i:n) {
                 w[i,j] = overlap_ratio(geneSets[id[i]], geneSets[id[j]])
             }
@@ -54,14 +54,14 @@ enrichMap <- function(x, n = 50, fixed=TRUE, vertex.label.font=1, ...) {
         wd <- melt(w)
         wd <- wd[wd[,1] != wd[,2],]
         wd <- wd[!is.na(wd[,3]),]
-        g <- graph.data.frame(wd[,-3], directed=F)
+        g <- graph.data.frame(wd[,-3], directed=FALSE)
         E(g)$width=sqrt(wd[,3]*20)
         g <- delete.edges(g, E(g)[wd[,3] < 0.2])
-        idx <- unlist(sapply(V(g)$name, function(x) which(x == y$Description)))
+        idx <- unlist(vapply(V(g)$name, function(x) which(x == y$Description)))
 
         cols <- color_scale("red", "#E5C494")
 
-        V(g)$color <- cols[sapply(pvalue, getIdx, min(pvalue), max(pvalue))]
+        V(g)$color <- cols[vapply(pvalue, getIdx, min(pvalue), max(pvalue))]
         ## seq_gradient_pal("red", "grey")(pvalue[idx])
 
         ## data can be exported to view in Cytoscape or other tools

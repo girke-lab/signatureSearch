@@ -39,9 +39,9 @@ GSEA_fgsea <- function(geneList,
                    minGSSize = minGSSize,
                    maxGSSize = maxGSSize
                    )
-    ledge <- sapply(tmp_res$leadingEdge, paste0, collapse='/')
-    ledge_rank <- sapply(tmp_res$leadingEdge, function(x) match(x, names(geneList)))
-    ledge_rank2 <- sapply(ledge_rank, paste, collapse="/")
+    ledge <- vapply(tmp_res$leadingEdge, paste0, collapse='/', FUN.VALUE = character(1))
+    ledge_rank <- lapply(tmp_res$leadingEdge, function(x) match(x, names(geneList)))
+    ledge_rank2 <- vapply(ledge_rank, paste, collapse="/", FUN.VALUE = character(1))
     message("ledge_rank included")
     res <- data.frame(
         ID = as.character(tmp_res$pathway),

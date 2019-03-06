@@ -4,13 +4,13 @@
 \alias{gseGO2}
 \title{gseGO2}
 \usage{
-gseGO2(geneList, ont = "BP", OrgDb, keyType = "ENTREZID", exponent = 1,
-  nproc = 1, nPerm = 1000, minGSSize = 2, maxGSSize = 500,
-  pvalueCutoff = 0.05, pAdjustMethod = "BH", verbose = TRUE,
-  seed = FALSE, by = "fgsea")
+gseGO2(geneList, ont = "BP", OrgDb, keyType = "ENTREZID",
+  exponent = 1, nproc = 1, nPerm = 1000, minGSSize = 2,
+  maxGSSize = 500, pvalueCutoff = 0.05, pAdjustMethod = "BH",
+  verbose = TRUE)
 }
 \arguments{
-\item{geneList}{order ranked geneList}
+\item{geneList}{scored ranked geneList}
 
 \item{ont}{one of "BP", "MF", "CC" or "ALL"}
 
@@ -20,7 +20,7 @@ gseGO2(geneList, ont = "BP", OrgDb, keyType = "ENTREZID", exponent = 1,
 
 \item{exponent}{weight of each step}
 
-\item{nproc}{If not equal to zero, sets BPPARAM to use nproc workers (default = 0)}
+\item{nproc}{If not equal to zero, sets BPPARAM to use nproc workers (default = 1)}
 
 \item{nPerm}{permutation numbers}
 
@@ -33,15 +33,11 @@ gseGO2(geneList, ont = "BP", OrgDb, keyType = "ENTREZID", exponent = 1,
 \item{pAdjustMethod}{pvalue adjustment method}
 
 \item{verbose}{print message or not}
-
-\item{seed}{logical, not applicable when setting `by` as `fgsea`}
-
-\item{by}{one of 'fgsea' or 'DOSE'}
 }
 \value{
 feaResult object
 }
 \description{
-Gene Set Enrichment Analysis of Gene Ontology (drug targets score list as geneList, GSEA method is modified to
-accept geneList with large portion of zeros)
+Modified Gene Set Enrichment Analysis (GSEA) of Gene Ontology.
+The GSEA method is modified to accept geneList with large portion of zeros
 }

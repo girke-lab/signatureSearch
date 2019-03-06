@@ -2,11 +2,12 @@
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 aes_string
 ##' @importFrom ggplot2 geom_point
-##' @importFrom ggplot2 scale_color_gradient
+##' @importFrom ggplot2 scale_colour_gradient
 ##' @importFrom ggplot2 xlab
 ##' @importFrom ggplot2 ylab
 ##' @importFrom ggplot2 ggtitle
-dotplot_internal <- function(object, x="geneRatio", colorBy="p.adjust", showCategory=10, split=NULL, font.size=12, title="") {
+dotplot_internal <- function(object, x="geneRatio", colorBy="p.adjust", 
+                        showCategory=10, split=NULL, font.size=12, title="") {
     colorBy <- match.arg(colorBy, c("pvalue", "p.adjust", "qvalue"))
     if (x == "geneRatio" || x == "GeneRatio") {
         x <- "GeneRatio"
@@ -24,7 +25,7 @@ dotplot_internal <- function(object, x="geneRatio", colorBy="p.adjust", showCate
     idx <- order(df$GeneRatio, decreasing = FALSE)
     df$Description <- factor(df$Description, levels=df$Description[idx])
     ggplot(df, aes_string(x=x, y="Description", size=size, color=colorBy)) +
-        geom_point() + scale_color_gradient(low="red", high="blue") +
+        geom_point() + scale_colour_gradient(low="red", high="blue") +
             ylab("") + ggtitle(title) + theme_dose(font.size)
 }
 

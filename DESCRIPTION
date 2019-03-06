@@ -1,26 +1,27 @@
 Package: signatureSearch
-Title: Signature Search and Functional Enrichment Analysis
-Version: 0.0.6
-Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu", role = c("aut", "cre"))
-Description: This package can be used to do Gene Expression Signature Search (GESS) and downstream Functional Enrichment Analysis (FEA).
-Depends: R (>= 3.5.0), SummarizedExperiment, HDF5Array, GSEABase, Rcpp
+Title: signatureSearch-Discovering novel modes of action of bioactive compounds
+Version: 0.99.2
+Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
+           role = c("aut", "cre"))
+Description: This package can be used to do Gene Expression Signature Search 
+            (GESS) and downstream Functional Enrichment Analysis (FEA).
+Depends: R (>= 3.6.0), SummarizedExperiment, Rcpp
 Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), R.utils,
         S4Vectors, data.table, magrittr, RSQLite, dplyr, fgsea,
         igraph, scales, methods, qvalue, stats, stats4, graphics,
-        utils, org.Hs.eg.db, reshape2, visNetwork, drugbankR, BiocParallel, fastmatch,
-        tools, batchtools, DelayedArray, Biobase, Matrix (>= 1.0.9),
-        parallel, annotate, readr, cmapR
-Suggests: AnnotationHub, KEGG.db, knitr, testthat, topGO,
-        rmarkdown, BiocStyle
+        utils, org.Hs.eg.db, reshape2, visNetwork, BiocParallel, fastmatch,
+        tools, batchtools, DelayedArray, Biobase, clusterProfiler, enrichplot,
+        parallel, readr, rhdf5, grDevices, gCMAP, DOSE, HDF5Array
+Suggests: AnnotationHub, KEGG.db, knitr, testthat, rmarkdown, BiocStyle
 License: Artistic-2.0
 SystemRequirements: C++11
 LinkingTo: Rcpp
 Encoding: UTF-8
-LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 NeedsCompilation: no
 Packaged: 2018-08-24 18:22:55 UTC; yduan004
+biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment
 Author: Yuzhu Duan [aut, cre]
 Maintainer: Yuzhu Duan <yduan004@ucr.edu>
 URL: https://github.com/yduan004/signatureSearch/

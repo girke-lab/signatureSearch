@@ -1,3 +1,37 @@
+##' show qSig, gessResult, feaResult objects
+##' 
+##' @name show
+##' @docType methods
+##' @rdname show-methods
+##' @title show method
+##' @param object object used for show
+##' @return message
+##' @aliases show,gessResult-method
+##' @usage show(object)
+setMethod("show", signature(object="gessResult"),
+          function (object) {
+            cat("#\n# gessResult object \n#\n")
+            cat("@result \n")
+            print(object@result)
+            if(is(object@qsig, "list")){
+              cat("@qsig", "\t", "up gene set", 
+                  paste0("(", length(object@qsig[[1]]), "):"), 
+                  "\t", object@qsig[[1]][seq_len(10)], "... \n")
+              cat("     ", "\t", "down gene set", 
+                  paste0("(", length(object@qsig[[2]]), "):"), 
+                  "\t", object@qsig[[2]][seq_len(10)], "... \n")
+            }
+            if(is(object@qsig, "matrix")){
+              cat("@qsig\n")
+              mat=object@qsig
+              print(head(mat,10))
+              cat("# ... with", nrow(mat)-10, "more rows\n")
+            }
+            cat("\n@gess_method", "\t", object@gess_method, "\n")
+            cat("\n@refdb", "\t")
+            print(object@refdb)
+          })
+
 ##' @name show
 ##' @docType methods
 ##' @rdname show-methods
@@ -16,45 +50,41 @@ setMethod("show", signature(object="feaResult"),
               str(object@universe)
               cat(paste0("#...", nrow(object@result)), "enriched terms found\n")
               str(object@result)
-              # cat("#...Citation\n")
-              # citation_msg <- paste("  Guangchuang Yu, Li-Gen Wang, Yanyan Han and Qing-Yu He.",
-              #                       "  clusterProfiler: an R package for comparing biological themes among",
-              #                       "  gene clusters. OMICS: A Journal of Integrative Biology",
-              #                       "  2012, 16(5):284-287", sep="\n", collapse="\n")
-              # cat(citation_msg, "\n\n")
           })
 
-##' plot method generics
-##'
-##' @docType methods
-##' @name plot
-##' @rdname plot-methods
-##' @aliases plot,feaResult,ANY-method
-##' @title plot method
-##' @param x A \code{feaResult} instance
-##' @param type one of dot, bar, cnet or enrichMap
-##' @param ... Additional argument list
-##' @return plot
-##' @importFrom stats4 plot
-##' @exportMethod plot
-##' @author Guangchuang Yu \url{http://guangchuangyu.github.io}
-setMethod("plot", signature(x="feaResult"),
-          function(x, type = "bar", ... ) {
-              if (type == "cnet" || type == "cnetplot") {
-                  cnetplot.enrichResult(x, ...)
-              }
-              if (type == "bar" || type == "barplot") {
-                  barplot(x, ...)
-              }
-              if (type == "enrichMap") {
-                  enrichMap(x, ...)
-              }
-              if (type == "dot" || type == "dotplot") {
-                  dotplot(x, ...)
-              }
-          }
-          )
 
+##' @description get 'result' slot of gessResult object
+##' @name result
+##' @docType methods
+##' @rdname result-methods
+##' @method result gessResult
+##' @param x \code{gessResult} or \code{feaResult} object
+##' @return tibble
+##' @aliases result,gessResult-method
+setMethod("result", signature(x="gessResult"),
+          function(x) x@result)
+
+
+##' @description get 'result' slot of feaResult object
+##' @name result
+##' @docType methods
+##' @rdname result-methods
+##' @method result feaResult
+##' @aliases result,feaResult-method
+setMethod("result", signature(x="feaResult"),
+          function(x) x@result)
+
+##' @description get `drugs` slot of feaResult object
+##' @name get_drugs
+##' @docType methods
+##' @rdname get_drugs-methods
+##' @method get_drugs feaResult
+##' @aliases get_drugs,feaResult-method
+##' @aliases get_drugs-method
+##' @param x feaResult object
+##' @return character vector
+setMethod("get_drugs", signature(x="feaResult"),
+          function(x) x@drugs)
 
 ##' dotplot for feaResult
 ##'
@@ -67,25 +97,35 @@ setMethod("plot", signature(x="feaResult"),
 ##' @param split separate result by 'category' variable
 ##' @param font.size font size
 ##' @param title plot title
+##' @importFrom enrichplot dotplot
 ##' @exportMethod dotplot
-##' @author Guangchuang Yu
 setMethod("dotplot", signature(object="feaResult"),
-          function(object, x="geneRatio", colorBy="p.adjust", showCategory=10, split=NULL, font.size=12, title="") {
-              dotplot_internal(object, x, colorBy, showCategory, split, font.size, title)
-          }
-          )
+          function(object, x="geneRatio", colorBy="p.adjust", showCategory=10, 
+                   split=NULL, font.size=12, title="") {
+              dotplot_internal(object, x, colorBy, showCategory, 
+                               split, font.size, title)
+          })
 
+##' cnetplot for feaResult
+##' 
 ##' @rdname cnetplot-methods
-##' @exportMethod cnetplot
+##' @aliases cnetplot,feaResult,ANY-method
+##' @param x feaResult object
+##' @param showCategory number of enriched terms to display
+##' @param categorySize one of 'pvalue', 'p.adjust' and 'qvalue'
+##' @param foldChange fold change
+##' @param fixed TRUE or FALSE
+##' @importFrom enrichplot cnetplot
+##' @export
 setMethod("cnetplot", signature(x="feaResult"),
-          function(x, showCategory=5, categorySize="pvalue", foldChange=NULL, fixed=TRUE, ...) {
-              cnetplot.enrichResult(x,
+          function(x, showCategory=5, categorySize="pvalue", 
+                   foldChange=NULL, fixed=TRUE, ...) {
+              cnetplot.feaResult(x,
                                     showCategory=showCategory,
                                     categorySize=categorySize,
                                     foldChange=foldChange,
                                     fixed=fixed, ...)
-          }
-          )
+})
 # 
 # ##' @rdname dtnetplot-methods
 # ##' @exportMethod dtnetplot

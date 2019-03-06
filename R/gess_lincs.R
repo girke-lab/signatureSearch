@@ -1,20 +1,18 @@
 #' @importFrom utils read.delim
 #' @importFrom stats quantile
-.lincsScores <- function(esout, upset, downset, minTauRefSize, ES_NULL="Default", taurefList="Default") {
+.lincsScores <- function(esout, upset, downset, minTauRefSize, 
+                         ES_NULL="Default", taurefList="Default") {
   ## P-value and FDR for WTCS based on ESnull from random queries where p-value = sum(ESrand > ES_obs)/Nrand
   if(ES_NULL != "Default") {WTCSnull <- read.delim(ES_NULL)} else {
     ext_path <- system.file("extdata", package="signatureSearch")
-    if(! file.exists(file.path(ext_path, "ES_NULL.txt"))){
-      download.file("http://biocluster.ucr.edu/~yduan004/LINCS_db/ES_NULL.txt", file.path(ext_path, "ES_NULL.txt"), quiet = TRUE)
-    }
     WTCSnull <- read.delim(file.path(ext_path, "ES_NULL.txt")) 
   }
   WTCSnull[WTCSnull[, "Freq"]==0, "Freq"] <- 1 # Add pseudo count of 1 where Freq is zero 
   myrounding <- max(nchar(as.character(WTCSnull[,"WTCS"]))) - 3 # Three because of dot and minus sign
   es_round <- round(as.numeric(esout), myrounding) # Assures same rounding used for WTCSnull computation
-  WTCS_pval <- sapply(es_round, function(x) {
+  WTCS_pval <- vapply(es_round, function(x) {
     sum(WTCSnull[abs(WTCSnull[,"WTCS"]) > abs(x), "Freq"]) / sum(WTCSnull[,"Freq"])	
-  })
+    }, FUN.VALUE = numeric(1))
   WTCS_fdr <- p.adjust(WTCS_pval, "fdr")
   ## Normalized connectivity score (NCS)
   grouping <- paste(gsub("^.*?__", "", names(esout)), as.character(ifelse(esout > 0, "up", "down")), sep="__")
@@ -27,7 +25,8 @@
   ## Tau calculation requires reference NCS lookup DB
   ## performs: sign(ncs_query) * 100/N sum(abs(ncs_ref) < abs(ncs_query))
   if(! file.exists(file.path(ext_path, "taurefList.rds"))){
-    download.file("http://biocluster.ucr.edu/~yduan004/LINCS_db/taurefList.rds", file.path(ext_path, "taurefList.rds"), quiet = TRUE)
+    download.file("http://biocluster.ucr.edu/~yduan004/LINCS_db/taurefList.rds", 
+                  file.path(ext_path, "taurefList.rds"), quiet = TRUE)
   }
   taurefList9264 <- readRDS(file.path(ext_path, "taurefList.rds"))
   ncs_query <- ncs; names(ncs_query) <- names(esout)
@@ -47,7 +46,7 @@
   })
   tau <- unlist(tau)
   tau <- tau[names(ncs_query)]
-  tauRefSize <- sapply(taurefList9264, ncol)[gsub("^.*?__", "", names(tau))]
+  tauRefSize <- vapply(taurefList9264, ncol, FUN.VALUE = integer(1))[gsub("^.*?__", "", names(tau))]
   tau[tauRefSize < minTauRefSize] <- NA
   
   ## Summary across cell lines (NCSct)
@@ -58,9 +57,12 @@
   })
   qmax <- qmax[ctgrouping]
   ## Organize result in data.frame
-  new <- as.data.frame(t(sapply(1:length(esout), function(i)
-    unlist(strsplit(as.character(names(esout)[i]), "__")))), stringsAsFactors=FALSE)
+  new <- as.data.frame(t(vapply(seq_along(esout), function(i)
+    unlist(strsplit(as.character(names(esout)[i]), "__")),
+    FUN.VALUE = character(3))), stringsAsFactors=FALSE)
   colnames(new) = c("pert", "cell", "type")
+  ## Add by YD 
+  rm(taurefList9264); gc()
   resultDF <- data.frame(new, 
                          trend = as.character(ifelse(esout > 0, "up", "down")),
                          WTCS = as.numeric(esout),
@@ -112,7 +114,9 @@
 #' @return data.frame
 #' @importFrom DelayedArray apply
 #' @export
-lincsEnrich <- function(se, upset, downset, sortby="NCS", type=1, output="all", ES_NULL="Default", taurefList="Default", minTauRefSize=500, chunk_size=5000) {
+lincsEnrich <- function(se, upset, downset, sortby="NCS", type=1, 
+                        output="all", ES_NULL="Default", taurefList="Default", 
+                        minTauRefSize=500, chunk_size=5000) {
   mycolnames <- c("WTCS", "NCS", "Tau", "NCSct", "N_upset", "N_downset", NA)
   if(!any(mycolnames %in% sortby)) stop("Unsupported value assinged to sortby.")
   
@@ -122,7 +126,7 @@ lincsEnrich <- function(se, upset, downset, sortby="NCS", type=1, output="all", 
   
   ceil <- ceiling(ncol(dmat)/chunk_size)
   ESout=NULL
-  for(i in 1:ceil){
+  for(i in seq_len(ceil)){
     dmat_sub <- dmat[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(dmat))]
     mat <- as(dmat_sub, "matrix")
     if(length(upset)>0 & length(downset)>0) {
@@ -147,7 +151,8 @@ lincsEnrich <- function(se, upset, downset, sortby="NCS", type=1, output="all", 
     return(ESout)
   }
   if(output=="all") {
-    resultDF <- .lincsScores(esout=ESout, upset=upset, downset=downset, minTauRefSize=minTauRefSize, ES_NULL=ES_NULL, taurefList=taurefList)
+    resultDF <- .lincsScores(esout=ESout, upset=upset, downset=downset, 
+        minTauRefSize=minTauRefSize, ES_NULL=ES_NULL, taurefList=taurefList)
   }
   if(!is.na(sortby)) {
     resultDF <- resultDF[order(abs(resultDF[,sortby]), decreasing=TRUE), ]
@@ -185,7 +190,8 @@ gess_lincs <- function(qSig, ES_NULL="Default", taurefList="Default", sortby="NC
   upset <- qSig@qsig[[1]]
   downset <- qSig@qsig[[2]]
   se <- qSig@refdb 
-  res <- lincsEnrich(se=se, upset=upset, downset=downset, ES_NULL=ES_NULL, taurefList=taurefList, sortby=sortby, chunk_size=chunk_size)
+  res <- lincsEnrich(se=se, upset=upset, downset=downset, ES_NULL=ES_NULL, 
+              taurefList=taurefList, sortby=sortby, chunk_size=chunk_size)
   # add target column
   target <- suppressMessages(get_targets(res$pert))
   res <- left_join(res, target, by=c("pert"="drug_name"))
@@ -199,7 +205,7 @@ gess_lincs <- function(qSig, ES_NULL="Default", taurefList="Default", sortby="NC
 
 randQuerySets <- function(id_names, N_queries, set_length=150) {
   randset_names <- paste0("randset_", sprintf("%09d", seq_len(N_queries)))
-  rand_query_list <- sapply(randset_names, function(x) {
+  rand_query_list <- vapply(randset_names, function(x) {
     id_list <- sample(id_names, 2 * set_length)
     split(id_list, rep(c("up", "down"), each=set_length))
   },
@@ -208,7 +214,8 @@ randQuerySets <- function(id_names, N_queries, set_length=150) {
 }
 
 #' ES_null Distribution with Random Queryies for Computing Nominal P-values for ES
-#' @param se SummarizedExperiment object loaded from HDF5 backend LICNS GSE92742 database via `loadHDF5SummarizedExperiment(dbpath)` function
+#' @param se SummarizedExperiment object loaded from HDF5 backend LICNS GSE92742 database 
+#'  via `loadHDF5SummarizedExperiment(dbpath)` function
 #' `dbpath` is the direcotry path to the `lincs42` database
 #' @param N_queries number of random queries
 #' @param dest_ES_NULL_path file path to the generated "ES_NULL.txt" file
@@ -277,7 +284,8 @@ randQueryES_slurm <- function(se, N_queries=1000, dest_ES_NULL_path, partition) 
 }
 
 #' ES_null Distribution with Random Queryies for Computing Nominal P-values for ES
-#' @param se SummarizedExperiment object loaded from HDF5 backend LICNS GSE92742 database via `loadHDF5SummarizedExperiment(dbpath)` function
+#' @param se SummarizedExperiment object loaded from HDF5 backend LICNS GSE92742 database 
+#' via `loadHDF5SummarizedExperiment(dbpath)` function
 #' `dbpath` is the direcotry path to the `lincs42` database
 #' @param N_queries number of random queries
 #' @param dest_ES_NULL_path file path to the generated "ES_NULL.txt" file
@@ -289,14 +297,14 @@ randQueryES_local <- function(se, N_queries=1000, dest_ES_NULL_path) {
   ## Create list of random queries
   idnames <- rownames(se)
   query_list <- randQuerySets(id_names=idnames, N_queries=N_queries, set_length=150)
-  ## Define sapply function
+  ## Define vapply function
   f <- function(x, query_list, se) {
       esout <- lincsEnrich(se, upset=query_list[[x]]$up, downset=query_list[[x]]$down, sortby=NA, output="esonly", type=1)
       names(esout) <- colData(se)$pert_cell_factor
       message("Random query ", sprintf("%04d", x), " has been searched against reference database")
       wtcs = esout
   }
-  myMA <- sapply(seq(along=query_list), f, query_list, se)
+  myMA <- vapply(seq(along=query_list), f, query_list, se)
   colnames(myMA) <- names(query_list)
   # write.table(as.data.frame(myMA), file=paste0(dirname(dest_ES_NULL_path), "/myMA.tsv"), col.names = NA, quote=FALSE, sep="\t")
   
@@ -333,10 +341,11 @@ queryReferenceDB <- function(se, Nup=150, Ndown=150, ES_NULL="Default", dest_pat
     chunkno <- x 
     sz <- 10 # small enough to use short queue 
     qlist <- split(query_list, ceiling(seq_along(names(query_list))/sz))
-    myMA <- matrix(, length(query_list), sz, dimnames=list(names(query_list), 1:sz))
+    myMA <- matrix(, length(query_list), sz, dimnames=list(names(query_list), seq_len(sz)))
     qlistone <- qlist[[chunkno]] 
     for(i in seq_along(qlistone)) {
-      resultDF <- lincsEnrich(se, upset=qlistone[[i]]$up, downset=qlistone[[i]]$down, sortby=NA, output="no_tau", ES_NULL=ES_NULL, taurefList="Default")
+      resultDF <- lincsEnrich(se, upset=qlistone[[i]]$up, downset=qlistone[[i]]$down, 
+          sortby=NA, output="no_tau", ES_NULL=ES_NULL, taurefList="Default")
       ncs <- resultDF$NCS
       mynames <- paste(resultDF$Pert, resultDF$Type, sep="__")
       mynames <- gsub("__up|__down", "", mynames)
@@ -350,7 +359,7 @@ queryReferenceDB <- function(se, Nup=150, Ndown=150, ES_NULL="Default", dest_pat
   ## Split query into chunks, each chunk will be processed on cluster as one process
   sz <- 10 # small enough to use short queue 
   qlist <- split(query_list, ceiling(seq_along(names(query_list))/sz)) 
-  # qlist <-  qlist[1:200] # test
+  # qlist <-  qlist[seq_len(200)] # test
   # qlist <-  qlist[201:length(qlist)] # test
   dir = dirname(dest_path)
   setwd(dir)
@@ -384,7 +393,7 @@ queryReferenceDB <- function(se, Nup=150, Ndown=150, ES_NULL="Default", dest_pat
     pathDF <- data.frame(query=names(query_list), path=rep(seq_along(qlist), each=sz))
     pathDF <- data.frame(pathDF, target=gsub("^.*?__", "", pathDF$query))
     pathList <- split(as.character(pathDF$path), factor(pathDF$target))
-    pathList <- sapply(pathList, unique) # eliminates unnecessary/duplicated imports of files
+    pathList <- vapply(pathList, unique) # eliminates unnecessary/duplicated imports of files
     taurefList <- rep(NA, length(pathList)); names(taurefList) <- names(pathList)
     taurefList <- as.list(taurefList) 
     for(celltype in names(pathList)) {

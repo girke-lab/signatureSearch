@@ -5,11 +5,11 @@
 \title{tsea_mabs}
 \usage{
 tsea_mabs(drugs, type = "GO", ont = "MF", nPerm = 1000,
-  pAdjustMethod = "BH", pvalueCutoff = 0.05, minGSSize = 2,
+  pAdjustMethod = "BH", pvalueCutoff = 0.05, minGSSize = 5,
   maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do target set enrichment analysis (TSEA), Can be top ranking drugs in GESS result.}
+\item{drugs}{query drug set used to do TSEA, Can be top ranking drugs in GESS result.}
 
 \item{type}{can be `GO` or `KEGG`}
 
@@ -17,7 +17,7 @@ tsea_mabs(drugs, type = "GO", ont = "MF", nPerm = 1000,
 
 \item{nPerm}{permutation numbers used to calculate p value}
 
-\item{pAdjustMethod}{p value adjustment method for p values in target set enrichment result}
+\item{pAdjustMethod}{p value adjustment method for p values in the enrichment result}
 
 \item{pvalueCutoff}{p value Cutoff}
 

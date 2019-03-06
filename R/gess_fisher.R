@@ -21,19 +21,20 @@ gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
   dmat <- assay(se)
   ceil <- ceiling(ncol(dmat)/chunk_size)
   resultDF <- data.frame()
-  for(i in 1:ceil){
+  for(i in seq_len(ceil)){
     dmat_sub <- dmat[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(dmat))]
     mat <- as(dmat_sub, "matrix")
     cmap <- induceCMAPCollection(mat, higher=higher, lower=lower)
     universe <- featureNames(cmap)
     c <- fisher_score(query=query, sets=cmap, universe = universe)
-    resultDF <- rbind(resultDF, data.frame(c))
+    resultDF <- rbind(resultDF, cmapTable(c))
   }
   resultDF <- resultDF[order(resultDF$padj), ]
   row.names(resultDF) <- NULL
   
-  new <- as.data.frame(t(sapply(1:nrow(resultDF), function(i)
-    unlist(strsplit(as.character(resultDF$set[i]), "__")))), stringsAsFactors=FALSE)
+  new <- as.data.frame(t(vapply(seq_len(nrow(resultDF)), function(i)
+    unlist(strsplit(as.character(resultDF$set[i]), "__")),
+    FUN.VALUE = character(3))), stringsAsFactors=FALSE)
   colnames(new) = c("pert", "cell", "type")
   resultDF <- cbind(new, resultDF[,-1])
   # add target column
