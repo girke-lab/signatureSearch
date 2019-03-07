@@ -5,7 +5,7 @@ Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu",
            role = c("aut", "cre"))
 Description: This package can be used to do Gene Expression Signature Search 
             (GESS) and downstream Functional Enrichment Analysis (FEA).
-Depends: R (>= 3.6.0), SummarizedExperiment, Rcpp
+Depends: R (>= 3.5.0), SummarizedExperiment, Rcpp
 Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), R.utils,
         S4Vectors, data.table, magrittr, RSQLite, dplyr, fgsea,
         igraph, scales, methods, qvalue, stats, stats4, graphics,

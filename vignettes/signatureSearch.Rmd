@@ -115,7 +115,7 @@ result(cmap)
 ## Searching with LINCS method for GESS
 
 Generate "qSig" object for GESS_LINCS method and search against reference database
-```{r gess_lincs, eval=TRUE}
+```{r gess_lincs, eval=FALSE}
 qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "LINCS", refdb = sample_db)
 lincs <- gess_lincs(qsig_lincs, sortby="NCS")
 result(lincs)
@@ -178,7 +178,7 @@ Choose GESS result from LINCS method as input for the downstream functional enri
 ## dup_hyperG method for TSEA
 
 Subset top 10 ranking drugs in GESS result, get their target set (with duplication) as query for duplication support hypergeometric test for TSEA.
-```{r tsea_dup_hyperG, eval=TRUE}
+```{r tsea_dup_hyperG, eval=FALSE}
 drugs <- unique(result(lincs)$pert[1:10])
 # GO annotation system
 dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", type = "GO", ont="MF", pvalueCutoff=0.05, pAdjustMethod="BH", qvalueCutoff = 0.1, minGSSize = 10, maxGSSize = 500)
@@ -194,7 +194,7 @@ result(dup_hyperG_k_res)
 
 Subset top 10 ranking drugs in GESS result as query, mGSEA method internally get their target set and turn it to scored ranked target list as query for TSEA. 
 The scores represent weight of targets in the target set.
-```{r tsea_mgsea, eval=TRUE}
+```{r tsea_mgsea, eval=FALSE}
 mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, nPerm=1000, pvalueCutoff=1, minGSSize=5)
 result(mgsea_res)
 # KEGG annotation system
@@ -205,7 +205,7 @@ result(mgsea_k_res)
 ## mabs method for TSEA
 
 Subset top 10 ranking drugs in GESS result as query, mabs method internally get their target set and ranked target list with scores, which represent weight of targets. 
-```{r tsea_mabs, eval=TRUE}
+```{r tsea_mabs, eval=FALSE}
 # GO annotation system
 mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, pvalueCutoff=0.05, minGSSize=5)
 result(mabs_res)
@@ -217,7 +217,7 @@ result(mabs_k_res)
 ## hyperG method for DSEA
 
 Subset top 10 ranking drugs in GESS result as query for hypergeometric test for DSEA.
-```{r dsea_hyperG, eval=TRUE}
+```{r dsea_hyperG, eval=FALSE}
 drugs <- unique(result(lincs)$pert[1:10])
 # GO annotation system
 hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", pvalueCutoff = 0.05, qvalueCutoff = 0.1, minGSSize = 10)
@@ -230,7 +230,7 @@ result(hyperG_k_res)
 ## GSEA method for DSEA
 
 Use ranked drug list in GESS result as GSEA input, the scores are similarity metrics of the corresponding GESS methods. Zeros are removed.
-```{r dsea_gsea, eval=TRUE}
+```{r dsea_gsea, eval=FALSE}
 dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
 dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]
@@ -243,11 +243,11 @@ result(gsea_k_res)
 ```
 
 ## Consistency Comparison of enriched terms from 5 FEA methods
-```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
+```{r cmp_enrich, eval=FALSE, fig.width=10.5, fig.height=5.5}
 comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, Ntop=20, type="GO")
 ```
 
-```{r cmp_enrich_k, eval=TRUE, fig.width=8}
+```{r cmp_enrich_k, eval=FALSE, fig.width=8}
 comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_k_res, hyperG_k_res, gsea_k_res, Ntop=20, type="KEGG")
 ```
 
@@ -259,7 +259,7 @@ The consistency of the enriched GO terms/KEGG pathways from the five functional 
 ## Construct drug-target interaction networks in interesting GO categories
 
 Build drug-target networks in top ranking GO categories
-```{r dtnet_go, eval=TRUE}
+```{r dtnet_go, eval=FALSE}
 dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF", desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF", desc="NF-kappaB binding")
 dtnetplot(drugs = drugs, set = "GO:0016811", ont = "MF", desc="hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in linear amides")
@@ -268,7 +268,7 @@ dtnetplot(drugs = drugs, set = "GO:0016811", ont = "MF", desc="hydrolase activit
 ## Construct drug-target interaction networks in interested KEGG pathways or defined other gene/protein sets
 
 Build drug-target networks in top ranking KEGG pathways
-```{r dtnet_kegg, eval=TRUE}
+```{r dtnet_kegg, eval=FALSE}
 dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034", desc="Alcoholism")
 dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05203", desc="Viral carcinogenesis")
 dtnetplot(drugs = drugs, set = "hsa04213", desc="Longevity regulating pathway - multiple species")
