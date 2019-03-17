@@ -26,7 +26,17 @@ mabsGO <- function(geneList,
     ont %<>% toupper
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
 
-    GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
+    #GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
+    # download GO_DATA and save it locally to save time
+    ext_path <- system.file("extdata", package="signatureSearch")
+    godata_path <- paste0(ext_path,"/GO_DATA.rds")
+    if(file.exists(godata_path)){
+      GO_DATA <- readRDS(godata_path)
+    } else {
+      download.file("http://biocluster.ucr.edu/~yduan004/fea/GO_DATA.rds",
+                    godata_path, quiet = TRUE)
+      GO_DATA <- readRDS(godata_path)
+    }
     
     res <-  mabs_internal(geneList = geneList,
                           nPerm = nPerm,

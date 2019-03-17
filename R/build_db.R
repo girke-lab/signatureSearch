@@ -1,8 +1,8 @@
 #' Build CMAP, LINCS or custome reference database
 #' 
 #' @title build_db
-#' @param df data.frame, represents genoime-wide GEPs (log2FC, Z-scores, intensity values, etc.) of compound or genetic treatments. 
-#' Rownames (Gene IDs) should be included. The column names should be of `(drug)__(cell)__(factor)` format, e.g., `sirolimus__MCF7__trt_cp`.
+#' @param df data.frame, represents genoime-wide GEPs (log2FC, z-scores, intensity values, etc.) of compound or genetic treatments. 
+#' Rownames (Gene IDs) should be included. The colnames should be of `(drug)__(cell)__(factor)` format, e.g., `sirolimus__MCF7__trt_cp`.
 #' @param file a character string, path to the tabular file in tab-delimited format or gctx file for LINCS database. The tabular file 
 #' can mimic both count data from RNA-Seq and intensity values from gene chips, Rownames (Gene IDs) should be included. 
 #' The column names should be of `(drug)__(cell)__(type)` format. The tabular file 

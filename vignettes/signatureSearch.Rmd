@@ -1,5 +1,6 @@
 ---
-title: _signatureSearch_ - Discovering novel modes of action of bioactive compounds
+title: _signatureSearch_ - Discovering novel modes of action 
+        of bioactive compounds
 author: "Author: Yuzhu Duan (yduan004@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
@@ -46,37 +47,117 @@ suppressPackageStartupMessages({
 
 # Background
 
-This project is about optimizing signature search and enrichment methods for the discovery of novel modes of action (MOA) of bioactive compounds from reference databases, such as LINCS, containing the genome-wide gene expression signatures (GESs) from tens of thousands of drug and genetic perturbations. The methods can be divided into two major classes. First, gene expression signature search (GESS) methods are used to identify drugs that induce GESs similar to those of query GESs of interest. The queries can be drug- or disease-related GESs. Since the MOA of most drugs in the corresponding reference databases are known, the resulting associations are useful to gain insights into pharmacological and disease mechanisms and to develop novel drug repurposing approaches. Second, functional enrichment analysis (FEA) methods using Gene Ontology (GO) or pathway annotations have been developed to functionally interpret the vast number of GESS results. The latter are composed of lists of drugs ranked by the similarity metric of the corresponding GESS method making the functional interpretation of their top ranking drugs challenging. Importantly, the FEA methods developed by this study also support the reconstruction of drug-target networks to guide the interpretation of the results.
+This project is about optimizing signature search and enrichment methods for 
+the discovery of novel modes of action (MOA) of bioactive compounds from 
+reference databases, such as LINCS, containing the genome-wide gene expression 
+signatures (GESs) from tens of thousands of drug and genetic perturbations. 
+The methods can be divided into two major classes. First, gene expression 
+signature search (GESS) methods are used to identify drugs that induce GESs 
+similar to those of query GESs of interest. The queries can be drug- or 
+disease-related GESs. Since the MOA of most drugs in the corresponding 
+reference databases are known, the resulting associations are useful to gain 
+insights into pharmacological and disease mechanisms and to develop novel drug 
+repurposing approaches. Second, functional enrichment analysis (FEA) methods 
+using Gene Ontology (GO) or pathway annotations have been developed to 
+functionally interpret the vast number of GESS results. The latter are 
+composed of lists of drugs ranked by the similarity metric of the corresponding 
+GESS method making the functional interpretation of their top ranking drugs 
+challenging. Importantly, the FEA methods developed by this study also support 
+the reconstruction of drug-target networks to guide the interpretation of the 
+results.
 
-@Lamb2006-du generated a GES database, initially including 164 drugs screened against four mammalian cell lines [@Lamb2006-du]. A few years later it was extended to 1,309 drugs and eight cell lines. In 2017, the database was increased to 19,811 drugs by the Library of Network-Based Cellular Signatures (LINCS) Consortium [@Subramanian2017-fu], while the number of cell types represented in the database has increased to over 70 normal and cancer cell lines. The number of compound dosages and time points considered in the assays has also been increased by 10-20 fold. The initial database used Affymetrix Gene Chips as expression platform. To scale from a few thousand to many hundred thousand GESs, the LINCS Consortium uses now the more economic L1000 assay. This bead-based technology is a low cost, high-throughput reduced representation expression profiling assay. It measures the expression of 978 landmark genes and 80 control genes by detecting fluorescent intensity of beads after capturing the ligation-mediated amplification products of mRNAs [@Peck2006-rf]. The expression of 11,350 additional genes is imputed from the landmark genes by using as training data a collection of 12,063 Affymetrix gene chips [@Edgar2002-di]. The substantial scale-up of the LINCS project provides now many new opportunities to explore MOAs for a vast number of small molecules. Figure 1 illustrates the entire GESS/FEA workflow.
+@Lamb2006-du generated a GES database, initially including 164 drugs screened 
+against four mammalian cell lines [@Lamb2006-du]. A few years later it was 
+extended to 1,309 drugs and eight cell lines. In 2017, the database was 
+increased to 19,811 drugs by the Library of Network-Based Cellular Signatures 
+(LINCS) Consortium [@Subramanian2017-fu], while the number of cell types 
+represented in the database has increased to over 70 normal and cancer cell 
+lines. The number of compound dosages and time points considered in the assays 
+has also been increased by 10-20 fold. The initial database used Affymetrix 
+Gene Chips as expression platform. To scale from a few thousand to many hundred 
+thousand GESs, the LINCS Consortium uses now the more economic L1000 assay. 
+This bead-based technology is a low cost, high-throughput reduced 
+representation expression profiling assay. It measures the expression of 978 
+landmark genes and 80 control genes by detecting fluorescent intensity of beads 
+after capturing the ligation-mediated amplification products of mRNAs 
+[@Peck2006-rf]. The expression of 11,350 additional genes is imputed from the 
+landmark genes by using as training data a collection of 12,063 Affymetrix gene 
+chips [@Edgar2002-di]. The substantial scale-up of the LINCS project provides 
+now many new opportunities to explore MOAs for a vast number of small molecules.
+Figure 1 illustrates the entire GESS/FEA workflow.
 
 <center>
 ![](images/ss_wf.png)
 </center>
 
-Figure 1: Overview of GESS and FEA methods. GES queries are used to search a drug-based GES reference database for drugs inducing GESs similar to the query. To interpret the results mechanistically, the GESS results are subjected to functional enrichment analysis (FEA) including drug and target enrichment analyses (DSEA, TSEA). Both identify enriched functional categories (GO terms and/or KEGG pathways) in the GESS results. Subsequently, drug-target networks are reconstructed for visualization and interpretation.
+Figure 1: Overview of GESS and FEA methods. GES queries are used to search a 
+drug-based GES reference database for drugs inducing GESs similar to the query. 
+To interpret the results mechanistically, the GESS results are subjected to 
+functional enrichment analysis (FEA) including drug and target enrichment 
+analyses (DSEA, TSEA). Both identify enriched functional categories (GO terms 
+and/or KEGG pathways) in the GESS results. Subsequently, drug-target networks 
+are reconstructed for visualization and interpretation.
 
 # Terminology
 
-Gene Expression Signatures (GESs): can be gene expression profiles (GEPs), which can be genome-wide profile from differential expression analysis ($log_2$ ratios or z-scores) or gene expression intensity values from perturbagen treatment in cell culture, or differentially expressed gene sets (DEGs) from a treatment.
+Gene Expression Signatures (GESs): can be gene expression profiles (GEPs), 
+which can be genome-wide profile from differential expression analysis ($log_2$ 
+ratios or z-scores) or gene expression intensity values from perturbagen 
+treatment in cell culture, or differentially expressed gene sets (DEGs) from 
+a treatment.
 
 # Reference Database
 
-The CMAP and LINCS differential expression databases can be built with `build_db` funciton by providing paths to the CMAP tabular file or LINCS gctx file or directly downloaded at [CMAP](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap.tar.gz), [LINCS](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42.tar.gz). The databases are stored as HDF5 backed `SummarizedExperiment` object. Untar the downloaded file by `tar -xzvf file.tar.gz` command, then load the `SummarizedExperiment` object via `loadHDF5SummarizedExperiment` function. The 'assays' slot of the loaded SummarizedExperiment object represents the $log_2$ ratios or z-scores generated from differential expression (DE) analysis. 
+The CMAP and LINCS signature databases can be loaded from `signatureSearch_data`
+package as `SummarizedExperiment` objects. 
 
-The CMAP and LINCS expression databases can be built with `build_db` funciton or directly downloaded at [CMAP_expr](http://biocluster.ucr.edu/~yduan004/CMAP_db/cmap_expr.tar.gz), [LINCS_expr](http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs42_expr.tar.gz). They stores the mean experssion values of drug treatment samples in cells.
+The loaded `lincs` database represents z-scores from differential expression 
+(DE) analysis of 12,328 genes from 8,140 compound treatments in 30 cells 
+(45,956 signatures in total). The `lincs_expr` 
+database contains gene expression intensity values from 5,925 compound
+treatments in 30 cells (38,824 signatures in total). 
 
-The custom database can also be built via `build_db` function if a `data.frame` representing genoime-wide GEPs of compound or genetic treatments in cells is provided.
+The loaded `cmap` database represents the $log_2$ fold change of 12,437 genes 
+from 1,281 compound treatments in 4 cells (3,478 signatures in total).
+The `cmap_expr` database represents mean expression values of 1,309 drug
+treatment samples in 4 cells (3,587 signatures in total).
+
+The custom database can be built via `build_custom_db` function if a 
+`data.frame` representing genome-wide GEPs (log2FC, z-scores, intensity values, 
+etc.) of compound or genetic treatments in cells is provided. 
 
 # Implementation of \emph{signatureSearch} package
 
-It is necessary to integrate the GESS and FEA methods into an R/Bioconductor package since it enables efficient testing across large and extendable number of statistical methods and expression data types, simplifies development of automated analysis workflows, the usage of generic data objects and classes improves maintainability and reproducibility, the integration with existing R/Bioconductor ecosystem maximizes extensibility and reusability by other groups. Figure 2 shows the workflow design of the package. The expression profiles from RNA-Seq, Affymetrix chips or other technology can be used to build the reference database and stored as HDF5 backed SummarizedExperiment object. The query signature and reference database were built into \emph{qSig} object and 5 methods are supported for searching. Since the reference database could contain hundreds of thousands of signatures, it is volumized searched for efficient memory usage and faster time performance. The search results are stored in \emph{gessResult} object and can be functionally annotated by TSEA and DSEA methods. The enrichment results are stored in \emph{feaResult} object and the drug target networks can be built for visualization. 
+It is necessary to integrate the GESS and FEA methods into an R/Bioconductor 
+package since it enables efficient testing across large and extendable number 
+of statistical methods and expression data types, simplifies development of 
+automated analysis workflows, the usage of generic data objects and classes 
+improves maintainability and reproducibility, the integration with existing 
+R/Bioconductor ecosystem maximizes extensibility and reusability by other 
+groups. Figure 2 shows the workflow design of the package. The expression 
+profiles from RNA-Seq, Affymetrix chips or other technology can be used to 
+build the reference database and stored as HDF5 backed SummarizedExperiment 
+object. The query signature and reference database were built into \emph{qSig} 
+object and 5 methods are supported for searching. Since the reference database 
+could contain hundreds of thousands of signatures, it is volumized searched for 
+efficient memory usage and faster time performance. The search results are 
+stored in \emph{gessResult} object and can be functionally annotated by TSEA 
+and DSEA methods. The enrichment results are stored in \emph{feaResult} object 
+and the drug target networks can be built for visualization. 
 
 <center>
 ![](images/ss_fc.png)
 </center>
 
-Figure 2: Workflow of _signatureSearch_ package. The expression profiles from RNA-Seq, Affymetrix chips or other technology can be used to build the reference database and stored as HDF5 backed SummarizedExperiment object. The query signature and reference database are built into \emph{qSig} object and 5 GESS methods (CMAP, LINCS, gCMAP, Fisher, and Spearman) are supported for searching. The search results are stored in \emph{gessResult} object and can be functionally annotated by TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA) methods. The enrichment results are stored in \emph{feaResult} object and the drug target networks can be built for visualization.
+Figure 2: Workflow of _signatureSearch_ package. The expression profiles from 
+RNA-Seq, Affymetrix chips or other technology can be used to build the reference
+database and stored as HDF5 backed SummarizedExperiment object. The query 
+signature and reference database are built into \emph{qSig} object and 5 GESS 
+methods (CMAP, LINCS, gCMAP, Fisher, and Spearman) are supported for searching. 
+The search results are stored in \emph{gessResult} object and can be 
+functionally annotated by TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA)
+methods. The enrichment results are stored in \emph{feaResult} object and the 
+drug target networks can be built for visualization.
 
 # Installation
 
@@ -89,7 +170,11 @@ BiocManager::install("signatureSearch", version = "3.9")
 
 # Methods for GESS
 
-As an example of running GESS/FEA workflow, 95 GEPs randomly sampled from LINCS DE database and 5 GEPs from `HDAC inhibitors` (`vorinostat`, `rhamnetin`, `trichostatin A`, `pyroxamide`, and `HC toxin`) treatments in human SKB (muscle) cell were combined to generate a sample reference database. The query signature is the vorinostat treatment drawn from the sample database.  
+As an example of running GESS/FEA workflow, 95 GEPs randomly sampled from 
+`lincs` database and 5 GEPs from `HDAC inhibitors` (`vorinostat`, `rhamnetin`, 
+`trichostatin A`, `pyroxamide`, and `HC toxin`) treatments in human SKB (muscle)
+cell were combined to generate a sample reference database. The query signature 
+is the vorinostat treatment drawn from the sample database.
 
 ## Load database and get query signature
 ```{r db_sig, eval=TRUE}
@@ -104,9 +189,28 @@ downset <- tail(names(query[order(-query)]), 150)
 
 ## Searching with CMAP method for GESS
 
-Generate "qSig" object for GESS_CMAP method and search against reference database
+@Lamb2006-du introduced the gene expression-based search method known as 
+Connectivity Map (CMap) where a GES database is searched with a query GES for 
+similar matches [@Lamb2006-du]. Here, we generalize this type of GES similarity 
+search method and refer to it as GES search (GESS). Specifically, the GESS 
+method from @Lamb2006-du, termed as \emph{CMAP}, uses as query the most up- 
+and down-regulated DEGs from a genome-wide expression experiment. The GES query 
+is used to search a database of rank transformed GEPs and ranks the results by 
+the degree of enrichment of the up- and down-regulated query genes on the top 
+and bottom of the databases entries, respectively. The search results are a 
+list of drugs that have similar or opposing GESs as the query. Similar GESs 
+suggest similar physiological effects of the corresponding perturbagens. 
+These GES associations can be useful to uncover novel treatments for a variety 
+of diseases or connections among small molecules sharing a common MOA. 
+
+Since no correct implementations of the CMAP algorithm are available for 
+download, it is implemented in this package.
+
+Generate `qSig` object for `gess_cmap` method and search against the sample
+reference database
 ```{r gess_cmap, eval=TRUE}
-qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "CMAP", refdb = sample_db)
+qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), 
+                  gess_method = "CMAP", refdb = sample_db)
 cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 cmap
 result(cmap)
@@ -114,16 +218,32 @@ result(cmap)
 
 ## Searching with LINCS method for GESS
 
-Generate "qSig" object for GESS_LINCS method and search against reference database
-```{r gess_lincs, eval=FALSE}
-qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), gess_method = "LINCS", refdb = sample_db)
+@Subramanian2017-fu introduced a new GESS method (\emph{LINCS}) that is similar
+with CMAP method but weights genes in the query set by using expression 
+profiles with scores instead of rank transformed as reference database. Since
+now, no implementations of this algorithm available, it is implemented
+here.
+
+Generate `qSig` object for `gess_lincs` method and search against the sample 
+database
+```{r gess_lincs, eval=TRUE}
+qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
+                   gess_method = "LINCS", refdb = sample_db)
 lincs <- gess_lincs(qsig_lincs, sortby="NCS")
 result(lincs)
 ```
 
 ## Searching with gCMAP method for GESS
 
-Generate "qSig" object for GESS_gCMAP method and search against reference database
+The \emph{gCMAP} [@Sandmann2014-qm] package provides access to related but not 
+identical implementations of the original CMAP algorithm proposed by 
+@Lamb2006-du. It uses as query a rank transformed GEP and the reference 
+database is composed of DEG sets. This is the opposite situation of the 
+original \emph{CMAP} method, where the query is a DEG set and the database 
+contains rank transformed GEPs.
+
+Generate `qSig` object for `gess_gcmap` method and search against 
+the sample database
 ```{r gess_gcmap, eval=TRUE}
 qsig_gcmap <- qSig(qsig = query_mat, gess_method = "gCMAP", refdb = sample_db)
 gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
@@ -132,7 +252,12 @@ result(gcmap)
 
 ## Searching with Fisher method for GESS
 
-Generate "qSig" object for GESS_fisher method and search against reference database
+The Fisher’s exact test [@Graham_J_G_Upton1992-pg] can also be used as search 
+algorithm for querying GES databases for similar entries. This can be achieved 
+if both the query and the database are composed of DEG sets.
+
+Generate `qSig` object for `gess_fisher` method and search against the
+sample database
 ```{r gess_fisher, eval=TRUE}
 qsig_fisher <- qSig(qsig = query_mat, gess_method = "Fisher", refdb = sample_db)
 fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
@@ -141,7 +266,18 @@ result(fisher)
 
 ## Searching with Spearman correlation method for GESS
 
-Generate "qSig" object for GESS_Cor method and search against reference database
+The Spearman correlation coefficients can be used as a GESS method by searching 
+with a query expression profile a database of expression profiles
+[@Mukaka2012-an]. Spearman correlation-based queries were performed with 
+genome-wide GEPs as well as with GEPs subsetted to the same query genes used 
+for the set enrichment methods (\emph{CMAP}, \emph{LINCS} and \emph{Fisher}). 
+The latter situation makes the correlation-based results more comparable to the 
+set enrichment methods by providing to each method a more equal amount of 
+information than this is the case for the \emph{SPall} method with 
+genome-wide GEPs. 
+
+Generate `qSig` object for `gess_cor` method and search against the 
+sample database
 
 ### Genome-wide Spearman correlation
 ```{r gess_sp, eval=TRUE}
@@ -150,9 +286,10 @@ sp <- gess_cor(qSig=qsig_sp, method="spearman")
 result(sp)
 ```
 
-### Spearman_sub correlation
+### Spearman subset correlation
 ```{r gess_spsub, eval=TRUE}
-# Subset z-scores of 150 up and down gene sets from "vorinostat__SKB__trt_cp" signature.
+# Subset z-scores of 150 up and down gene sets from 
+# "vorinostat__SKB__trt_cp" signature.
 query_mat_sub <- as.matrix(query_mat[c(upset, downset),])
 qsig_spsub <- qSig(qsig = query_mat_sub, gess_method = "Cor", refdb = sample_db)
 spsub <- gess_cor(qSig=qsig_spsub, method="spearman")
@@ -160,116 +297,315 @@ result(spsub)
 ```
 
 ## GESS result visulization
-If the signature database contains drug treatments in different cell types, including normal and tumor, the GESS result can be visualized by summarizing rankings/scores of selected drugs across difference cells. The sample databased used in this vignette only contains treatments in SKB cell, so there is no need to summarize the result. I used the same `vorinostat` query signature to search the full LINCS database by LINCS method, Figure 3 shows visualization of the summary GESS result.
+
+If the signature database contains drug treatments in different cell types, 
+including normal and tumor, the GESS result can be visualized by summarizing 
+rankings/scores of selected drugs across difference cells. The sample databases 
+used in this vignette only contains treatments in SKB cell, so there is no need 
+to summarize the result. I used the same `vorinostat` query signature to search 
+against the full LINCS database by LINCS method, Figure 3 shows the summary
+visualization of the GESS result.
 
 <center>
 ![](images/vorinostat_SKB_lincs_gess_res_vis.png)
 </center>
 
-Figure 3: Summary of NCS scores across cell types of selected drugs in vorinostat GESS result searching against LINCS database. Drugs 1 to 10 from left to right: top 10 drugs in the above lincs result searching against sample database. The other drugs are HDAC inhibitors not selected in the sample database.
+Figure 3: Summary of NCS scores across cell types of selected drugs in 
+vorinostat GESS result searching against LINCS database. Drugs 1 to 10 from 
+left to right: top 10 drugs in the above lincs result searching against the 
+sample database. The other drugs are HDAC inhibitors not selected in the 
+sample database.
 
 ## Conclusion
-4/5 HDAC inhibitors (vorinostat, trichostatin-a, HC-toxin, pyroxamide) were found by CMAP, LINCS, Fisher and Spearman correlation methods in their top 10 results, demonstrating their ability to cluster drugs in the same MOA category. Specifically, LINCS and Spearman correlation (both genome-wide and sub) methods could discover another HDAC inhibitor (APHA-compound-8) in the database, which is promising as a discovery tool.
 
-# Methods for FEA
+4/5 HDAC inhibitors (vorinostat, trichostatin-a, HC-toxin, pyroxamide) were 
+found by CMAP, LINCS, Fisher and Spearman correlation methods in their top 10 
+results, demonstrating their ability to cluster drugs in the same MOA category. 
+Specifically, LINCS and Spearman correlation (both genome-wide and sub) methods 
+could discover another HDAC inhibitor (APHA-compound-8) in the database, which 
+is promising as a discovery tool.
 
-Choose GESS result from LINCS method as input for the downstream functional enrichment analysis.
+# FEA
 
-## dup_hyperG method for TSEA
+GESS results are a list of drugs ranked by their signature similarity to a 
+query signature of interest. Prioritizing drugs based on these rankings alone 
+is challenging. To overcome this challenge, this project developed downstream 
+functional enrichment analysis (FEA) methods that automate the functional 
+interpretation and visualization of the GESS results. As of now, no methods 
+have been developed to address this need. FEA can be performed by two 
+approaches, target set enrichment analysis (TSEA) and drug set enrichment 
+analysis (DSEA). Here, the GESS result from LINCS method is chosen as input for 
+the downstream functional enrichment analysis.
 
-Subset top 10 ranking drugs in GESS result, get their target set (with duplication) as query for duplication support hypergeometric test for TSEA.
-```{r tsea_dup_hyperG, eval=FALSE}
+## TSEA
+GO terms and KEGG pathway annotations were used to functionally annotate GESS 
+results. For this drug-target mapping information is required to link drugs 
+via their targets proteins to GO terms and KEGG pathways. The TSEA approach 
+uses the target proteins for the top connected drugs in the GESS results and 
+then applies one of three functional enrichment methods: \emph{dup\_hyperG}, 
+\emph{m\_GSEA} and \emph{mabs}. The drug-target annotations required for this 
+approach were obtained from DrugBank [@Wishart2018-ap], [Touchstone]
+(https://clue.io/) and STITCH [@Kuhn2010-hz]. The STITCH database provides 
+confidence scores for each drug-target interaction. Only interactions 
+with confidence scores $\ge$0.7
+were considered reliable and used for this approach. To minimize noise, 
+\textit{e.g.} from promiscuous binders, drugs with more than 100 distinct 
+targets were removed. Similarly, targets with more than 100 annotated drugs 
+were excluded. The remaining drug-target space considered by this study 
+included 5,682 target proteins and 22,481 small molecules.
+
+It is important to note here that the target protein sets used for the TSEA 
+method contain often duplicated proteins. This is due to the fact that many 
+drugs share the same target proteins. Standard enrichment methods would 
+eliminate these duplications since they assume uniqueness in the test sets. 
+Removing duplications in TSEA would be inappropriate since it would erase one 
+of the most important pieces of information. To solve this problem, this 
+project developed a weighting method for duplicated targets where the weighting 
+is proportional to the frequency of the targets in the test set. 
+
+### dup_hyperG method for TSEA
+
+The classical hypergeometric test assumes uniqueness in its gene/protein 
+test sets. Its p value is calculated according to equation 
+\ref{eq:hyperG_pvalue}. 
+
+\begin{equation}\label{eq:hyperG_pvalue}
+   p=\sum_{k=x}^{n}\frac {{D \choose k}{{N-D} \choose {n-k}}}{{N \choose n}}
+\end{equation}
+
+In case of GO term enrichment analysis the individual variables are assigned 
+the following components.
+$N$ is the total number of genes/proteins contained in the entire annotation 
+(universe); $D$ is the number of genes annotated at a specific GO node; $n$ is 
+the total number of genes in the test set; and $x$ is the number of genes in 
+the test set annotated at a specific GO node.
+
+To maintain the duplication information in the test sets used for TSEA, the 
+values of $n$ and $x$ in equation \ref{eq:hyperG_pvalue} are adjusted by the 
+frequency of the target proteins in the test set. Effectively, the approach 
+removes the duplications, but maintains their frequency information in form of 
+weighting values.
+
+Subset top 10 ranking drugs in GESS result, get their target set 
+(with duplications) as query for dup_hyperG method for TSEA.
+```{r tsea_dup_hyperG, eval=TRUE}
 drugs <- unique(result(lincs)$pert[1:10])
 # GO annotation system
-dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", type = "GO", ont="MF", pvalueCutoff=0.05, pAdjustMethod="BH", qvalueCutoff = 0.1, minGSSize = 10, maxGSSize = 500)
+dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+                                  type = "GO", ont="MF", pvalueCutoff=0.05, 
+                                  pAdjustMethod="BH", qvalueCutoff = 0.1, 
+                                  minGSSize = 10, maxGSSize = 500)
 dup_hyperG_res
 result(dup_hyperG_res)
 # KEGG annotation system
-dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", type = "KEGG", pvalueCutoff=0.1, pAdjustMethod="BH", qvalueCutoff = 0.2, minGSSize = 10, maxGSSize = 500)
+dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+                                    type = "KEGG", pvalueCutoff=0.1, 
+                                    pAdjustMethod="BH", qvalueCutoff = 0.2, 
+                                    minGSSize = 10, maxGSSize = 500)
 dup_hyperG_k_res
 result(dup_hyperG_k_res)
 ```
 
-## mGSEA method for TSEA
+### mGSEA method for TSEA
 
-Subset top 10 ranking drugs in GESS result as query, mGSEA method internally get their target set and turn it to scored ranked target list as query for TSEA. 
-The scores represent weight of targets in the target set.
-```{r tsea_mgsea, eval=FALSE}
-mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, nPerm=1000, pvalueCutoff=1, minGSSize=5)
+The original GSEA method proposed by @Subramanian2005-ro uses predefined 
+gene sets $S$ given by the GO or KEGG annotations. The goal is to determine 
+whether the genes in $S$ are randomly distributed throughout a ranked test 
+gene list $L$ (\textit{e.g.} all genes ranked by $log_2$ fold changes) or 
+enriched at the top or bottom. This is expressed by an Enrichment Score ($ES$) 
+reflecting the degree to which a set $S$ is overrepresented at the extremes 
+of $L$. 
+
+For TSEA, the query is a target set where duplicated entries are maintained. 
+To perform GSEA, this target set with duplications was transformed to a scored 
+ranked target list $L_{tar}$ of all targets provided by the corresponding 
+annotation system. For each target in the query target set, its frequency is 
+divided by the number of targets in the target set, which is the weight of that 
+target. For targets present in the annotation system but absent in the target 
+set, their scores are set to 0. Thus, every target in the annotation system 
+will be assigned a score and then sorted decreasingly to obtain $L_{tar}$.
+
+In case of TSEA, the original GSEA method cannot be used directly since a large 
+portion of zeros exists in $L_{tar}$. If the scores of the genes in set $S$ are 
+all zeros, $N_R$ (sum of scores of genes in set $S$) will be zero, which cannot 
+be used as the denominator. In this case, $ES$ is set to -1. If only some genes 
+in set $S$ have scores of zeros then $N_R$ is set to a larger number to 
+decrease the weight of the genes in $S$ that have non-zero scores 
+(see Equation \ref{eq:mgsea}). 
+
+\begin{equation}\label{eq:mgsea}
+   N_R=\sum_{g_j\in S}|r_j|^p+min(r_j | r_j > 0)*\sum_{g_j\in S}I_{r_j=0}
+\end{equation}
+
+\begin{center}
+     $r_j$: score of gene $j$ in $L_{tar}$; $p=1$ 
+\end{center}
+
+\vspace{0.3cm}
+
+The reason for this modification is that if only one gene in gene set $S$ has 
+a non-zero score and this gene ranks high in $L_{tar}$, the weight of this gene 
+will be 1 resulting in an $ES(S)$ close to 1. Thus, the original GSEA method 
+will score the gene set $S$ as significantly enriched. However, this is 
+undesirable because in this example only one gene is shared among the target 
+set and the gene set $S$. Therefore, giving small weights to genes in $S$ that
+have zero scores could decrease the weight of the genes in $S$ that have 
+non-zero scores, thereby decrease the false positive rate. To favor truely 
+enriched GO terms and KEGG pathways (gene set $S$) at the top of $L_{tar}$, 
+the largest value of $P_{hit}-P_{miss}$ is set as $ES$. 
+
+Subset top 10 ranking drugs in GESS result as query, mGSEA method internally 
+gets their target set and transforms it to a scored ranked target list as query.
+The scores represent weights of targets in the target set.
+```{r tsea_mgsea, eval=TRUE}
+mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
+                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
 result(mgsea_res)
 # KEGG annotation system
-mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, nPerm=1000, pvalueCutoff=1, minGSSize=2)
+mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
+                          nPerm=1000, pvalueCutoff=1, minGSSize=2)
 result(mgsea_k_res)
 ```
 
-## mabs method for TSEA
+### mabs method for TSEA
 
-Subset top 10 ranking drugs in GESS result as query, mabs method internally get their target set and ranked target list with scores, which represent weight of targets. 
-```{r tsea_mabs, eval=FALSE}
+The input for the \emph{mabs} method is $L_{tar}$, the same as for 
+\emph{m\_GSEA}. The \emph{meanAbs} statistic ($mabs(S)$) of a gene set $S$ is 
+calculated as mean absolute scores of the genes in $S$. In order to adjust for 
+size variations in gene set $S$, 1000 random permutations of $L_{tar}$ are 
+performed to determine $mabs(S,\pi)$. Subsequently, $mabs(S)$ is normalized by 
+subtracting the median of the $mabs(S,\pi)$ and then dividing by the standard 
+deviation of $mabs(S,\pi)$ yielding the normalized scores $Nmabs(S)$. Finally, 
+the portion of $mabs(S,\pi)$ that is greater than $mabs(S)$ is used as nominal 
+p value. The resulting nominal p values are adjusted for multiple hypothesis 
+testing using the Benjamini-Hochberg method [@Fang2012-ms].
+
+Subset top 10 ranking drugs in GESS result as query, mabs method internally 
+get their target set and $L_{tar}$, which represents weights of targets. 
+```{r tsea_mabs, eval=TRUE}
 # GO annotation system
-mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, pvalueCutoff=0.05, minGSSize=5)
+mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
+                      pvalueCutoff=0.05, minGSSize=5)
 result(mabs_res)
 # KEGG annotation system
-mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, pvalueCutoff=0.05, minGSSize=5)
+mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
+                        pvalueCutoff=0.05, minGSSize=5)
 result(mabs_k_res)
 ```
 
-## hyperG method for DSEA
+## DSEA
 
-Subset top 10 ranking drugs in GESS result as query for hypergeometric test for DSEA.
-```{r dsea_hyperG, eval=FALSE}
+TSEA performs the FEA on target sets obtained by converting the drug sets from 
+GESS results to the corresponding target sets given by known drug-target 
+associations. Alternatively, one can use the drug sets for functional 
+enrichment testing  directly by changing the mappings in the reference database 
+from target-to-functional category mappings to drug-to-functional category 
+mappings. The latter can be generated based on the drug-target information 
+provided by DrugBank or related databases. As a result, one can perform the FEA 
+on ranked drug lists directly. This so called Drug Set Enrichment Analysis 
+(DSEA) approach has the advantage that the drugs in the query test sets are 
+usually unique allowing to use them without any changes for functional 
+enrichment methods. In contrast to this, the target query sets of the TSEA 
+approach are not unique. Thus, they cannot be used without major changes 
+(\textit{e.g.} frequency weighting) with most existing functional enrichment 
+methods where uniqueness in the test sets is one of the main assumptions. 
+In case of DSEA, however, classical enrichment methods such as the 
+hypergeometric test (\emph{hyperG}) and GSEA can be used without any 
+modifications. When DSEA is used with the hypergeometric test, the query is 
+usually composed of the top ranking drugs from a GESS result, while it is 
+ranked lists of all drugs in the reference database when GSEA is used. The 
+scores of the corresponding GESS method can be used for ranking the drugs 
+as it is required by the GSEA algorithm. The drugs in the GESS results with 
+zero scores are excluded.
+
+### hyperG method for DSEA
+
+Subset top 10 ranking drugs in GESS result as query for 
+hypergeometric test for DSEA.
+```{r dsea_hyperG, eval=TRUE}
 drugs <- unique(result(lincs)$pert[1:10])
 # GO annotation system
-hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", pvalueCutoff = 0.05, qvalueCutoff = 0.1, minGSSize = 10)
+hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", 
+                          pvalueCutoff = 0.05, qvalueCutoff = 0.1, 
+                          minGSSize = 10)
 result(hyperG_res)
 # KEGG annotation system
-hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", pvalueCutoff = 1, qvalueCutoff = 1, minGSSize = 10, maxGSSize = 2000)
+hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
+                            pvalueCutoff = 1, qvalueCutoff = 1, 
+                            minGSSize = 10, maxGSSize = 2000)
 result(hyperG_k_res)
 ```
 
-## GSEA method for DSEA
+### GSEA method for DSEA
 
-Use ranked drug list in GESS result as GSEA input, the scores are similarity metrics of the corresponding GESS methods. Zeros are removed.
-```{r dsea_gsea, eval=FALSE}
+Use ranked drug list in GESS result as GSEA input, the scores are similarity 
+metrics of the corresponding GESS methods. Drugs with zero scores are removed.
+```{r dsea_gsea, eval=TRUE}
 dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
 dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]
 # GO annotation system
-gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.2, minGSSize=5)
+gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000,
+                      pAdjustMethod="BH", pvalueCutoff=0.2, minGSSize=5)
 result(gsea_res)
 # KEGG annotation system
-gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, pAdjustMethod="BH", pvalueCutoff=0.5, minGSSize=5)
+gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
+                        pAdjustMethod="BH", pvalueCutoff=0.5, minGSSize=5)
 result(gsea_k_res)
 ```
 
-## Consistency Comparison of enriched terms from 5 FEA methods
-```{r cmp_enrich, eval=FALSE, fig.width=10.5, fig.height=5.5}
-comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, Ntop=20, type="GO")
+## Consistency Comparison of enrichment results from 5 FEA methods
+
+The enriched GO/KEGG terms were re-ranked by putting the terms supported by more
+methods at topper. For terms supported by the same number of methods, the lower
+of the mean ranks of the terms across enrichment methods, 
+the topper of the terms. 
+
+```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
+comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, 
+             Ntop=20, type="GO")
 ```
 
-```{r cmp_enrich_k, eval=FALSE, fig.width=8}
-comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_k_res, hyperG_k_res, gsea_k_res, Ntop=20, type="KEGG")
+```{r cmp_enrich_k, eval=TRUE, fig.width=8}
+comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_k_res, hyperG_k_res, 
+             gsea_k_res, Ntop=20, type="KEGG")
 ```
 
 ## Conclusion
-The consistency of the enriched GO terms/KEGG pathways from the five functional enrichment methods is pretty good. All of them could discovery the histone deacetylase pathways that the query drug vorinostat is involved in. Since each method have their advantages and disadvantages, it is reasonable to combine and re-rank their enrichment results to increase confidence.  
+
+The consistency of the enriched GO terms/KEGG pathways from the five functional 
+enrichment methods is pretty good. All of them could discovery the histone 
+deacetylase pathways that the query drug vorinostat is involved in. Since each 
+method have their advantages and disadvantages, it is reasonable to combine and 
+re-rank their enrichment results to increase confidence.
 
 # Visulization
+
+The drug-target networks can be built if a drug set and a target/protein set is 
+provided. If the target set is a GO category or a KEGG pathway, the term ID 
+could be directly used.
 
 ## Construct drug-target interaction networks in interesting GO categories
 
 Build drug-target networks in top ranking GO categories
-```{r dtnet_go, eval=FALSE}
-dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF", desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
-dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF", desc="NF-kappaB binding")
-dtnetplot(drugs = drugs, set = "GO:0016811", ont = "MF", desc="hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in linear amides")
+```{r dtnet_go, eval=TRUE}
+dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF", 
+          desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
+dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF", 
+          desc="NF-kappaB binding")
+dtnetplot(drugs = drugs, set = "GO:0016811", ont = "MF", 
+          desc="hydrolase activity, acting on carbon-nitrogen (but not peptide) 
+          bonds, in linear amides")
 ```
 
-## Construct drug-target interaction networks in interested KEGG pathways or defined other gene/protein sets
+## Construct drug-target interaction networks in interested KEGG pathways
 
 Build drug-target networks in top ranking KEGG pathways
-```{r dtnet_kegg, eval=FALSE}
-dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034", desc="Alcoholism")
-dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05203", desc="Viral carcinogenesis")
-dtnetplot(drugs = drugs, set = "hsa04213", desc="Longevity regulating pathway - multiple species")
+```{r dtnet_kegg, eval=TRUE}
+dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034", 
+          desc="Alcoholism")
+dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05203", 
+          desc="Viral carcinogenesis")
+dtnetplot(drugs = drugs, set = "hsa04213", 
+          desc="Longevity regulating pathway - multiple species")
 ```

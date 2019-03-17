@@ -1,6 +1,6 @@
 Package: signatureSearch
 Title: signatureSearch-Discovering novel modes of action of bioactive compounds
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
            role = c("aut", "cre"))
 Description: This package can be used to do Gene Expression Signature Search 
