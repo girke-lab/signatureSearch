@@ -2,15 +2,15 @@
 % Please edit documentation in R/dsea_hyperG.R
 \name{dsea_hyperG}
 \alias{dsea_hyperG}
-\title{Drug GO Enrichment Analysis of drug sets.
-Given a vector of drugs, this function will return the enriched GO categories with hypergeometric test after FDR control.}
+\title{hyperG method for DSEA}
 \usage{
 dsea_hyperG(drugs, type = "GO", ont = "BP", pvalueCutoff = 0.05,
   pAdjustMethod = "BH", qvalueCutoff = 0.2, minGSSize = 10,
   maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do drug set enrichment analysis (DSEA), Can be top ranking drugs in GESS result.}
+\item{drugs}{query drug set used to do DSEA. 
+Can be top ranking drugs in GESS result.}
 
 \item{type}{one of "GO" or "KEGG"}
 
@@ -18,24 +18,51 @@ dsea_hyperG(drugs, type = "GO", ont = "BP", pvalueCutoff = 0.05,
 
 \item{pvalueCutoff}{Cutoff value of p value.}
 
-\item{pAdjustMethod}{one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
+\item{pAdjustMethod}{p value adjustment method,
+one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
 
 \item{qvalueCutoff}{q value cutoff}
 
-\item{minGSSize}{minimal size of drugs annotated by Ontology term for testing after drug-to-GO category mapping.}
+\item{minGSSize}{minimal size of drug sets annotated by ontology term 
+after drug to functional category mappings.}
 
-\item{maxGSSize}{maximal size of drugs annotated for testing}
+\item{maxGSSize}{maximal size of drug sets annotated for testing}
 }
 \value{
-\code{feaResult} object
+\code{\link{feaResult}} object, 
+represents enriched functional categories.
 }
 \description{
-Drug GO Enrichment Analysis of drug sets.
-Given a vector of drugs, this function will return the enriched GO categories with hypergeometric test after FDR control.
+The hypergeometric test is used to do enrichment analysis on a drug set 
+after mapping drugs to functional categories via drug-target links in
+DrugBank, CLUE and STITCH databases
+}
+\details{
+The drug sets can also be directly used for functional enrichment testing 
+by changing the mappings in the reference database from target-to-functional
+category mappings to drug-to-functional category mappings. 
+The latter can be generated based on the drug-target information provided 
+by DrugBank or related databases. As a result, one can perform the FEA on 
+ranked drug lists directly. This DSEA approach has the advantage that the 
+drugs in the query test sets are usually unique allowing to use them 
+without any changes for functional enrichment methods.
+
+So the hypergeometric test is directly used when the query is a vector of 
+drugs, e.g., top ranking drugs from GESS result since the functional
+categories also contains drug sets after gene to drug mappings.
+}
+\examples{
+drugs <- data(drugs)
+# GO annotation system
+hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
+result(hyperG_res)
+## KEGG annotation system
+hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
+                            pvalueCutoff = 1, qvalueCutoff = 1, 
+                            minGSSize = 10, maxGSSize = 2000)
+result(hyperG_k_res)
 }
 \seealso{
-\code{\link{feaResult-class}}
-}
-\author{
-Yuzhu Duan
+\code{\link{feaResult}}, \code{\link{fea}},
+         \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
 }

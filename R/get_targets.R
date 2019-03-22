@@ -1,14 +1,18 @@
-##' get targets in DrugBank/LINCS/STITCH for a given list of drugs
+##' This function can be used to get protein targets of query drugs in 
+##' DrugBank, CLUE and STITCH databases. A SQLite database storing drug-target
+##' links in the above three databases can be found at 
+##' \code{\link{signatureSearch_data}} package. 
 ##'
-##' @title get drug targets in DrugBank/LINCS/STITCH
-##' @param drugs character vector, a list of drug names
+##' @title get targets of query drugs
+##' @param drugs a character vector storing a list of drug names
 ##' @param database one of "DrugBank", "LINCS", "STITCH" or "all"  
-##' @return data.frame of drugs and target symbols
+##' @return data.frame of drugs and target gene symbols
 ##' @importFrom RSQLite dbConnect
 ##' @importFrom RSQLite dbGetQuery
 ##' @importFrom utils download.file
 ##' @importFrom RSQLite SQLite
 ##' @importFrom RSQLite dbDisconnect
+##' @seealso \code{\link[signatureSearch_data]{dtlink_dt_clue_sti}}
 ##' @export 
 
 get_targets <- function(drugs, database="all"){
@@ -19,11 +23,14 @@ get_targets <- function(drugs, database="all"){
   if(file.exists(dtlink_path)){
     conn <- dbConnect(SQLite(), dtlink_path)
   } else {
-    tryCatch(download.file("http://biocluster.ucr.edu/~yduan004/DOSE2/dtlink_db_lincs_sti.db", dtlink_path, quiet = TRUE), 
-             error = function(e){
-               stop("Error happens when downloading signatureSearch/dtlink_db_lincs_sti.db")
-             }, warning = function(w) {file.remove(dtlink_path)
-               stop("Error happens when downloading signatureSearch/dtlink_db_lincs_sti.db")})
+    tryCatch(download.file(
+      "http://biocluster.ucr.edu/~yduan004/DOSE2/dtlink_db_lincs_sti.db", 
+      dtlink_path, quiet = TRUE), 
+      error = function(e){stop("Error happens when downloading 
+             signatureSearch/dtlink_db_lincs_sti.db")},
+      warning = function(w) {file.remove(dtlink_path)
+               stop("Error happens when downloading 
+                    signatureSearch/dtlink_db_lincs_sti.db")})
     conn <- dbConnect(SQLite(), dtlink_path)
   }
   dtlink_db <- dbGetQuery(conn, 'SELECT * FROM dtlink_db')
@@ -41,8 +48,10 @@ get_targets <- function(drugs, database="all"){
   res_db$drug_name = drugs_orig[idx_db]
   if(database=="DrugBank"){
     if(length(drugs_notar_db) > 0)
-      message("No targets found in DrugBank database for ", length(drugs_notar_db),
-              " drugs: \n",paste(drugs_notar_db, collapse = " / "))
+      message("No targets found in DrugBank database for ", 
+              length(drugs_notar_db),
+              " drugs: \n",
+              paste(drugs_notar_db, collapse = " / "))
     return(res_db)
   }
   
@@ -55,8 +64,10 @@ get_targets <- function(drugs, database="all"){
   res_lincs$drug_name = drugs_orig[idx_lincs]
   if(database=="LINCS"){
     if(length(drugs_notar_lincs) > 0)
-      message("No targets found in LINCS database for ", length(drugs_notar_lincs), 
-              " drugs: \n",paste(drugs_notar_lincs, collapse = " / "))
+      message("No targets found in LINCS database for ", 
+              length(drugs_notar_lincs), 
+              " drugs: \n",
+              paste(drugs_notar_lincs, collapse = " / "))
     return(res_lincs)
   }
   
@@ -69,8 +80,10 @@ get_targets <- function(drugs, database="all"){
   res_sti$drug_name = drugs_orig[idx_sti]
   if(database=="STITCH"){
     if(length(drugs_notar_sti) > 0)
-      message("No targets found in STITCH database for ", length(drugs_notar_sti), 
-              " drugs: \n",paste(drugs_notar_sti, collapse = " / "))
+      message("No targets found in STITCH database for ", 
+              length(drugs_notar_sti), 
+              " drugs: \n",
+              paste(drugs_notar_sti, collapse = " / "))
     return(res_sti)
   }
   
@@ -83,8 +96,10 @@ get_targets <- function(drugs, database="all"){
   res$drug_name = drugs_orig[idx]
   if(database=="all"){
     if(length(drugs_notar) > 0)
-      message("No targets found in DrugBank/LINCS/STITCH database for ", length(drugs_notar), 
-              " drugs: \n",paste(drugs_notar, collapse = " / "), "\n")
+      message("No targets found in DrugBank/LINCS/STITCH database for ", 
+              length(drugs_notar), 
+              " drugs: \n",
+              paste(drugs_notar, collapse = " / "), "\n")
     return(res)
   }
 }
@@ -93,7 +108,8 @@ slash2link <- function(slash){
   res <- data.frame()
   for(i in seq_len(nrow(slash))){
     tar <- unlist(strsplit(as.character(slash[i,2]), "; "))
-    tmp <- data.frame(drug_name=slash[i,1], t_gn_sym=tar, stringsAsFactors = FALSE)
+    tmp <- data.frame(drug_name=slash[i,1], t_gn_sym=tar, 
+                      stringsAsFactors = FALSE)
     res <- rbind(res, tmp)
   }
   res <- unique(res)
@@ -104,9 +120,11 @@ list2slash <- function(list){
   if(length(list)==0){
     return(data.frame(drug_name=NULL, t_gn_sym=NULL))
   }
-  tar <- vapply(list, function(x) paste0(x, collapse = "; "), FUN.VALUE = character(1))
+  tar <- vapply(list, function(x) paste0(x, collapse = "; "), 
+                FUN.VALUE = character(1))
   drug <- names(list)
-  res <- data.frame(drug_name=drug, t_gn_sym=tar, stringsAsFactors = FALSE, row.names = NULL)
+  res <- data.frame(drug_name=drug, t_gn_sym=tar, stringsAsFactors = FALSE, 
+                    row.names = NULL)
   res <- res[res$t_gn_sym != "", ]
   return(res)
 }

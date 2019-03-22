@@ -9,8 +9,9 @@ setMethod(
       stop( "Requested element name not found in data." )
     
     if( any( signed(query) == FALSE )) {
-      stop("CMAPCollection contains unsigned GeneSets, which lack the information
-about up-/down-regulated categories required to compute the connectivity score.")
+      stop("CMAPCollection contains unsigned GeneSets, which lack the 
+       information about up-/down-regulated categories required to 
+       compute the connectivity score.")
     }
 
     ## rank data matrix in descending order
@@ -21,14 +22,14 @@ about up-/down-regulated categories required to compute the connectivity score."
     matched.sets <- query[na.omit(matched.features),]
     
     ## extract scores for each gene set
-    sets.up     <- mclapply( seq(ncol(matched.sets)),
-                            function( x ) which(members( matched.sets )[ ,x ] == 1 ))
+    sets.up <- mclapply(seq(ncol(matched.sets)),
+                        function(x) which(members(matched.sets)[ ,x ] == 1))
     
-    sets.down     <- mclapply( seq(ncol(matched.sets)),
-                              function( x ) which(members( matched.sets )[ ,x ] == -1 ))
+    sets.down <- mclapply(seq(ncol(matched.sets)),
+                        function(x) which(members(matched.sets)[ ,x] == -1))
     
     ## transform experiment to (reverse) ranks
-    rank.matrix <- apply(data.matrix, 2, function(x) { length(x) - rank(x) + 1 } )
+    rank.matrix <- apply(data.matrix, 2, function(x) {length(x)-rank(x)+1})
     
     ## calculate connectivity score
     raw.score <- apply( rank.matrix, 2, function( r ) {
@@ -51,7 +52,7 @@ about up-/down-regulated categories required to compute the connectivity score."
       gene.scores <- NA
              }
     ## store results
-    results <- mclapply( seq( ncol( experiment ) ), function( x ) { ## x = data column
+    results <- mclapply(seq(ncol(experiment)), function(x) { ## x = data column
       
       if( ! all(is.na( gene.scores) )) {
         geneScores <- I( gene.scores[[x]])
@@ -59,13 +60,13 @@ about up-/down-regulated categories required to compute the connectivity score."
         geneScores <- NA
       }
   
-      res <- data.frame(   set = sampleNames(query), 
-                           trend = ifelse(score[,x] >=0, "up", "down"),
-                           effect = score[,x],
-                           nSet = Matrix::colSums( abs( members (query) ) ),
-                           nFound = Matrix::colSums( abs( members (matched.sets) ) ),
-                           pData(query))
-     res
+      res <- data.frame(set = sampleNames(query), 
+                        trend = ifelse(score[,x] >=0, "up", "down"),
+                        effect = score[,x],
+                        nSet = Matrix::colSums(abs(members(query))),
+                        nFound = Matrix::colSums(abs(members(matched.sets))),
+                        pData(query))
+      res
       })
     
     names( results ) <- sampleNames(experiment)
@@ -80,36 +81,34 @@ about up-/down-regulated categories required to compute the connectivity score."
           )
 
 setMethod(
-          "connectivity_score_raw",
-          signature( experiment = "matrix",query = "CMAPCollection" ),
-          function( experiment,query, ... ) {
-            connectivity_score_raw( ExpressionSet(experiment), query, element="exprs" )
-          }
-          )
+  "connectivity_score_raw",
+  signature( experiment = "matrix",query = "CMAPCollection" ),
+  function( experiment, query, ... ) {
+    connectivity_score_raw(ExpressionSet(experiment), query, element="exprs" )
+  })
 
 setMethod(
-          "connectivity_score_raw",
-          signature( experiment = "matrix" , query = "SignedGeneSet"),
-          function( experiment, query, ...) {
-            connectivity_score_raw( ExpressionSet(experiment), as(query, "CMAPCollection"), element="exprs")
-          }
-          )
+  "connectivity_score_raw",
+  signature( experiment = "matrix" , query = "SignedGeneSet"),
+  function( experiment, query, ...) {
+    connectivity_score_raw(ExpressionSet(experiment), 
+                           as(query, "CMAPCollection"), element="exprs")
+  })
 
 setMethod(
-          "connectivity_score_raw",
-          signature( experiment = "eSet" ,query = "SignedGeneSet"),
-          function( experiment, query, ...) {
-            connectivity_score_raw( experiment, as(query, "CMAPCollection") )
-          }
-          )
+  "connectivity_score_raw",
+  signature( experiment = "eSet" ,query = "SignedGeneSet"),
+  function( experiment, query, ...) {
+    connectivity_score_raw( experiment, as(query, "CMAPCollection") )
+  })
 
 setMethod(
   "connectivity_score_raw",
   signature( experiment = "matrix" , query = "GeneSetCollection"),
   function( experiment, query, ... ) {
-    connectivity_score_raw( ExpressionSet(experiment), as(query, "CMAPCollection"), element="exprs")
-  }
-  )
+    connectivity_score_raw( ExpressionSet(experiment), 
+                            as(query, "CMAPCollection"), element="exprs")
+  })
 
 setMethod(
   "connectivity_score_raw",
@@ -123,9 +122,9 @@ setMethod(
   "connectivity_score_raw",
   signature( experiment = "ANY", query = "GeneSet" ),
   function( experiment, query, ...) {
-    stop("Connectivity score calculation requires gene sign information (up- / down- regulated gene categories).\n")
-  }
-  )
+    stop("Connectivity score calculation requires gene sign information 
+         (up- / down- regulated gene categories).\n")
+  })
 
 
 .ks <- function( V, n ) {

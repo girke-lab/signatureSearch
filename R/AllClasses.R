@@ -1,17 +1,33 @@
 ##' Class "qSig"
 ##' 
-##' This class represents the query signature for GESS analysis
+##' This class stores the query signature, reference database
+##' and GESS method used to search for similarity
 ##' @name qSig-class
 ##' @docType class
-##' @slot qsig When "gess_method" is "CMAP", "LINCS" or "Fisher", "sig" is a list of two elements, up and down regulated gene sets of entrez ids. 
-##' When "gess_method" is "gCMAP" or "SP", "sig" is a list of one element, named numeric vector represents GEP from DE analysis or gene expression values.
-##' @slot gess_method one of "CMAP","LINCS","gCMAP","Fisher","SP"
-##' @slot refdb \code{SummarizedExperiment} object or a HDF5 backend \code{SummarizedExperiment} object loaded via 
-##' `loadHDF5SummarizedExperiment` function from the HDF5 datasets saved in a directory. 
-##' where all the assays are \code{HDF5Array} or \code{DelayedArray} objects consist of genome-wide differential expression profiles (GEPs)
-##'  (e.g. log2 ratios or z-scores) from various drug treatments or genetic perturbations. 
-##' It represents reference database that the query signature is searched against. Can be existing public databases (CMAP or LINCS)
-##' or custom database.
+##' @aliases qSig-class
+##' @slot qsig When 'gess_method' is 'CMAP' or 'LINCS', it should be a list of 
+##' two elements, which are up and down regulated gene sets of entrez ids.
+##' 
+##' When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
+##' representing gene expression profiles (GEPs) of treatment(s). 
+##' @slot gess_method one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'
+##' @slot refdb \code{SummarizedExperiment} object, which can be HDF5 backed 
+##' and loaded via `loadHDF5SummarizedExperiment` function. 
+##' The 'assays' slot of the \strong{SummarizedExperiment} object should be a 
+##' \code{DelayedMatrix} or a matrix consists of genome-wide (GEPs) from a
+##' number of drug treatments or genetic perturbations. It represents the 
+##' reference database that the query signature is searched against. 
+##' 
+##' The \code{sample_db} contains 95 GEPs randomly sampled from the `lincs` 
+##' database and 5 GEPs from HDAC inhibitors in human SKB (muscle) cell. 
+##' 
+##' The full `lincs` and `cmap` public databases can be loaded from the 
+##' \code{\link{signatureSerch_data}} package.
+##' 
+##' The custom database can be built via \code{\link{`build_custom_db`}} 
+##' function if a `data.frame` representing genome-wide GEPs (log2FC, z-scores, 
+##' intensity values, etc.) of compound or genetic treatments in cells 
+##' is provided.
 ##' @exportClass qSig
 ##' @keywords classes
 setClass("qSig", slots = c(
@@ -19,6 +35,33 @@ setClass("qSig", slots = c(
   gess_method = "character",
   refdb = "SummarizedExperiment"
 ))
+
+##' Class "gessResult"
+##' 
+##' The class stores the result of GESS analysis
+##' @name gessResult-class
+##' @aliases gessResult
+##' @docType class
+##' @slot result tibble from GESS analysis, represents a list of drugs 
+##' in the reference database ranked by their signature similarity to the query
+##' @slot qsig query signature
+##' @slot gess_method method for GESS analysis
+##' @slot refdb `SummarizedExperiment` object represents the refrence 
+##' signaure database
+##' @exportClass gessResult
+##' @keywords classes
+setClass("gessResult",
+         slots = c(
+           result = "data.frame",
+           qsig = "ANY",
+           gess_method = "character",
+           refdb = "SummarizedExperiment"
+         ))
+
+## Constructor for "gessResult"
+gessResult <- function(result, qsig, gess_method, refdb)
+  new("gessResult", result=result, qsig=qsig, 
+      gess_method=gess_method, refdb=refdb)
 
 
 ## Defining the validity method for "qSig"
@@ -37,45 +80,24 @@ setClass("qSig", slots = c(
 ##' @slot organism only "human" supported
 ##' @slot ontology biological ontology
 ##' @slot drugs Drug IDs
-##' @slot targets Target IDs of drugs in DrugBank/LINCS/STITCH databases or target list with scores.
-##' @slot universe background genes or drugs. For TSEA, it is all the genes in the corresponding annotation system (GO/KEGG). For DSEA, it is all the drugs
-##' in the correspoinding annotation system (GO/KEGG) after drug-to-functional category mapping
+##' @slot targets Target IDs of drugs in DrugBank/LINCS/STITCH databases or 
+##' target list with scores.
+##' @slot universe background genes or drugs. For TSEA, it is all the genes 
+##' in the corresponding annotation system (GO/KEGG). For DSEA, it is all the 
+##' drugs in the correspoinding annotation system (GO/KEGG) after 
+##' drug-to-functional category mapping
 ##' @slot refSets gene sets or drug sets in the corresponding annotation system
 ##' @exportClass feaResult
 ##' @author Yuzhu Duan
 ##' @keywords classes
 setClass("feaResult",
          representation=representation(
-             result         = "data.frame",
-             organism       = "character",
-             ontology       = "character",
-             drugs          = "character",
-             targets        = "ANY",
-             universe       = "character",
-             refSets        = "list"
-             )
+           result         = "data.frame",
+           organism       = "character",
+           ontology       = "character",
+           drugs          = "character",
+           targets        = "ANY",
+           universe       = "character",
+           refSets        = "list"
          )
-
-##' Class "gessResult"
-##' 
-##' The class represents the result of GESS analysis
-##' @name gessResult-class
-##' @docType class
-##' @slot result tibble from GESS analysis
-##' @slot qsig query signature
-##' @slot gess_method method for GESS analysis
-##' @slot refdb `SummarizedExperiment` object represents refrence signaure database
-##' @exportClass gessResult
-##' @keywords classes
-setClass("gessResult",
-         slots = c(
-           result = "data.frame",
-           qsig = "ANY",
-           gess_method = "character",
-           refdb = "SummarizedExperiment"
-         ))
-
-## Constructor for "gessResult"
-gessResult <- function(result, qsig, gess_method, refdb)
-  new("gessResult", result=result, qsig=qsig, 
-      gess_method=gess_method, refdb=refdb)
+)

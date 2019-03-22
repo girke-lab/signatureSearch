@@ -2,7 +2,7 @@
 % Please edit documentation in R/gess_gcmap.R
 \name{gess_gcmap}
 \alias{gess_gcmap}
-\title{gess_gcmap}
+\title{gCMAP method for GESS}
 \usage{
 gess_gcmap(qSig, higher, lower, add_bs_score = FALSE,
   chunk_size = 5000)
@@ -24,9 +24,39 @@ measure the robustness of the result rankings.}
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-gessResult object represents a list of drugs in reference database
-ranked by their similarity to query signature
+gessResult object, containing drugs in the reference database
+ranked by their similarity to the query signature
 }
 \description{
-gCMAP method for GESS
+It uses query signature to search against the reference database in the 
+\code{qSig} by gCMAP method, which is adapted from the gCMAP package 
+(Sandmann et al., 2014)
+}
+\details{
+The \code{gCMAP} package provides access to related 
+but not identical implementations of the original CMAP algorithm proposed by 
+Lamb et al., 2006. It uses as query a rank transformed GEP and the reference 
+database is composed of DEG sets. This is the opposite situation of the 
+original \code{CMAP} method, where the query is a DEG set and the database 
+contains rank transformed GEPs.
+}
+\examples{
+db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+sample_db <- loadHDF5SummarizedExperiment(db_dir)
+## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db)
+gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
+result(gcmap)
+}
+\references{
+\itemize{
+  \item Sandmann et al., 2014,
+        \url{https://academic.oup.com/bioinformatics/article/30/1/127/236809}
+  \item gCMAP package,
+        \url{https://bioconductor.org/packages/release/bioc/html/gCMAP.html}
+}
+}
+\seealso{
+\code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 }

@@ -2,22 +2,48 @@
 % Please edit documentation in R/gess_cor.R
 \name{gess_cor}
 \alias{gess_cor}
-\title{gess_cor}
+\title{Correlation based method for GESS}
 \usage{
 gess_cor(qSig, method, chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{`qSig` object, The 'gess_method' slot should be 'Cor'. The ‘qsig’ slot could be a matrix representing gene expression values, 
-the reference database could also store genome-wide expression values of treatment samples}
+\item{qSig}{`qSig` object, The 'gess_method' slot should be 'Cor'. 
+The reference database in the \code{qsig} could either store gene expression 
+values or differential expression scores.}
 
-\item{method}{a character string indicating which correlation coefficient (or covariance) is to be computed. 
-One of "spearman" (default), "kendall", or "pearson": can be abbreviated.}
+\item{method}{One of 'spearman' (default), 'kendall', or 'pearson',
+indicating which correlation coefficient to be used.}
 
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-gessResult object
+gessResult object, containing drugs in the reference database
+ranked by their similarity to the query signature
 }
 \description{
-Gene expression signature search with correlation coefficient
+It uses query signature to search against the reference database in the 
+\code{qSig} by mearsuring correlation coefficient.
+}
+\details{
+The correlation coefficients can be used as a GESS method by searching 
+with a query expression profile a database of expression profiles. 
+Correlation-based queries were performed with genome-wide GEPs as well as 
+with GEPs subsetted to the same query genes used for the set enrichment 
+methods (\code{CMAP}, \code{LINCS} and \code{Fisher}). 
+The latter situation makes the correlation-based results more comparable 
+to the set enrichment methods by providing to each method a more equal 
+amount of information than this is the case for the correlation method with 
+genome-wide GEPs.
+}
+\examples{
+db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+sample_db <- loadHDF5SummarizedExperiment(db_dir)
+## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = sample_db)
+sp <- gess_cor(qSig=qsig_sp, method="spearman")
+result(sp)
+}
+\seealso{
+\code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 }

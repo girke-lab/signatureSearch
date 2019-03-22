@@ -2,16 +2,19 @@
 % Please edit documentation in R/dtnetplot.R
 \name{dtnetplot}
 \alias{dtnetplot}
-\title{dtnetplot}
+\title{plot drug-target interaction network}
 \usage{
 dtnetplot(drugs, set, ont = NULL, ...)
 }
 \arguments{
-\item{drugs}{drugs used to build d-t network}
+\item{drugs}{A character vector representing drugs used to build a 
+drug-target network}
 
-\item{set}{could be GO term ID, KEGG pathway ID or a character vector of gene set with gene SYMBOLs.}
+\item{set}{could be GO term ID, KEGG pathway ID or a character vector of 
+gene set with SYMBOL ids.}
 
-\item{ont}{if the `set` is GO term ID, `ont` is the ontology that GO term is belong to. One of "BP", "MF", "CC" or "ALL"}
+\item{ont}{if the `set` is a GO term ID, `ont` is the ontology that GO term 
+is belong to. One of "BP", "MF", "CC" or "ALL"}
 
 \item{...}{additional parameters}
 }
@@ -19,5 +22,12 @@ dtnetplot(drugs, set, ont = NULL, ...)
 visNetwork plot
 }
 \description{
-dtnetplot
+A drug-target interaction network can be built if a drug set and a 
+target/protein set is provided. If the target set is a GO category or a 
+KEGG pathway, their term ID could be directly used.
+}
+\examples{
+data(drugs)
+dtnetplot(drugs=drugs, set="GO:0032041", ont = "MF", 
+    desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 }

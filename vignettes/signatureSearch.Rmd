@@ -40,7 +40,6 @@ options(width=200)
 ```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
 suppressPackageStartupMessages({
   library(signatureSearch)
-  library(HDF5Array)
   library(ggplot2)
 })
 ```
@@ -111,9 +110,9 @@ a treatment.
 The CMAP and LINCS signature databases can be loaded from `signatureSearch_data`
 package as `SummarizedExperiment` objects. 
 
-The loaded `lincs` database represents z-scores from differential expression 
-(DE) analysis of 12,328 genes from 8,140 compound treatments in 30 cells 
-(45,956 signatures in total). The `lincs_expr` 
+The loaded `lincs` database represents moderated z-scores from differential 
+expression (DE) analysis of 12,328 genes from 8,140 compound treatments in 
+30 cells (45,956 signatures in total). The `lincs_expr` 
 database contains gene expression intensity values from 5,925 compound
 treatments in 30 cells (38,824 signatures in total). 
 
@@ -172,7 +171,7 @@ BiocManager::install("signatureSearch", version = "3.9")
 
 As an example of running GESS/FEA workflow, 95 GEPs randomly sampled from 
 `lincs` database and 5 GEPs from `HDAC inhibitors` (`vorinostat`, `rhamnetin`, 
-`trichostatin A`, `pyroxamide`, and `HC toxin`) treatments in human SKB (muscle)
+`trichostatin A`, `pyroxamide`, and `HC toxin`) in human SKB (muscle)
 cell were combined to generate a sample reference database. The query signature 
 is the vorinostat treatment drawn from the sample database.
 
@@ -264,24 +263,24 @@ fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
 ```
 
-## Searching with Spearman correlation method for GESS
+## Searching with correlation based method for GESS
 
-The Spearman correlation coefficients can be used as a GESS method by searching 
-with a query expression profile a database of expression profiles
-[@Mukaka2012-an]. Spearman correlation-based queries were performed with 
-genome-wide GEPs as well as with GEPs subsetted to the same query genes used 
-for the set enrichment methods (\emph{CMAP}, \emph{LINCS} and \emph{Fisher}). 
-The latter situation makes the correlation-based results more comparable to the 
-set enrichment methods by providing to each method a more equal amount of 
-information than this is the case for the \emph{SPall} method with 
-genome-wide GEPs. 
+The correlation coefficients can be used as a GESS method by searching
+with a query expression profile a database of expression profiles.
+Correlation-based queries were performed with genome-wide GEPs as well as
+with GEPs subsetted to the same query genes used for the set enrichment
+methods (\emph{CMAP}, \emph{LINCS} and \emph{Fisher}).
+The latter situation makes the correlation-based results more comparable
+to the set enrichment methods by providing to each method a more equal
+amount of information than this is the case for the correlation method with
+genome-wide GEPs. Here, we choose to use Spearman correlation
 
 Generate `qSig` object for `gess_cor` method and search against the 
 sample database
 
 ### Genome-wide Spearman correlation
 ```{r gess_sp, eval=TRUE}
-qsig_sp <- qSig(qsig = as.matrix(query), gess_method = "Cor", refdb = sample_db)
+qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = sample_db)
 sp <- gess_cor(qSig=qsig_sp, method="spearman")
 result(sp)
 ```
@@ -458,6 +457,7 @@ Subset top 10 ranking drugs in GESS result as query, mGSEA method internally
 gets their target set and transforms it to a scored ranked target list as query.
 The scores represent weights of targets in the target set.
 ```{r tsea_mgsea, eval=TRUE}
+# GO annotation system
 mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
                         nPerm=1000, pvalueCutoff=1, minGSSize=5)
 result(mgsea_res)
@@ -514,9 +514,9 @@ hypergeometric test (\emph{hyperG}) and GSEA can be used without any
 modifications. When DSEA is used with the hypergeometric test, the query is 
 usually composed of the top ranking drugs from a GESS result, while it is 
 ranked lists of all drugs in the reference database when GSEA is used. The 
-scores of the corresponding GESS method can be used for ranking the drugs 
-as it is required by the GSEA algorithm. The drugs in the GESS results with 
-zero scores are excluded.
+similarity scores of the corresponding GESS method can be used for ranking the 
+drugs as it is required by the GSEA algorithm. 
+The drugs in the GESS results with zero scores are excluded.
 
 ### hyperG method for DSEA
 
@@ -525,9 +525,7 @@ hypergeometric test for DSEA.
 ```{r dsea_hyperG, eval=TRUE}
 drugs <- unique(result(lincs)$pert[1:10])
 # GO annotation system
-hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF", 
-                          pvalueCutoff = 0.05, qvalueCutoff = 0.1, 
-                          minGSSize = 10)
+hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
 result(hyperG_res)
 # KEGG annotation system
 hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
@@ -546,19 +544,19 @@ dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]
 # GO annotation system
 gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000,
-                      pAdjustMethod="BH", pvalueCutoff=0.2, minGSSize=5)
+                      pvalueCutoff=0.2, minGSSize=5)
 result(gsea_res)
 # KEGG annotation system
 gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
-                        pAdjustMethod="BH", pvalueCutoff=0.5, minGSSize=5)
+                        pvalueCutoff=0.5, minGSSize=5)
 result(gsea_k_res)
 ```
 
 ## Consistency Comparison of enrichment results from 5 FEA methods
 
-The enriched GO/KEGG terms were re-ranked by putting the terms supported by more
-methods at topper. For terms supported by the same number of methods, the lower
-of the mean ranks of the terms across enrichment methods, 
+The enriched GO/KEGG categories were re-ranked by putting the terms supported 
+by more methods to topper. For terms supported by the same number of methods, 
+the lower of the mean ranks of the terms across enrichment methods, 
 the topper of the terms. 
 
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
@@ -581,9 +579,9 @@ re-rank their enrichment results to increase confidence.
 
 # Visulization
 
-The drug-target networks can be built if a drug set and a target/protein set is 
-provided. If the target set is a GO category or a KEGG pathway, the term ID 
-could be directly used.
+A drug-target interaction network can be built if a drug set and a 
+target/protein set is provided. If the target set is a GO category or a KEGG 
+pathway, their term ID could be directly used.
 
 ## Construct drug-target interaction networks in interesting GO categories
 

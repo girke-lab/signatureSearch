@@ -49,11 +49,11 @@ mabsGO <- function(geneList,
     if (is.null(res))
         return(res)
 
-    res@organism <- get_organism(OrgDb)
+    res@organism <- clusterProfiler:::get_organism(OrgDb)
     res@ontology <- ont
 
     if (ont == "ALL") {
-        res <- add_GO_Ontology(res, GO_DATA)
+        res <- clusterProfiler:::add_GO_Ontology(res, GO_DATA)
     }
     return(res)
 }

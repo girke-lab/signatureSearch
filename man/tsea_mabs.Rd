@@ -2,14 +2,15 @@
 % Please edit documentation in R/tsea_mabs.R
 \name{tsea_mabs}
 \alias{tsea_mabs}
-\title{tsea_mabs}
+\title{meanAbs method for TSEA}
 \usage{
 tsea_mabs(drugs, type = "GO", ont = "MF", nPerm = 1000,
   pAdjustMethod = "BH", pvalueCutoff = 0.05, minGSSize = 5,
   maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do TSEA, Can be top ranking drugs in GESS result.}
+\item{drugs}{query drug set used to do TSEA. 
+Can be top ranking drugs in GESS result.}
 
 \item{type}{can be `GO` or `KEGG`}
 
@@ -17,20 +18,51 @@ tsea_mabs(drugs, type = "GO", ont = "MF", nPerm = 1000,
 
 \item{nPerm}{permutation numbers used to calculate p value}
 
-\item{pAdjustMethod}{p value adjustment method for p values in the enrichment result}
-
-\item{pvalueCutoff}{p value Cutoff}
+\item{pAdjustMethod}{p value adjustment method,
+one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
 
 \item{minGSSize}{minimum size of each gene set in annotation system}
 
 \item{maxGSSize}{maximum size of each gene set in annotation system}
 }
 \value{
-A \code{feaResult} instance
+\code{\link{feaResult}} object, 
+represents enriched functional categories.
 }
 \description{
-drug targets GO/KEGG enrichment analysis by using `mabs` method
+This method support target set with duplications by transforming it to a 
+scored ranked target list and calculating mean absolute scores of genes
+in gene set \emph{S}
 }
-\author{
-Yuzhu Duan (yduan004@ucr.edu)
+\details{
+The input for the \emph{mabs} method is \emph{L_tar}, the same as for 
+\code{m_GSEA}. The \emph{meanAbs} statistic (\emph{mabs(S)}) of a gene set 
+\emph{S} is calculated as mean absolute scores of the genes in \emph{S}. 
+In order to adjust for size variations in gene set \emph{S}, 1000 random 
+permutations of \emph{L_tar} are performed to determine \emph{mabs(S,pi)}. 
+Subsequently, \emph{mabs(S)} is normalized by subtracting the median of the 
+\emph{mabs(S,pi)} and then dividing by the standard deviation of 
+\emph{mabs(S,pi)} yielding the normalized scores \emph{Nmabs(S)}. Finally, 
+the portion of \emph{mabs(S,pi)} that is greater than \emph{mabs(S)} is 
+used as nominal p value (Fang et al., 2012). 
+The resulting nominal p values are adjusted for 
+multiple hypothesis testing using the Benjamini-Hochberg method.
+}
+\examples{
+drugs <- data(drugs)
+## GO annotation system
+mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
+                      pvalueCutoff=0.05, minGSSize=5)
+result(mabs_res)
+## KEGG annotation system
+mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
+                        pvalueCutoff=0.05, minGSSize=5)
+result(mabs_k_res)
+}
+\references{
+Fang et at., 2012,
+\url{https://www.nature.com/articles/cr2011149}
+}
+\seealso{
+\code{\link{feaResult}}, \code{\link{fea}}, \code{\link{tsea_mGSEA}}
 }

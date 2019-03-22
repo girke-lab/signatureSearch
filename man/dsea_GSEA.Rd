@@ -2,18 +2,17 @@
 % Please edit documentation in R/dsea_GSEA.R
 \name{dsea_GSEA}
 \alias{dsea_GSEA}
-\title{dsea_GSEA}
+\title{GSEA method for DSEA}
 \usage{
 dsea_GSEA(drugList, type = "GO", ont = "BP", exponent = 1,
   nPerm = 1000, minGSSize = 10, maxGSSize = 500,
   pvalueCutoff = 0.05, pAdjustMethod = "BH")
 }
 \arguments{
-\item{drugList}{ranked lists of all drugs in the GESS result. 
-The scores of the corresponding GESS method can be used for 
+\item{drugList}{scored ranked list of all drugs in the GESS result. 
+The similarity scores of the corresponding GESS method can be used for 
 ranking the drugs as it is required by the GSEA algorithm. 
-The drugs with zero scores are excluded in the GESS results 
-of CMAP, gCMAP and LINCS methods}
+The drugs with zero scores are excluded.}
 
 \item{type}{one of "GO" or "KEGG"}
 
@@ -23,20 +22,59 @@ of CMAP, gCMAP and LINCS methods}
 
 \item{nPerm}{permutation numbers}
 
-\item{minGSSize}{minimal size of each geneSet for analyzing}
+\item{minGSSize}{minimal size of drug sets annotated by ontology term 
+after drug to functional category mappings.}
 
-\item{maxGSSize}{maximal size of genes annotated for testing}
+\item{maxGSSize}{maximal size of drug sets annotated for testing}
 
 \item{pvalueCutoff}{pvalue Cutoff}
 
-\item{pAdjustMethod}{pvalue adjustment method}
+\item{pAdjustMethod}{p value adjustment method,
+one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
 }
 \value{
-A \code{feaResult} instance.
+\code{\link{feaResult}} object, 
+represents enriched functional categories.
 }
 \description{
-Gene Set Enrichment Analysis of drug Ontology
+The original GSEA method is used to do enrichment analysis on a scored
+ranked drug list after mapping drugs to functional categories via 
+drug-target links in DrugBank, CLUE and STITCH databases
 }
-\author{
-Yuzhu Duan
+\details{
+The ranked drug list consists of all drugs in the GESS result. 
+The similarity scores of the corresponding GESS method can be used for 
+ranking the drugs as it is required by the GSEA algorithm. The drugs 
+with zero scores are excluded.
+}
+\examples{
+db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+sample_db <- loadHDF5SummarizedExperiment(db_dir)
+## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+query = as.numeric(query_mat); names(query) = rownames(query_mat)
+upset <- head(names(query[order(-query)]), 150)
+downset <- tail(names(query[order(-query)]), 150)
+qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
+                   gess_method = "LINCS", refdb = sample_db)
+lincs <- gess_lincs(qsig_lincs, sortby="NCS")
+dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
+dl <- dl[dl>0]
+dl <- dl[!duplicated(names(dl))]
+# GO annotation system
+gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
+                      nPerm=1000, pvalueCutoff=0.2, minGSSize=5)
+                      result(gsea_res)
+# KEGG annotation system
+gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
+                        pvalueCutoff=0.5, minGSSize=5)
+result(gsea_k_res)
+}
+\references{
+GSEA algorithm: Subramanian et at., 2005,
+\url{https://www.pnas.org/content/102/43/15545}
+}
+\seealso{
+\code{\link{feaResult}}, \code{\link{fea}},
+         \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
 }

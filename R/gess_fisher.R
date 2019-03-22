@@ -1,20 +1,38 @@
-#' Fisher method for GESS
-#' 
-#' @title gess_fisher
-#' @param qSig `qSig` object, The 'gess_method' slot of 'qSig' should be 'Fisher'
-#' @param higher The 'higher' threshold. If not 'NULL', genes with a score larger than 'higher' will be included in the gene set with sign +1. 
+#' @title Fisher method for GESS
+#' @description 
+#' It uses query signature to search against the reference database in the 
+#' \code{qSig} by Fisher's exact test
+#' @details 
+#' The Fisher’s exact test can also be used as similarity search algorithm if 
+#' both the query and the database are composed of DEG sets.
+#' @param qSig `qSig` object, 
+#' The 'gess_method' slot of 'qSig' should be 'Fisher'
+#' @param higher The 'higher' threshold. If not 'NULL', genes with a score 
+#' larger than 'higher' will be included in the gene set with sign +1. 
 #' At least one of 'lower' and 'higher' must be specified.
-#' @param lower The lower threshold. If not 'NULL', genes with a score smaller than 'lower' will be included in the gene set with sign -1. 
+#' @param lower The lower threshold. If not 'NULL', genes with a score smaller 
+#' than 'lower' will be included in the gene set with sign -1. 
 #' At least one of 'lower' and 'higher' must be specified.
 #' @param chunk_size size of chunk per processing
-#' @return gessResult object represents a list of drugs in reference database ranked by their similarity to query signature
+#' @return gessResult object, containing drugs in the reference database
+#' ranked by their similarity to the query signature
+#' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
+#' @examples 
+#' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+#' sample_db <- loadHDF5SummarizedExperiment(db_dir)
+#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' qsig_fisher <- qSig(qsig=query_mat, gess_method="Fisher", refdb=sample_db)
+#' fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
+#' result(fisher)
 #' @export
 #' 
 gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(qSig@gess_method != "Fisher"){
-    stop("The 'gess_method' slot of 'qSig' should be 'Fisher' if using 'gess_fisher' function")
+    stop("The 'gess_method' slot of 'qSig' should be 'Fisher' 
+         if using 'gess_fisher' function")
   }
   query <- induceCMAPCollection(qSig@qsig, higher=higher, lower=lower)
   se <- qSig@refdb

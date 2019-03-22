@@ -2,24 +2,45 @@
 % Please edit documentation in R/gess_fisher.R
 \name{gess_fisher}
 \alias{gess_fisher}
-\title{gess_fisher}
+\title{Fisher method for GESS}
 \usage{
 gess_fisher(qSig, higher, lower, chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{`qSig` object, The 'gess_method' slot of 'qSig' should be 'Fisher'}
+\item{qSig}{`qSig` object, 
+The 'gess_method' slot of 'qSig' should be 'Fisher'}
 
-\item{higher}{The 'higher' threshold. If not 'NULL', genes with a score larger than 'higher' will be included in the gene set with sign +1. 
+\item{higher}{The 'higher' threshold. If not 'NULL', genes with a score 
+larger than 'higher' will be included in the gene set with sign +1. 
 At least one of 'lower' and 'higher' must be specified.}
 
-\item{lower}{The lower threshold. If not 'NULL', genes with a score smaller than 'lower' will be included in the gene set with sign -1. 
+\item{lower}{The lower threshold. If not 'NULL', genes with a score smaller 
+than 'lower' will be included in the gene set with sign -1. 
 At least one of 'lower' and 'higher' must be specified.}
 
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-gessResult object represents a list of drugs in reference database ranked by their similarity to query signature
+gessResult object, containing drugs in the reference database
+ranked by their similarity to the query signature
 }
 \description{
-Fisher method for GESS
+It uses query signature to search against the reference database in the 
+\code{qSig} by Fisher's exact test
+}
+\details{
+The Fisher’s exact test can also be used as similarity search algorithm if 
+both the query and the database are composed of DEG sets.
+}
+\examples{
+db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+sample_db <- loadHDF5SummarizedExperiment(db_dir)
+## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+qsig_fisher <- qSig(qsig=query_mat, gess_method="Fisher", refdb=sample_db)
+fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
+result(fisher)
+}
+\seealso{
+\code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 }

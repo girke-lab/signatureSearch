@@ -2,14 +2,15 @@
 % Please edit documentation in R/tsea_mGSEA.R
 \name{tsea_mGSEA}
 \alias{tsea_mGSEA}
-\title{tsea_mGSEA}
+\title{mGSEA method for TSEA}
 \usage{
 tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000,
   exponent = 1, pAdjustMethod = "BH", pvalueCutoff = 0.05,
   minGSSize = 2, maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do TSEA. Can be top ranking drugs in GESS result.}
+\item{drugs}{query drug set used to do TSEA.
+Can be top ranking drugs in GESS result.}
 
 \item{type}{onoe of `GO` or `KEGG`}
 
@@ -19,7 +20,8 @@ tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000,
 
 \item{exponent}{weight of each step}
 
-\item{pAdjustMethod}{p value adjustment method for p values in the enrichment result}
+\item{pAdjustMethod}{p value adjustment method,
+one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
 
 \item{pvalueCutoff}{p value cutoff}
 
@@ -28,11 +30,66 @@ tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000,
 \item{maxGSSize}{maximum size of each gene set in annotation system}
 }
 \value{
-A \code{feaResult} instance
+\code{\link{feaResult}} object, 
+represents enriched functional categories.
 }
 \description{
-drug targets GO/KEGG enrichment analysis by using `mGSEA` method
+This method support target set with duplications by transforming it to a 
+scored ranked target list and conducting enrichment analysis by modified 
+GSEA method.
 }
-\author{
-Yuzhu Duan (yduan004@ucr.edu)
+\details{
+The original GSEA method proposed by Subramanian et at., 2005 uses 
+predefined gene sets \emph{S} given by the GO or KEGG annotations. The goal 
+is to determine whether the genes in \emph{S} are randomly distributed 
+throughout a ranked test gene list \emph{L} (e.g. all genes ranked by 
+log2 fold changes) or enriched at the top or bottom. This is expressed by an 
+Enrichment Score (\emph{ES}) reflecting the degree to which a set \emph{S} 
+is overrepresented at the extremes of \emph{L}.
+
+For TSEA, the query is a target set where duplicated entries are maintained. 
+To perform GSEA, this target set with duplications was transformed to a 
+scored ranked target list \emph{L_tar} of all targets provided by the 
+corresponding annotation system. For each target in the query target set, 
+its frequency is divided by the number of targets in the target set, 
+which is the weight of that target. 
+For targets present in the annotation system but absent in the 
+target set, their scores are set to 0. Thus, every target in the annotation 
+system will be assigned a score and then sorted decreasingly to obtain
+\emph{L_tar}.
+
+In case of TSEA, the original GSEA method cannot be used directly since a 
+large portion of zeros exists in \emph{L_tar}. If the scores of the genes in 
+set \emph{S} are all zeros, \emph{N_R} (sum of scores of genes in set 
+\emph{S}) will be zero, which cannot be used as the denominator. 
+In this case, \emph{ES} is set to -1. If only some genes in set \emph{S}
+have scores of zeros then \emph{N_R} is set to a larger number to decrease 
+the weight of the genes in \emph{S} that have non-zero scores.
+ 
+The reason for this modification is that if only one gene in gene set 
+\emph{S} has a non-zero score and this gene ranks high in \emph{L_tar}, 
+the weight of this gene will be 1 resulting in an \emph{ES(S)} close to 1. 
+Thus, the original GSEA method will score the gene set \emph{S} as 
+significantly enriched. However, this is undesirable because in this 
+example only one gene is shared among the target set and the gene set 
+\emph{S}. Therefore, giving small weights to genes in \emph{S} that
+have zero scores could decrease the weight of the genes in \emph{S} that 
+have non-zero scores, thereby decrease the false positive rate.
+}
+\examples{
+drugs <- data(drugs)
+## GO annotation system
+mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
+                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
+result(mgsea_res)
+mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
+                          nPerm=1000, pvalueCutoff=1, minGSSize=2)
+result(mgsea_k_res)
+}
+\references{
+Subramanian et at., 2005,
+\url{https://www.pnas.org/content/102/43/15545}
+}
+\seealso{
+\code{\link{feaResult}}, \code{\link{fea}}
 }

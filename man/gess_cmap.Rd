@@ -2,25 +2,55 @@
 % Please edit documentation in R/gess_cmap.R
 \name{gess_cmap}
 \alias{gess_cmap}
-\title{gess_cmap}
+\title{CMAP method for GESS}
 \usage{
 gess_cmap(qSig, chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{`qSig` object, The 'gess_method' slot should be 'CMAP'. The GEPs will be internally rank transformed.}
+\item{qSig}{\code{qSig} object, The 'gess_method' slot should be 'CMAP'.}
 
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-`gessResult` object, represents a list of drugs in reference database ranked by their similarity to query signature
+\code{gessResult} object, represents drugs in the reference database 
+ranked by their similarity to the query signature
 }
 \description{
-CMAP method for GESS
+It uses query signature to search against the reference database in the 
+\code{qSig} by CMAP method, which is an implementation of the original 
+CMap method from Lamb et al, 2006.
 }
 \details{
-Motivation: gene expression signature search (GESS) using original CMap enrichment and new LINCS algorithms, as well as variants from gCMAP package
-against very large expression databases containing tens to hundreds of thousands of profiles with very moderate memory requirements. The original 
-CMap and new LINCS enrichment functions are custom implementations according to Lamb et al, 2006 and Subramanian et al, 2017. Most methods 
-can be easily parallelized for multiple query signatures. The time performance of the gess_cmap/gess_lincs methods on a single CPU core is about 
-4 min for querying with a single signature ~100,000 CMAP/LINCS database signatures for gess_cmap method, while it is ~10 min for gess_lincs method.
+Lamb et at., 2006 introduced the gene expression-based search method known as 
+Connectivity Map (CMap) where a GES database is searched with a query GES for 
+similar matches. It uses as query the most up- and down-regulated DEGs from 
+a genome-wide expression experiment. The GES query is used to search a 
+database of rank transformed GEPs and ranks the results by the degree of 
+enrichment of the up- and down-regulated query genes on the top and bottom 
+of the databases entries, respectively. The search results are a list of 
+drugs that have similar or opposing GESs as the query. Similar GESs suggest 
+similar physiological effects of the corresponding perturbagens. 
+
+The CMAP method takes about 4 min on a single CPU core for querying with a 
+single signature against ~100,000 signatures in the LINCS database.
+}
+\examples{
+db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+sample_db <- loadHDF5SummarizedExperiment(db_dir)
+## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+query = as.numeric(query_mat); names(query) = rownames(query_mat)
+upset <- head(names(query[order(-query)]), 150)
+downset <- tail(names(query[order(-query)]), 150)
+qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), 
+                  gess_method = "CMAP", refdb = sample_db)
+cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
+result(cmap)
+}
+\references{
+For detailed description of the CMap method, please refer to
+Lamb et al., 2006, \url{http://science.sciencemag.org/content/313/5795/1929}
+}
+\seealso{
+\code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 }

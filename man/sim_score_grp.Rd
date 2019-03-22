@@ -13,7 +13,8 @@ sim_score_grp(tib, grp1, grp2, score_column)
 
 \item{grp2}{character vector, group 2 of cell types, e.g., normal cell types}
 
-\item{score_column}{character, column name of similairity scores to be grouped}
+\item{score_column}{character, column name of similairity scores to be 
+grouped}
 }
 \value{
 tibble

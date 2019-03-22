@@ -9,17 +9,18 @@ comp_fea_res(dup_hyperG_res = NULL, mgsea_res = NULL,
   type = "GO")
 }
 \arguments{
-\item{dup_hyperG_res}{enrichment result from dup_hyperG method}
+\item{dup_hyperG_res}{feaResult object from 'dup_hyperG' method}
 
-\item{mgsea_res}{enrichment result from mGSEA method}
+\item{mgsea_res}{feaResult object from 'mGSEA' method}
 
-\item{mabs_res}{enrichment result from mabs method}
+\item{mabs_res}{feaResult object from 'mabs' method}
 
-\item{hyperG_res}{enrichment result from hyperG method}
+\item{hyperG_res}{feaResult object from 'hyperG' method}
 
-\item{gsea_res}{enrichment result from GSEA method}
+\item{gsea_res}{feaResult object from 'GSEA' method}
 
-\item{Ntop}{number of top enrichment result from each method used to do comparison. The plot only show the top 20 ranking terms}
+\item{Ntop}{number of top enriched categories from each method used to do 
+comparison. By default, the plot only compare the top 20 ranking terms}
 
 \item{type}{"GO" or "KEGG", indicating the type of enriched terms}
 }
@@ -28,4 +29,16 @@ igraph object
 }
 \description{
 Plot consistency comparison of enriched terms from FEA methods
+}
+\details{
+The enriched GO/KEGG categories were re-ranked by putting the terms 
+supported by more methods to topper. For terms supported by the same number
+of methods, the lower of the mean ranks of the terms across 
+enrichment methods, the topper of the terms.
+}
+\examples{
+\dontrun{
+  comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, 
+               hyperG_res, gsea_res, Ntop=20, type="GO")
+}
 }

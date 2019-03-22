@@ -5,22 +5,37 @@
 \alias{qSig-class}
 \title{Class "qSig"}
 \description{
-This class represents the query signature for GESS analysis
+This class stores the query signature, reference database
+and GESS method used to search for similarity
 }
 \section{Slots}{
 
 \describe{
-\item{\code{qsig}}{When "gess_method" is "CMAP", "LINCS" or "Fisher", "sig" is a list of two elements, up and down regulated gene sets of entrez ids. 
-When "gess_method" is "gCMAP" or "SP", "sig" is a list of one element, named numeric vector represents GEP from DE analysis or gene expression values.}
+\item{\code{qsig}}{When 'gess_method' is 'CMAP' or 'LINCS', it should be a list of 
+two elements, which are up and down regulated gene sets of entrez ids.
 
-\item{\code{gess_method}}{one of "CMAP","LINCS","gCMAP","Fisher","SP"}
+When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
+representing gene expression profiles (GEPs) of treatment(s).}
 
-\item{\code{refdb}}{\code{SummarizedExperiment} object or a HDF5 backend \code{SummarizedExperiment} object loaded via 
-`loadHDF5SummarizedExperiment` function from the HDF5 datasets saved in a directory. 
-where all the assays are \code{HDF5Array} or \code{DelayedArray} objects consist of genome-wide differential expression profiles (GEPs)
- (e.g. log2 ratios or z-scores) from various drug treatments or genetic perturbations. 
-It represents reference database that the query signature is searched against. Can be existing public databases (CMAP or LINCS)
-or custom database.}
+\item{\code{gess_method}}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
+
+\item{\code{refdb}}{\code{SummarizedExperiment} object, which can be HDF5 backed 
+and loaded via `loadHDF5SummarizedExperiment` function. 
+The 'assays' slot of the \strong{SummarizedExperiment} object should be a 
+\code{DelayedMatrix} or a matrix consists of genome-wide (GEPs) from a
+number of drug treatments or genetic perturbations. It represents the 
+reference database that the query signature is searched against. 
+
+The \code{sample_db} contains 95 GEPs randomly sampled from the `lincs` 
+database and 5 GEPs from HDAC inhibitors in human SKB (muscle) cell. 
+
+The full `lincs` and `cmap` public databases can be loaded from the 
+\code{\link{signatureSerch_data}} package.
+
+The custom database can be built via \code{\link{`build_custom_db`}} 
+function if a `data.frame` representing genome-wide GEPs (log2FC, z-scores, 
+intensity values, etc.) of compound or genetic treatments in cells 
+is provided.}
 }}
 
 \keyword{classes}

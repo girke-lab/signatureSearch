@@ -1,6 +1,6 @@
 cor_sig_search <- function(query, refdb, method){
   res_list <- NULL
-  # make sure rownames of query and refdb are exactly same
+  # make sure rownames of query and refdb are the same
   common_gene <- intersect(rownames(query), rownames(refdb))
   query2 <- as.matrix(query[common_gene,])
   colnames(query2) <- colnames(query)
@@ -11,7 +11,8 @@ cor_sig_search <- function(query, refdb, method){
     trend=cor
     trend[cor>=0]="up"
     trend[cor<0]="down"
-    res <- data.frame(set=names(cor), trend=trend, cor_score = cor, stringsAsFactors = FALSE)
+    res <- data.frame(set=names(cor), trend=trend, cor_score = cor, 
+                      stringsAsFactors = FALSE)
     res_list <- c(res_list, list(res))
   }
   names(res_list) <- colnames(query)
@@ -19,20 +20,44 @@ cor_sig_search <- function(query, refdb, method){
   return(res_list)
 }
 
-#' Gene expression signature search with correlation coefficient
-#' @title gess_cor
-#' @param qSig `qSig` object, The 'gess_method' slot should be 'Cor'. The ‘qsig’ slot could be a matrix representing gene expression values, 
-#' the reference database could also store genome-wide expression values of treatment samples
-#' @param method a character string indicating which correlation coefficient (or covariance) is to be computed. 
-#' One of "spearman" (default), "kendall", or "pearson": can be abbreviated.
+#' @title Correlation based method for GESS
+#' @description 
+#' It uses query signature to search against the reference database in the 
+#' \code{qSig} by mearsuring correlation coefficient.
+#' @details 
+#' The correlation coefficients can be used as a GESS method by searching 
+#' with a query expression profile a database of expression profiles. 
+#' Correlation-based queries were performed with genome-wide GEPs as well as 
+#' with GEPs subsetted to the same query genes used for the set enrichment 
+#' methods (\code{CMAP}, \code{LINCS} and \code{Fisher}). 
+#' The latter situation makes the correlation-based results more comparable 
+#' to the set enrichment methods by providing to each method a more equal 
+#' amount of information than this is the case for the correlation method with 
+#' genome-wide GEPs. 
+#' @param qSig `qSig` object, The 'gess_method' slot should be 'Cor'. 
+#' The reference database in the \code{qsig} could either store gene expression 
+#' values or differential expression scores.
+#' @param method One of 'spearman' (default), 'kendall', or 'pearson',
+#' indicating which correlation coefficient to be used.
 #' @param chunk_size size of chunk per processing
-#' @return gessResult object
+#' @return gessResult object, containing drugs in the reference database
+#' ranked by their similarity to the query signature
+#' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
+#' @examples 
+#' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+#' sample_db <- loadHDF5SummarizedExperiment(db_dir)
+#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = sample_db)
+#' sp <- gess_cor(qSig=qsig_sp, method="spearman")
+#' result(sp)
 #' @export
 gess_cor <- function(qSig, method, chunk_size=5000){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(qSig@gess_method != "Cor"){
-    stop("The 'gess_method' slot of 'qSig' should be 'Cor' if using 'gess_cor' function")
+    stop("The 'gess_method' slot of 'qSig' should be 'Cor' 
+         if using 'gess_cor' function")
   }
   query <- qSig@qsig
   se <- qSig@refdb

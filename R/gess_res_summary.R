@@ -5,17 +5,10 @@
 #' @importFrom dplyr bind_cols
 #' @export
 cell_rank_sum <- function(gessResult){
-  if(!is(gessResult, "gessResult")) stop("The 'gessResult' should be an object of 'gessResult' class")
+  if(!is(gessResult, "gessResult")) 
+    stop("The 'gessResult' should be an object of 'gessResult' class")
   tb <- result(gessResult)[,c(seq_len(2))]
   tb <- bind_cols(rank = seq_len(nrow(tb)), tb)
-  # rank_sum <- matrix(NA, nrow = length(unique(tb$pert)), ncol = length(unique(tb$cell)))
-  # rownames(rank_sum)=as.character(unique(tb$pert))
-  # colnames(rank_sum)=as.character(unique(tb$cell))
-  # for(i in 1:nrow(rank_sum)){
-  #   for(j in 1:ncol(rank_sum)){
-  #     rank_sum[i,j]=as.numeric(tb[tb$pert==rownames(rank_sum)[i]&tb$cell==colnames(rank_sum)[j], "rank"])
-  #   }
-  # }
   dl <- split(as.data.frame(tb)[,c("rank","cell")], tb$pert)
   cell_name=unique(tb$cell)
   dl_num <- lapply(dl, function(x){
@@ -39,7 +32,8 @@ cell_rank_sum <- function(gessResult){
 #' @param tib tibble object from result(gessResult)
 #' @param grp1 character vector, group 1 of cell types, e.g., tumor cell types
 #' @param grp2 character vector, group 2 of cell types, e.g., normal cell types
-#' @param score_column character, column name of similairity scores to be grouped 
+#' @param score_column character, column name of similairity scores to be 
+#' grouped 
 #' @return tibble
 #' @export
 

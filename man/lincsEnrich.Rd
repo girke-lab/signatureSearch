@@ -5,8 +5,8 @@
 \title{lincsEnrich}
 \usage{
 lincsEnrich(se, upset, downset, sortby = "NCS", type = 1,
-  output = "all", ES_NULL = "Default", taurefList = "Default",
-  minTauRefSize = 500, chunk_size = 5000)
+  output = "all", ES_NULL = "Default", minTauRefSize = 500,
+  chunk_size = 5000)
 }
 \arguments{
 \item{se}{SummarizedExperiment object}
@@ -21,10 +21,10 @@ lincsEnrich(se, upset, downset, sortby = "NCS", type = 1,
 
 \item{output}{one of `esonly` and `all`.}
 
-\item{ES_NULL}{path to the ES_NULL file. ES_null distribution is generated with random queryies for computing nominal P-values for ES by 
-`randQueryES_slurm` or `randQueryES_local` function. If `ES_NULL` is set as `Default`, it uses the ES_null distribution that we generated.}
-
-\item{taurefList}{path to the "taurefList.rds" file. If set as `Default`, it uses the "taurefList.rds" file that we generated.}
+\item{ES_NULL}{path to the ES_NULL file. ES_null distribution is generated 
+with random queryies for computing nominal P-values for ES by `randQueryES` 
+function. If `ES_NULL` is set as `Default`, it uses the ES_null distribution 
+that we generated.}
 
 \item{minTauRefSize}{minimum size of reference data to compute Tau score}
 

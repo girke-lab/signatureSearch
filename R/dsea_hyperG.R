@@ -1,23 +1,52 @@
-##' Drug GO Enrichment Analysis of drug sets.
-##' Given a vector of drugs, this function will return the enriched GO categories with hypergeometric test after FDR control.
+##' hyperG method for DSEA
+##' 
+##' The hypergeometric test is used to do enrichment analysis on a drug set 
+##' after mapping drugs to functional categories via drug-target links in
+##' DrugBank, CLUE and STITCH databases
+##' 
+##' The drug sets can also be directly used for functional enrichment testing 
+##' by changing the mappings in the reference database from target-to-functional
+##' category mappings to drug-to-functional category mappings. 
+##' The latter can be generated based on the drug-target information provided 
+##' by DrugBank or related databases. As a result, one can perform the FEA on 
+##' ranked drug lists directly. This DSEA approach has the advantage that the 
+##' drugs in the query test sets are usually unique allowing to use them 
+##' without any changes for functional enrichment methods. 
+##' 
+##' So the hypergeometric test is directly used when the query is a vector of 
+##' drugs, e.g., top ranking drugs from GESS result since the functional
+##' categories also contains drug sets after gene to drug mappings.
 ##'
-##'
-##' @param drugs query drug set used to do drug set enrichment analysis (DSEA), Can be top ranking drugs in GESS result. 
+##' @param drugs query drug set used to do DSEA. 
+##' Can be top ranking drugs in GESS result. 
 ##' @param type one of "GO" or "KEGG"
 ##' @param ont One of "MF", "BP", and "CC" or "ALL".
 ##' @param pvalueCutoff Cutoff value of p value.
-##' @param pAdjustMethod one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
+##' @param pAdjustMethod p value adjustment method,
+##' one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
 ##' @param qvalueCutoff q value cutoff
-##' @param minGSSize minimal size of drugs annotated by Ontology term for testing after drug-to-GO category mapping.
-##' @param maxGSSize maximal size of drugs annotated for testing
-##' @return \code{feaResult} object
+##' @param minGSSize minimal size of drug sets annotated by ontology term 
+##' after drug to functional category mappings.
+##' @param maxGSSize maximal size of drug sets annotated for testing
+##' @return \code{\link{feaResult}} object, 
+##' represents enriched functional categories.
 ##' @import org.Hs.eg.db
 ##' @importFrom magrittr %<>%
 ##' @importMethodsFrom AnnotationDbi mappedkeys
 ##' @importMethodsFrom AnnotationDbi mget
-##' @seealso \code{\link{feaResult-class}}
+##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
+##'          \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
+##' @examples 
+##' drugs <- data(drugs)
+##' # GO annotation system
+##' hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
+##' result(hyperG_res)
+##' ## KEGG annotation system
+##' hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
+##'                             pvalueCutoff = 1, qvalueCutoff = 1, 
+##'                             minGSSize = 10, maxGSSize = 2000)
+##' result(hyperG_k_res)
 ##' @export
-##' @author Yuzhu Duan
 dsea_hyperG <- function(drugs,
                         type = "GO",
                         ont="BP",
@@ -31,7 +60,8 @@ dsea_hyperG <- function(drugs,
     ont %<>% toupper
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
     
-    # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", ont, keytype="SYMBOL")
+    # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
+    #                                  ont, keytype="SYMBOL")
     # download GO_DATA_drug and save it locally to save time
     ext_path <- system.file("extdata", package="signatureSearch")
     godata_drug_path <- paste0(ext_path,"/GO_DATA_drug.rds")
@@ -60,11 +90,11 @@ dsea_hyperG <- function(drugs,
     if (is.null(res))
       return(res)
     
-    res@organism <- get_organism(OrgDb="org.Hs.eg.db")
+    res@organism <- clusterProfiler:::get_organism(OrgDb="org.Hs.eg.db")
     res@ontology <- ont
     res@targets <- NULL
     if (ont == "ALL") {
-      res <- add_GO_Ontology(res, GO_DATA_drug)
+      res <- clusterProfiler:::add_GO_Ontology(res, GO_DATA_drug)
     }
     return(res)
   }
@@ -90,7 +120,6 @@ dsea_hyperG <- function(drugs,
     return(res)
   }
 }
-
 
 ##' @importFrom AnnotationDbi keys
 ##' @importFrom AnnotationDbi select
@@ -119,7 +148,7 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
     org <- get("organism", envir=GO_Env)
     kt <- get("keytype", envir=GO_Env)
     
-    if (org == get_organism(OrgDb) &&
+    if (org == clusterProfiler:::get_organism(OrgDb) &&
         keytype == kt &&
         exists("goAnno", envir=GO_Env, inherits=FALSE) &&
         exists("GO2TERM", envir=GO_Env, inherits=FALSE)){
@@ -146,37 +175,8 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
     
     assign("goAnno", goAnno, envir=GO_Env)
     assign("keytype", keytype, envir=GO_Env)
-    assign("organism", get_organism(OrgDb), envir=GO_Env)
+    assign("organism", clusterProfiler:::get_organism(OrgDb), envir=GO_Env)
   }
-  
-  # # get dtlink in drugbank, lincs and stitch databases
-  # ext_path <- system.file("extdata", package="signatureSearch")
-  # dtlink_path <- paste0(ext_path,"/dtlink_db_lincs_sti.db")
-  # if(file.exists(dtlink_path)){
-  #   conn <- dbConnect(SQLite(), dtlink_path)
-  # } else {
-  #   tryCatch(download.file("http://biocluster.ucr.edu/~yduan004/DOSE2/dtlink_db_lincs_sti.db", dtlink_path, quiet = TRUE), 
-  #            error = function(e){
-  #              stop("Error happens when downloading signatureSearch/dtlink_db_lincs_sti.db")
-  #            }, warning = function(w) {file.remove(dtlink_path)
-  #              stop("Error happens when downloading signatureSearch/dtlink_db_lincs_sti.db")})
-  #   conn <- dbConnect(SQLite(), dtlink_path)
-  # }
-  # dtlink <- dbGetQuery(conn, 'SELECT * FROM dtlink')
-  # dbDisconnect(conn)
-  # 
-  # # convert SYMBOL-GOALL in goAnno to drug-GOALL
-  # message("left join goAnno and dtlink")
-  # goAnno_drug <- left_join(as_tibble(goAnno[,c(2,1,4)]), as_tibble(dtlink), by = c("SYMBOL"="t_gn_sym"))
-  # rm(dtlink)
-  # goAnno_drug <- as.data.frame(goAnno_drug)[,c("GOALL","ONTOLOGYALL","drug_name")]
-  # message("remove na in goAnno_drug")
-  # goAnno_drug <- na.omit(goAnno_drug)
-  # message("unique GOALL and drug_name in goAnno_drug")
-  # goAnno_drug <- goAnno_drug[!duplicated(goAnno_drug[,c("GOALL","drug_name")]),]
-  # message("unique is done")
-  # # goAnno_drug <- goAnno_drug %>% filter(!is.na(drug_name)) %>% distinct(GOALL, drug_name, .keep_all = TRUE)
-  # # goAnno_drug <- as.data.frame(goAnno_drug)
   
   # download goAnno_drug.rds
   ext_path <- system.file("extdata", package="signatureSearch")

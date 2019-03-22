@@ -1,9 +1,14 @@
-#' tsea_dup_hyperG
+#' dup_hyperG method for TSEA
 #' 
-#' drug targets GO/KEGG enrichment analysis by using `dup_hyperG` method
-
-#' @param drugs query drug set used to do target set enrichment analysis (TSEA).
-#' Can be top ranking drugs in GESS result. 
+#' This method support target set with duplications by adjusting the frequency 
+#' of the duplicated proteins in the target set instead of taking the unique.
+#' 
+#' The classical hypergeometric test assumes uniqueness in its gene/protein 
+#' test sets. To maintain the duplication information in the test sets used for 
+#' TSEA, the duplication information in the test set is maintained by adjusting
+#' their frequency.
+#' @param drugs query drug set used to do TSEA.
+#' Can be top ranking drugs in the GESS result. 
 #' @param universe background genes/targets. If set as `Default`, 
 #' it represents all the annotated genes/targets in
 #' the corresponding annotation system (e.g. GO or KEGG). 
@@ -11,16 +16,30 @@
 #' universe should be gene entrez ids.
 #' @param type one of `GO` or `KEGG`
 #' @param ont if type is `GO`, set ontology. One of `BP`,`MF`,`CC` or `ALL`
-#' @param pAdjustMethod p value adjustment method for p values 
-#' in the enrichment result
+#' @param pAdjustMethod p value adjustment method, 
+#' one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
 #' @param pvalueCutoff p value Cutoff
 #' @param qvalueCutoff qvalue Cutoff
-#' @param minGSSize minimum size of each gene set in annotation system
-#' @param maxGSSize maximum size of each gene set in annotation system
-#' @return feaResult object
+#' @param minGSSize minimum size of each gene set in the annotation system
+#' @param maxGSSize maximum size of each gene set in the annotation system
+#' @return \code{\link{feaResult}} object, 
+#' represents enriched functional categories.
+#' @seealso \code{\link{feaResult}}, \code{\link{fea}}
+#' @examples 
+#' drugs <- data(drugs)
+#' ## GO annotation system
+#' dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+#'                                   type = "GO", ont="MF", pvalueCutoff=0.05, 
+#'                                   pAdjustMethod="BH", qvalueCutoff = 0.1, 
+#'                                   minGSSize = 10, maxGSSize = 500)
+#' result(dup_hyperG_res)
+#' ## KEGG annotation system
+#' dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+#'                                     type = "KEGG", pvalueCutoff=0.1, 
+#'                                     pAdjustMethod="BH", qvalueCutoff = 0.2, 
+#'                                     minGSSize = 10, maxGSSize = 500)
+#' result(dup_hyperG_k_res)
 #' @export
-#' @author Yuzhu Duan (yduan004@ucr.edu)
-#' 
 tsea_dup_hyperG <- function(drugs, universe = "Default", 
                             type="GO", ont="MF", 
                             pAdjustMethod = "BH", pvalueCutoff = 0.05, 
@@ -39,20 +58,6 @@ tsea_dup_hyperG <- function(drugs, universe = "Default",
       ext_path <- system.file("extdata", package="signatureSearch")
       univ_tar_path <- paste0(ext_path,"/univ_genes_in_GO.txt")
       universe <- readLines(univ_tar_path)
-      # if(file.exists(univ_tar_path)){
-      #   universe <- readLines(univ_tar_path)
-      # } else {
-      #   tryCatch(download.file(
-      #   "http://biocluster.ucr.edu/~yduan004/fea/univ_genes_in_GO.txt", 
-      #   univ_tar_path, quiet = TRUE), 
-      #   error = function(e){
-      #     stop("Error happens when downloading fea/univ_genes_in_GO.txt")
-      #   }, 
-      #   warning = function(w) {
-      #     file.remove(univ_tar_path)
-      #     stop("Error happens when downloading fea/univ_genes_in_GO.txt")})
-      #   universe <- readLines(univ_tar_path)
-      # }
     }
     ego <- enrichGO(gene = gnset, universe = universe, OrgDb = org.Hs.eg.db, 
                     keytype = 'SYMBOL', ont = ont, 

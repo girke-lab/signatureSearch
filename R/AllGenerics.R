@@ -1,5 +1,3 @@
-##' qSig generic
-##' 
 ##' @title qSig method
 ##' @rdname qSig-methods
 ##' @export

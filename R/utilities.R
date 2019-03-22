@@ -9,7 +9,7 @@ get_GO_Env <- function () {
 }
 
 ##' @importFrom S4Vectors metadata
-get_organism <- function(OrgDb) {
+clusterProfiler:::get_organism <- function(OrgDb) {
   OrgDb <- load_OrgDb(OrgDb)
   md <- metadata(OrgDb)
   md[md[,1] == "ORGANISM", 2]
@@ -36,7 +36,7 @@ get_GO2TERM_table <- function() {
     GOTERM.df[, c("go_id", "Term")] %>% unique
 }
 
-add_GO_Ontology <- function(obj, GO_DATA) {
+clusterProfiler:::add_GO_Ontology <- function(obj, GO_DATA) {
     if (is(obj, 'feaResult')) {
         obj@ontology <- 'GOALL'
     }

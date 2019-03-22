@@ -2,18 +2,24 @@
 % Please edit documentation in R/get_targets.R
 \name{get_targets}
 \alias{get_targets}
-\title{get drug targets in DrugBank/LINCS/STITCH}
+\title{get targets of query drugs}
 \usage{
 get_targets(drugs, database = "all")
 }
 \arguments{
-\item{drugs}{character vector, a list of drug names}
+\item{drugs}{a character vector storing a list of drug names}
 
 \item{database}{one of "DrugBank", "LINCS", "STITCH" or "all"}
 }
 \value{
-data.frame of drugs and target symbols
+data.frame of drugs and target gene symbols
 }
 \description{
-get targets in DrugBank/LINCS/STITCH for a given list of drugs
+This function can be used to get protein targets of query drugs in 
+DrugBank, CLUE and STITCH databases. A SQLite database storing drug-target
+links in the above three databases can be found at 
+\code{\link{signatureSearch_data}} package.
+}
+\seealso{
+\code{\link[signatureSearch_data]{dtlink_dt_clue_sti}}
 }

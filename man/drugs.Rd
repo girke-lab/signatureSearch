@@ -10,6 +10,6 @@ drugs
 }
 \description{
 A character vector containing top 10 drugs in the GESS result 
-from LICNS method in the vignette
+from gess_lincs method in the vignette
 }
 \keyword{datasets}

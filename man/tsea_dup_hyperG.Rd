@@ -2,15 +2,15 @@
 % Please edit documentation in R/tsea_dup_hyperG.R
 \name{tsea_dup_hyperG}
 \alias{tsea_dup_hyperG}
-\title{tsea_dup_hyperG}
+\title{dup_hyperG method for TSEA}
 \usage{
 tsea_dup_hyperG(drugs, universe = "Default", type = "GO", ont = "MF",
   pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.05,
   minGSSize = 5, maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{query drug set used to do target set enrichment analysis (TSEA).
-Can be top ranking drugs in GESS result.}
+\item{drugs}{query drug set used to do TSEA.
+Can be top ranking drugs in the GESS result.}
 
 \item{universe}{background genes/targets. If set as `Default`, 
 it represents all the annotated genes/targets in
@@ -22,23 +22,46 @@ universe should be gene entrez ids.}
 
 \item{ont}{if type is `GO`, set ontology. One of `BP`,`MF`,`CC` or `ALL`}
 
-\item{pAdjustMethod}{p value adjustment method for p values 
-in the enrichment result}
+\item{pAdjustMethod}{p value adjustment method, 
+one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
 
 \item{pvalueCutoff}{p value Cutoff}
 
 \item{qvalueCutoff}{qvalue Cutoff}
 
-\item{minGSSize}{minimum size of each gene set in annotation system}
+\item{minGSSize}{minimum size of each gene set in the annotation system}
 
-\item{maxGSSize}{maximum size of each gene set in annotation system}
+\item{maxGSSize}{maximum size of each gene set in the annotation system}
 }
 \value{
-feaResult object
+\code{\link{feaResult}} object, 
+represents enriched functional categories.
 }
 \description{
-drug targets GO/KEGG enrichment analysis by using `dup_hyperG` method
+This method support target set with duplications by adjusting the frequency 
+of the duplicated proteins in the target set instead of taking the unique.
 }
-\author{
-Yuzhu Duan (yduan004@ucr.edu)
+\details{
+The classical hypergeometric test assumes uniqueness in its gene/protein 
+test sets. To maintain the duplication information in the test sets used for 
+TSEA, the duplication information in the test set is maintained by adjusting
+their frequency.
+}
+\examples{
+drugs <- data(drugs)
+## GO annotation system
+dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+                                  type = "GO", ont="MF", pvalueCutoff=0.05, 
+                                  pAdjustMethod="BH", qvalueCutoff = 0.1, 
+                                  minGSSize = 10, maxGSSize = 500)
+result(dup_hyperG_res)
+## KEGG annotation system
+dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+                                    type = "KEGG", pvalueCutoff=0.1, 
+                                    pAdjustMethod="BH", qvalueCutoff = 0.2, 
+                                    minGSSize = 10, maxGSSize = 500)
+result(dup_hyperG_k_res)
+}
+\seealso{
+\code{\link{feaResult}}, \code{\link{fea}}
 }

@@ -3,20 +3,23 @@
 \docType{class}
 \name{gessResult-class}
 \alias{gessResult-class}
+\alias{gessResult}
 \title{Class "gessResult"}
 \description{
-The class represents the result of GESS analysis
+The class stores the result of GESS analysis
 }
 \section{Slots}{
 
 \describe{
-\item{\code{result}}{tibble from GESS analysis}
+\item{\code{result}}{tibble from GESS analysis, represents a list of drugs 
+in the reference database ranked by their signature similarity to the query}
 
 \item{\code{qsig}}{query signature}
 
 \item{\code{gess_method}}{method for GESS analysis}
 
-\item{\code{refdb}}{`SummarizedExperiment` object represents refrence signaure database}
+\item{\code{refdb}}{`SummarizedExperiment` object represents the refrence 
+signaure database}
 }}
 
 \keyword{classes}
