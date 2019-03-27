@@ -28,7 +28,7 @@ setMethod("show", signature(object="gessResult"),
               cat("# ... with", nrow(mat)-10, "more rows\n")
             }
             cat("\n@gess_method", "\t", object@gess_method, "\n")
-            cat("\n@refdb_name", "\t", object@refdb_name)
+            cat("\n@refdb_name", "\t", object@refdb_name, "\n")
           })
 
 ##' @name show
