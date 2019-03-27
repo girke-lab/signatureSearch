@@ -11,7 +11,8 @@ mabsKEGG(geneList, organism = "hsa", keyType = "kegg", nPerm = 1000,
 \arguments{
 \item{geneList}{scored ranked geneList}
 
-\item{organism}{supported organism listed in 'http://www.genome.jp/kegg/catalog/org_list.html'}
+\item{organism}{supported organism listed in 
+\url{http://www.genome.jp/kegg/catalog/org_list.html}}
 
 \item{keyType}{one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'}
 
@@ -26,7 +27,7 @@ mabsKEGG(geneList, organism = "hsa", keyType = "kegg", nPerm = 1000,
 \item{pAdjustMethod}{pvalue adjustment method}
 }
 \value{
-mabsResult object
+\code{\link{feaResult}} object
 }
 \description{
 meanAbs analysis of KEGG

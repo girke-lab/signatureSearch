@@ -29,6 +29,8 @@
 ##' function if a `data.frame` representing genome-wide GEPs (log2FC, z-scores, 
 ##' intensity values, etc.) of compound or genetic treatments in cells 
 ##' is provided.
+##' @param refdb_name character, name of the reference database. Like "CMAP",
+##' "LINCS" or other custom names.
 ##' @return \code{qSig} object
 ##' @seealso \code{\link{build_custom_db}}, \code{\link{signatureSerch_data}},
 ##'          \code{\link[SummarizedExperiment]{SummarizedExperiment}},
@@ -47,8 +49,9 @@
 ##' qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db)
 ##' @exportMethod qSig
 setMethod("qSig",
-  signature(qsig="list", gess_method="character", refdb="SummarizedExperiment"),
-  function(qsig, gess_method, refdb){
+  signature(qsig="list", gess_method="character", 
+            refdb="SummarizedExperiment", refdb_name="character"),
+  function(qsig, gess_method, refdb, refdb_name="UNKNOWN"){
     ## Validity check of refdb
     if(!is.numeric(as.matrix(assay(refdb)[1,1]))) 
       stop("The value stored in 'assays' slot of 'refdb' should be numeric!")
@@ -88,7 +91,8 @@ setMethod("qSig",
     } else
       stop("'gess_method' slot must be one of 'CMAP', 'LINCS', or 'Fisher' if 
 'qsig' is a list of two elements representing up and down regulated gene sets!")
-    new("qSig", qsig=qsig, gess_method=gess_method, refdb=refdb)
+    new("qSig", qsig=qsig, gess_method=gess_method, refdb=refdb,
+        refdb_name=refdb_name)
   }
 )
 
@@ -101,8 +105,8 @@ setMethod("qSig",
 ##' @exportMethod qSig
 setMethod("qSig",
   signature(qsig="matrix", gess_method="character", 
-            refdb="SummarizedExperiment"),
-  function(qsig, gess_method, refdb){
+            refdb="SummarizedExperiment", refdb_name="character"),
+  function(qsig, gess_method, refdb, refdb_name="UNKNOWN"){
     ## Validity check of refdb
     if(!is.numeric(as.matrix(assay(refdb)[1,1]))) 
       stop("The value stored in 'assays' slot of 'refdb' should be numeric")
@@ -121,7 +125,8 @@ setMethod("qSig",
     } else
       stop("'gess_method' slot must be one of 'gCMAP', 'Fisher' or 'Cor' 
   if 'qsig' is a numeric matrix representing genome-wide GEPs from treatments!")
-    new("qSig", qsig=qsig, gess_method=gess_method, refdb=refdb)
+    new("qSig", qsig=qsig, gess_method=gess_method, refdb=refdb,
+        refdb_name=refdb_name)
   }
 )
 

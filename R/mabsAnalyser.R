@@ -11,7 +11,7 @@
 ##' @param pvalueCutoff pvalue Cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @export
-##' @return mabsResult object
+##' @return \code{\link{feaResult}} object
 ##' @author Yuzhu Duan
 mabsGO <- function(geneList,
                   ont           = "BP",
@@ -27,16 +27,11 @@ mabsGO <- function(geneList,
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
 
     #GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
-    # download GO_DATA and save it locally to save time
-    ext_path <- system.file("extdata", package="signatureSearch")
-    godata_path <- paste0(ext_path,"/GO_DATA.rds")
-    if(file.exists(godata_path)){
-      GO_DATA <- readRDS(godata_path)
-    } else {
-      download.file("http://biocluster.ucr.edu/~yduan004/fea/GO_DATA.rds",
-                    godata_path, quiet = TRUE)
-      GO_DATA <- readRDS(godata_path)
-    }
+    # download GO_DATA.rds and save it to cache to save time
+    fl <- download_data_file(url=
+        "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/GO_DATA.rds",
+                             rname="GO_DATA")
+    GO_DATA <- readRDS(fl)
     
     res <-  mabs_internal(geneList = geneList,
                           nPerm = nPerm,
@@ -49,7 +44,7 @@ mabsGO <- function(geneList,
     if (is.null(res))
         return(res)
 
-    res@organism <- clusterProfiler:::get_organism(OrgDb)
+    res@organism <- DOSE:::get_organism(OrgDb)
     res@ontology <- ont
 
     if (ont == "ALL") {
@@ -62,7 +57,8 @@ mabsGO <- function(geneList,
 ##'
 ##' @title mabsKEGG
 ##' @param geneList scored ranked geneList
-##' @param organism supported organism listed in 'http://www.genome.jp/kegg/catalog/org_list.html'
+##' @param organism supported organism listed in 
+##' \url{http://www.genome.jp/kegg/catalog/org_list.html}
 ##' @param keyType one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'
 ##' @param nPerm permutation numbers
 ##' @param minGSSize minimal size of each geneSet for analyzing
@@ -70,7 +66,7 @@ mabsGO <- function(geneList,
 ##' @param pvalueCutoff pvalue Cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @export
-##' @return mabsResult object
+##' @return \code{\link{feaResult}} object
 mabsKEGG <- function(geneList,
                     organism          = 'hsa',
                     keyType           = 'kegg',
@@ -80,8 +76,8 @@ mabsKEGG <- function(geneList,
                     pvalueCutoff      = 0.05,
                     pAdjustMethod     = "BH") {
 
-    species <- organismMapper(organism)
-    KEGG_DATA <- prepare_KEGG(species, "KEGG", keyType)
+    species <- clusterProfiler:::organismMapper(organism)
+    KEGG_DATA <- clusterProfiler:::prepare_KEGG(species, "KEGG", keyType)
 
     res <-  mabs_internal(geneList = geneList,
                           nPerm = nPerm,

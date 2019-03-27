@@ -50,6 +50,7 @@
 #' @param pvalueCutoff p value cutoff
 #' @param minGSSize minimum size of each gene set in annotation system
 #' @param maxGSSize maximum size of each gene set in annotation system
+#' @param verbose TRUE or FALSE, print message or not
 #' @return \code{\link{feaResult}} object, 
 #' represents enriched functional categories.
 #' @seealso \code{\link{feaResult}}, \code{\link{fea}}
@@ -66,12 +67,11 @@
 #'                           nPerm=1000, pvalueCutoff=1, minGSSize=2)
 #' result(mgsea_k_res)
 #' @export
-#' 
 tsea_mGSEA <- function(drugs, 
                       type="GO", ont="MF", 
                       nPerm=1000, exponent=1, 
                       pAdjustMethod = "BH", pvalueCutoff = 0.05,
-                      minGSSize = 2, maxGSSize = 500){
+                      minGSSize = 2, maxGSSize = 500, verbose=FALSE){
   drugs <- unique(tolower(drugs))
   targets <- get_targets(drugs, database = "all")
   gnset <- na.omit(unlist(lapply(targets$t_gn_sym, function(i) 
@@ -93,7 +93,7 @@ tsea_mGSEA <- function(drugs,
     gsego <- gseGO2(geneList = tar_total_weight, OrgDb = org.Hs.eg.db, 
                     ont = ont, keyType = "SYMBOL", nPerm = nPerm, 
                     minGSSize = minGSSize, maxGSSize = maxGSSize, 
-                    exponent = exponent, nproc=1, verbose=TRUE, 
+                    exponent = exponent, nproc=1, verbose=verbose, 
                     pvalueCutoff = pvalueCutoff, pAdjustMethod=pAdjustMethod)
     gsego@drugs = drugs
     return(gsego)
@@ -121,7 +121,7 @@ tsea_mGSEA <- function(drugs,
     tar_total_weight = c(tar_weight, tar_diff_weight)
     
     gsekk <- gseKEGG2(geneList=tar_total_weight, organism='hsa', 
-                      keyType='kegg', nPerm = nPerm, verbose = TRUE, 
+                      keyType='kegg', nPerm = nPerm, verbose = verbose, 
                       minGSSize = minGSSize, maxGSSize=maxGSSize, 
                       pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod)
     gsekk@drugs = drugs

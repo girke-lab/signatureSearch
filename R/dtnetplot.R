@@ -24,21 +24,18 @@ dtnetplot <- function(drugs, set, ont = NULL, ...) {
     if(is.null(ont) | !any(ont %in% c("BP","MF","CC","ALL"))) 
       stop("The 'set' is a GO term ID, please set 'ont' as one of 
            BP, MF, CC or ALL")
-    # download goAnno.rds
-    ext_path <- system.file("extdata", package="signatureSearch")
-    anno_path <- file.path(ext_path, "goAnno.rds")
-    if(file.exists(anno_path)){
-      goAnno <- readRDS(anno_path)
-    } else {
-      download.file("http://biocluster.ucr.edu/~yduan004/fea/goAnno.rds", 
-                    anno_path, quiet = TRUE)
-      goAnno <- readRDS(anno_path)
-    }
+    # download goAnno.rds and save it to cache
+    fl <- download_data_file(url=
+    "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/goAnno.rds",
+                             rname="goAnno")
+    goAnno <- readRDS(fl)
+    
     go_gene <- unique(goAnno$SYMBOL[goAnno$ONTOLOGYALL == ont & 
                                       goAnno$GOALL == set])
   }
   if(grepl("hsa\\d{5}",set)){
-    KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
+    KEGG_DATA <- clusterProfiler:::prepare_KEGG(species="hsa", "KEGG", 
+                                                keyType="kegg")
     p2e <- get("PATHID2EXTID", envir=KEGG_DATA)
     go_gene_entrez = p2e[[set]]
     # convert Entrez ids in KEGG pathways to gene SYMBOL

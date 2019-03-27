@@ -158,13 +158,19 @@ functionally annotated by TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA)
 methods. The enrichment results are stored in \emph{feaResult} object and the 
 drug target networks can be built for visualization.
 
-# Installation
+# Installation and Loading
 
-To install this package, start R (version "3.6") and enter:
+`signatureSearch` is a Bioconductor package and can be installed through 
+`BiocManager::install()`
 ```{r install, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("signatureSearch", version = "3.9")
+```
+
+After the package is installed, it can be loaded into \emph{R} workspace by
+```{r load, eval=TRUE}
+library(signatureSearch)
 ```
 
 # Methods for GESS
@@ -209,8 +215,8 @@ Generate `qSig` object for `gess_cmap` method and search against the sample
 reference database
 ```{r gess_cmap, eval=TRUE}
 qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), 
-                  gess_method = "CMAP", refdb = sample_db)
-cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
+                  gess_method="CMAP", refdb=sample_db, refdb_name="sample")
+cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000) # type "yes" when prompted
 cmap
 result(cmap)
 ```
@@ -227,7 +233,7 @@ Generate `qSig` object for `gess_lincs` method and search against the sample
 database
 ```{r gess_lincs, eval=TRUE}
 qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-                   gess_method = "LINCS", refdb = sample_db)
+                   gess_method="LINCS", refdb=sample_db, refdb_name="sample")
 lincs <- gess_lincs(qsig_lincs, sortby="NCS")
 result(lincs)
 ```
@@ -244,7 +250,8 @@ contains rank transformed GEPs.
 Generate `qSig` object for `gess_gcmap` method and search against 
 the sample database
 ```{r gess_gcmap, eval=TRUE}
-qsig_gcmap <- qSig(qsig = query_mat, gess_method = "gCMAP", refdb = sample_db)
+qsig_gcmap <- qSig(qsig = query_mat, gess_method = "gCMAP", 
+                   refdb = sample_db, refdb_name="sample")
 gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
 result(gcmap)
 ```
@@ -258,7 +265,8 @@ if both the query and the database are composed of DEG sets.
 Generate `qSig` object for `gess_fisher` method and search against the
 sample database
 ```{r gess_fisher, eval=TRUE}
-qsig_fisher <- qSig(qsig = query_mat, gess_method = "Fisher", refdb = sample_db)
+qsig_fisher <- qSig(qsig = query_mat, gess_method = "Fisher", 
+                    refdb = sample_db, refdb_name="sample")
 fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
 ```
@@ -280,7 +288,8 @@ sample database
 
 ### Genome-wide Spearman correlation
 ```{r gess_sp, eval=TRUE}
-qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = sample_db)
+qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", 
+                refdb = sample_db, refdb_name="sample")
 sp <- gess_cor(qSig=qsig_sp, method="spearman")
 result(sp)
 ```
@@ -290,7 +299,8 @@ result(sp)
 # Subset z-scores of 150 up and down gene sets from 
 # "vorinostat__SKB__trt_cp" signature.
 query_mat_sub <- as.matrix(query_mat[c(upset, downset),])
-qsig_spsub <- qSig(qsig = query_mat_sub, gess_method = "Cor", refdb = sample_db)
+qsig_spsub <- qSig(qsig = query_mat_sub, gess_method = "Cor", 
+                   refdb = sample_db, refdb_name="sample")
 spsub <- gess_cor(qSig=qsig_spsub, method="spearman")
 result(spsub)
 ```

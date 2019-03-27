@@ -1,15 +1,4 @@
-##' generic function for meanAbs analysis
-##'
-##' @title mabs_internal
-##' @param geneList order ranked geneList
-##' @param nPerm permutation numbers
-##' @param minGSSize minimal size of each geneSet for analyzing
-##' @param maxGSSize maximal size of each geneSet for analyzing
-##' @param pvalueCutoff p value Cutoff
-##' @param pAdjustMethod p value adjustment method
-##' @param USER_DATA annotation data
-##' @return mabsResult object
-##' @author Yuzhu Duan
+## generic function for meanAbs analysis
 mabs_internal <- function(geneList,
                           nPerm,
                           minGSSize,
@@ -18,13 +7,14 @@ mabs_internal <- function(geneList,
                           pAdjustMethod,
                           USER_DATA) {
     geneList <- sort(geneList, decreasing = TRUE)
-    geneSets <- getGeneSet(USER_DATA)
-    selected.gs <- geneSet_filter(geneSets, geneList, minGSSize, maxGSSize)
+    geneSets <- get("PATHID2EXTID", envir = USER_DATA)
+    selected.gs <- DOSE:::geneSet_filter(geneSets, geneList, 
+                                         minGSSize, maxGSSize)
 
     if (is.null(selected.gs))
         return(NULL)
   
-    message("calculating observed meanAbs scores...")
+    #message("calculating observed meanAbs scores...")
 
     observedScore <- vapply(selected.gs, function(gs)
         mabs_score(geneSet=gs, geneList=geneList),
@@ -34,7 +24,7 @@ mabs_internal <- function(geneList,
     selected.gs <- selected.gs[observedScore != 0]
     observedScore <- observedScore[observedScore != 0]
     
-    message("calculating permutation scores...")
+    #message("calculating permutation scores...")
     
     # get 1000 permutation matrix of geneList
     perm_mat <- replicate(nPerm, sample(geneList))
@@ -47,17 +37,17 @@ mabs_internal <- function(geneList,
 
     Nmabs <- (observedScore - median)/sd
     
-    message("calculating p values...")
+    #message("calculating p values...")
     
     pvals <- vapply(seq_along(observedScore), function(i) {
         sum(permScores[,i]>observedScore[i]) / nPerm
     }, FUN.VALUE = numeric(1))
     
     p.adj <- p.adjust(pvals, method=pAdjustMethod)
-    qvalues <- calculate_qvalue(pvals)
+    qvalues <- DOSE:::calculate_qvalue(pvals)
 
     gs.name <- names(selected.gs)
-    Description <- TERM2NAME(gs.name, USER_DATA)
+    Description <- DOSE:::TERM2NAME(gs.name, USER_DATA)
 
     geneID <- vapply(selected.gs, function(x) 
       paste0(intersect(x, names(geneList)[geneList>0]), collapse = "/"),
@@ -85,20 +75,15 @@ mabs_internal <- function(geneList,
     row.names(res) <- res$ID
     if (nrow(res) == 0) {
         message("no term enriched under specific pvalueCutoff...")
-        res = new("feaResult",
-                result    = as_tibble(res),
-                refSets   = geneSets,
-                targets   = geneList,
-                universe = names(geneList)
-        )
+        return(NULL)
     }
-    message("done...")
+    #message("done...")
 
     res = new("feaResult",
         result     = as_tibble(res),
-        refSets   = geneSets,
-        targets   = geneList,
-        universe = names(geneList)
+        #refSets   = geneSets,
+        targets   = geneList
+        #universe = names(geneList)
         )
     res@organism <- "UNKNOWN"
     return(res)
@@ -107,21 +92,5 @@ mabs_internal <- function(geneList,
 mabs_score <- function(geneList, geneSet) {
     mabs <- mean(abs(geneList[geneSet]))
     return(mabs)
-}
-
-geneSet_filter <- function(geneSets, geneList, minGSSize, maxGSSize) {
-    geneSets <- lapply(geneSets, intersect, names(geneList))
-
-    gs.idx <- get_geneSet_index(geneSets, minGSSize, maxGSSize)
-    nGeneSet <- sum(gs.idx)
-
-    if ( nGeneSet == 0 ) {
-        msg <- paste0("No gene set have size between [", 
-                      minGSSize, ", ", maxGSSize, "]...")
-        message(msg)
-        message("--> return NULL...")
-        return(NULL)
-    }
-    geneSets[gs.idx]
 }
 

@@ -28,8 +28,7 @@ setMethod("show", signature(object="gessResult"),
               cat("# ... with", nrow(mat)-10, "more rows\n")
             }
             cat("\n@gess_method", "\t", object@gess_method, "\n")
-            cat("\n@refdb", "\t")
-            print(object@refdb)
+            cat("\n@refdb_name", "\t", object@refdb_name)
           })
 
 ##' @name show
@@ -46,8 +45,8 @@ setMethod("show", signature(object="feaResult"),
               str(object@drugs)
               cat("#...@targets", "\t")
               str(object@targets)
-              cat("#...@universe", "\t")
-              str(object@universe)
+              # cat("#...@universe", "\t")
+              # str(object@universe)
               cat(paste0("#...", nrow(object@result)), "enriched terms found\n")
               str(object@result)
           })
@@ -126,16 +125,4 @@ setMethod("cnetplot", signature(x="feaResult"),
                                     foldChange=foldChange,
                                     fixed=fixed, ...)
 })
-# 
-# ##' @rdname dtnetplot-methods
-# ##' @exportMethod dtnetplot
-# setMethod("dtnetplot", signature(x="enrichResult"),
-#           function(c_ego, GOterm, drugSize="targetNum", targetWeight=NULL, fixed=TRUE, ...) {
-#             dtnetplot.enrichResult(c_ego,
-#                                    GOterm,
-#                                    drugSize=drugSize,
-#                                    targetWeight=targetWeight,
-#                                    fixed=fixed, ...)
-#           }
-# )
 

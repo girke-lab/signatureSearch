@@ -1,7 +1,8 @@
 ##' @title qSig method
 ##' @rdname qSig-methods
 ##' @export
-setGeneric("qSig", function(qsig, gess_method, refdb) standardGeneric("qSig"))
+setGeneric("qSig", function(qsig, gess_method, refdb, refdb_name) 
+  standardGeneric("qSig"))
 
 ##' result generic
 ##' 

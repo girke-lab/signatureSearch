@@ -2,7 +2,7 @@
 % Please edit documentation in R/gseAnalyzer2.R
 \name{gseKEGG2}
 \alias{gseKEGG2}
-\title{gseKEGG2}
+\title{modified GSEA method for KEGG enrichment analysis}
 \usage{
 gseKEGG2(geneList, organism = "hsa", keyType = "kegg", exponent = 1,
   nproc = 1, nPerm = 1000, minGSSize = 10, maxGSSize = 500,
@@ -11,13 +11,15 @@ gseKEGG2(geneList, organism = "hsa", keyType = "kegg", exponent = 1,
 \arguments{
 \item{geneList}{order ranked geneList}
 
-\item{organism}{supported organism listed in 'http://www.genome.jp/kegg/catalog/org_list.html'}
+\item{organism}{supported organism listed in '
+\url{http://www.genome.jp/kegg/catalog/org_list.html}}
 
 \item{keyType}{one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'}
 
 \item{exponent}{weight of each step}
 
-\item{nproc}{If not equal to zero, sets BPPARAM to use nproc workers (default = 1)}
+\item{nproc}{If not equal to zero, 
+sets BPPARAM to use nproc workers (default = 1)}
 
 \item{nPerm}{permutation numbers}
 
@@ -35,6 +37,6 @@ gseKEGG2(geneList, organism = "hsa", keyType = "kegg", exponent = 1,
 feaResult object
 }
 \description{
-Modified Gene Set Enrichment Analysis (GSEA) of KEGG pathways.
-The GSEA method is modified to accept geneList with large portion of zeros
+The modified GSEA algorithm supports geneList with large portion of zeros
+and enrich KEGG pathways at the top of the geneList
 }

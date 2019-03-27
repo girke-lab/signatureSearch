@@ -7,8 +7,11 @@
   if(ES_NULL != "Default") {
     WTCSnull <- read.delim(ES_NULL)
     } else {
-    ext_path <- system.file("extdata", package="signatureSearch")
-    WTCSnull <- read.delim(file.path(ext_path, "ES_NULL.txt")) 
+    # download ES_NULL.txt and save it to cache
+      fl <- download_data_file(url=
+        "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/ES_NULL.txt",
+                               rname="ES_NULL")
+      WTCSnull <- read.delim(fl) 
   }
   WTCSnull[WTCSnull[, "Freq"]==0, "Freq"] <- 1 
   # Add pseudo count of 1 where Freq is zero 
@@ -37,11 +40,13 @@
   # without abs() sign of neg values would switch to pos
   ## Tau calculation requires reference NCS lookup DB
   ## performs: sign(ncs_query) * 100/N sum(abs(ncs_ref) < abs(ncs_query))
-  if(! file.exists(file.path(ext_path, "taurefList.rds"))){
-    download.file("http://biocluster.ucr.edu/~yduan004/LINCS_db/taurefList.rds", 
-                  file.path(ext_path, "taurefList.rds"), quiet = TRUE)
-  }
-  taurefList9264 <- readRDS(file.path(ext_path, "taurefList.rds"))
+  
+  # download taurefList.rds and save it to cache
+  fl <- download_data_file(url=
+      "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/taurefList.rds",
+                           rname="taurefList")
+  taurefList9264 <- readRDS(fl)
+  
   ncs_query <- ncs; names(ncs_query) <- names(esout)
   queryDB_refDB_match <- 
     unique(unlist(lapply(taurefList9264, rownames))) %in% names(ncs_query)
@@ -123,20 +128,6 @@
   return(ES)
 }
 
-#' lincsEnrich
-#' @param se SummarizedExperiment object
-#' @param upset character vector represents up regulated gene sets
-#' @param downset character vector represents down regulated gene sets
-#' @param sortby by which the result data frame is sorted
-#' @param type exponent of GSEA algorithm
-#' @param output one of `esonly` and `all`.
-#' @param ES_NULL path to the ES_NULL file. ES_null distribution is generated 
-#' with random queryies for computing nominal P-values for ES by `randQueryES` 
-#' function. If `ES_NULL` is set as `Default`, it uses the ES_null distribution 
-#' that we generated.
-#' @param minTauRefSize minimum size of reference data to compute Tau score
-#' @param chunk_size size of chunk per processing
-#' @return data.frame
 #' @importFrom DelayedArray apply
 lincsEnrich <- function(se, upset, downset, sortby="NCS", type=1, 
                         output="all", ES_NULL="Default", 
@@ -225,7 +216,6 @@ lincsEnrich <- function(se, upset, downset, sortby="NCS", type=1,
 #' @param chunk_size size of chunk per processing
 #' @return \code{\link{gessResult}} object, containing drugs in the reference 
 #' database ranked by their similarity to the query signature
-#' @importFrom utils download.file
 #' @importFrom R.utils gunzip
 #' @import HDF5Array
 #' @import SummarizedExperiment
@@ -266,7 +256,7 @@ gess_lincs <- function(qSig, ES_NULL="Default",
   x <- gessResult(result = as_tibble(res),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,
-                  refdb = qSig@refdb)
+                  refdb_name = qSig@refdb_name)
   return(x)
 }
 

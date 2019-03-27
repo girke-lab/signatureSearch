@@ -22,7 +22,6 @@
 #' @param chunk_size size of chunk per processing
 #' @return gessResult object, containing drugs in the reference database
 #' ranked by their similarity to the query signature
-#' @importFrom utils download.file
 #' @importFrom R.utils gunzip
 #' @import HDF5Array
 #' @import SummarizedExperiment
@@ -81,7 +80,7 @@ gess_gcmap <- function(qSig, higher, lower,
   x <- gessResult(result = as_tibble(res),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,
-                  refdb = qSig@refdb)
+                  refdb_name = qSig@refdb_name)
   return(x)
 }
 

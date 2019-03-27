@@ -2,7 +2,7 @@
 % Please edit documentation in R/gseAnalyzer2.R
 \name{gseGO2}
 \alias{gseGO2}
-\title{gseGO2}
+\title{modified GSEA method for GO enrichment analysis}
 \usage{
 gseGO2(geneList, ont = "BP", OrgDb, keyType = "ENTREZID",
   exponent = 1, nproc = 1, nPerm = 1000, minGSSize = 2,
@@ -10,21 +10,23 @@ gseGO2(geneList, ont = "BP", OrgDb, keyType = "ENTREZID",
   verbose = TRUE)
 }
 \arguments{
-\item{geneList}{scored ranked geneList}
+\item{geneList}{numeric vector with gene SYMBOL as names, the genes are 
+ranked decreasingly by their scores.}
 
 \item{ont}{one of "BP", "MF", "CC" or "ALL"}
 
-\item{OrgDb}{OrgDb}
+\item{OrgDb}{OrgDb, e.g., "org.Hs.eg.db".}
 
 \item{keyType}{keytype of gene}
 
 \item{exponent}{weight of each step}
 
-\item{nproc}{If not equal to zero, sets BPPARAM to use nproc workers (default = 1)}
+\item{nproc}{If not equal to zero, sets BPPARAM to use nproc workers 
+(default = 1)}
 
 \item{nPerm}{permutation numbers}
 
-\item{minGSSize}{minimal size of each geneSet for analyzing}
+\item{minGSSize}{minimal size of each gene set for analyzing}
 
 \item{maxGSSize}{maximal size of genes annotated for testing}
 
@@ -38,6 +40,7 @@ gseGO2(geneList, ont = "BP", OrgDb, keyType = "ENTREZID",
 feaResult object
 }
 \description{
-Modified Gene Set Enrichment Analysis (GSEA) of Gene Ontology.
-The GSEA method is modified to accept geneList with large portion of zeros
+The modified Gene Set Enrichment Analysis (GSEA) of Gene Ontology supports
+geneList with large portion of zeros and enrich GO terms at the top of the
+geneList
 }

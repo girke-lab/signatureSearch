@@ -12,7 +12,7 @@ Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), R.utils,
         igraph, scales, methods, qvalue, stats, stats4, graphics,
         utils, org.Hs.eg.db, reshape2, visNetwork, BiocParallel, fastmatch,
         tools, batchtools, DelayedArray, Biobase, clusterProfiler, enrichplot,
-        parallel, readr, rhdf5, grDevices, gCMAP, DOSE
+        parallel, readr, rhdf5, grDevices, gCMAP, DOSE, BiocFileCache
 Suggests: AnnotationHub, KEGG.db, knitr, testthat, rmarkdown, BiocStyle
 License: Artistic-2.0
 SystemRequirements: C++11

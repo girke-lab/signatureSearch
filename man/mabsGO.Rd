@@ -28,7 +28,7 @@ mabsGO(geneList, ont = "BP", OrgDb, keyType = "SYMBOL", nPerm = 1000,
 \item{pAdjustMethod}{pvalue adjustment method}
 }
 \value{
-mabsResult object
+\code{\link{feaResult}} object
 }
 \description{
 MeanAbs Analysis of Gene Ontology

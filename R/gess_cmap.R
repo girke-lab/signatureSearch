@@ -95,7 +95,6 @@ cmapEnrich <- function(se, upset, downset, chunk_size=5000) {
 #' @param chunk_size size of chunk per processing
 #' @return \code{gessResult} object, represents drugs in the reference database 
 #' ranked by their similarity to the query signature
-#' @importFrom utils download.file
 #' @importFrom R.utils gunzip
 #' @importFrom tools file_path_as_absolute
 #' @import methods
@@ -139,6 +138,6 @@ gess_cmap <- function(qSig, chunk_size=5000){
   x <- gessResult(result = as_tibble(res),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,
-                  refdb = qSig@refdb)
+                  refdb_name = qSig@refdb_name)
   return(x)
 }

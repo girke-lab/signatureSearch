@@ -12,7 +12,7 @@ GSEA_fgsea2 <- function(geneList,
   if(verbose)
     message("preparing geneSet collections...")
   
-  geneSets <- getGeneSet(USER_DATA)
+  geneSets <- get("PATHID2EXTID", envir = USER_DATA)
   
   if(verbose)
     message("excluding gene sets that have no intersect with drug targets")
@@ -40,15 +40,16 @@ GSEA_fgsea2 <- function(geneList,
                     nproc = nproc)
   
   p.adj <- p.adjust(tmp_res$pval, method=pAdjustMethod)
-  qvalues <- calculate_qvalue(tmp_res$pval)
+  qvalues <- DOSE:::calculate_qvalue(tmp_res$pval)
   
-  Description <- TERM2NAME(tmp_res$pathway, USER_DATA)
+  Description <- DOSE:::TERM2NAME(tmp_res$pathway, USER_DATA)
   
   ledge <- vapply(tmp_res$leadingEdge, paste0, collapse='/', 
                   FUN.VALUE = character(1))
   ledge_rank <- vapply(tmp_res$ledge_rank, paste0, collapse='/', 
                        FUN.VALUE = character(1))
-  message("ledge_rank included")
+  if(verbose)
+      message("ledge_rank included")
   res <- data.frame(
     ID = as.character(tmp_res$pathway),
     Description = Description,
@@ -70,15 +71,8 @@ GSEA_fgsea2 <- function(geneList,
   res <- res[idx, ]
   
   if (nrow(res) == 0) {
-    message("no term enriched under specific pvalueCutoff...")
-    return(
-      new("feaResult",
-          result    = as_tibble(res),
-          refSets   = geneSets,
-          targets   = geneList,
-          universe  = names(geneList)
-      )
-    )
+    message("No term enriched under specific pvalueCutoff...")
+    return(NULL)
   }
   
   row.names(res) <- res$ID
@@ -88,26 +82,14 @@ GSEA_fgsea2 <- function(geneList,
   
   new("feaResult",
       result    = as_tibble(res),
-      refSets   = geneSets,
-      targets   = geneList,
-      universe  = names(geneList)
+      #refSets   = geneSets,
+      targets   = geneList
+      #universe  = names(geneList)
   )
 }
 
-##' Generic function for gene set enrichment analysis.
-##' GSEA method is modified to accept geneList with large portion of zeros
-##'
-##' @title GSEA_internal2
-##' @param geneList order ranked geneList
-##' @param exponent weight of each step
-##' @param nPerm permutation numbers
-##' @param minGSSize minimal size of each geneSet for analyzing
-##' @param maxGSSize maximal size of each geneSet for analyzing
-##' @param pvalueCutoff p value Cutoff
-##' @param pAdjustMethod p value adjustment method
-##' @param verbose print message or not
-##' @param USER_DATA annotation data
-##' @return feaResult object
+## Generic function for gene set enrichment analysis.
+## GSEA method is modified to accept geneList with large portion of zeros
 GSEA_internal2 <- function(geneList,
                             exponent,
                             nPerm,

@@ -45,8 +45,8 @@ tsea_dup_hyperG <- function(drugs, universe = "Default",
                             pAdjustMethod = "BH", pvalueCutoff = 0.05, 
                             qvalueCutoff = 0.05, 
                             minGSSize = 5, maxGSSize = 500){
-  message("The query drugs [", length(drugs),"] are: \n", 
-          paste0(drugs[seq_len(min(length(drugs), 10))], sep ="  "), "...")
+  # message("The query drugs [", length(drugs),"] are: \n", 
+  #         paste0(drugs[seq_len(min(length(drugs), 10))], sep ="  "), "...")
   drugs <- unique(tolower(drugs))
   targets <- get_targets(drugs, database = "all")
   gnset <- na.omit(unlist(lapply(targets$t_gn_sym, function(i) 
@@ -59,7 +59,7 @@ tsea_dup_hyperG <- function(drugs, universe = "Default",
       univ_tar_path <- paste0(ext_path,"/univ_genes_in_GO.txt")
       universe <- readLines(univ_tar_path)
     }
-    ego <- enrichGO(gene = gnset, universe = universe, OrgDb = org.Hs.eg.db, 
+    ego <- enrichGO2(gene = gnset, universe = universe, OrgDb = org.Hs.eg.db, 
                     keytype = 'SYMBOL', ont = ont, 
                     pAdjustMethod = pAdjustMethod, pvalueCutoff = pvalueCutoff, 
                     qvalueCutoff = qvalueCutoff, 
@@ -77,7 +77,7 @@ tsea_dup_hyperG <- function(drugs, universe = "Default",
     gnset_entrez <- suppressMessages(
       AnnotationDbi::select(org.Hs.eg.db, keys = gnset, keytype = "SYMBOL", 
                             columns = "ENTREZID")$ENTREZID)
-    kk <- enrichKEGG(gene=gnset_entrez, organism = "hsa", keyType = "kegg", 
+    kk <- enrichKEGG2(gene=gnset_entrez, organism = "hsa", keyType = "kegg", 
                      pvalueCutoff = pvalueCutoff, 
                      pAdjustMethod = pAdjustMethod, 
                      universe=universe, minGSSize = minGSSize, 

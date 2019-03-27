@@ -9,7 +9,6 @@
 ##' @return data.frame of drugs and target gene symbols
 ##' @importFrom RSQLite dbConnect
 ##' @importFrom RSQLite dbGetQuery
-##' @importFrom utils download.file
 ##' @importFrom RSQLite SQLite
 ##' @importFrom RSQLite dbDisconnect
 ##' @seealso \code{\link[signatureSearch_data]{dtlink_dt_clue_sti}}
@@ -18,23 +17,14 @@
 get_targets <- function(drugs, database="all"){
   drugs_orig <- unique(drugs)
   drugs <- unique(tolower(drugs))
-  ext_path <- system.file("extdata", package="signatureSearch")
-  dtlink_path <- paste0(ext_path,"/dtlink_db_lincs_sti.db")
-  if(file.exists(dtlink_path)){
-    conn <- dbConnect(SQLite(), dtlink_path)
-  } else {
-    tryCatch(download.file(
-      "http://biocluster.ucr.edu/~yduan004/DOSE2/dtlink_db_lincs_sti.db", 
-      dtlink_path, quiet = TRUE), 
-      error = function(e){stop("Error happens when downloading 
-             signatureSearch/dtlink_db_lincs_sti.db")},
-      warning = function(w) {file.remove(dtlink_path)
-               stop("Error happens when downloading 
-                    signatureSearch/dtlink_db_lincs_sti.db")})
-    conn <- dbConnect(SQLite(), dtlink_path)
-  }
+  # download dtlink_db_clue_sti.db and save it to cache
+  fl <- download_data_file(url=paste0("http://biocluster.ucr.edu/~yduan004/",
+                                "signatureSearch_data/dtlink_db_clue_sti.db"),
+                           rname="dtlink")
+  conn <- dbConnect(SQLite(), fl)
+
   dtlink_db <- dbGetQuery(conn, 'SELECT * FROM dtlink_db')
-  dtlink_lincs <- dbGetQuery(conn, 'SELECT * FROM dtlink_lincs')
+  dtlink_clue <- dbGetQuery(conn, 'SELECT * FROM dtlink_clue')
   dtlink_sti <- dbGetQuery(conn, 'SELECT * FROM dtlink_sti')
   dtlink <- dbGetQuery(conn, 'SELECT * FROM dtlink')
   dbDisconnect(conn)
@@ -56,7 +46,7 @@ get_targets <- function(drugs, database="all"){
   }
   
   # drug targets in LINCS
-  dtlist_lincs <- split(dtlink_lincs$t_gn_sym, dtlink_lincs$drug_name)
+  dtlist_lincs <- split(dtlink_clue$t_gn_sym, dtlink_clue$drug_name)
   drugs_notar_lincs <- setdiff(drugs, names(dtlist_lincs))
   dtlist_lincs_drugs <- dtlist_lincs[intersect(names(dtlist_lincs), drugs)]
   res_lincs <- list2slash(dtlist_lincs_drugs)

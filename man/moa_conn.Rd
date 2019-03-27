@@ -2,22 +2,34 @@
 % Please edit documentation in R/moa_conn.R
 \name{moa_conn}
 \alias{moa_conn}
-\title{MOA connectivity}
+\title{Summarize GESS results on MOA level}
 \usage{
 moa_conn(gess_tb, moa_cats = "default", cells = "normal")
 }
 \arguments{
-\item{gess_tb}{table of GESS result}
+\item{gess_tb}{table in \code{\link{gessResult}} object}
 
-\item{moa_cats}{if set as "default", it uses MOA annotaions in CLUE website (https://clue.io/). Users can customise it as a `list` object in R.}
+\item{moa_cats}{if set as "default", it uses MOA annotaions from CLUE 
+website \url{https://clue.io/}. 
+Users can customize it as a `list` with names as MOA categories and 
+contents as drug names.}
 
-\item{cells}{one of "normal", "cancer" or "all", or a character vector containing selected cell types. It represents a group of interested 
-cell types. "all": all the 30 cell types in LINCS database; "normal": normal cell types in LINCS database as one group; 
-"tumor": tumor cell types in LINCS database as one group;}
+\item{cells}{one of "normal", "cancer" or "all", or a character vector 
+containing selected cell types. It represents a group of interested 
+cell types. 
+\itemize{
+  \item "all": all the 30 cell types in LINCS database;
+  \item "normal": normal cell types in LINCS database as one group; 
+  \item "tumor": tumor cell types in LINCS database as one group;
+}}
 }
 \value{
 data.frame
 }
 \description{
-Get MOA categories ranked by their connectivity to query signature in selected cells
+Summarize GESS results to get a list of MOA categories ranked by their 
+connectivity to query signature in cells
+}
+\seealso{
+\code{\link{gessResult}}
 }

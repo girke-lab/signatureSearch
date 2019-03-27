@@ -28,12 +28,15 @@
 ##' function if a `data.frame` representing genome-wide GEPs (log2FC, z-scores, 
 ##' intensity values, etc.) of compound or genetic treatments in cells 
 ##' is provided.
+##' @slot refdb_name character, name of the reference database. Like "CMAP",
+##' "LINCS" or other custom names.
 ##' @exportClass qSig
 ##' @keywords classes
 setClass("qSig", slots = c(
   qsig = "ANY",
   gess_method = "character",
-  refdb = "SummarizedExperiment"
+  refdb = "SummarizedExperiment",
+  refdb_name = "character"
 ))
 
 ##' Class "gessResult"
@@ -46,8 +49,7 @@ setClass("qSig", slots = c(
 ##' in the reference database ranked by their signature similarity to the query
 ##' @slot qsig query signature
 ##' @slot gess_method method for GESS analysis
-##' @slot refdb `SummarizedExperiment` object represents the refrence 
-##' signaure database
+##' @slot refdb_name name of the reference database
 ##' @exportClass gessResult
 ##' @keywords classes
 setClass("gessResult",
@@ -55,13 +57,13 @@ setClass("gessResult",
            result = "data.frame",
            qsig = "ANY",
            gess_method = "character",
-           refdb = "SummarizedExperiment"
+           refdb_name = "character"
          ))
 
 ## Constructor for "gessResult"
-gessResult <- function(result, qsig, gess_method, refdb)
+gessResult <- function(result, qsig, gess_method, refdb_name="UNKNOWN")
   new("gessResult", result=result, qsig=qsig, 
-      gess_method=gess_method, refdb=refdb)
+      gess_method=gess_method, refdb_name=refdb_name)
 
 
 ## Defining the validity method for "qSig"
@@ -82,11 +84,6 @@ gessResult <- function(result, qsig, gess_method, refdb)
 ##' @slot drugs Drug IDs
 ##' @slot targets Target IDs of drugs in DrugBank/LINCS/STITCH databases or 
 ##' target list with scores.
-##' @slot universe background genes or drugs. For TSEA, it is all the genes 
-##' in the corresponding annotation system (GO/KEGG). For DSEA, it is all the 
-##' drugs in the correspoinding annotation system (GO/KEGG) after 
-##' drug-to-functional category mapping
-##' @slot refSets gene sets or drug sets in the corresponding annotation system
 ##' @exportClass feaResult
 ##' @author Yuzhu Duan
 ##' @keywords classes
@@ -96,8 +93,10 @@ setClass("feaResult",
            organism       = "character",
            ontology       = "character",
            drugs          = "character",
-           targets        = "ANY",
-           universe       = "character",
-           refSets        = "list"
+           targets        = "ANY"
          )
 )
+## @slot universe background genes or drugs. For TSEA, it is all the genes 
+## in the corresponding annotation system (GO/KEGG). For DSEA, it is all the 
+## drugs in the correspoinding annotation system (GO/KEGG) after 
+## drug-to-functional category mapping

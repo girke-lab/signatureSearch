@@ -62,6 +62,6 @@ gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
   x <- gessResult(result = as_tibble(res),
                   qsig = qSig@qsig,
                   gess_method = qSig@gess_method,
-                  refdb = qSig@refdb)
+                  refdb_name = qSig@refdb_name)
   return(x)
 }

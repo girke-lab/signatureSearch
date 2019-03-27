@@ -62,16 +62,11 @@ dsea_hyperG <- function(drugs,
     
     # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
     #                                  ont, keytype="SYMBOL")
-    # download GO_DATA_drug and save it locally to save time
-    ext_path <- system.file("extdata", package="signatureSearch")
-    godata_drug_path <- paste0(ext_path,"/GO_DATA_drug.rds")
-    if(file.exists(godata_drug_path)){
-      GO_DATA_drug <- readRDS(godata_drug_path)
-    } else {
-      download.file("http://biocluster.ucr.edu/~yduan004/fea/GO_DATA_drug.rds", 
-                    godata_drug_path, quiet = TRUE)
-      GO_DATA_drug <- readRDS(godata_drug_path)
-    }
+    # download GO_DATA_drug.rds and save it to cache to save time
+    fl <- download_data_file(url=
+    "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/GO_DATA_drug.rds",
+                             rname="GO_DATA_drug")
+    GO_DATA_drug <- readRDS(fl)
     
     # get all the drugs in the corresponding annotation system as universe
     ext2path <- get("EXTID2PATHID", envir = GO_DATA_drug)
@@ -84,13 +79,12 @@ dsea_hyperG <- function(drugs,
                              qvalueCutoff = qvalueCutoff,
                              minGSSize = minGSSize,
                              maxGSSize = maxGSSize,
-                             USER_DATA = GO_DATA_drug
-    )
+                             USER_DATA = GO_DATA_drug)
     
     if (is.null(res))
       return(res)
     
-    res@organism <- clusterProfiler:::get_organism(OrgDb="org.Hs.eg.db")
+    res@organism <- DOSE:::get_organism(OrgDb="org.Hs.eg.db")
     res@ontology <- ont
     res@targets <- NULL
     if (ont == "ALL") {
@@ -99,7 +93,7 @@ dsea_hyperG <- function(drugs,
     return(res)
   }
   if(type == "KEGG"){
-    species <- organismMapper("hsa")
+    species <- clusterProfiler:::organismMapper("hsa")
     KEGG_DATA_drug <- prepare_KEGG_drug(species, "KEGG", keyType="kegg")
     # get all the drugs in the corresponding annotation system as universe
     ext2path <- get("EXTID2PATHID", envir = KEGG_DATA_drug)
@@ -139,7 +133,7 @@ dsea_hyperG <- function(drugs,
 ##' @importFrom stats na.omit
 ##' @importFrom GOSemSim load_OrgDb
 get_GO_data_drug <- function(OrgDb, ont, keytype) {
-  GO_Env <- get_GO_Env()
+  GO_Env <- clusterProfiler:::get_GO_Env()
   use_cached <- FALSE
   
   if (exists("organism", envir=GO_Env, inherits=FALSE) &&
@@ -148,7 +142,7 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
     org <- get("organism", envir=GO_Env)
     kt <- get("keytype", envir=GO_Env)
     
-    if (org == clusterProfiler:::get_organism(OrgDb) &&
+    if (org == DOSE:::get_organism(OrgDb) &&
         keytype == kt &&
         exists("goAnno", envir=GO_Env, inherits=FALSE) &&
         exists("GO2TERM", envir=GO_Env, inherits=FALSE)){
@@ -175,20 +169,15 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
     
     assign("goAnno", goAnno, envir=GO_Env)
     assign("keytype", keytype, envir=GO_Env)
-    assign("organism", clusterProfiler:::get_organism(OrgDb), envir=GO_Env)
+    assign("organism", DOSE:::get_organism(OrgDb), envir=GO_Env)
   }
   
-  # download goAnno_drug.rds
-  ext_path <- system.file("extdata", package="signatureSearch")
-  anno_path <- file.path(ext_path, "goAnno_drug.rds")
-  if(file.exists(anno_path)){
-    goAnno_drug <- readRDS(anno_path)
-  } else {
-    download.file("http://biocluster.ucr.edu/~yduan004/fea/goAnno_drug.rds", 
-                  anno_path, quiet = TRUE)
-    goAnno_drug <- readRDS(anno_path)
-  }
-  # "drug_name" in goAnno_drug are all lowercase
+  # download goAnno_drug.rds and save it to cache
+  fl <- download_data_file(url=
+    "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/goAnno_drug.rds",
+                           rname="goAnno_drug")
+  goAnno_drug <- readRDS(fl) # "drug_name" in goAnno_drug are all lowercase
+  
   if (ont == "ALL") {
     GO2GENE <- goAnno_drug[,c("GOALL","drug_name")]
   } else {
@@ -196,7 +185,8 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
                            c("GOALL","drug_name")]
   }
   
-  GO_DATA <- build_Anno(GO2GENE, get_GO2TERM_table())
+  GO_DATA <- DOSE:::build_Anno(GO2GENE, 
+                                       clusterProfiler:::get_GO2TERM_table())
   
   goOnt.df <- goAnno[, c("GOALL", "ONTOLOGYALL")] %>% unique
   goOnt <- goOnt.df[,2]
@@ -216,23 +206,12 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
 ##' @importFrom RSQLite dbDisconnect
 ##' @importFrom utils download.file
 prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
-  kegg <- download_KEGG(species, KEGG_Type, keyType)
-  
+  kegg <- clusterProfiler:::download_KEGG(species, KEGG_Type, keyType)
   # get dtlink_entrez
-  ext_path <- system.file("extdata", package="signatureSearch")
-  dtlink_path <- paste0(ext_path,"/dtlink_db_lincs_sti.db")
-  if(file.exists(dtlink_path)){
-    conn <- dbConnect(SQLite(), dtlink_path)
-  } else {
-    tryCatch(download.file(
-      "http://biocluster.ucr.edu/~yduan004/DOSE2/dtlink_db_lincs_sti.db", 
-      dtlink_path, quiet = TRUE), 
-       error = function(e){
-         stop("Error happens when downloading DOSE2/dtlink_db_lincs_sti.db")
-       }, warning = function(w) {file.remove(dtlink_path)
-         stop("Error happens when downloading DOSE2/dtlink_db_lincs_sti.db")})
-    conn <- dbConnect(SQLite(), dtlink_path)
-  }
+  fl <- download_data_file(url=paste0("http://biocluster.ucr.edu/~yduan004/",
+                                  "signatureSearch_data/dtlink_db_clue_sti.db"),
+                           rname="dtlink")
+  conn <- dbConnect(SQLite(), fl)
   dtlink_entrez <- dbGetQuery(conn, 'SELECT * FROM dtlink_entrez')
   dbDisconnect(conn)
   
@@ -244,9 +223,8 @@ prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
     filter(!is.na(drug_name)) %>% distinct(from, drug_name, .keep_all = TRUE)
   keggpath2entrez <- as.data.frame(keggpath2entrez)[,c("from","drug_name")]
   kegg$KEGGPATHID2EXTID <- keggpath2entrez
-  build_Anno(kegg$KEGGPATHID2EXTID,
+  DOSE:::build_Anno(kegg$KEGGPATHID2EXTID,
              kegg$KEGGPATHID2NAME)
 }
-
 ## get rid of "Undefined global functions or variables" note
 cell = drug_name = from = . = NULL

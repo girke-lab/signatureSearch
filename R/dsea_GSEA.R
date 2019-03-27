@@ -72,16 +72,11 @@ dsea_GSEA <- function(drugList,
   if(type=="GO"){
     # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
     #                                  ont, keytype="SYMBOL")
-    # download GO_DATA_drug and save it locally to save time
-    ext_path <- system.file("extdata", package="signatureSearch")
-    godata_drug_path <- paste0(ext_path,"/GO_DATA_drug.rds")
-    if(file.exists(godata_drug_path)){
-      GO_DATA_drug <- readRDS(godata_drug_path)
-    } else {
-      download.file("http://biocluster.ucr.edu/~yduan004/fea/GO_DATA_drug.rds", 
-                    godata_drug_path, quiet = TRUE)
-      GO_DATA_drug <- readRDS(godata_drug_path)
-    }
+    # download GO_DATA_drug.rds and save it to cache to save time
+    fl <- download_data_file(url=
+   "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/GO_DATA_drug.rds",
+      rname="GO_DATA_drug")
+    GO_DATA_drug <- readRDS(fl)
     
     res <-  GSEA_internal(geneList = drugList,
                           exponent = exponent,
@@ -95,7 +90,9 @@ dsea_GSEA <- function(drugList,
     
     if (is.null(res))
       return(res)
-    res@organism <- clusterProfiler:::get_organism(OrgDb = "org.Hs.eg.db")
+    res@drugs <- names(drugList)
+    res@targets <- NULL
+    res@organism <- DOSE:::get_organism(OrgDb = "org.Hs.eg.db")
     res@ontology <- ont
     
     if (ont == "ALL") {
@@ -105,7 +102,7 @@ dsea_GSEA <- function(drugList,
   }
   
   if(type=="KEGG"){
-    species <- organismMapper("hsa")
+    species <- clusterProfiler:::organismMapper("hsa")
     KEGG_DATA_drug <- prepare_KEGG_drug(species, "KEGG", keyType="kegg")
     
     res <-  GSEA_internal(geneList = drugList,
@@ -120,6 +117,8 @@ dsea_GSEA <- function(drugList,
     
     if (is.null(res))
       return(res)
+    res@drugs <- names(drugList)
+    res@targets <- NULL
     res@organism <- species
     res@ontology <- "KEGG"
     return(res)

@@ -1,23 +1,29 @@
-##' MOA connectivity
+##' Summarize GESS results on MOA level
 ##' 
-##' Get MOA categories ranked by their connectivity to query signature in selected cells
-##' @param gess_tb table of GESS result
-##' @param moa_cats if set as "default", it uses MOA annotaions in CLUE website (https://clue.io/). Users can customise it as a `list` object in R.
-##' @param cells one of "normal", "cancer" or "all", or a character vector containing selected cell types. It represents a group of interested 
-##' cell types. "all": all the 30 cell types in LINCS database; "normal": normal cell types in LINCS database as one group; 
-##' "tumor": tumor cell types in LINCS database as one group;
+##' Summarize GESS results to get a list of MOA categories ranked by their 
+##' connectivity to query signature in cells
+##' @param gess_tb table in \code{\link{gessResult}} object
+##' @param moa_cats if set as "default", it uses MOA annotaions from CLUE 
+##' website \url{https://clue.io/}. 
+##' Users can customize it as a `list` with names as MOA categories and 
+##' contents as drug names.
+##' @param cells one of "normal", "cancer" or "all", or a character vector 
+##' containing selected cell types. It represents a group of interested 
+##' cell types. 
+##' \itemize{
+##'   \item "all": all the 30 cell types in LINCS database;
+##'   \item "normal": normal cell types in LINCS database as one group; 
+##'   \item "tumor": tumor cell types in LINCS database as one group;
+##' }
+##'  
 ##' @return data.frame 
+##' @seealso \code{\link{gessResult}}
 ##' @export
 moa_conn <- function(gess_tb, moa_cats="default", cells="normal"){
   if(moa_cats=="default"){
     dir <- system.file("extdata", package = "signatureSearch")
-    moa_path <- file.path(dir, "lincs_clue_moa_list_filtered_for_tar_num10.rds") 
-    if(file.exists(moa_path)){
-      moa_list <- readRDS(moa_path)
-    } else {
-      download.file("http://biocluster.ucr.edu/~yduan004/LINCS_db/lincs_clue_moa_list_filtered_for_tar_num10.rds", moa_path, quiet = TRUE)
-      moa_list <- readRDS(moa_path)
-    }
+    moa_path <- file.path(dir, "clue_moa_list.rds") 
+    moa_list <- readRDS(moa_path)
   }
   if(is(moa_cats, "list")){
     moa_list <- moa_cats
@@ -38,7 +44,8 @@ moa_mrk <- function(gess_tb, moa_list, cells){
                              stringsAsFactors = FALSE)
   }
   else if(cells=="normal"){
-    cell_sel <- c("HA1E", "HCC515", "HEK293T", "MCF10A", "NKDBA", "NEU", "NPC", "FIBRNPC", "ASC", "CD34", "PHH", "SKB")
+    cell_sel <- c("HA1E", "HCC515", "HEK293T", "MCF10A", "NKDBA", "NEU", "NPC", 
+                  "FIBRNPC", "ASC", "CD34", "PHH", "SKB")
     gess_tb_sub <- filter(gess_tb, cell %in% cell_sel)
     moa_mrk <- sort(vapply(moa_list, function(x) 
       mean(as.numeric(gess_tb_sub$rank[gess_tb_sub$pert %in% x]), na.rm=TRUE),
@@ -48,7 +55,8 @@ moa_mrk <- function(gess_tb, moa_list, cells){
                              stringsAsFactors = FALSE)
   }
   else if(cells=="tumor"){
-    cell_sel <- c("A375", "A549", "BT20", "HEPG2", "HL60", "HS578T", "HT29", "HUH7", "JURKAT", "MCF7", "MDAMB231", "NOMO1", "PC3",
+    cell_sel <- c("A375", "A549", "BT20", "HEPG2", "HL60", "HS578T", "HT29", 
+                  "HUH7", "JURKAT", "MCF7", "MDAMB231", "NOMO1", "PC3",
                   "SKBR3", "THP1", "U266", "U937", "VCAP")
     gess_tb_sub <- filter(gess_tb, cell %in% cell_sel)
     moa_mrk <- sort(vapply(moa_list, function(x) 
