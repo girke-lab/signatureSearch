@@ -3,29 +3,30 @@
 \docType{methods}
 \name{qSig}
 \alias{qSig}
-\alias{qSig,list,character,SummarizedExperiment-method}
-\alias{qSig,matrix,character,SummarizedExperiment-method}
+\alias{qSig,list,character,SummarizedExperiment,character-method}
+\alias{qSig,matrix,character,SummarizedExperiment,character-method}
 \title{qSig method}
 \usage{
-qSig(qsig, gess_method, refdb)
+qSig(qsig, gess_method, refdb, refdb_name)
 
-\S4method{qSig}{list,character,SummarizedExperiment}(qsig, gess_method,
-  refdb)
+\S4method{qSig}{list,character,SummarizedExperiment,character}(qsig,
+  gess_method, refdb, refdb_name = "UNKNOWN")
 
-\S4method{qSig}{matrix,character,SummarizedExperiment}(qsig, gess_method,
-  refdb)
+\S4method{qSig}{matrix,character,SummarizedExperiment,character}(qsig,
+  gess_method, refdb, refdb_name = "UNKNOWN")
 }
 \arguments{
-\item{qsig}{When 'gess_method' is 'CMAP' or 'LINCS', it should be a list of 
-two elements, which are up and down regulated gene sets of entrez ids.
+\item{qsig}{When 'gess_method' is 'CMAP' or 'LINCS', 
+it should be a list of two elements, which are up and down regulated gene 
+sets of entrez ids.
 
 When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
 representing gene expression profiles (GEPs) of treatment(s).}
 
 \item{gess_method}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
 
-\item{refdb}{\code{SummarizedExperiment} object, which can be HDF5 backed 
-and loaded via `loadHDF5SummarizedExperiment` function. 
+\item{refdb}{\code{SummarizedExperiment} object, which can be 
+HDF5 backed and loaded via `loadHDF5SummarizedExperiment` function. 
 The 'assays' slot of the \strong{SummarizedExperiment} object should be a 
 \code{DelayedMatrix} or a matrix consists of genome-wide (GEPs) from a
 number of drug treatments or genetic perturbations. It represents the 
@@ -35,17 +36,22 @@ The \code{sample_db} contains 95 GEPs randomly sampled from the `lincs`
 database and 5 GEPs from HDAC inhibitors in human SKB (muscle) cell. 
 
 The full `lincs` and `cmap` public databases can be loaded from the 
-\code{\link{signatureSerch_data}} package.
+\code{signatureSearch_data} package.
 
-The custom database can be built via \code{\link{`build_custom_db`}} 
+The custom database can be built via \code{\link{build_custom_db}} 
 function if a `data.frame` representing genome-wide GEPs (log2FC, z-scores, 
 intensity values, etc.) of compound or genetic treatments in cells 
 is provided.}
+
+\item{refdb_name}{character, name of the reference database. Like "CMAP",
+"LINCS" or other custom names.}
 }
 \value{
 \code{qSig} object
 }
 \description{
+qSig generic
+
 It builds a `qSig` object to store the query signature, reference database
 and GESS method used to search for similarity
 }
@@ -58,11 +64,13 @@ query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
 qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-                   gess_method = "LINCS", refdb = sample_db)
-qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db)
+                   gess_method = "LINCS", refdb = sample_db,
+                   refdb_name="sample")
+qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db,
+                   refdb_name="sample")
 }
 \seealso{
-\code{\link{build_custom_db}}, \code{\link{signatureSerch_data}},
+\code{\link{build_custom_db}}, \code{signatureSearch_data},
          \code{\link[SummarizedExperiment]{SummarizedExperiment}},
          \code{\link[DelayedArray]{DelayedMatrix}},
          \code{\link[HDF5Array]{loadHDF5SummarizedExperiment}}

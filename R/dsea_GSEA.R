@@ -38,7 +38,8 @@
 ##' upset <- head(names(query[order(-query)]), 150)
 ##' downset <- tail(names(query[order(-query)]), 150)
 ##' qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-##'                    gess_method = "LINCS", refdb = sample_db)
+##'                    gess_method = "LINCS", refdb = sample_db,
+##'                    refdb_name="sample")
 ##' lincs <- gess_lincs(qsig_lincs, sortby="NCS")
 ##' dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
 ##' dl <- dl[dl>0]
@@ -92,17 +93,17 @@ dsea_GSEA <- function(drugList,
       return(res)
     res@drugs <- names(drugList)
     res@targets <- NULL
-    res@organism <- DOSE:::get_organism(OrgDb = "org.Hs.eg.db")
+    res@organism <- get_organism(OrgDb = "org.Hs.eg.db")
     res@ontology <- ont
     
     if (ont == "ALL") {
-      res <- clusterProfiler:::add_GO_Ontology(res, GO_DATA_drug)
+      res <- add_GO_Ontology(res, GO_DATA_drug)
     } 
     return(res)
   }
   
   if(type=="KEGG"){
-    species <- clusterProfiler:::organismMapper("hsa")
+    species <- organismMapper("hsa")
     KEGG_DATA_drug <- prepare_KEGG_drug(species, "KEGG", keyType="kegg")
     
     res <-  GSEA_internal(geneList = drugList,

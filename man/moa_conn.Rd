@@ -30,6 +30,16 @@ data.frame
 Summarize GESS results to get a list of MOA categories ranked by their 
 connectivity to query signature in cells
 }
+\examples{
+db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+sample_db <- loadHDF5SummarizedExperiment(db_dir)
+## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+qsig_fisher <- qSig(qsig=query_mat, gess_method="Fisher", refdb=sample_db,
+                    refdb_name="sample")
+fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
+res_moa <- moa_conn(result(fisher))
+}
 \seealso{
 \code{\link{gessResult}}
 }

@@ -21,3 +21,9 @@ get_drugs generic
 
 get `drugs` slot of feaResult object
 }
+\examples{
+data(drugs)
+dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+                                  type = "GO", ont="MF")
+get_drugs(dup_hyperG_res)
+}

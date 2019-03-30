@@ -5,15 +5,16 @@
 ##' @docType methods
 ##' @name qSig
 ##' @rdname qSig-methods
-##' @aliases qSig,list,character,SummarizedExperiment-method
-##' @param qsig When 'gess_method' is 'CMAP' or 'LINCS', it should be a list of 
-##' two elements, which are up and down regulated gene sets of entrez ids.
+##' @aliases qSig,list,character,SummarizedExperiment,character-method
+##' @param qsig When 'gess_method' is 'CMAP' or 'LINCS', 
+##' it should be a list of two elements, which are up and down regulated gene 
+##' sets of entrez ids.
 ##' 
 ##' When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
 ##' representing gene expression profiles (GEPs) of treatment(s). 
 ##' @param gess_method one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'
-##' @param refdb \code{SummarizedExperiment} object, which can be HDF5 backed 
-##' and loaded via `loadHDF5SummarizedExperiment` function. 
+##' @param refdb \code{SummarizedExperiment} object, which can be 
+##' HDF5 backed and loaded via `loadHDF5SummarizedExperiment` function. 
 ##' The 'assays' slot of the \strong{SummarizedExperiment} object should be a 
 ##' \code{DelayedMatrix} or a matrix consists of genome-wide (GEPs) from a
 ##' number of drug treatments or genetic perturbations. It represents the 
@@ -23,16 +24,16 @@
 ##' database and 5 GEPs from HDAC inhibitors in human SKB (muscle) cell. 
 ##' 
 ##' The full `lincs` and `cmap` public databases can be loaded from the 
-##' \code{\link{signatureSerch_data}} package.
+##' \code{signatureSearch_data} package.
 ##' 
-##' The custom database can be built via \code{\link{`build_custom_db`}} 
+##' The custom database can be built via \code{\link{build_custom_db}} 
 ##' function if a `data.frame` representing genome-wide GEPs (log2FC, z-scores, 
 ##' intensity values, etc.) of compound or genetic treatments in cells 
 ##' is provided.
 ##' @param refdb_name character, name of the reference database. Like "CMAP",
 ##' "LINCS" or other custom names.
 ##' @return \code{qSig} object
-##' @seealso \code{\link{build_custom_db}}, \code{\link{signatureSerch_data}},
+##' @seealso \code{\link{build_custom_db}}, \code{signatureSearch_data},
 ##'          \code{\link[SummarizedExperiment]{SummarizedExperiment}},
 ##'          \code{\link[DelayedArray]{DelayedMatrix}},
 ##'          \code{\link[HDF5Array]{loadHDF5SummarizedExperiment}}
@@ -45,8 +46,10 @@
 ##' upset <- head(names(query[order(-query)]), 150)
 ##' downset <- tail(names(query[order(-query)]), 150)
 ##' qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-##'                    gess_method = "LINCS", refdb = sample_db)
-##' qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db)
+##'                    gess_method = "LINCS", refdb = sample_db,
+##'                    refdb_name="sample")
+##' qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db,
+##'                    refdb_name="sample")
 ##' @exportMethod qSig
 setMethod("qSig",
   signature(qsig="list", gess_method="character", 
@@ -101,7 +104,7 @@ setMethod("qSig",
 ##' @docType methods
 ##' @name qSig
 ##' @rdname qSig-methods
-##' @aliases qSig,matrix,character,SummarizedExperiment-method
+##' @aliases qSig,matrix,character,SummarizedExperiment,character-method
 ##' @exportMethod qSig
 setMethod("qSig",
   signature(qsig="matrix", gess_method="character", 

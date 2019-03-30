@@ -1,7 +1,7 @@
 ##' This function can be used to get protein targets of query drugs in 
 ##' DrugBank, CLUE and STITCH databases. A SQLite database storing drug-target
 ##' links in the above three databases can be found at 
-##' \code{\link{signatureSearch_data}} package. 
+##' \code{signatureSearch_data} package. 
 ##'
 ##' @title get targets of query drugs
 ##' @param drugs a character vector storing a list of drug names
@@ -11,7 +11,10 @@
 ##' @importFrom RSQLite dbGetQuery
 ##' @importFrom RSQLite SQLite
 ##' @importFrom RSQLite dbDisconnect
-##' @seealso \code{\link[signatureSearch_data]{dtlink_dt_clue_sti}}
+##' @seealso \code{dtlink_dt_clue_sti}
+##' @examples 
+##' data(drugs)
+##' dt <- get_targets(drugs)
 ##' @export 
 
 get_targets <- function(drugs, database="all"){

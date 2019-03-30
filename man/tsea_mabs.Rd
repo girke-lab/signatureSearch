@@ -21,6 +21,8 @@ Can be top ranking drugs in GESS result.}
 \item{pAdjustMethod}{p value adjustment method,
 one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
 
+\item{pvalueCutoff}{p value cutoff}
+
 \item{minGSSize}{minimum size of each gene set in annotation system}
 
 \item{maxGSSize}{maximum size of each gene set in annotation system}
@@ -49,7 +51,7 @@ The resulting nominal p values are adjusted for
 multiple hypothesis testing using the Benjamini-Hochberg method.
 }
 \examples{
-drugs <- data(drugs)
+data(drugs)
 ## GO annotation system
 mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
                       pvalueCutoff=0.05, minGSSize=5)

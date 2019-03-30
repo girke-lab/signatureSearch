@@ -77,3 +77,16 @@ NULL
 #' @docType data
 #' @keywords datasets
 "drugs"
+
+#' Target list used in examples
+#' 
+#' A named numeric vector with GENE SYMBOL as names. It is a subset of the 
+#' first 1000 elements from 'targets' slot of 'mgsea_res' in the vignette. 
+#' The scores represent the weights of targets/genes in the target set of the
+#' selected top 10 drugs.
+#'
+#' @name targetList
+#' @aliases targetList
+#' @docType data
+#' @keywords datasets
+"targetList"

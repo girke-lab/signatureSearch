@@ -38,7 +38,8 @@
 #' sample_db <- loadHDF5SummarizedExperiment(db_dir)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db)
+#' qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db,
+#'                    refdb_name="sample")
 #' gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
 #' result(gcmap)
 #' @export

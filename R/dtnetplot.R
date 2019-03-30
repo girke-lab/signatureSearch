@@ -12,6 +12,8 @@
 ##' @return visNetwork plot
 ##' @import visNetwork
 ##' @importFrom AnnotationDbi select
+##' @importFrom scales cscale
+##' @importFrom scales seq_gradient_pal
 ##' @examples 
 ##' data(drugs)
 ##' dtnetplot(drugs=drugs, set="GO:0032041", ont = "MF", 
@@ -34,8 +36,7 @@ dtnetplot <- function(drugs, set, ont = NULL, ...) {
                                       goAnno$GOALL == set])
   }
   if(grepl("hsa\\d{5}",set)){
-    KEGG_DATA <- clusterProfiler:::prepare_KEGG(species="hsa", "KEGG", 
-                                                keyType="kegg")
+    KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
     p2e <- get("PATHID2EXTID", envir=KEGG_DATA)
     go_gene_entrez = p2e[[set]]
     # convert Entrez ids in KEGG pathways to gene SYMBOL

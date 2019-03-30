@@ -52,7 +52,7 @@ drugs, e.g., top ranking drugs from GESS result since the functional
 categories also contains drug sets after gene to drug mappings.
 }
 \examples{
-drugs <- data(drugs)
+data(drugs)
 # GO annotation system
 hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
 result(hyperG_res)

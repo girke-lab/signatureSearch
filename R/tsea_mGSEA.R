@@ -57,7 +57,7 @@
 #' @references Subramanian et at., 2005,
 #' \url{https://www.pnas.org/content/102/43/15545}
 #' @examples 
-#' drugs <- data(drugs)
+#' data(drugs)
 #' ## GO annotation system
 #' mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
 #'                         nPerm=1000, pvalueCutoff=1, minGSSize=5)
@@ -95,6 +95,8 @@ tsea_mGSEA <- function(drugs,
                     minGSSize = minGSSize, maxGSSize = maxGSSize, 
                     exponent = exponent, nproc=1, verbose=verbose, 
                     pvalueCutoff = pvalueCutoff, pAdjustMethod=pAdjustMethod)
+    if(is.null(gsego))
+        return(NULL)
     gsego@drugs = drugs
     return(gsego)
   }
@@ -124,6 +126,8 @@ tsea_mGSEA <- function(drugs,
                       keyType='kegg', nPerm = nPerm, verbose = verbose, 
                       minGSSize = minGSSize, maxGSSize=maxGSSize, 
                       pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod)
+    if(is.null(gsekk))
+        return(NULL)
     gsekk@drugs = drugs
     return(gsekk)
   }

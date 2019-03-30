@@ -2,12 +2,12 @@
 % Please edit documentation in R/gess_res_summary.R
 \name{sim_score_grp}
 \alias{sim_score_grp}
-\title{sim_score_grp}
+\title{Get summary scores of drugs in cell groups}
 \usage{
 sim_score_grp(tib, grp1, grp2, score_column)
 }
 \arguments{
-\item{tib}{tibble object from result(gessResult)}
+\item{tib}{tibble in gessResult object.}
 
 \item{grp1}{character vector, group 1 of cell types, e.g., tumor cell types}
 
@@ -20,5 +20,20 @@ grouped}
 tibble
 }
 \description{
-Append two columns (score_column_grp1, score_column_grp2) to GESS result
+Append two columns (score_column_grp1, score_column_grp2) to GESS result,
+which represent cell summary scores of drugs in a cell group.
+}
+\examples{
+db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+sample_db <- loadHDF5SummarizedExperiment(db_dir)
+## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+query = as.numeric(query_mat); names(query) = rownames(query_mat)
+upset <- head(names(query[order(-query)]), 150)
+downset <- tail(names(query[order(-query)]), 150)
+qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
+                   gess_method = "LINCS", refdb = sample_db,
+                   refdb_name="sample")
+lincs <- gess_lincs(qsig_lincs, sortby="NCS")
+df <- sim_score_grp(result(lincs), grp1="SKB", grp2="MCF7", "NCS")
 }

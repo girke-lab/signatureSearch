@@ -37,18 +37,18 @@ setMethod("show", signature(object="gessResult"),
 ##' @aliases show,feaResult-method
 ##' @importFrom utils str
 setMethod("show", signature(object="feaResult"),
-          function (object){
-              cat("#\n# Functional Enrichment Analysis \n#\n")
-              cat("#...@organism", "\t", object@organism, "\n")
-              cat("#...@ontology", "\t", object@ontology, "\n")
-              cat("#...@drugs", "\t")
-              str(object@drugs)
-              cat("#...@targets", "\t")
-              str(object@targets)
-              # cat("#...@universe", "\t")
-              # str(object@universe)
-              cat(paste0("#...", nrow(object@result)), "enriched terms found\n")
-              str(object@result)
+      function (object){
+          cat("#\n# Functional Enrichment Analysis \n#\n")
+          cat("#...@organism", "\t", object@organism, "\n")
+          cat("#...@ontology", "\t", object@ontology, "\n")
+          cat("#...@drugs", "\t")
+          str(object@drugs)
+          cat("#...@targets", "\t")
+          str(object@targets)
+          # cat("#...@universe", "\t")
+          # str(object@universe)
+          cat(paste0("#...", nrow(object@result)), "enriched terms found\n")
+          str(object@result)
           })
 
 
@@ -60,6 +60,15 @@ setMethod("show", signature(object="feaResult"),
 ##' @param x \code{gessResult} or \code{feaResult} object
 ##' @return tibble
 ##' @aliases result,gessResult-method
+##' @examples 
+##' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
+##' sample_db <- loadHDF5SummarizedExperiment(db_dir)
+##' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+##' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+##' qsig_fisher <- qSig(qsig=query_mat, gess_method="Fisher", refdb=sample_db,
+##'                     refdb_name="sample")
+##' fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
+##' result(fisher)
 setMethod("result", signature(x="gessResult"),
           function(x) x@result)
 
@@ -70,6 +79,11 @@ setMethod("result", signature(x="gessResult"),
 ##' @rdname result-methods
 ##' @method result feaResult
 ##' @aliases result,feaResult-method
+##' @examples 
+##' data(drugs)
+##' dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+##'                                   type = "GO", ont="MF")
+##' result(dup_hyperG_res)
 setMethod("result", signature(x="feaResult"),
           function(x) x@result)
 
@@ -82,47 +96,53 @@ setMethod("result", signature(x="feaResult"),
 ##' @aliases get_drugs-method
 ##' @param x feaResult object
 ##' @return character vector
+##' @examples 
+##' data(drugs)
+##' dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+##'                                   type = "GO", ont="MF")
+##' get_drugs(dup_hyperG_res)
 setMethod("get_drugs", signature(x="feaResult"),
           function(x) x@drugs)
 
-##' dotplot for feaResult
-##'
-##' @rdname dotplot-methods
-##' @aliases dotplot,feaResult,ANY-method
-##' @param object an instance of feaResult
-##' @param x variable for x axis
-##' @param colorBy one of 'pvalue', 'p.adjust' and 'qvalue'
-##' @param showCategory number of category
-##' @param split separate result by 'category' variable
-##' @param font.size font size
-##' @param title plot title
-##' @importFrom enrichplot dotplot
-##' @exportMethod dotplot
-setMethod("dotplot", signature(object="feaResult"),
-          function(object, x="geneRatio", colorBy="p.adjust", showCategory=10, 
-                   split=NULL, font.size=12, title="") {
-              dotplot_internal(object, x, colorBy, showCategory, 
-                               split, font.size, title)
-          })
-
-##' cnetplot for feaResult
-##' 
-##' @rdname cnetplot-methods
-##' @aliases cnetplot,feaResult,ANY-method
-##' @param x feaResult object
-##' @param showCategory number of enriched terms to display
-##' @param categorySize one of 'pvalue', 'p.adjust' and 'qvalue'
-##' @param foldChange fold change
-##' @param fixed TRUE or FALSE
-##' @importFrom enrichplot cnetplot
-##' @export
-setMethod("cnetplot", signature(x="feaResult"),
-          function(x, showCategory=5, categorySize="pvalue", 
-                   foldChange=NULL, fixed=TRUE, ...) {
-              cnetplot.feaResult(x,
-                                    showCategory=showCategory,
-                                    categorySize=categorySize,
-                                    foldChange=foldChange,
-                                    fixed=fixed, ...)
-})
+# ##' dotplot for feaResult
+# ##'
+# ##' @rdname dotplot-methods
+# ##' @aliases dotplot,feaResult,ANY-method
+# ##' @param object an instance of feaResult
+# ##' @param x variable for x axis
+# ##' @param colorBy one of 'pvalue', 'p.adjust' and 'qvalue'
+# ##' @param showCategory number of category
+# ##' @param split separate result by 'category' variable
+# ##' @param font.size font size
+# ##' @param title plot title
+# ##' @return plot
+# ##' @importFrom enrichplot dotplot
+# ##' @exportMethod dotplot
+# setMethod("dotplot", signature(object="feaResult"),
+#           function(object, x="geneRatio", colorBy="p.adjust", 
+#           showCategory=10, split=NULL, font.size=12, title="") {
+#               dotplot_internal(object, x, colorBy, showCategory, 
+#                                split, font.size, title)
+#            })
+# 
+# ##' cnetplot for feaResult
+# ##' 
+# ##' @rdname cnetplot-methods
+# ##' @aliases cnetplot,feaResult,ANY-method
+# ##' @param x feaResult object
+# ##' @param showCategory number of enriched terms to display
+# ##' @param categorySize one of 'pvalue', 'p.adjust' and 'qvalue'
+# ##' @param foldChange fold change
+# ##' @param fixed TRUE or FALSE
+# ##' @importFrom enrichplot cnetplot
+# ##' @export
+# setMethod("cnetplot", signature(x="feaResult"),
+#           function(x, showCategory=5, categorySize="pvalue", 
+#                    foldChange=NULL, fixed=TRUE, ...) {
+#               cnetplot.feaResult(x,
+#                                     showCategory=showCategory,
+#                                     categorySize=categorySize,
+#                                     foldChange=foldChange,
+#                                     fixed=fixed, ...)
+# })
 

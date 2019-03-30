@@ -15,7 +15,7 @@ enrichGO2(gene, OrgDb, keytype = "SYMBOL", ont = "MF",
 
 \item{keytype}{keytype of input gene}
 
-\item{ont}{One of "MF", "BP", and "CC" subontologies.}
+\item{ont}{One of "MF", "BP", "CC" or "ALL"}
 
 \item{pvalueCutoff}{Cutoff value of pvalue.}
 
@@ -39,6 +39,16 @@ A \code{feaResult} instance.
 Given a vector of genes, this function will return the enriched GO
 categories after FDR control.
 The hypergeometric test is adjusted to support gene set with duplications
+}
+\examples{
+# The method supports duplicated elements in 'gene', 
+# which should be SYMBOL id for GO enrichment.
+gene = c(rep("HDAC1",4), rep("HDAC3",2), "SOX8", "KLK14")
+library(org.Hs.eg.db)
+data(targetList)
+ego <- enrichGO2(gene = gene, OrgDb=org.Hs.eg.db, ont="MF",
+                 universe=names(targetList))
+head(ego)
 }
 \seealso{
 \code{\link{feaResult-class}}

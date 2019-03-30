@@ -20,7 +20,8 @@
              before scaling in the result.}
 
 \usage{
-\S4method{connectivity_score_raw}{eSet,CMAPCollection}(experiment, query, element="z", keep.scores=FALSE)
+\S4method{connectivity_score_raw}{eSet,CMAPCollection}(experiment, query, 
+element="z", keep.scores=FALSE)
 
 \S4method{connectivity_score_raw}{matrix,CMAPCollection}(experiment, query, ...)
 
@@ -31,7 +32,8 @@
 \S4method{connectivity_score_raw}{eSet,GeneSetCollection}(experiment, query,
 ...)
 
-\S4method{connectivity_score_raw}{matrix,GeneSetCollection}(experiment, query,...)
+\S4method{connectivity_score_raw}{matrix,GeneSetCollection}(experiment, 
+query,...)
 
 \S4method{connectivity_score_raw}{ANY,GeneSet}(experiment, query, ...)
 }
@@ -47,7 +49,10 @@
   \item{element}{ Character string specifying which element of a
     multi-channel eSet to access for determining tag rank? }
   
-\item{keep.scores}{ Logical: keep gene-level scores for all gene sets (Default: TRUE) ? The size of the generated CMAPResults object increases with the number of contained gene sets. For very large collections, consider setting this parameter to 'FALSE' to conserve memory.}
+\item{keep.scores}{ Logical: keep gene-level scores for all gene sets 
+(Default: TRUE) ? The size of the generated CMAPResults object increases with 
+the number of contained gene sets. For very large collections, consider setting 
+this parameter to 'FALSE' to conserve memory.}
 
 \item{\dots}{ Additional arguments passed on to downstream functions.}
 }

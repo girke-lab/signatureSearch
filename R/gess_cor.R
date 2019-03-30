@@ -48,7 +48,8 @@ cor_sig_search <- function(query, refdb, method){
 #' sample_db <- loadHDF5SummarizedExperiment(db_dir)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = sample_db)
+#' qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = sample_db,
+#'                 refdb_name="sample")
 #' sp <- gess_cor(qSig=qsig_sp, method="spearman")
 #' result(sp)
 #' @export

@@ -16,11 +16,12 @@ output:
   pdf_document:
     toc: true
 fontsize: 15pt
+always_allow_html: yes
 bibliography: bibtex.bib
 vignette: >
   %\VignetteIndexEntry{signatureSearch}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 <style>
@@ -234,7 +235,7 @@ database
 ```{r gess_lincs, eval=TRUE}
 qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
                    gess_method="LINCS", refdb=sample_db, refdb_name="sample")
-lincs <- gess_lincs(qsig_lincs, sortby="NCS")
+lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 result(lincs)
 ```
 
@@ -312,8 +313,8 @@ including normal and tumor, the GESS result can be visualized by summarizing
 rankings/scores of selected drugs across difference cells. The sample databases 
 used in this vignette only contains treatments in SKB cell, so there is no need 
 to summarize the result. I used the same `vorinostat` query signature to search 
-against the full LINCS database by LINCS method, Figure 3 shows the summary
-visualization of the GESS result.
+against the full LINCS database via `gess_lincs` method, then use `gess_res_vis`
+function to visualize the GESS result, Figure 3 shows the plot.
 
 <center>
 ![](images/vorinostat_SKB_lincs_gess_res_vis.png)
@@ -356,7 +357,7 @@ then applies one of three functional enrichment methods: \emph{dup\_hyperG},
 approach were obtained from DrugBank [@Wishart2018-ap], [Touchstone]
 (https://clue.io/) and STITCH [@Kuhn2010-hz]. The STITCH database provides 
 confidence scores for each drug-target interaction. Only interactions 
-with confidence scores $\ge$0.7
+with confidence scores $\ge$ 0.7
 were considered reliable and used for this approach. To minimize noise, 
 \textit{e.g.} from promiscuous binders, drugs with more than 100 distinct 
 targets were removed. Similarly, targets with more than 100 annotated drugs 
@@ -379,7 +380,7 @@ test sets. Its p value is calculated according to equation
 \ref{eq:hyperG_pvalue}. 
 
 \begin{equation}\label{eq:hyperG_pvalue}
-   p=\sum_{k=x}^{n}\frac {{D \choose k}{{N-D} \choose {n-k}}}{{N \choose n}}
+   p=\sum_{k=x}^{n} \frac {{D \choose k}{{N-D} \choose {n-k}}}{{N \choose n}}
 \end{equation}
 
 In case of GO term enrichment analysis the individual variables are assigned 
@@ -601,9 +602,6 @@ dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF",
           desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF", 
           desc="NF-kappaB binding")
-dtnetplot(drugs = drugs, set = "GO:0016811", ont = "MF", 
-          desc="hydrolase activity, acting on carbon-nitrogen (but not peptide) 
-          bonds, in linear amides")
 ```
 
 ## Construct drug-target interaction networks in interested KEGG pathways
@@ -612,8 +610,6 @@ Build drug-target networks in top ranking KEGG pathways
 ```{r dtnet_kegg, eval=TRUE}
 dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034", 
           desc="Alcoholism")
-dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05203", 
-          desc="Viral carcinogenesis")
 dtnetplot(drugs = drugs, set = "hsa04213", 
           desc="Longevity regulating pathway - multiple species")
 ```

@@ -19,6 +19,12 @@
 ##' @importMethodsFrom AnnotationDbi mappedkeys
 ##' @importMethodsFrom AnnotationDbi mget
 ##' @importClassesFrom methods data.frame
+##' @examples 
+##' # It supports duplicated elements in "gene", which should be entrez id
+##' gene = c(rep("4312",4), rep("8318",2), "991", "10874")
+##' data(geneList, package="DOSE")
+##' kk <- enrichKEGG2(gene = gene, universe=names(geneList))
+##' head(kk)
 ##' @export
 enrichKEGG2 <- function(gene,
                        organism          = "hsa",
@@ -30,8 +36,8 @@ enrichKEGG2 <- function(gene,
                        maxGSSize         = 500,
                        qvalueCutoff      = 0.2) {
   
-  species <- clusterProfiler:::organismMapper(organism)
-  KEGG_DATA <- clusterProfiler:::prepare_KEGG(species, "KEGG", keyType)
+  species <- organismMapper(organism)
+  KEGG_DATA <- prepare_KEGG(species, "KEGG", keyType)
   res <- enricher_internal(gene,
                            pvalueCutoff  = pvalueCutoff,
                            pAdjustMethod = pAdjustMethod,

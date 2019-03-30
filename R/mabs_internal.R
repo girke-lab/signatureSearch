@@ -8,8 +8,7 @@ mabs_internal <- function(geneList,
                           USER_DATA) {
     geneList <- sort(geneList, decreasing = TRUE)
     geneSets <- get("PATHID2EXTID", envir = USER_DATA)
-    selected.gs <- DOSE:::geneSet_filter(geneSets, geneList, 
-                                         minGSSize, maxGSSize)
+    selected.gs <- geneSet_filter(geneSets, geneList, minGSSize, maxGSSize)
 
     if (is.null(selected.gs))
         return(NULL)
@@ -44,10 +43,10 @@ mabs_internal <- function(geneList,
     }, FUN.VALUE = numeric(1))
     
     p.adj <- p.adjust(pvals, method=pAdjustMethod)
-    qvalues <- DOSE:::calculate_qvalue(pvals)
+    qvalues <- calculate_qvalue(pvals)
 
     gs.name <- names(selected.gs)
-    Description <- DOSE:::TERM2NAME(gs.name, USER_DATA)
+    Description <- TERM2NAME(gs.name, USER_DATA)
 
     geneID <- vapply(selected.gs, function(x) 
       paste0(intersect(x, names(geneList)[geneList>0]), collapse = "/"),

@@ -23,6 +23,7 @@
 #' @param nPerm permutation numbers used to calculate p value
 #' @param pAdjustMethod p value adjustment method,
 #' one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
+#' @param pvalueCutoff p value cutoff
 #' @param minGSSize minimum size of each gene set in annotation system
 #' @param maxGSSize maximum size of each gene set in annotation system
 #' @return \code{\link{feaResult}} object, 
@@ -31,7 +32,8 @@
 #' @references Fang et at., 2012,
 #' \url{https://www.nature.com/articles/cr2011149}
 #' @examples 
-#' drugs <- data(drugs)
+#' \dontrun{
+#' data(drugs)
 #' ## GO annotation system
 #' mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
 #'                       pvalueCutoff=0.05, minGSSize=5)
@@ -40,6 +42,7 @@
 #' mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
 #'                         pvalueCutoff=0.05, minGSSize=5)
 #' result(mabs_k_res)
+#' }
 #' @export
 #' 
 tsea_mabs <- function(drugs, 

@@ -14,7 +14,6 @@ GSEA_fgsea <- function(geneList,
         message("preparing geneSet collections...")
 
     geneSets <- get("PATHID2EXTID", envir = USER_DATA)
-    DOSE:::check_gene_id(geneList, geneSets)
 
     if(verbose)
         message("GSEA analysis...")
@@ -28,9 +27,9 @@ GSEA_fgsea <- function(geneList,
                  nproc = 1)
 
     p.adj <- p.adjust(tmp_res$pval, method=pAdjustMethod)
-    qvalues <- DOSE:::calculate_qvalue(tmp_res$pval)
+    qvalues <- calculate_qvalue(tmp_res$pval)
 
-    Description <- DOSE:::TERM2NAME(tmp_res$pathway, USER_DATA)
+    Description <- TERM2NAME(tmp_res$pathway, USER_DATA)
 
     params <- list(pvalueCutoff = pvalueCutoff,
                    nPerm = nPerm,

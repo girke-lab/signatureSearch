@@ -4,10 +4,9 @@
 \alias{gseGO2}
 \title{modified GSEA method for GO enrichment analysis}
 \usage{
-gseGO2(geneList, ont = "BP", OrgDb, keyType = "ENTREZID",
-  exponent = 1, nproc = 1, nPerm = 1000, minGSSize = 2,
-  maxGSSize = 500, pvalueCutoff = 0.05, pAdjustMethod = "BH",
-  verbose = TRUE)
+gseGO2(geneList, ont = "BP", OrgDb, keyType = "SYMBOL", exponent = 1,
+  nproc = 1, nPerm = 1000, minGSSize = 2, maxGSSize = 500,
+  pvalueCutoff = 0.05, pAdjustMethod = "BH", verbose = TRUE)
 }
 \arguments{
 \item{geneList}{numeric vector with gene SYMBOL as names, the genes are 
@@ -43,4 +42,11 @@ feaResult object
 The modified Gene Set Enrichment Analysis (GSEA) of Gene Ontology supports
 geneList with large portion of zeros and enrich GO terms at the top of the
 geneList
+}
+\examples{
+data(targetList)
+library(org.Hs.eg.db)
+gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
+                pvalueCutoff = 1)
+head(gsego)
 }

@@ -21,8 +21,8 @@ It uses query signature to search against the reference database in the
 CMap method from Lamb et al, 2006.
 }
 \details{
-Lamb et at., 2006 introduced the gene expression-based search method known as 
-Connectivity Map (CMap) where a GES database is searched with a query GES for 
+Lamb et at., 2006 introduced the gene expression-based search method known as
+Connectivity Map (CMap) where a GES database is searched with a query GES for
 similar matches. It uses as query the most up- and down-regulated DEGs from 
 a genome-wide expression experiment. The GES query is used to search a 
 database of rank transformed GEPs and ranks the results by the degree of 
@@ -31,8 +31,8 @@ of the databases entries, respectively. The search results are a list of
 drugs that have similar or opposing GESs as the query. Similar GESs suggest 
 similar physiological effects of the corresponding perturbagens. 
 
-The CMAP method takes about 4 min on a single CPU core for querying with a 
-single signature against ~100,000 signatures in the LINCS database.
+The CMAP method takes about 1.2 min on a single CPU core for querying with a 
+single signature against 10,000 signatures in the LINCS database.
 }
 \examples{
 db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
@@ -43,7 +43,8 @@ query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
 qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), 
-                  gess_method = "CMAP", refdb = sample_db)
+                  gess_method = "CMAP", refdb = sample_db,
+                  refdb_name="sample")
 cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 result(cmap)
 }

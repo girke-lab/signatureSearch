@@ -6,13 +6,12 @@ Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu",
            role = c("aut", "cre"))
 Description: This package can be used to do Gene Expression Signature Search 
             (GESS) and downstream Functional Enrichment Analysis (FEA).
-Depends: R (>= 3.5.0), SummarizedExperiment, Rcpp, HDF5Array
+Depends: R (>= 3.6), SummarizedExperiment, Rcpp, HDF5Array
 Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), R.utils,
-        S4Vectors, data.table, magrittr, RSQLite, dplyr, fgsea,
-        igraph, scales, methods, qvalue, stats, stats4, graphics,
-        utils, org.Hs.eg.db, reshape2, visNetwork, BiocParallel, fastmatch,
-        tools, batchtools, DelayedArray, Biobase, clusterProfiler, enrichplot,
-        parallel, readr, rhdf5, grDevices, gCMAP, DOSE, BiocFileCache
+        data.table, magrittr, RSQLite, dplyr, fgsea, scales, methods, 
+        qvalue, stats, utils, org.Hs.eg.db, reshape2, visNetwork, BiocParallel, 
+        fastmatch, tools, DelayedArray, Biobase, clusterProfiler,
+        parallel, readr, gCMAP, DOSE, BiocFileCache, rappdirs
 Suggests: AnnotationHub, KEGG.db, knitr, testthat, rmarkdown, BiocStyle
 License: Artistic-2.0
 SystemRequirements: C++11
@@ -22,7 +21,8 @@ VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 NeedsCompilation: no
 Packaged: 2018-08-24 18:22:55 UTC; yduan004
-biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment
+biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment, 
+           Sequencing, Coverage
 Author: Yuzhu Duan [aut, cre]
 Maintainer: Yuzhu Duan <yduan004@ucr.edu>
 URL: https://github.com/yduan004/signatureSearch/

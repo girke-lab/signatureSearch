@@ -18,8 +18,12 @@ data.frame of drugs and target gene symbols
 This function can be used to get protein targets of query drugs in 
 DrugBank, CLUE and STITCH databases. A SQLite database storing drug-target
 links in the above three databases can be found at 
-\code{\link{signatureSearch_data}} package.
+\code{signatureSearch_data} package.
+}
+\examples{
+data(drugs)
+dt <- get_targets(drugs)
 }
 \seealso{
-\code{\link[signatureSearch_data]{dtlink_dt_clue_sti}}
+\code{dtlink_dt_clue_sti}
 }

@@ -4,20 +4,35 @@
 \alias{build_custom_db}
 \title{build_custom_db}
 \usage{
-build_custom_db(df, dest_path)
+build_custom_db(df, dest_dir)
 }
 \arguments{
-\item{df}{data.frame, represents genoime-wide GEPs (log2FC, z-scores, 
-intensity values, etc.) of compound or genetic treatments. 
-Rownames (Gene IDs) should be included. The colnames should be of 
+\item{df}{data.frame, represents genome-wide Gene Expression Profiles (GEPs)
+(log2FC, z-scores, intensity values, etc.) of compound or genetic treatments.
+Rownames (Gene SYMBOLs) should be included. The colnames should be of 
 `(drug)__(cell)__(factor)` format, e.g., `sirolimus__MCF7__trt_cp`.}
 
-\item{dest_path}{directory path to store the reference database, which is 
-the hdf5 backed \code{SummarizedExperiment} object}
+\item{dest_dir}{directory path to store the reference database, which is 
+the hdf5 backed \code{\link{SummarizedExperiment}} object}
 }
 \value{
-hdf5 backed \code{SummarizedExperiment} object
+hdf5 backed \code{\link{SummarizedExperiment}} object
 }
 \description{
 Build custom reference signature database for GESS
+}
+\examples{
+# Generate a data.frame 
+df <- data.frame(sirolimus__MCF7__trt_cp=rnorm(1000),
+                 vorinostat__SKB__trt_cp=rnorm(1000))
+data(targetList)
+rownames(df) = names(targetList)
+dest_dir = tempfile("h5_df_")
+# The following step takes some time, so do not run as example
+# se = build_custom_db(df, dest_dir)
+list.files(dest_dir)
+unlink(dest_dir, recursive=TRUE)
+}
+\seealso{
+\code{\link{saveHDF5SummarizedExperiment}}
 }

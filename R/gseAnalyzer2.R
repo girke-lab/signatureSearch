@@ -17,12 +17,18 @@
 ##' @param pvalueCutoff pvalue Cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @param verbose print message or not
-##' @export
 ##' @return feaResult object
+##' @examples 
+##' data(targetList)
+##' library(org.Hs.eg.db)
+##' gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
+##'                 pvalueCutoff = 1)
+##' head(gsego)
+##' @export
 gseGO2 <- function(geneList,
                   ont           = "BP",
                   OrgDb,
-                  keyType       = "ENTREZID",
+                  keyType       = "SYMBOL",
                   exponent      = 1,
                   nproc         = 1,
                   nPerm         = 1000,
@@ -54,12 +60,15 @@ gseGO2 <- function(geneList,
 
     if (is.null(res))
         return(res)
-
-    res@organism <- DOSE:::get_organism(OrgDb)
-
-    if (ont == "ALL") {
-        res <- clusterProfiler:::add_GO_Ontology(res, GO_DATA)
-    }
+    # Add and select ontology in res
+    res <- add_GO_Ontology(res, GO_DATA)
+    tmp_df <- res@result
+    colnames(tmp_df)[1] = "ont"
+    res@result <- tmp_df
+    if(ont != "ALL")
+      res@result <- as_tibble(res[res$ont == ont, ])
+    
+    res@organism <- get_organism(OrgDb)
     return(res)
 }
 
@@ -80,8 +89,14 @@ gseGO2 <- function(geneList,
 ##' @param pvalueCutoff pvalue Cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @param verbose print message or not
-##' @export
 ##' @return feaResult object
+##' @examples 
+##' # Gene Entrez id should be used for KEGG enrichment
+##' data(geneList, package="DOSE")
+##' geneList[100:length(geneList)]=0
+##' gsekk <- gseKEGG2(geneList=geneList, pvalueCutoff = 1)
+##' head(gsekk)
+##' @export
 gseKEGG2 <- function(geneList,
                     organism          = 'hsa',
                     keyType           = 'kegg',
@@ -93,8 +108,8 @@ gseKEGG2 <- function(geneList,
                     pvalueCutoff      = 0.05,
                     pAdjustMethod     = "BH",
                     verbose           = TRUE) {
-    species <- clusterProfiler:::organismMapper(organism)
-    KEGG_DATA <- clusterProfiler:::prepare_KEGG(species, "KEGG", keyType)
+    species <- organismMapper(organism)
+    KEGG_DATA <- prepare_KEGG(species, "KEGG", keyType)
     res <-  GSEA_internal2(geneList = geneList,
                           exponent = exponent,
                           nPerm = nPerm,

@@ -32,3 +32,10 @@ mabsKEGG(geneList, organism = "hsa", keyType = "kegg", nPerm = 1000,
 \description{
 meanAbs analysis of KEGG
 }
+\examples{
+# Gene Entrez id should be used for KEGG enrichment
+data(geneList, package="DOSE")
+geneList[100:length(geneList)]=0
+mk <- mabsKEGG(geneList=geneList, pvalueCutoff = 1)
+head(mk)
+}

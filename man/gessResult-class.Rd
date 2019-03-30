@@ -18,8 +18,7 @@ in the reference database ranked by their signature similarity to the query}
 
 \item{\code{gess_method}}{method for GESS analysis}
 
-\item{\code{refdb}}{`SummarizedExperiment` object represents the refrence 
-signaure database}
+\item{\code{refdb_name}}{name of the reference database}
 }}
 
 \keyword{classes}

@@ -40,9 +40,9 @@ GSEA_fgsea2 <- function(geneList,
                     nproc = nproc)
   
   p.adj <- p.adjust(tmp_res$pval, method=pAdjustMethod)
-  qvalues <- DOSE:::calculate_qvalue(tmp_res$pval)
+  qvalues <- calculate_qvalue(tmp_res$pval)
   
-  Description <- DOSE:::TERM2NAME(tmp_res$pathway, USER_DATA)
+  Description <- TERM2NAME(tmp_res$pathway, USER_DATA)
   
   ledge <- vapply(tmp_res$leadingEdge, paste0, collapse='/', 
                   FUN.VALUE = character(1))

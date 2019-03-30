@@ -38,3 +38,10 @@ Given a vector of genes, this function will return the enriched KEGG
 pathways after FDR control.
 The hypergeometric test is adjusted to support gene set with duplications
 }
+\examples{
+# It supports duplicated elements in "gene", which should be entrez id
+gene = c(rep("4312",4), rep("8318",2), "991", "10874")
+data(geneList, package="DOSE")
+kk <- enrichKEGG2(gene = gene, universe=names(geneList))
+head(kk)
+}

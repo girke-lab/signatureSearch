@@ -15,7 +15,7 @@ enricher_internal <- function(gene,
 
   ## query external ID to Term ID
   gene <- as.character(gene)
-  qExtID2TermID <- DOSE:::EXTID2TERMID(gene, USER_DATA)
+  qExtID2TermID <- EXTID2TERMID(gene, USER_DATA)
   qTermID <- unlist(qExtID2TermID)
   if (is.null(qTermID)) {
       message("--> No gene can be mapped....")
@@ -40,7 +40,7 @@ enricher_internal <- function(gene,
 
   ## Get all the genes that have GO annotation, intersect with universe, 
   ## get extID as universe
-  extID <- DOSE:::ALLEXTID(USER_DATA)
+  extID <- ALLEXTID(USER_DATA)
   if (missing(universe))
       universe <- NULL
   if(!is.null(universe)) {
@@ -54,10 +54,10 @@ enricher_internal <- function(gene,
   qTermID <- unique(names(qTermID2ExtID))
 
 
-  termID2ExtID <- DOSE:::TERMID2EXTID(qTermID, USER_DATA)
+  termID2ExtID <- TERMID2EXTID(qTermID, USER_DATA)
   termID2ExtID <- lapply(termID2ExtID, intersect, extID)
 
-  idx <- DOSE:::get_geneSet_index(termID2ExtID, minGSSize, maxGSSize)
+  idx <- get_geneSet_index(termID2ExtID, minGSSize, maxGSSize)
 
   if (sum(idx) == 0) {
       msg <- paste("No gene set have size >", minGSSize, "...")
@@ -135,7 +135,7 @@ enricher_internal <- function(gene,
                      Count = k,
                      stringsAsFactors = FALSE)
 
-  Description <- DOSE:::TERM2NAME(qTermID, USER_DATA)
+  Description <- TERM2NAME(qTermID, USER_DATA)
 
   if (length(qTermID) != length(Description)) {
       idx <- qTermID %in% names(Description)

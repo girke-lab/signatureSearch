@@ -6,7 +6,7 @@
 \usage{
 tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000,
   exponent = 1, pAdjustMethod = "BH", pvalueCutoff = 0.05,
-  minGSSize = 2, maxGSSize = 500)
+  minGSSize = 2, maxGSSize = 500, verbose = FALSE)
 }
 \arguments{
 \item{drugs}{query drug set used to do TSEA.
@@ -28,6 +28,8 @@ one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
 \item{minGSSize}{minimum size of each gene set in annotation system}
 
 \item{maxGSSize}{maximum size of each gene set in annotation system}
+
+\item{verbose}{TRUE or FALSE, print message or not}
 }
 \value{
 \code{\link{feaResult}} object, 
@@ -77,7 +79,7 @@ have zero scores could decrease the weight of the genes in \emph{S} that
 have non-zero scores, thereby decrease the false positive rate.
 }
 \examples{
-drugs <- data(drugs)
+data(drugs)
 ## GO annotation system
 mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
                         nPerm=1000, pvalueCutoff=1, minGSSize=5)

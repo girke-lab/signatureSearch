@@ -10,9 +10,15 @@
 ##' @param maxGSSize maximal size of genes annotated for testing
 ##' @param pvalueCutoff pvalue Cutoff
 ##' @param pAdjustMethod pvalue adjustment method
-##' @export
 ##' @return \code{\link{feaResult}} object
 ##' @author Yuzhu Duan
+##' @examples 
+##' data(targetList)
+##' library(org.Hs.eg.db)
+##' mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
+##'              pvalueCutoff = 1)
+##' head(mg)
+##' @export
 mabsGO <- function(geneList,
                   ont           = "BP",
                   OrgDb,
@@ -43,13 +49,17 @@ mabsGO <- function(geneList,
 
     if (is.null(res))
         return(res)
-
-    res@organism <- DOSE:::get_organism(OrgDb)
+    
+    # Add and select ontology in res
+    res <- add_GO_Ontology(res, GO_DATA)
+    tmp_df <- res@result
+    colnames(tmp_df)[1] = "ont"
+    res@result <- tmp_df
+    if(ont != "ALL")
+      res@result <- as_tibble(res[res$ont == ont, ])
+    
+    res@organism <- get_organism(OrgDb)
     res@ontology <- ont
-
-    if (ont == "ALL") {
-        res <- clusterProfiler:::add_GO_Ontology(res, GO_DATA)
-    }
     return(res)
 }
 
@@ -65,8 +75,14 @@ mabsGO <- function(geneList,
 ##' @param maxGSSize maximal size of genes annotated for testing
 ##' @param pvalueCutoff pvalue Cutoff
 ##' @param pAdjustMethod pvalue adjustment method
-##' @export
 ##' @return \code{\link{feaResult}} object
+##' @examples 
+##' # Gene Entrez id should be used for KEGG enrichment
+##' data(geneList, package="DOSE")
+##' geneList[100:length(geneList)]=0
+##' mk <- mabsKEGG(geneList=geneList, pvalueCutoff = 1)
+##' head(mk)
+##' @export
 mabsKEGG <- function(geneList,
                     organism          = 'hsa',
                     keyType           = 'kegg',
@@ -76,8 +92,8 @@ mabsKEGG <- function(geneList,
                     pvalueCutoff      = 0.05,
                     pAdjustMethod     = "BH") {
 
-    species <- clusterProfiler:::organismMapper(organism)
-    KEGG_DATA <- clusterProfiler:::prepare_KEGG(species, "KEGG", keyType)
+    species <- organismMapper(organism)
+    KEGG_DATA <- prepare_KEGG(species, "KEGG", keyType)
 
     res <-  mabs_internal(geneList = geneList,
                           nPerm = nPerm,

@@ -37,7 +37,8 @@
 ##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
 ##'          \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
 ##' @examples 
-##' drugs <- data(drugs)
+##' \dontrun{
+##' data(drugs)
 ##' # GO annotation system
 ##' hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
 ##' result(hyperG_res)
@@ -45,7 +46,8 @@
 ##' hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
 ##'                             pvalueCutoff = 1, qvalueCutoff = 1, 
 ##'                             minGSSize = 10, maxGSSize = 2000)
-##' result(hyperG_k_res)
+##' result(hyperG_k_res) 
+##' }
 ##' @export
 dsea_hyperG <- function(drugs,
                         type = "GO",
@@ -84,16 +86,16 @@ dsea_hyperG <- function(drugs,
     if (is.null(res))
       return(res)
     
-    res@organism <- DOSE:::get_organism(OrgDb="org.Hs.eg.db")
+    res@organism <- get_organism(OrgDb="org.Hs.eg.db")
     res@ontology <- ont
     res@targets <- NULL
     if (ont == "ALL") {
-      res <- clusterProfiler:::add_GO_Ontology(res, GO_DATA_drug)
+      res <- add_GO_Ontology(res, GO_DATA_drug)
     }
     return(res)
   }
   if(type == "KEGG"){
-    species <- clusterProfiler:::organismMapper("hsa")
+    species <- organismMapper("hsa")
     KEGG_DATA_drug <- prepare_KEGG_drug(species, "KEGG", keyType="kegg")
     # get all the drugs in the corresponding annotation system as universe
     ext2path <- get("EXTID2PATHID", envir = KEGG_DATA_drug)
@@ -133,7 +135,7 @@ dsea_hyperG <- function(drugs,
 ##' @importFrom stats na.omit
 ##' @importFrom GOSemSim load_OrgDb
 get_GO_data_drug <- function(OrgDb, ont, keytype) {
-  GO_Env <- clusterProfiler:::get_GO_Env()
+  GO_Env <- get_GO_Env()
   use_cached <- FALSE
   
   if (exists("organism", envir=GO_Env, inherits=FALSE) &&
@@ -142,7 +144,7 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
     org <- get("organism", envir=GO_Env)
     kt <- get("keytype", envir=GO_Env)
     
-    if (org == DOSE:::get_organism(OrgDb) &&
+    if (org == get_organism(OrgDb) &&
         keytype == kt &&
         exists("goAnno", envir=GO_Env, inherits=FALSE) &&
         exists("GO2TERM", envir=GO_Env, inherits=FALSE)){
@@ -169,7 +171,7 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
     
     assign("goAnno", goAnno, envir=GO_Env)
     assign("keytype", keytype, envir=GO_Env)
-    assign("organism", DOSE:::get_organism(OrgDb), envir=GO_Env)
+    assign("organism", get_organism(OrgDb), envir=GO_Env)
   }
   
   # download goAnno_drug.rds and save it to cache
@@ -185,8 +187,7 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
                            c("GOALL","drug_name")]
   }
   
-  GO_DATA <- DOSE:::build_Anno(GO2GENE, 
-                                       clusterProfiler:::get_GO2TERM_table())
+  GO_DATA <- build_Anno(GO2GENE, get_GO2TERM_table())
   
   goOnt.df <- goAnno[, c("GOALL", "ONTOLOGYALL")] %>% unique
   goOnt <- goOnt.df[,2]
@@ -205,8 +206,9 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
 ##' @importFrom RSQLite SQLite
 ##' @importFrom RSQLite dbDisconnect
 ##' @importFrom utils download.file
+##' @importFrom clusterProfiler download_KEGG
 prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
-  kegg <- clusterProfiler:::download_KEGG(species, KEGG_Type, keyType)
+  kegg <- clusterProfiler::download_KEGG(species, KEGG_Type, keyType)
   # get dtlink_entrez
   fl <- download_data_file(url=paste0("http://biocluster.ucr.edu/~yduan004/",
                                   "signatureSearch_data/dtlink_db_clue_sti.db"),
@@ -223,8 +225,7 @@ prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
     filter(!is.na(drug_name)) %>% distinct(from, drug_name, .keep_all = TRUE)
   keggpath2entrez <- as.data.frame(keggpath2entrez)[,c("from","drug_name")]
   kegg$KEGGPATHID2EXTID <- keggpath2entrez
-  DOSE:::build_Anno(kegg$KEGGPATHID2EXTID,
-             kegg$KEGGPATHID2NAME)
+  build_Anno(kegg$KEGGPATHID2EXTID, kegg$KEGGPATHID2NAME)
 }
 ## get rid of "Undefined global functions or variables" note
 cell = drug_name = from = . = NULL
