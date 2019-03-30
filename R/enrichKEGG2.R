@@ -20,13 +20,11 @@
 ##' @importMethodsFrom AnnotationDbi mget
 ##' @importClassesFrom methods data.frame
 ##' @examples 
-##' \dontrun{
 ##' # It supports duplicated elements in "gene", which should be entrez id
 ##' gene = c(rep("4312",4), rep("8318",2), "991", "10874")
 ##' data(geneList, package="DOSE")
 ##' kk <- enrichKEGG2(gene = gene, universe=names(geneList))
 ##' head(kk)
-##' }
 ##' @export
 enrichKEGG2 <- function(gene,
                        organism          = "hsa",

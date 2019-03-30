@@ -32,7 +32,6 @@
 #' @references Fang et at., 2012,
 #' \url{https://www.nature.com/articles/cr2011149}
 #' @examples 
-#' \dontrun{
 #' data(drugs)
 #' ## GO annotation system
 #' mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
@@ -42,7 +41,6 @@
 #' mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
 #'                         pvalueCutoff=0.05, minGSSize=5)
 #' result(mabs_k_res)
-#' }
 #' @export
 #' 
 tsea_mabs <- function(drugs, 

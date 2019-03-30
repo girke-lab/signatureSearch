@@ -18,7 +18,6 @@
 ##' @return A \code{feaResult} instance.
 ##' @seealso \code{\link{feaResult-class}}
 ##' @examples 
-##' \dontrun{
 ##' # The method supports duplicated elements in 'gene', 
 ##' # which should be SYMBOL id for GO enrichment.
 ##' gene = c(rep("HDAC1",4), rep("HDAC3",2), "SOX8", "KLK14")
@@ -27,7 +26,6 @@
 ##' ego <- enrichGO2(gene = gene, OrgDb=org.Hs.eg.db, ont="MF",
 ##'                  universe=names(targetList))
 ##' head(ego)
-##' }
 ##' @export
 enrichGO2 <- function(gene,
                      OrgDb,

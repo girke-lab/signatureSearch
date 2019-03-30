@@ -37,7 +37,6 @@
 ##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
 ##'          \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
 ##' @examples 
-##' \dontrun{
 ##' data(drugs)
 ##' # GO annotation system
 ##' hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
@@ -47,7 +46,6 @@
 ##'                             pvalueCutoff = 1, qvalueCutoff = 1, 
 ##'                             minGSSize = 10, maxGSSize = 2000)
 ##' result(hyperG_k_res) 
-##' }
 ##' @export
 dsea_hyperG <- function(drugs,
                         type = "GO",

@@ -41,9 +41,11 @@ The modified GSEA algorithm supports geneList with large portion of zeros
 and enrich KEGG pathways at the top of the geneList
 }
 \examples{
+\dontrun{
 # Gene Entrez id should be used for KEGG enrichment
 data(geneList, package="DOSE")
 geneList[100:length(geneList)]=0
 gsekk <- gseKEGG2(geneList=geneList, pvalueCutoff = 1)
 head(gsekk)
+}
 }

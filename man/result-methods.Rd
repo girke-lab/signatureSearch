@@ -38,5 +38,5 @@ result(fisher)
 data(drugs)
 dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
                                   type = "GO", ont="MF")
-result(dup_hyperG_res)
+result(dup_hyperG_res) 
 }
