@@ -13,11 +13,13 @@
 ##' @return \code{\link{feaResult}} object
 ##' @author Yuzhu Duan
 ##' @examples 
+##' \dontrun{
 ##' data(targetList)
 ##' library(org.Hs.eg.db)
 ##' mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
 ##'              pvalueCutoff = 1)
 ##' head(mg)
+##' }
 ##' @export
 mabsGO <- function(geneList,
                   ont           = "BP",
@@ -77,11 +79,13 @@ mabsGO <- function(geneList,
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @return \code{\link{feaResult}} object
 ##' @examples 
+##' \dontrun{
 ##' # Gene Entrez id should be used for KEGG enrichment
 ##' data(geneList, package="DOSE")
 ##' geneList[100:length(geneList)]=0
 ##' mk <- mabsKEGG(geneList=geneList, pvalueCutoff = 1)
 ##' head(mk)
+##' }
 ##' @export
 mabsKEGG <- function(geneList,
                     organism          = 'hsa',

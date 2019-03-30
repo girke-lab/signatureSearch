@@ -61,6 +61,7 @@ setMethod("show", signature(object="feaResult"),
 ##' @return tibble
 ##' @aliases result,gessResult-method
 ##' @examples 
+##' \dontrun{
 ##' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
 ##' sample_db <- loadHDF5SummarizedExperiment(db_dir)
 ##' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
@@ -69,6 +70,8 @@ setMethod("show", signature(object="feaResult"),
 ##'                     refdb_name="sample")
 ##' fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 ##' result(fisher)
+##' }
+
 setMethod("result", signature(x="gessResult"),
           function(x) x@result)
 
@@ -80,10 +83,13 @@ setMethod("result", signature(x="gessResult"),
 ##' @method result feaResult
 ##' @aliases result,feaResult-method
 ##' @examples 
+##' \dontrun{
 ##' data(drugs)
 ##' dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
 ##'                                   type = "GO", ont="MF")
-##' result(dup_hyperG_res)
+##' result(dup_hyperG_res) 
+##' }
+
 setMethod("result", signature(x="feaResult"),
           function(x) x@result)
 
@@ -97,10 +103,13 @@ setMethod("result", signature(x="feaResult"),
 ##' @param x feaResult object
 ##' @return character vector
 ##' @examples 
+##' \dontrun{
 ##' data(drugs)
 ##' dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
 ##'                                   type = "GO", ont="MF")
 ##' get_drugs(dup_hyperG_res)
+##' }
+
 setMethod("get_drugs", signature(x="feaResult"),
           function(x) x@drugs)
 
