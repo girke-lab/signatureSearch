@@ -44,11 +44,9 @@ geneList with large portion of zeros and enrich GO terms at the top of the
 geneList
 }
 \examples{
-\dontrun{
 data(targetList)
 library(org.Hs.eg.db)
-gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
-                pvalueCutoff = 1)
-head(gsego)
-}
+#gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
+#                pvalueCutoff = 1)
+#head(gsego)
 }

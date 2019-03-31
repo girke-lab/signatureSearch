@@ -81,9 +81,9 @@ have non-zero scores, thereby decrease the false positive rate.
 \examples{
 data(drugs)
 ## GO annotation system
-mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
-                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
-result(mgsea_res)
+#mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
+#                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
+#result(mgsea_res)
 mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
                           nPerm=1000, pvalueCutoff=1, minGSSize=2)
 result(mgsea_k_res)

@@ -36,7 +36,7 @@ qsig_fisher <- qSig(qsig=query_mat, gess_method="Fisher", refdb=sample_db,
 fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
 data(drugs)
-dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-                                  type = "GO", ont="MF")
-result(dup_hyperG_res) 
+#dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+#                                 type = "GO", ont="MF")
+#result(dup_hyperG_res) 
 }

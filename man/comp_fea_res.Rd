@@ -37,8 +37,7 @@ of methods, the lower of the mean ranks of the terms across
 enrichment methods, the topper of the terms.
 }
 \examples{
-\dontrun{
-  comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, 
-               hyperG_res, gsea_res, Ntop=20, type="GO")
-}
+data(drugs)
+#comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, 
+#             hyperG_res, gsea_res, Ntop=20, type="GO")
 }

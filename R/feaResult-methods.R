@@ -47,9 +47,10 @@ setMethod("show", signature(object="gessResult"),
 ##' @importFrom utils str
 ##' @examples
 ##' data(drugs)
-##' dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-##'                                   type = "GO", ont="MF")
-##' dup_hyperG_res 
+##' # dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+##' #                                 type = "GO", ont="MF")
+##' # dup_hyperG_res 
+
 setMethod("show", signature(object="feaResult"),
       function (object){
           cat("#\n# Functional Enrichment Analysis \n#\n")
@@ -96,9 +97,9 @@ setMethod("result", signature(x="gessResult"),
 ##' @aliases result,feaResult-method
 ##' @examples
 ##' data(drugs)
-##' dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-##'                                   type = "GO", ont="MF")
-##' result(dup_hyperG_res) 
+##' #dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+##' #                                 type = "GO", ont="MF")
+##' #result(dup_hyperG_res) 
 
 setMethod("result", signature(x="feaResult"),
           function(x) x@result)
@@ -114,9 +115,9 @@ setMethod("result", signature(x="feaResult"),
 ##' @return character vector
 ##' @examples 
 ##' data(drugs)
-##' dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-##'                                   type = "GO", ont="MF")
-##' get_drugs(dup_hyperG_res)
+##' # dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+##' #                                   type = "GO", ont="MF")
+##' # get_drugs(dup_hyperG_res)
 
 setMethod("get_drugs", signature(x="feaResult"),
           function(x) x@drugs)

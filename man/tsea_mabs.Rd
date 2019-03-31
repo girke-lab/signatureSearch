@@ -53,13 +53,13 @@ multiple hypothesis testing using the Benjamini-Hochberg method.
 \examples{
 data(drugs)
 ## GO annotation system
-mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
-                      pvalueCutoff=0.05, minGSSize=5)
-result(mabs_res)
+#mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
+#                      pvalueCutoff=0.05, minGSSize=5)
+#result(mabs_res)
 ## KEGG annotation system
-mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
-                        pvalueCutoff=0.05, minGSSize=5)
-result(mabs_k_res)
+#mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
+#                        pvalueCutoff=0.05, minGSSize=5)
+#result(mabs_k_res)
 }
 \references{
 Fang et at., 2012,

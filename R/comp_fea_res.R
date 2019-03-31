@@ -18,10 +18,9 @@
 ##' @importFrom DOSE theme_dose
 ##' @return igraph object
 ##' @examples 
-##' \dontrun{
-##'   comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, 
-##'                hyperG_res, gsea_res, Ntop=20, type="GO")
-##' }
+##' data(drugs)
+##' #comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, 
+##' #             hyperG_res, gsea_res, Ntop=20, type="GO")
 ##' @export
 
 comp_fea_res <- function(dup_hyperG_res=NULL, mgsea_res=NULL, mabs_res=NULL, 

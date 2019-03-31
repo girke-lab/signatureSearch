@@ -39,8 +39,8 @@
 ##' @examples 
 ##' data(drugs)
 ##' # GO annotation system
-##' hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
-##' result(hyperG_res)
+##' #hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
+##' #result(hyperG_res)
 ##' ## KEGG annotation system
 ##' hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
 ##'                             pvalueCutoff = 1, qvalueCutoff = 1, 

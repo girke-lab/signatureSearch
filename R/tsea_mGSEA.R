@@ -59,9 +59,9 @@
 #' @examples 
 #' data(drugs)
 #' ## GO annotation system
-#' mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
-#'                         nPerm=1000, pvalueCutoff=1, minGSSize=5)
-#' result(mgsea_res)
+#' #mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
+#' #                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
+#' #result(mgsea_res)
 #  ## KEGG annotation system
 #' mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
 #'                           nPerm=1000, pvalueCutoff=1, minGSSize=2)
