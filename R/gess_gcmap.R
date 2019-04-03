@@ -10,6 +10,19 @@
 #' database is composed of DEG sets. This is the opposite situation of the 
 #' original \code{CMAP} method, where the query is a DEG set and the database 
 #' contains rank transformed GEPs.
+#' 
+#' Description of the score columns in the gess_gcmap tibble result:
+#' \itemize{
+#'     \item effect: scaled bi-directional enrichment score, the same as 
+#'     the 'scaled_score' in the \code{\link{gess_cmap}} result
+#'     \item nSet: number of genes of the drug signature in the reference 
+#'     database (gene sets) after setting the higher and lower cutoff.
+#'     \item nFound: number of genes of the drug signature in the reference 
+#'     database (gene sets) also found in the query signature 
+#'     (whole genome profile).
+#'     \item signed: whether gene sets in the reference database have signs, 
+#'     representing up and down regulated genes when computing scores 
+#' }
 #' @param qSig `qSig` object, The 'gess_method' slot of 'qSig' should be 'gCMAP'
 #' @param higher The 'higher' threshold. If not 'NULL', genes with a score 
 #' larger than 'higher' will be included in the gene set with sign +1. 

@@ -108,7 +108,7 @@ a treatment.
 
 # Reference Database
 
-The CMAP and LINCS signature databases can be loaded from `signatureSearch_data`
+The CMAP and LINCS signature databases can be loaded from `signatureSearchData`
 package as `SummarizedExperiment` objects. 
 
 The loaded `lincs` database represents moderated z-scores from differential 
@@ -122,9 +122,15 @@ from 1,281 compound treatments in 4 cells (3,478 signatures in total).
 The `cmap_expr` database represents mean expression values of 1,309 drug
 treatment samples in 4 cells (3,587 signatures in total).
 
+For documentations of generating the CMAP/LINCS databases, please refer to the 
+vignette of `signatureSearchData` package by running 
+`browseVignettes("signatureSearchData")` in R.
+
 The custom database can be built via `build_custom_db` function if a 
-`data.frame` representing genome-wide GEPs (log2FC, z-scores, intensity values, 
-etc.) of compound or genetic treatments in cells is provided. 
+`data.frame` representing genome-wide GEPs of compound or genetic treatments in 
+cells is provided. The GEPs can be log2 fold change, z-scores \emph{etc.} from 
+differential expression analysis, or gene expression intensity values from 
+Affymetrix Chips, or read counts from RNA-Seq data.
 
 # Implementation of \emph{signatureSearch} package
 

@@ -8,9 +8,17 @@ build_custom_db(df, dest_dir)
 }
 \arguments{
 \item{df}{data.frame, represents genome-wide Gene Expression Profiles (GEPs)
-(log2FC, z-scores, intensity values, etc.) of compound or genetic treatments.
+of compound or genetic treatments in cells. The GEPs can be log2 fold change,
+z-scores \emph{etc.} from differential expression analysis, or gene 
+expression intensity values from Affymetrix Chips, or read counts from 
+RNA-Seq data. 
+
 Rownames (Gene SYMBOLs) should be included. The colnames should be of 
-`(drug)__(cell)__(factor)` format, e.g., `sirolimus__MCF7__trt_cp`.}
+`(drug)__(cell)__(factor)` format, e.g., `sirolimus__MCF7__trt_cp`.
+It can be generalized to any type of treatment, for example, gene knockdown
+or overexpression by setting `drug` as gene symbol, `factor` as 'gene_ko' or 
+other words, `cell` as treatment cell types. So, one example for 
+generalization format could be `P53__MCF7__gene_ko`.}
 
 \item{dest_dir}{directory path to store the reference database, which is 
 the hdf5 backed \code{\link{SummarizedExperiment}} object}

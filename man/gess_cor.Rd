@@ -33,7 +33,12 @@ methods (\code{CMAP}, \code{LINCS} and \code{Fisher}).
 The latter situation makes the correlation-based results more comparable 
 to the set enrichment methods by providing to each method a more equal 
 amount of information than this is the case for the correlation method with 
-genome-wide GEPs.
+genome-wide GEPs. 
+
+Description of the score columns in the gess_cor tibble result:
+\itemize{
+    \item cor_score: correlation coefficiency.
+}
 }
 \examples{
 db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")

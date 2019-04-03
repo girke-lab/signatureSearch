@@ -34,6 +34,11 @@ cor_sig_search <- function(query, refdb, method){
 #' to the set enrichment methods by providing to each method a more equal 
 #' amount of information than this is the case for the correlation method with 
 #' genome-wide GEPs. 
+#' 
+#' Description of the score columns in the gess_cor tibble result:
+#' \itemize{
+#'     \item cor_score: correlation coefficiency.
+#' }
 #' @param qSig `qSig` object, The 'gess_method' slot should be 'Cor'. 
 #' The reference database in the \code{qsig} could either store gene expression 
 #' values or differential expression scores.

@@ -39,6 +39,19 @@ Lamb et al., 2006. It uses as query a rank transformed GEP and the reference
 database is composed of DEG sets. This is the opposite situation of the 
 original \code{CMAP} method, where the query is a DEG set and the database 
 contains rank transformed GEPs.
+
+Description of the score columns in the gess_gcmap tibble result:
+\itemize{
+    \item effect: scaled bi-directional enrichment score, the same as 
+    the 'scaled_score' in the \code{\link{gess_cmap}} result
+    \item nSet: number of genes of the drug signature in the reference 
+    database (gene sets) after setting the higher and lower cutoff.
+    \item nFound: number of genes of the drug signature in the reference 
+    database (gene sets) also found in the query signature 
+    (whole genome profile).
+    \item signed: whether gene sets in the reference database have signs, 
+    representing up and down regulated genes when computing scores 
+}
 }
 \examples{
 db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")

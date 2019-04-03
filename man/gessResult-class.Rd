@@ -12,7 +12,23 @@ The class stores the result of GESS analysis
 
 \describe{
 \item{\code{result}}{tibble from GESS analysis, represents a list of drugs 
-in the reference database ranked by their signature similarity to the query}
+in the reference database ranked by their signature similarity to the query.
+
+The description of the common tibble columns from different GESS methods:
+\itemize{
+    \item pert: perturbation/drug names
+    \item cell: cell types
+    \item type: type of perturbation. In CMAP and LINCS databases, the 
+    perturbation types are all treatment compound (trt_cp). Users can 
+    build their custom signature database with other types of perturbation,
+    e.g., gene knockdown or overexpression via \code{\link{build_custom_db}}
+    function
+    \item trend: up or down. up: the signature in the gess result is 
+    positively connected with query signature; down: negatively connected.
+    \item N_upset: number of genes in the up set of query signature
+    \item N_downset: number of genes in the down set of query signature
+    \item t_gn_sym: SYMBOL id of target genes/proteins of drugs.
+}}
 
 \item{\code{qsig}}{query signature}
 
