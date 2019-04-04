@@ -62,8 +62,9 @@ data(drugs)
 #result(mabs_k_res)
 }
 \references{
-Fang et at., 2012,
-\url{https://www.nature.com/articles/cr2011149}
+Fang, Z., Tian, W., & Ji, H. (2012). A network-based 
+gene-weighting approach for pathway analysis. Cell Research, 22(3), 
+565–580. \url{https://doi.org/10.1038/cr.2011.149}
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}}, \code{\link{tsea_mGSEA}}

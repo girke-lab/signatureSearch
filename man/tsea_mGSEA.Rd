@@ -89,8 +89,12 @@ mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1,
 result(mgsea_k_res)
 }
 \references{
-Subramanian et at., 2005,
-\url{https://www.pnas.org/content/102/43/15545}
+GSEA algorithm: 
+Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
+Gillette, M. A., … Mesirov, J. P. (2005). Gene set enrichment analysis: a 
+knowledge-based approach for interpreting genome-wide expression profiles. 
+Proceedings of the National Academy of Sciences of the United States of
+America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}}

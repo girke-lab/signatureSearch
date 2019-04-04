@@ -128,11 +128,11 @@ vignette of `signatureSearchData` package by running
 
 The custom database can be built via `build_custom_db` function if a 
 `data.frame` representing genome-wide GEPs of compound or genetic treatments in 
-cells is provided. The GEPs can be log2 fold change, z-scores \emph{etc.} from 
+cells is provided. The GEPs can be log2 fold change, z-scores *etc.* from 
 differential expression analysis, or gene expression intensity values from 
 Affymetrix Chips, or read counts from RNA-Seq data.
 
-# Implementation of \emph{signatureSearch} package
+# Implementation of *signatureSearch* package
 
 It is necessary to integrate the GESS and FEA methods into an R/Bioconductor 
 package since it enables efficient testing across large and extendable number 
@@ -143,12 +143,12 @@ R/Bioconductor ecosystem maximizes extensibility and reusability by other
 groups. Figure 2 shows the workflow design of the package. The expression 
 profiles from RNA-Seq, Affymetrix chips or other technology can be used to 
 build the reference database and stored as HDF5 backed SummarizedExperiment 
-object. The query signature and reference database were built into \emph{qSig} 
+object. The query signature and reference database were built into *qSig* 
 object and 5 methods are supported for searching. Since the reference database 
 could contain hundreds of thousands of signatures, it is volumized searched for 
 efficient memory usage and faster time performance. The search results are 
-stored in \emph{gessResult} object and can be functionally annotated by TSEA 
-and DSEA methods. The enrichment results are stored in \emph{feaResult} object 
+stored in *gessResult* object and can be functionally annotated by TSEA 
+and DSEA methods. The enrichment results are stored in *feaResult* object 
 and the drug target networks can be built for visualization. 
 
 <center>
@@ -158,16 +158,16 @@ and the drug target networks can be built for visualization.
 Figure 2: Workflow of _signatureSearch_ package. The expression profiles from 
 RNA-Seq, Affymetrix chips or other technology can be used to build the reference
 database and stored as HDF5 backed SummarizedExperiment object. The query 
-signature and reference database are built into \emph{qSig} object and 5 GESS 
+signature and reference database are built into *qSig* object and 5 GESS 
 methods (CMAP, LINCS, gCMAP, Fisher, and Spearman) are supported for searching. 
-The search results are stored in \emph{gessResult} object and can be 
+The search results are stored in *gessResult* object and can be 
 functionally annotated by TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA)
-methods. The enrichment results are stored in \emph{feaResult} object and the 
+methods. The enrichment results are stored in *feaResult* object and the 
 drug target networks can be built for visualization.
 
 # Installation and Loading
 
-`signatureSearch` is a Bioconductor package and can be installed through 
+`signatureSearch` is a R/Bioconductor package and can be installed through 
 `BiocManager::install()`
 ```{r install, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -175,7 +175,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("signatureSearch", version = "3.9")
 ```
 
-After the package is installed, it can be loaded into \emph{R} workspace by
+After the package is installed, it can be loaded into *R* workspace by
 ```{r load, eval=TRUE}
 library(signatureSearch)
 ```
@@ -205,7 +205,7 @@ downset <- tail(names(query[order(-query)]), 150)
 Connectivity Map (CMap) where a GES database is searched with a query GES for 
 similar matches [@Lamb2006-du]. Here, we generalize this type of GES similarity 
 search method and refer to it as GES search (GESS). Specifically, the GESS 
-method from @Lamb2006-du, termed as \emph{CMAP}, uses as query the most up- 
+method from @Lamb2006-du, termed as *CMAP*, uses as query the most up- 
 and down-regulated DEGs from a genome-wide expression experiment. The GES query 
 is used to search a database of rank transformed GEPs and ranks the results by 
 the degree of enrichment of the up- and down-regulated query genes on the top 
@@ -230,7 +230,7 @@ result(cmap)
 
 ## Searching with LINCS method for GESS
 
-@Subramanian2017-fu introduced a new GESS method (\emph{LINCS}) that is similar
+@Subramanian2017-fu introduced a new GESS method (*LINCS*) that is similar
 with CMAP method but weights genes in the query set by using expression 
 profiles with scores instead of rank transformed as reference database. Since
 now, no implementations of this algorithm available, it is implemented
@@ -247,11 +247,11 @@ result(lincs)
 
 ## Searching with gCMAP method for GESS
 
-The \emph{gCMAP} [@Sandmann2014-qm] package provides access to related but not 
+The *gCMAP* [@Sandmann2014-qm] package provides access to related but not 
 identical implementations of the original CMAP algorithm proposed by 
 @Lamb2006-du. It uses as query a rank transformed GEP and the reference 
 database is composed of DEG sets. This is the opposite situation of the 
-original \emph{CMAP} method, where the query is a DEG set and the database 
+original *CMAP* method, where the query is a DEG set and the database 
 contains rank transformed GEPs.
 
 Generate `qSig` object for `gess_gcmap` method and search against 
@@ -284,7 +284,7 @@ The correlation coefficients can be used as a GESS method by searching
 with a query expression profile a database of expression profiles.
 Correlation-based queries were performed with genome-wide GEPs as well as
 with GEPs subsetted to the same query genes used for the set enrichment
-methods (\emph{CMAP}, \emph{LINCS} and \emph{Fisher}).
+methods (*CMAP*, *LINCS* and *Fisher*).
 The latter situation makes the correlation-based results more comparable
 to the set enrichment methods by providing to each method a more equal
 amount of information than this is the case for the correlation method with
@@ -358,14 +358,15 @@ GO terms and KEGG pathway annotations were used to functionally annotate GESS
 results. For this drug-target mapping information is required to link drugs 
 via their targets proteins to GO terms and KEGG pathways. The TSEA approach 
 uses the target proteins for the top connected drugs in the GESS results and 
-then applies one of three functional enrichment methods: \emph{dup\_hyperG}, 
-\emph{m\_GSEA} and \emph{mabs}. The drug-target annotations required for this 
-approach were obtained from DrugBank [@Wishart2018-ap], [Touchstone]
-(https://clue.io/) and STITCH [@Kuhn2010-hz]. The STITCH database provides 
+then applies one of three functional enrichment methods: *dup\_hyperG*, 
+*m\_GSEA* and *mabs*. The drug-target annotations required for this 
+approach were obtained from DrugBank [@Wishart2018-ap], 
+[Touchstone](https://clue.io/) and STITCH [@Kuhn2010-hz]. 
+The STITCH database provides 
 confidence scores for each drug-target interaction. Only interactions 
 with confidence scores $\ge$ 0.7
 were considered reliable and used for this approach. To minimize noise, 
-\textit{e.g.} from promiscuous binders, drugs with more than 100 distinct 
+*e.g.* from promiscuous binders, drugs with more than 100 distinct 
 targets were removed. Similarly, targets with more than 100 annotated drugs 
 were excluded. The remaining drug-target space considered by this study 
 included 5,682 target proteins and 22,481 small molecules.
@@ -397,7 +398,7 @@ the total number of genes in the test set; and $x$ is the number of genes in
 the test set annotated at a specific GO node.
 
 To maintain the duplication information in the test sets used for TSEA, the 
-values of $n$ and $x$ in equation \ref{eq:hyperG_pvalue} are adjusted by the 
+values of $n$ and $x$ in the above equation are adjusted by the 
 frequency of the target proteins in the test set. Effectively, the approach 
 removes the duplications, but maintains their frequency information in form of 
 weighting values.
@@ -427,7 +428,7 @@ result(dup_hyperG_k_res)
 The original GSEA method proposed by @Subramanian2005-ro uses predefined 
 gene sets $S$ given by the GO or KEGG annotations. The goal is to determine 
 whether the genes in $S$ are randomly distributed throughout a ranked test 
-gene list $L$ (\textit{e.g.} all genes ranked by $log_2$ fold changes) or 
+gene list $L$ (*e.g.* all genes ranked by $log_2$ fold changes) or 
 enriched at the top or bottom. This is expressed by an Enrichment Score ($ES$) 
 reflecting the degree to which a set $S$ is overrepresented at the extremes 
 of $L$. 
@@ -446,8 +447,7 @@ portion of zeros exists in $L_{tar}$. If the scores of the genes in set $S$ are
 all zeros, $N_R$ (sum of scores of genes in set $S$) will be zero, which cannot 
 be used as the denominator. In this case, $ES$ is set to -1. If only some genes 
 in set $S$ have scores of zeros then $N_R$ is set to a larger number to 
-decrease the weight of the genes in $S$ that have non-zero scores 
-(see Equation \ref{eq:mgsea}). 
+decrease the weight of the genes in $S$ that have non-zero scores.
 
 \begin{equation}\label{eq:mgsea}
    N_R=\sum_{g_j\in S}|r_j|^p+min(r_j | r_j > 0)*\sum_{g_j\in S}I_{r_j=0}
@@ -486,8 +486,8 @@ result(mgsea_k_res)
 
 ### mabs method for TSEA
 
-The input for the \emph{mabs} method is $L_{tar}$, the same as for 
-\emph{m\_GSEA}. The \emph{meanAbs} statistic ($mabs(S)$) of a gene set $S$ is 
+The input for the *mabs* method is $L_{tar}$, the same as for 
+*m\_GSEA*. The *meanAbs* statistic ($mabs(S)$) of a gene set $S$ is 
 calculated as mean absolute scores of the genes in $S$. In order to adjust for 
 size variations in gene set $S$, 1000 random permutations of $L_{tar}$ are 
 performed to determine $mabs(S,\pi)$. Subsequently, $mabs(S)$ is normalized by 
@@ -524,10 +524,10 @@ on ranked drug lists directly. This so called Drug Set Enrichment Analysis
 usually unique allowing to use them without any changes for functional 
 enrichment methods. In contrast to this, the target query sets of the TSEA 
 approach are not unique. Thus, they cannot be used without major changes 
-(\textit{e.g.} frequency weighting) with most existing functional enrichment 
+(*e.g.* frequency weighting) with most existing functional enrichment 
 methods where uniqueness in the test sets is one of the main assumptions. 
 In case of DSEA, however, classical enrichment methods such as the 
-hypergeometric test (\emph{hyperG}) and GSEA can be used without any 
+hypergeometric test (*hyperG*) and GSEA can be used without any 
 modifications. When DSEA is used with the hypergeometric test, the query is 
 usually composed of the top ranking drugs from a GESS result, while it is 
 ranked lists of all drugs in the reference database when GSEA is used. The 

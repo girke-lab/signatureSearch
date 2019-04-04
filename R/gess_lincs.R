@@ -75,8 +75,10 @@
 #' @import SummarizedExperiment
 #' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 #' @references For detailed description of the LINCS method and scores, 
-#' please refer to Subramanian et al., 2017,
-#' \url{https://www.sciencedirect.com/science/article/pii/S0092867417313090}
+#' please refer to: Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., 
+#' Natoli, T. E., Lu, X., … Golub, T. R. (2017). A Next Generation 
+#' Connectivity Map: L1000 Platform and the First 1,000,000 Profiles. Cell, 
+#' 171(6), 1437–1452.e17. \url{https://doi.org/10.1016/j.cell.2017.10.049}
 #' @examples 
 #' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
 #' sample_db <- loadHDF5SummarizedExperiment(db_dir)
@@ -338,8 +340,10 @@ lincsEnrich <- function(se, upset, downset, sortby="NCS", type=1,
 #' unlink("ES_NULL.txt")
 #' @seealso \code{\link{gess_lincs}}
 #' @references 
-#' Subramanian et al., 2017,
-#' \url{https://www.sciencedirect.com/science/article/pii/S0092867417313090}
+#' Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., Natoli, T. E., 
+#' Lu, X., … Golub, T. R. (2017). A Next Generation Connectivity Map: L1000 
+#' Platform and the First 1,000,000 Profiles. Cell, 171(6), 1437–1452.e17. 
+#' \url{https://doi.org/10.1016/j.cell.2017.10.049}
 #' @export
 
 randQueryES <- function(se, N_queries=1000, dest_ES_NULL_path) {

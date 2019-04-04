@@ -58,8 +58,12 @@ cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 result(cmap)
 }
 \references{
-For detailed description of the CMap method, please refer to
-Lamb et al., 2006, \url{http://science.sciencemag.org/content/313/5795/1929}
+For detailed description of the CMap method, please refer to: 
+Lamb, J., Crawford, E. D., Peck, D., Modell, J. W., Blat, I. C., 
+Wrobel, M. J., … Golub, T. R. (2006). The Connectivity Map: 
+using gene-expression signatures to connect small molecules, genes, and 
+disease. Science, 313(5795), 1929–1935. 
+\url{https://doi.org/10.1126/science.1132939}
 }
 \seealso{
 \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}

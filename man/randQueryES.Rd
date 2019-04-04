@@ -28,8 +28,10 @@ randQueryES(se=se, N_queries=5, dest_ES_NULL_path="ES_NULL.txt")
 unlink("ES_NULL.txt")
 }
 \references{
-Subramanian et al., 2017,
-\url{https://www.sciencedirect.com/science/article/pii/S0092867417313090}
+Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., Natoli, T. E., 
+Lu, X., … Golub, T. R. (2017). A Next Generation Connectivity Map: L1000 
+Platform and the First 1,000,000 Profiles. Cell, 171(6), 1437–1452.e17. 
+\url{https://doi.org/10.1016/j.cell.2017.10.049}
 }
 \seealso{
 \code{\link{gess_lincs}}

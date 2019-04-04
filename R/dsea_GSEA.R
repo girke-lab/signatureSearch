@@ -27,8 +27,12 @@
 ##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
 ##'          \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
 ##' @references 
-##' GSEA algorithm: Subramanian et at., 2005,
-##' \url{https://www.pnas.org/content/102/43/15545}
+##' GSEA algorithm: 
+##' Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
+##' Gillette, M. A., … Mesirov, J. P. (2005). Gene set enrichment analysis: a 
+##' knowledge-based approach for interpreting genome-wide expression profiles. 
+##' Proceedings of the National Academy of Sciences of the United States of
+##' America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
 ##' @examples 
 ##' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
 ##' sample_db <- loadHDF5SummarizedExperiment(db_dir)

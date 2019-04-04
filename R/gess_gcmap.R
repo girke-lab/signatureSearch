@@ -40,12 +40,9 @@
 #' @import SummarizedExperiment
 #' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 #' @references 
-#' \itemize{
-#'   \item Sandmann et al., 2014,
-#'         \url{https://academic.oup.com/bioinformatics/article/30/1/127/236809}
-#'   \item gCMAP package,
-#'         \url{https://bioconductor.org/packages/release/bioc/html/gCMAP.html}
-#' }
+#' Sandmann, T., Kummerfeld, S. K., Gentleman, R., & Bourgon, R. 
+#' (2014). gCMAP: user-friendly connectivity mapping with R. Bioinformatics , 
+#' 30(1), 127–128. \url{https://doi.org/10.1093/bioinformatics/btt592}
 #' @examples 
 #' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
 #' sample_db <- loadHDF5SummarizedExperiment(db_dir)
