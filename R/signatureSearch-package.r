@@ -7,7 +7,7 @@
 #' @import Rcpp
 #' @description 
 #' Welcome to the signatureSearch package! This package integrates methods for
-#' Gene Expression Signature Search (GESS) and Functional Enrichment Analyis 
+#' Gene Expression Signature Search (GESS) and Functional Enrichment Analysis 
 #' (FEA). GESS methods use gene sets or Gene Expression Profiles (GEPs) 
 #' of log2 fold change, z-scores or intensity value to search against large 
 #' reference database containing tens to hundreds of thousands of GEPs or 
@@ -20,7 +20,7 @@
 #' The GESS methods include \code{CMAP}, \code{LINCS}, \code{gCMAP}, 
 #' \code{Fisher} and \code{Cor}. For detailed
 #' description, please see document of each method. Most methods 
-#' can be easily parallelized for multiple query signatures.
+#' can be easily paralleled for multiple query signatures.
 #' 
 #' The FEA can be done by two approaches, Target Set Enrichment Analysis (TSEA)
 #' and Drug Set Enrichment Analysis (DSEA). The TSEA methods first get target
@@ -37,7 +37,7 @@
 #' 
 #' Instead of doing enrichment on the target set, the DSEA methods 
 #' do enrichment directly on the drug set by mapping drugs to 
-#' funcitonal categories via drug-target mapping information. Since drugs in 
+#' functional categories via drug-target mapping information. Since drugs in 
 #' the test sets are usually unique, it allows to use the classical enrichment
 #' methods without any changes. The DSEA methods include \code{hyperG} and 
 #' \code{GSEA}. For detailed description, please see document of each method.

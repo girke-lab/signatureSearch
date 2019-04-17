@@ -1,8 +1,8 @@
 #' @title gCMAP method for GESS
 #' @description 
 #' It uses query signature to search against the reference database in the 
-#' \code{qSig} by gCMAP method, which is adapted from the gCMAP package 
-#' (Sandmann et al., 2014)
+#' \code{\link{qSig}} object by gCMAP method, which is adapted from the 
+#' gCMAP package (Sandmann et al., 2014)
 #' @details 
 #' The \code{gCMAP} package provides access to related 
 #' but not identical implementations of the original CMAP algorithm proposed by 
@@ -30,46 +30,43 @@
 #' @param lower The lower threshold. If not 'NULL', genes with a score smaller 
 #' than 'lower' will be included in the gene set with sign -1. 
 #' At least one of 'lower' and 'higher' must be specified.
-#' @param add_bs_score TRUE or FALSE. If true, bootstrap scores are added to 
-#' measure the robustness of the result rankings.
 #' @param chunk_size size of chunk per processing
 #' @return gessResult object, containing drugs in the reference database
 #' ranked by their similarity to the query signature
-#' @importFrom R.utils gunzip
-#' @import HDF5Array
-#' @import SummarizedExperiment
 #' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 #' @references 
 #' Sandmann, T., Kummerfeld, S. K., Gentleman, R., & Bourgon, R. 
 #' (2014). gCMAP: user-friendly connectivity mapping with R. Bioinformatics , 
 #' 30(1), 127–128. \url{https://doi.org/10.1093/bioinformatics/btt592}
 #' @examples 
-#' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-#' sample_db <- loadHDF5SummarizedExperiment(db_dir)
+#' db_path <- system.file("extdata", "sample_db.h5", 
+#'                        package = "signatureSearch")
+#' library(signatureSearchData)
+#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db,
+#' qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path,
 #'                    refdb_name="sample")
 #' gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
 #' result(gcmap)
 #' @export
 #' 
-gess_gcmap <- function(qSig, higher, lower, 
-                       add_bs_score = FALSE, chunk_size=5000){
+gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(qSig@gess_method != "gCMAP"){
     stop(paste("The 'gess_method' slot of 'qSig' should be 'gCMAP'",
                "if using 'gess_gcmap' function"))
   }
-  query <- qSig@qsig
-  se <- qSig@refdb
-  dmat <- assay(se)
-  ceil <- ceiling(ncol(dmat)/chunk_size)
+  query <- qSig@query
+  db_path <- qSig@refdb
+  mat_dim <- getH5dim(db_path)
+  mat_ncol <- mat_dim[2]
+  ceil <- ceiling(mat_ncol/chunk_size)
   resultDF <- data.frame()
   for(i in seq_len(ceil)){
-    dmat_sub <- dmat[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(dmat))]
-    mat <- as(dmat_sub, "matrix")
+    mat <- readHDF5mat(db_path,
+                    colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
     cmap <- gCMAP::induceCMAPCollection(mat, higher=higher, lower=lower)
     c <- connectivity_score_raw(experiment=as.matrix(query), query=cmap)
     resultDF <- rbind(resultDF, data.frame(c))
@@ -78,18 +75,13 @@ gess_gcmap <- function(qSig, higher, lower,
   resultDF[,"effect"] <-.connnectivity_scale(resultDF$effect)
   resultDF <- resultDF[order(abs(resultDF$effect), decreasing=TRUE), ]
   row.names(resultDF) <- NULL
-  
-  new <- as.data.frame(t(vapply(seq_len(nrow(resultDF)), function(i)
-    unlist(strsplit(as.character(resultDF$set[i]), "__")),
-    FUN.VALUE = character(3))), stringsAsFactors=FALSE)
-  colnames(new) = c("pert", "cell", "type")
-  resultDF <- cbind(new, resultDF[,-1])
+  resultDF <- sep_pcf(resultDF)
   # add target column
   target <- suppressMessages(get_targets(resultDF$pert))
   res <- left_join(resultDF, target, by=c("pert"="drug_name"))
   
   x <- gessResult(result = as_tibble(res),
-                  qsig = qSig@qsig,
+                  query = qSig@query,
                   gess_method = qSig@gess_method,
                   refdb_name = qSig@refdb_name)
   return(x)

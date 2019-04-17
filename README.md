@@ -37,7 +37,7 @@ Or it can be direcly installed from GitHub by
 devtools::install_github("yduan004/signatureSearch")
 ```
 
-After the package is installed, it can be loaded into \emph{R} workspace by
+After the package is installed, it can be loaded into *R* workspace by
 ```r
 library(signatureSearch)
 ```

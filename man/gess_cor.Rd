@@ -22,13 +22,13 @@ ranked by their similarity to the query signature
 }
 \description{
 It uses query signature to search against the reference database in the 
-\code{qSig} by mearsuring correlation coefficient.
+\code{\link{qSig}} object by measuring correlation coefficient.
 }
 \details{
 The correlation coefficients can be used as a GESS method by searching 
 with a query expression profile a database of expression profiles. 
 Correlation-based queries were performed with genome-wide GEPs as well as 
-with GEPs subsetted to the same query genes used for the set enrichment 
+with GEPs subset to the same query genes used for the set enrichment 
 methods (\code{CMAP}, \code{LINCS} and \code{Fisher}). 
 The latter situation makes the correlation-based results more comparable 
 to the set enrichment methods by providing to each method a more equal 
@@ -41,11 +41,13 @@ Description of the score columns in the gess_cor tibble result:
 }
 }
 \examples{
-db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-sample_db <- loadHDF5SummarizedExperiment(db_dir)
+db_path <- system.file("extdata", "sample_db.h5", 
+                       package = "signatureSearch")
+library(signatureSearchData)
+sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = sample_db,
+qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = db_path,
                 refdb_name="sample")
 sp <- gess_cor(qSig=qsig_sp, method="spearman")
 result(sp)

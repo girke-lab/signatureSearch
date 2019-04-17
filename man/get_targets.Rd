@@ -12,18 +12,18 @@ get_targets(drugs, database = "all")
 \item{database}{one of "DrugBank", "LINCS", "STITCH" or "all"}
 }
 \value{
-data.frame of drugs and target gene symbols
+data.frame with drugs and target gene symbols columns
 }
 \description{
 This function can be used to get protein targets of query drugs in 
 DrugBank, CLUE and STITCH databases. A SQLite database storing drug-target
 links in the above three databases can be found at 
-\code{signatureSearch_data} package.
+\code{\link[signatureSearchData]{signatureSearchData}} package.
 }
 \examples{
 data(drugs)
 dt <- get_targets(drugs)
 }
 \seealso{
-\code{dtlink_dt_clue_sti}
+\code{\link[signatureSearchData]{dtlink_dt_clue_sti}}
 }

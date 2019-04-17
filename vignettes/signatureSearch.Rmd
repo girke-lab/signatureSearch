@@ -108,8 +108,16 @@ a treatment.
 
 # Reference Database
 
-The CMAP and LINCS signature databases can be loaded from `signatureSearchData`
-package as `SummarizedExperiment` objects. 
+The CMAP and LINCS signature databases were stored in HDF5 files and available
+at `signatureSearchData` package where the data were stored at `AnnotationHub`. 
+User can download the CMAP/LINCS databases we generated 
+as follows, it returns to the file path to the downloaded databases:
+```{r download_db, eval=FALSE}
+library(AnnotationHub)
+ah <- AnnotationHub()
+cmap <- ah[["AH69075"]]; cmap_expr <- ah[["AH69077"]]
+lincs <- ah[["AH69079"]]; lincs_expr <- ah[["AH69081"]]
+```
 
 The loaded `lincs` database represents moderated z-scores from differential 
 expression (DE) analysis of 12,328 genes from 8,140 compound treatments in 
@@ -127,10 +135,10 @@ vignette of `signatureSearchData` package by running
 `browseVignettes("signatureSearchData")` in R.
 
 The custom database can be built via `build_custom_db` function if a 
-`data.frame` representing genome-wide GEPs of compound or genetic treatments in 
-cells is provided. The GEPs can be log2 fold change, z-scores *etc.* from 
-differential expression analysis, or gene expression intensity values from 
-Affymetrix Chips, or read counts from RNA-Seq data.
+`data.frame` or `matrix` representing genome-wide GEPs of compound or genetic 
+treatments in cells is provided. The GEPs can be log2 fold change, 
+z-scores *etc.* from differential expression analysis, or gene expression 
+intensity values from Affymetrix Chips, or read counts from RNA-Seq data.
 
 # Implementation of *signatureSearch* package
 
@@ -142,28 +150,30 @@ improves maintainability and reproducibility, the integration with existing
 R/Bioconductor ecosystem maximizes extensibility and reusability by other 
 groups. Figure 2 shows the workflow design of the package. The expression 
 profiles from RNA-Seq, Affymetrix chips or other technology can be used to 
-build the reference database and stored as HDF5 backed SummarizedExperiment 
-object. The query signature and reference database were built into *qSig* 
+build the reference database and stored in HDF5 files. 
+The query signature and reference database were built into *qSig* 
 object and 5 methods are supported for searching. Since the reference database 
-could contain hundreds of thousands of signatures, it is volumized searched for 
-efficient memory usage and faster time performance. The search results are 
-stored in *gessResult* object and can be functionally annotated by TSEA 
-and DSEA methods. The enrichment results are stored in *feaResult* object 
-and the drug target networks can be built for visualization. 
+could contain hundreds of thousands of signatures, the searching process
+was volumized for efficient memory usage and faster time performance. 
+The search results are stored in *gessResult* object and can be functionally 
+annotated by TSEA and DSEA methods. The enrichment results are stored in 
+*feaResult* object and the drug target networks can be built for visualization. 
 
 <center>
 ![](images/ss_fc.png)
 </center>
 
 Figure 2: Workflow of _signatureSearch_ package. The expression profiles from 
-RNA-Seq, Affymetrix chips or other technology can be used to build the reference
-database and stored as HDF5 backed SummarizedExperiment object. The query 
-signature and reference database are built into *qSig* object and 5 GESS 
-methods (CMAP, LINCS, gCMAP, Fisher, and Spearman) are supported for searching. 
-The search results are stored in *gessResult* object and can be 
+RNA-Seq, Affymetrix chips or other technology can be used to build the 
+custom reference database and stored in an HDF5 file. The database can also be
+HDF5 files representing CMAP/LINCS databases available at _signatureSearchData_
+package. The query signature and reference database are built into a *qSig* 
+object and 5 GESS methods (CMAP, LINCS, gCMAP, Fisher, and Spearman correlation)
+are supported for searching. 
+The search results are stored in a *gessResult* object and can be 
 functionally annotated by TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA)
-methods. The enrichment results are stored in *feaResult* object and the 
-drug target networks can be built for visualization.
+methods. The enrichment results are stored in a *feaResult* object and the 
+drug target networks can be built for visualization. Cont: container.
 
 # Installation and Loading
 
@@ -190,8 +200,10 @@ is the vorinostat treatment drawn from the sample database.
 
 ## Load database and get query signature
 ```{r db_sig, eval=TRUE}
-db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-sample_db <- loadHDF5SummarizedExperiment(db_dir)
+db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
+# Load sample_db as `SummarizedExperiment` object
+library(signatureSearchData)
+sample_db <- readHDF5chunk(db_path, colindex=1:100)
 # get "vorinostat__SKB__trt_cp" signature drawn from sample database
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
@@ -221,9 +233,9 @@ download, it is implemented in this package.
 Generate `qSig` object for `gess_cmap` method and search against the sample
 reference database
 ```{r gess_cmap, eval=TRUE}
-qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), 
-                  gess_method="CMAP", refdb=sample_db, refdb_name="sample")
-cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000) # type "yes" when prompted
+qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
+                  gess_method="CMAP", refdb=db_path, refdb_name="sample")
+cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 cmap
 result(cmap)
 ```
@@ -239,8 +251,8 @@ here.
 Generate `qSig` object for `gess_lincs` method and search against the sample 
 database
 ```{r gess_lincs, eval=TRUE}
-qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-                   gess_method="LINCS", refdb=sample_db, refdb_name="sample")
+qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
+                   gess_method="LINCS", refdb=db_path, refdb_name="sample")
 lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 result(lincs)
 ```
@@ -257,8 +269,8 @@ contains rank transformed GEPs.
 Generate `qSig` object for `gess_gcmap` method and search against 
 the sample database
 ```{r gess_gcmap, eval=TRUE}
-qsig_gcmap <- qSig(qsig = query_mat, gess_method = "gCMAP", 
-                   refdb = sample_db, refdb_name="sample")
+qsig_gcmap <- qSig(query = query_mat, gess_method = "gCMAP", 
+                   refdb = db_path, refdb_name="sample")
 gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
 result(gcmap)
 ```
@@ -272,8 +284,8 @@ if both the query and the database are composed of DEG sets.
 Generate `qSig` object for `gess_fisher` method and search against the
 sample database
 ```{r gess_fisher, eval=TRUE}
-qsig_fisher <- qSig(qsig = query_mat, gess_method = "Fisher", 
-                    refdb = sample_db, refdb_name="sample")
+qsig_fisher <- qSig(query = query_mat, gess_method = "Fisher", 
+                    refdb = db_path, refdb_name="sample")
 fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
 ```
@@ -283,7 +295,7 @@ result(fisher)
 The correlation coefficients can be used as a GESS method by searching
 with a query expression profile a database of expression profiles.
 Correlation-based queries were performed with genome-wide GEPs as well as
-with GEPs subsetted to the same query genes used for the set enrichment
+with GEPs subset to the same query genes used for the set enrichment
 methods (*CMAP*, *LINCS* and *Fisher*).
 The latter situation makes the correlation-based results more comparable
 to the set enrichment methods by providing to each method a more equal
@@ -295,8 +307,8 @@ sample database
 
 ### Genome-wide Spearman correlation
 ```{r gess_sp, eval=TRUE}
-qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", 
-                refdb = sample_db, refdb_name="sample")
+qsig_sp <- qSig(query = query_mat, gess_method = "Cor", 
+                refdb = db_path, refdb_name="sample")
 sp <- gess_cor(qSig=qsig_sp, method="spearman")
 result(sp)
 ```
@@ -306,8 +318,8 @@ result(sp)
 # Subset z-scores of 150 up and down gene sets from 
 # "vorinostat__SKB__trt_cp" signature.
 query_mat_sub <- as.matrix(query_mat[c(upset, downset),])
-qsig_spsub <- qSig(qsig = query_mat_sub, gess_method = "Cor", 
-                   refdb = sample_db, refdb_name="sample")
+qsig_spsub <- qSig(query = query_mat_sub, gess_method = "Cor", 
+                   refdb = db_path, refdb_name="sample")
 spsub <- gess_cor(qSig=qsig_spsub, method="spearman")
 result(spsub)
 ```
@@ -369,7 +381,7 @@ were considered reliable and used for this approach. To minimize noise,
 *e.g.* from promiscuous binders, drugs with more than 100 distinct 
 targets were removed. Similarly, targets with more than 100 annotated drugs 
 were excluded. The remaining drug-target space considered by this study 
-included 5,682 target proteins and 22,481 small molecules.
+included 5,729 target proteins and 22,647 small molecules.
 
 It is important to note here that the target protein sets used for the TSEA 
 method contain often duplicated proteins. This is due to the fact that many 
@@ -383,10 +395,9 @@ is proportional to the frequency of the targets in the test set.
 ### dup_hyperG method for TSEA
 
 The classical hypergeometric test assumes uniqueness in its gene/protein 
-test sets. Its p value is calculated according to equation 
-\ref{eq:hyperG_pvalue}. 
+test sets. Its p value is calculated according to equation
 
-\begin{equation}\label{eq:hyperG_pvalue}
+\begin{equation}
    p=\sum_{k=x}^{n} \frac {{D \choose k}{{N-D} \choose {n-k}}}{{N \choose n}}
 \end{equation}
 
@@ -449,7 +460,7 @@ be used as the denominator. In this case, $ES$ is set to -1. If only some genes
 in set $S$ have scores of zeros then $N_R$ is set to a larger number to 
 decrease the weight of the genes in $S$ that have non-zero scores.
 
-\begin{equation}\label{eq:mgsea}
+\begin{equation}
    N_R=\sum_{g_j\in S}|r_j|^p+min(r_j | r_j > 0)*\sum_{g_j\in S}I_{r_j=0}
 \end{equation}
 
@@ -466,7 +477,7 @@ will score the gene set $S$ as significantly enriched. However, this is
 undesirable because in this example only one gene is shared among the target 
 set and the gene set $S$. Therefore, giving small weights to genes in $S$ that
 have zero scores could decrease the weight of the genes in $S$ that have 
-non-zero scores, thereby decrease the false positive rate. To favor truely 
+non-zero scores, thereby decrease the false positive rate. To favor truly 
 enriched GO terms and KEGG pathways (gene set $S$) at the top of $L_{tar}$, 
 the largest value of $P_{hit}-P_{miss}$ is set as $ES$. 
 

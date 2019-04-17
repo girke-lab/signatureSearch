@@ -5,38 +5,31 @@
 ##' @name qSig-class
 ##' @docType class
 ##' @aliases qSig-class
-##' @slot qsig When 'gess_method' is 'CMAP' or 'LINCS', 
+##' @slot query When 'gess_method' is 'CMAP' or 'LINCS', 
 ##' it should be a list of two elements, which are up and down regulated 
 ##' gene sets of entrez ids.
 ##' 
 ##' When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
 ##' representing gene expression profiles (GEPs) of treatment(s). 
 ##' @slot gess_method one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'
-##' @slot refdb \code{SummarizedExperiment} object, which can be HDF5 
-##' backed and loaded via `loadHDF5SummarizedExperiment` function. 
-##' The 'assays' slot of the \strong{SummarizedExperiment} object should be a 
-##' \code{DelayedMatrix} or a matrix consists of genome-wide (GEPs) from a
-##' number of drug treatments or genetic perturbations. It represents the 
-##' reference database that the query signature is searched against. 
+##' @slot refdb character(1), can be "cmap", "cmap_expr", "lincs", or 
+##' "lincs_expr" if users want to use the existing CMAP/LINCS databases. 
 ##' 
-##' The \code{sample_db} contains 95 GEPs randomly sampled from the `lincs` 
-##' database and 5 GEPs from HDAC inhibitors in human SKB (muscle) cell. 
-##' 
-##' The full `lincs` and `cmap` public databases can be loaded from the 
-##' \code{signatureSearch_data} package.
-##' 
-##' The custom database can be built via \code{\link{build_custom_db}} 
-##' function if a `data.frame` representing genome-wide GEPs (log2FC, z-scores, 
-##' intensity values, etc.) of compound or genetic treatments in cells 
-##' is provided.
-##' @slot refdb_name character, name of the reference database. Like "CMAP",
-##' "LINCS" or other custom names.
+##' If users want to use the custom signature database, 
+##' it should be the file path to the HDF5 file generated with 
+##' \code{\link{build_custom_db}} function or
+##' generated from the source files of CMAP/LINCS databases according to 
+##' the vignette in \code{\link[signatureSearchData]{signatureSearchData}}
+##' package. The HDF5 file contains 
+##' the reference signatures that the query signature is searched against. 
+##' @slot refdb_name character(1), name of the reference database. Like "cmap",
+##' "lincs" or other custom names.
 ##' @exportClass qSig
 ##' @keywords classes
 setClass("qSig", slots = c(
-  qsig = "ANY",
+  query = "ANY",
   gess_method = "character",
-  refdb = "SummarizedExperiment",
+  refdb = "character",
   refdb_name = "character"
 ))
 
@@ -64,7 +57,7 @@ setClass("qSig", slots = c(
 ##'     \item N_downset: number of genes in the down set of query signature
 ##'     \item t_gn_sym: SYMBOL id of target genes/proteins of drugs.
 ##' } 
-##' @slot qsig query signature
+##' @slot query query signature
 ##' @slot gess_method method for GESS analysis
 ##' @slot refdb_name name of the reference database
 ##' @exportClass gessResult
@@ -72,14 +65,14 @@ setClass("qSig", slots = c(
 setClass("gessResult",
          slots = c(
            result = "data.frame",
-           qsig = "ANY",
+           query = "ANY",
            gess_method = "character",
            refdb_name = "character"
          ))
 
 ## Constructor for "gessResult"
-gessResult <- function(result, qsig, gess_method, refdb_name="UNKNOWN")
-  new("gessResult", result=result, qsig=qsig, 
+gessResult <- function(result, query, gess_method, refdb_name="UNKNOWN")
+  new("gessResult", result=result, query=query, 
       gess_method=gess_method, refdb_name=refdb_name)
 
 

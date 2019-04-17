@@ -3,7 +3,7 @@
 ##' The hypergeometric test is adjusted to support gene set with duplications
 ##' 
 ##' @title GO enrichment analysis via hypergeometric test
-##' @param gene a vector of entrez gene id or gene SYMBOL.
+##' @param gene a vector of gene SYMBOL ids.
 ##' @param OrgDb OrgDb
 ##' @param keytype keytype of input gene
 ##' @param ont One of "MF", "BP", "CC" or "ALL"
@@ -23,9 +23,11 @@
 ##' gene = c(rep("HDAC1",4), rep("HDAC3",2), "SOX8", "KLK14")
 ##' library(org.Hs.eg.db)
 ##' data(targetList)
-##' #ego <- enrichGO2(gene = gene, OrgDb=org.Hs.eg.db, ont="MF",
-##' #                 universe=names(targetList))
-##' #head(ego)
+##' \dontrun{
+##' ego <- enrichGO2(gene = gene, OrgDb=org.Hs.eg.db, ont="MF",
+##'                  universe=names(targetList))
+##' head(ego)
+##' }
 ##' @export
 enrichGO2 <- function(gene,
                      OrgDb,
@@ -42,11 +44,9 @@ enrichGO2 <- function(gene,
   ont %<>% toupper
   ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
   # GO_DATA <- clusterProfiler:::get_GO_data(OrgDb, ont, keytype)
-  # download GO_DATA.rds and save it to cache to save time
-  fl <- download_data_file(url=
-        "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/GO_DATA.rds",
-        rname="GO_DATA")
-  GO_DATA <- readRDS(fl)
+  # download GO_DATA.rds from AnnotationHub to save time by avoiding 
+  # builing GO_DATA from scratch
+  GO_DATA <- suppressMessages(ah[["AH69086"]])
   if (missing(universe))
     universe <- NULL
   

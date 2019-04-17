@@ -41,11 +41,9 @@ gseGO2 <- function(geneList,
     ont %<>% toupper
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
     #GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
-    # download GO_DATA.rds and save it to cache to save time
-    fl <- download_data_file(url=
-        "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/GO_DATA.rds",
-                             rname="GO_DATA")
-    GO_DATA <- readRDS(fl)
+    # download GO_DATA.rds from AnnotationHub to save time by avoiding 
+    # builing GO_DATA from scratch
+    GO_DATA <- suppressMessages(ah[["AH69086"]])
     
     res <-  GSEA_internal2(geneList = geneList,
                           exponent = exponent,

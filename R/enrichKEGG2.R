@@ -6,7 +6,7 @@
 ##' @param gene a vector of entrez gene id.
 ##' @param organism supported organism listed in 
 ##' \url{http://www.genome.jp/kegg/catalog/org_list.html}
-##' @param keyType one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'
+##' @param keyType one of "kegg", 'ncbi-geneid', 'ncbi-proteinid' and 'uniprot'
 ##' @param pvalueCutoff Cutoff value of pvalue.
 ##' @param pAdjustMethod one of "holm", "hochberg", "hommel", "bonferroni", 
 ##' "BH", "BY", "fdr", "none"

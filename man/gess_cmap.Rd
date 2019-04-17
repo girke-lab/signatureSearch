@@ -12,13 +12,13 @@ gess_cmap(qSig, chunk_size = 5000)
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-\code{gessResult} object, represents drugs in the reference database 
-ranked by their similarity to the query signature
+\code{\link{gessResult}} object, represents drugs in the reference 
+database ranked by their similarity to the query signature
 }
 \description{
 It uses query signature to search against the reference database in the 
-\code{qSig} by CMAP method, which is an implementation of the original 
-CMap method from Lamb et al, 2006.
+\code{\link{qSig}} object by CMAP method, which is an implementation of 
+the original CMap method from Lamb et al, 2006.
 }
 \details{
 Lamb et at., 2006 introduced the gene expression-based search method known as
@@ -31,8 +31,8 @@ of the databases entries, respectively. The search results are a list of
 drugs that have similar or opposing GESs as the query. Similar GESs suggest 
 similar physiological effects of the corresponding perturbagens. 
 
-The CMAP method takes about 1.2 min on a single CPU core for querying with a 
-single signature against 10,000 signatures in the LINCS database.
+The CMAP method takes about 1 minute on a single CPU core for querying with 
+a single signature against 10,000 signatures in the LINCS database.
 
 Description of the score columns in the gess_cmap tibble result:
 \itemize{
@@ -44,15 +44,17 @@ Description of the score columns in the gess_cmap tibble result:
 }
 }
 \examples{
-db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-sample_db <- loadHDF5SummarizedExperiment(db_dir)
+db_path <- system.file("extdata", "sample_db.h5", 
+                       package = "signatureSearch")
+library(signatureSearchData)
+sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
-qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), 
-                  gess_method = "CMAP", refdb = sample_db,
+qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
+                  gess_method = "CMAP", refdb = db_path,
                   refdb_name="sample")
 cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 result(cmap)

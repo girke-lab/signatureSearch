@@ -1,62 +1,66 @@
-##' The original GSEA method is used to do enrichment analysis on a scored
-##' ranked drug list after mapping drugs to functional categories via 
-##' drug-target links in DrugBank, CLUE and STITCH databases
-##' 
-##' The ranked drug list consists of all drugs in the GESS result. 
-##' The similarity scores of the corresponding GESS method can be used for 
-##' ranking the drugs as it is required by the GSEA algorithm. The drugs 
-##' with zero scores are excluded. 
-##'
-##' @title GSEA method for DSEA
-##' @param drugList scored ranked list of all drugs in the GESS result. 
-##' The similarity scores of the corresponding GESS method can be used for 
-##' ranking the drugs as it is required by the GSEA algorithm. 
-##' The drugs with zero scores are excluded.
-##' @param type one of "GO" or "KEGG"
-##' @param ont one of "BP", "MF", "CC" or "GO"
-##' @param exponent weight of each step
-##' @param nPerm permutation numbers
-##' @param minGSSize minimal size of drug sets annotated by ontology term 
-##' after drug to functional category mappings.
-##' @param maxGSSize maximal size of drug sets annotated for testing
-##' @param pvalueCutoff pvalue Cutoff
-##' @param pAdjustMethod p value adjustment method,
-##' one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
-##' @return \code{\link{feaResult}} object, 
-##' represents enriched functional categories.
-##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
-##'          \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
-##' @references 
-##' GSEA algorithm: 
-##' Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
-##' Gillette, M. A., … Mesirov, J. P. (2005). Gene set enrichment analysis: a 
-##' knowledge-based approach for interpreting genome-wide expression profiles. 
-##' Proceedings of the National Academy of Sciences of the United States of
-##' America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
-##' @examples 
-##' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-##' sample_db <- loadHDF5SummarizedExperiment(db_dir)
-##' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-##' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-##' query = as.numeric(query_mat); names(query) = rownames(query_mat)
-##' upset <- head(names(query[order(-query)]), 150)
-##' downset <- tail(names(query[order(-query)]), 150)
-##' qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-##'                    gess_method = "LINCS", refdb = sample_db,
-##'                    refdb_name="sample")
-##' lincs <- gess_lincs(qsig_lincs, sortby="NCS")
-##' dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
-##' dl <- dl[dl>0]
-##' dl <- dl[!duplicated(names(dl))]
-##' # GO annotation system
-##' #gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
-##' #                      nPerm=1000, pvalueCutoff=0.2, minGSSize=5)
-##' #                      result(gsea_res)
-##' # KEGG annotation system
-##' gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
-##'                         pvalueCutoff=0.5, minGSSize=5)
-##' result(gsea_k_res)
-##' @export
+#' The original GSEA method is used to do enrichment analysis on a scored
+#' ranked drug list after mapping drugs to functional categories via 
+#' drug-target links in DrugBank, CLUE and STITCH databases
+#' 
+#' The ranked drug list consists of all drugs in the GESS result. 
+#' The similarity scores of the corresponding GESS method can be used for 
+#' ranking the drugs as it is required by the GSEA algorithm. The drugs 
+#' with zero scores are excluded. 
+#'
+#' @title GSEA method for DSEA
+#' @param drugList scored ranked list of all drugs in the GESS result. 
+#' The similarity scores of the corresponding GESS method can be used for 
+#' ranking the drugs as it is required by the GSEA algorithm. 
+#' The drugs with zero scores are excluded.
+#' @param type one of "GO" or "KEGG"
+#' @param ont one of "BP", "MF", "CC" or "GO"
+#' @param exponent weight of each step
+#' @param nPerm permutation numbers
+#' @param minGSSize minimal size of drug sets annotated by ontology term 
+#' after drug to functional category mappings.
+#' @param maxGSSize maximal size of drug sets annotated for testing
+#' @param pvalueCutoff pvalue Cutoff
+#' @param pAdjustMethod p value adjustment method,
+#' one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
+#' @return \code{\link{feaResult}} object, 
+#' represents enriched functional categories.
+#' @seealso \code{\link{feaResult}}, \code{\link{fea}},
+#'          \code{\link[signatureSearchData]{dtlink_db_clue_sti}}
+#' @references 
+#' GSEA algorithm: 
+#' Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
+#' Gillette, M. A., … Mesirov, J. P. (2005). Gene set enrichment analysis: a 
+#' knowledge-based approach for interpreting genome-wide expression profiles. 
+#' Proceedings of the National Academy of Sciences of the United States of
+#' America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
+#' @examples 
+#' db_path <- system.file("extdata", "sample_db.h5", 
+#'                        package = "signatureSearch")
+#' library(signatureSearchData)
+#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
+#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' query = as.numeric(query_mat); names(query) = rownames(query_mat)
+#' upset <- head(names(query[order(-query)]), 150)
+#' downset <- tail(names(query[order(-query)]), 150)
+#' qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
+#'                    gess_method = "LINCS", refdb = db_path,
+#'                    refdb_name="sample")
+#' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
+#' dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
+#' dl <- dl[dl>0]
+#' dl <- dl[!duplicated(names(dl))]
+#' ## GO annotation system
+#' \dontrun{
+#' gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
+#'                       nPerm=1000, pvalueCutoff=0.2, minGSSize=5)
+#'                       result(gsea_res)
+#' }
+#' ## KEGG annotation system
+#' gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
+#'                         pvalueCutoff=0.5, minGSSize=5)
+#' result(gsea_k_res)
+#' @export
 dsea_GSEA <- function(drugList, 
                       type = "GO", 
                       ont           = "BP", 
@@ -77,11 +81,8 @@ dsea_GSEA <- function(drugList,
   if(type=="GO"){
     # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
     #                                  ont, keytype="SYMBOL")
-    # download GO_DATA_drug.rds and save it to cache to save time
-    fl <- download_data_file(url=
-   "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/GO_DATA_drug.rds",
-      rname="GO_DATA_drug")
-    GO_DATA_drug <- readRDS(fl)
+    # download GO_DATA_drug.rds 
+    GO_DATA_drug <- suppressMessages(ah[["AH69087"]])
     
     res <-  GSEA_internal(geneList = drugList,
                           exponent = exponent,

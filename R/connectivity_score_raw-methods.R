@@ -1,6 +1,5 @@
 ##' @import gCMAP
 ##' @import Biobase
-##' @importFrom parallel mclapply
 setMethod(
   "connectivity_score_raw",
   signature(experiment = "eSet", query = "CMAPCollection" ),
@@ -22,10 +21,10 @@ setMethod(
     matched.sets <- query[na.omit(matched.features),]
     
     ## extract scores for each gene set
-    sets.up <- mclapply(seq(ncol(matched.sets)),
+    sets.up <- lapply(seq(ncol(matched.sets)),
                         function(x) which(members(matched.sets)[ ,x ] == 1))
     
-    sets.down <- mclapply(seq(ncol(matched.sets)),
+    sets.down <- lapply(seq(ncol(matched.sets)),
                         function(x) which(members(matched.sets)[ ,x] == -1))
     
     ## transform experiment to (reverse) ranks
@@ -52,7 +51,7 @@ setMethod(
       gene.scores <- NA
              }
     ## store results
-    results <- mclapply(seq(ncol(experiment)), function(x) { ## x = data column
+    results <- lapply(seq(ncol(experiment)), function(x) { ## x = data column
       
       if( ! all(is.na( gene.scores) )) {
         geneScores <- I( gene.scores[[x]])

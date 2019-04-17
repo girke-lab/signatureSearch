@@ -1,17 +1,18 @@
 ##' This function can be used to get protein targets of query drugs in 
 ##' DrugBank, CLUE and STITCH databases. A SQLite database storing drug-target
 ##' links in the above three databases can be found at 
-##' \code{signatureSearch_data} package. 
+##' \code{\link[signatureSearchData]{signatureSearchData}} package. 
 ##'
 ##' @title get targets of query drugs
 ##' @param drugs a character vector storing a list of drug names
 ##' @param database one of "DrugBank", "LINCS", "STITCH" or "all"  
-##' @return data.frame of drugs and target gene symbols
+##' @return data.frame with drugs and target gene symbols columns
 ##' @importFrom RSQLite dbConnect
 ##' @importFrom RSQLite dbGetQuery
 ##' @importFrom RSQLite SQLite
 ##' @importFrom RSQLite dbDisconnect
-##' @seealso \code{dtlink_dt_clue_sti}
+##' @importFrom signatureSearchData load_sqlite
+##' @seealso \code{\link[signatureSearchData]{dtlink_dt_clue_sti}}
 ##' @examples 
 ##' data(drugs)
 ##' dt <- get_targets(drugs)
@@ -20,12 +21,8 @@
 get_targets <- function(drugs, database="all"){
   drugs_orig <- unique(drugs)
   drugs <- unique(tolower(drugs))
-  # download dtlink_db_clue_sti.db and save it to cache
-  fl <- download_data_file(url=paste0("http://biocluster.ucr.edu/~yduan004/",
-                                "signatureSearch_data/dtlink_db_clue_sti.db"),
-                           rname="dtlink")
-  conn <- dbConnect(SQLite(), fl)
-
+  # load dtlink_db_clue_sti.db stored in AnnotationHub
+  conn <- load_sqlite("AH69083")
   dtlink_db <- dbGetQuery(conn, 'SELECT * FROM dtlink_db')
   dtlink_clue <- dbGetQuery(conn, 'SELECT * FROM dtlink_clue')
   dtlink_sti <- dbGetQuery(conn, 'SELECT * FROM dtlink_sti')

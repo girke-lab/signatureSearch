@@ -30,7 +30,7 @@ The description of the common tibble columns from different GESS methods:
     \item t_gn_sym: SYMBOL id of target genes/proteins of drugs.
 }}
 
-\item{\code{qsig}}{query signature}
+\item{\code{query}}{query signature}
 
 \item{\code{gess_method}}{method for GESS analysis}
 

@@ -4,7 +4,7 @@
 \alias{build_custom_db}
 \title{build_custom_db}
 \usage{
-build_custom_db(df, dest_dir)
+build_custom_db(df, h5file)
 }
 \arguments{
 \item{df}{data.frame, represents genome-wide Gene Expression Profiles (GEPs)
@@ -13,21 +13,24 @@ z-scores \emph{etc.} from differential expression analysis, or gene
 expression intensity values from Affymetrix Chips, or read counts from 
 RNA-Seq data. 
 
-Rownames (Gene SYMBOLs) should be included. The colnames should be of 
+Rownames (gene SYMBOL) should be included. The colnames should be of 
 `(drug)__(cell)__(factor)` format, e.g., `sirolimus__MCF7__trt_cp`.
 It can be generalized to any type of treatment, for example, gene knockdown
-or overexpression by setting `drug` as gene symbol, `factor` as 'gene_ko' or 
+or over expression by setting `drug` as gene symbol, `factor` as 'gene_ko' or
 other words, `cell` as treatment cell types. So, one example for 
 generalization format could be `P53__MCF7__gene_ko`.}
 
-\item{dest_dir}{directory path to store the reference database, which is 
-the hdf5 backed \code{\link{SummarizedExperiment}} object}
+\item{h5file}{character(1), path to the destination hdf5 file}
 }
 \value{
-hdf5 backed \code{\link{SummarizedExperiment}} object
+HDF5 file
 }
 \description{
-Build custom reference signature database for GESS
+Build custom reference signature database for GESS methods
+}
+\details{
+It write a data frame containing GEPs of treatments into an HDF5 file as
+reference database
 }
 \examples{
 # Generate a data.frame 
@@ -35,12 +38,8 @@ df <- data.frame(sirolimus__MCF7__trt_cp=rnorm(1000),
                  vorinostat__SKB__trt_cp=rnorm(1000))
 data(targetList)
 rownames(df) = names(targetList)
-dest_dir = tempfile("h5_df_")
-# The following step takes some time, so do not run as example
-# se = build_custom_db(df, dest_dir)
-list.files(dest_dir)
-unlink(dest_dir, recursive=TRUE)
-}
-\seealso{
-\code{\link{saveHDF5SummarizedExperiment}}
+h5file = tempfile(fileext=".h5")
+build_custom_db(df, h5file)
+library(signatureSearchData)
+tmp <- readHDF5chunk(h5file, colindex=1:2)
 }

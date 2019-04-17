@@ -1,3 +1,85 @@
+#' @title CMAP method for GESS
+#' 
+#' @description 
+#' It uses query signature to search against the reference database in the 
+#' \code{\link{qSig}} object by CMAP method, which is an implementation of 
+#' the original CMap method from Lamb et al, 2006. 
+#' 
+#' @details 
+#' Lamb et at., 2006 introduced the gene expression-based search method known as
+#' Connectivity Map (CMap) where a GES database is searched with a query GES for
+#' similar matches. It uses as query the most up- and down-regulated DEGs from 
+#' a genome-wide expression experiment. The GES query is used to search a 
+#' database of rank transformed GEPs and ranks the results by the degree of 
+#' enrichment of the up- and down-regulated query genes on the top and bottom 
+#' of the databases entries, respectively. The search results are a list of 
+#' drugs that have similar or opposing GESs as the query. Similar GESs suggest 
+#' similar physiological effects of the corresponding perturbagens. 
+#' 
+#' The CMAP method takes about 1 minute on a single CPU core for querying with 
+#' a single signature against 10,000 signatures in the LINCS database.
+#' 
+#' Description of the score columns in the gess_cmap tibble result:
+#' \itemize{
+#'     \item raw_score: bi-directional enrichment score (Kolmogorov-Smirnov 
+#'     enrichment statistic) of up and down set in the query siganture
+#'     \item scaled_score: raw_score was scaled to valules from 1 to -1 by 
+#'     dividing the positive scores with maxmum positive score, and negative
+#'     scores with minimum negative score.
+#' }
+#' 
+#' @param qSig \code{qSig} object, The 'gess_method' slot should be 'CMAP'.
+#' @param chunk_size size of chunk per processing
+#' @return \code{\link{gessResult}} object, represents drugs in the reference 
+#' database ranked by their similarity to the query signature
+#' @import methods
+#' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
+#' @references For detailed description of the CMap method, please refer to: 
+#' Lamb, J., Crawford, E. D., Peck, D., Modell, J. W., Blat, I. C., 
+#' Wrobel, M. J., … Golub, T. R. (2006). The Connectivity Map: 
+#' using gene-expression signatures to connect small molecules, genes, and 
+#' disease. Science, 313(5795), 1929–1935. 
+#' \url{https://doi.org/10.1126/science.1132939}
+#' @examples 
+#' db_path <- system.file("extdata", "sample_db.h5", 
+#'                        package = "signatureSearch")
+#' library(signatureSearchData)
+#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
+#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' query = as.numeric(query_mat); names(query) = rownames(query_mat)
+#' upset <- head(names(query[order(-query)]), 150)
+#' downset <- tail(names(query[order(-query)]), 150)
+#' qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
+#'                   gess_method = "CMAP", refdb = db_path,
+#'                   refdb_name="sample")
+#' cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
+#' result(cmap)
+#' @export
+gess_cmap <- function(qSig, chunk_size=5000){
+    if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
+    # stopifnot(validObject(qSig))
+    if(qSig@gess_method != "CMAP"){
+        stop(paste("The 'gess_method' slot of 'qSig' should be 'CMAP'",
+                   "if using 'gess_cmap' function!"))
+    }
+    db_path <- qSig@refdb
+    qsig_up <- qSig@query[[1]]
+    qsig_dn <- qSig@query[[2]]
+    res <- cmapEnrich(db_path, upset=qsig_up, downset=qsig_dn, 
+                      chunk_size=chunk_size)
+    res <- sep_pcf(res)
+    # add target column
+    target <- suppressMessages(get_targets(res$pert))
+    res <- left_join(res, target, by=c("pert"="drug_name"))
+    
+    x <- gessResult(result = as_tibble(res),
+                    query = qSig@query,
+                    gess_method = qSig@gess_method,
+                    refdb_name = qSig@refdb_name)
+    return(x)
+}
+
 #' @importFrom data.table frank
 rankMatrix <- function(x, decreasing=TRUE) {
   if(!is(x, "matrix") | !is.numeric(x)) stop("x needs to be numeric matrix!")
@@ -9,20 +91,19 @@ rankMatrix <- function(x, decreasing=TRUE) {
   return(rankma)
 }
 
-cmapEnrich <- function(se, upset, downset, chunk_size=5000) {
-  ## Validity checks of inputs
-  # if(!is(rankMA, "matrix") | !is.numeric(rankMA)) 
-  #     stop("rankMA needs to be numeric matrix!")
-  # if(is.null(rownames(rankMA)) | is.null(colnames(rankMA))) 
-  #     stop("matrix rankMA lacks colnames and/or rownames!")
-  dmat <- assay(se)
-  ## Obtain ranks of query genes in DB
-  ceil <- ceiling(ncol(dmat)/chunk_size)
+#' @importFrom rhdf5 h5ls
+cmapEnrich <- function(db_path, upset, downset, chunk_size=5000) {
+  ## Read in matrix in h5 file by chunks
+  mat_dim <- getH5dim(db_path)
+  mat_nrow <- mat_dim[1]
+  mat_ncol <- mat_dim[2]
+  ceil <- ceiling(mat_ncol/chunk_size)
+  ## get ranks of up and down genes in DB
   rankLup=NULL
   rankLdown=NULL
   for(i in seq_len(ceil)){
-    dmat_sub <- dmat[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(dmat))]
-    mat <- as(dmat_sub, "matrix")
+    mat <- readHDF5mat(db_path,
+                    colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
     rankLup1 <- lapply(colnames(mat), function(x) sort(rank(-1*mat[,x])[upset]))
     rankLdown1 <- lapply(colnames(mat), 
                          function(x) sort(rank(-1*mat[,x])[downset]))
@@ -32,12 +113,12 @@ cmapEnrich <- function(se, upset, downset, chunk_size=5000) {
   
   ## Compute raw and scaled connectivity scores
   raw.score <- vapply(seq_along(rankLup), function(x) 
-                               .s(rankLup[[x]], rankLdown[[x]], n=nrow(dmat)),
+                               .s(rankLup[[x]], rankLdown[[x]], n=mat_nrow),
                       FUN.VALUE=numeric(1))
   score <- .S(raw.score)
   
   ## Assemble results
-  resultDF <- data.frame(set = colnames(dmat), 
+  resultDF <- data.frame(set = h5read(db_path, "colnames", drop=TRUE), 
                          trend = ifelse(score >=0, "up", "down"),
                          raw_score = raw.score,
                          scaled_score = score,
@@ -68,90 +149,4 @@ cmapEnrich <- function(se, upset, downset, chunk_size=5000) {
   p <- max(scores)
   q <- min(scores)
   ifelse(scores == 0, 0, ifelse(scores > 0, scores / p, -scores / q))
-}
-
-#' @title CMAP method for GESS
-#' 
-#' @description 
-#' It uses query signature to search against the reference database in the 
-#' \code{qSig} by CMAP method, which is an implementation of the original 
-#' CMap method from Lamb et al, 2006. 
-#' 
-#' @details 
-#' Lamb et at., 2006 introduced the gene expression-based search method known as
-#' Connectivity Map (CMap) where a GES database is searched with a query GES for
-#' similar matches. It uses as query the most up- and down-regulated DEGs from 
-#' a genome-wide expression experiment. The GES query is used to search a 
-#' database of rank transformed GEPs and ranks the results by the degree of 
-#' enrichment of the up- and down-regulated query genes on the top and bottom 
-#' of the databases entries, respectively. The search results are a list of 
-#' drugs that have similar or opposing GESs as the query. Similar GESs suggest 
-#' similar physiological effects of the corresponding perturbagens. 
-#' 
-#' The CMAP method takes about 1.2 min on a single CPU core for querying with a 
-#' single signature against 10,000 signatures in the LINCS database.
-#' 
-#' Description of the score columns in the gess_cmap tibble result:
-#' \itemize{
-#'     \item raw_score: bi-directional enrichment score (Kolmogorov-Smirnov 
-#'     enrichment statistic) of up and down set in the query siganture
-#'     \item scaled_score: raw_score was scaled to valules from 1 to -1 by 
-#'     dividing the positive scores with maxmum positive score, and negative
-#'     scores with minimum negative score.
-#' }
-#' 
-#' @param qSig \code{qSig} object, The 'gess_method' slot should be 'CMAP'.
-#' @param chunk_size size of chunk per processing
-#' @return \code{gessResult} object, represents drugs in the reference database 
-#' ranked by their similarity to the query signature
-#' @importFrom R.utils gunzip
-#' @importFrom tools file_path_as_absolute
-#' @import methods
-#' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
-#' @references For detailed description of the CMap method, please refer to: 
-#' Lamb, J., Crawford, E. D., Peck, D., Modell, J. W., Blat, I. C., 
-#' Wrobel, M. J., … Golub, T. R. (2006). The Connectivity Map: 
-#' using gene-expression signatures to connect small molecules, genes, and 
-#' disease. Science, 313(5795), 1929–1935. 
-#' \url{https://doi.org/10.1126/science.1132939}
-#' @examples 
-#' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-#' sample_db <- loadHDF5SummarizedExperiment(db_dir)
-#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' query = as.numeric(query_mat); names(query) = rownames(query_mat)
-#' upset <- head(names(query[order(-query)]), 150)
-#' downset <- tail(names(query[order(-query)]), 150)
-#' qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), 
-#'                   gess_method = "CMAP", refdb = sample_db,
-#'                   refdb_name="sample")
-#' cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
-#' result(cmap)
-#' @export
-gess_cmap <- function(qSig, chunk_size=5000){
-  if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
-  # stopifnot(validObject(qSig))
-  if(qSig@gess_method != "CMAP"){
-    stop(paste("The 'gess_method' slot of 'qSig' should be 'CMAP'",
-               "if using 'gess_cmap' function!"))
-  }
-  se <- qSig@refdb
-  #dmat = assay(se)
-  qsig_up <- qSig@qsig[[1]]
-  qsig_dn <- qSig@qsig[[2]]
-  res <- cmapEnrich(se, upset=qsig_up, downset=qsig_dn, chunk_size=chunk_size)
-  new <- as.data.frame(t(vapply(seq_len(nrow(res)), function(i)
-    unlist(strsplit(as.character(res$set[i]), "__")), FUN.VALUE=character(3))), 
-    stringsAsFactors=FALSE)
-  colnames(new) = c("pert", "cell", "type")
-  res <- cbind(new, res[,-1])
-  # add target column
-  target <- suppressMessages(get_targets(res$pert))
-  res <- left_join(res, target, by=c("pert"="drug_name"))
-    
-  x <- gessResult(result = as_tibble(res),
-                  qsig = qSig@qsig,
-                  gess_method = qSig@gess_method,
-                  refdb_name = qSig@refdb_name)
-  return(x)
 }

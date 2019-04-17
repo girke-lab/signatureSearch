@@ -4,15 +4,17 @@
 #' @return data.frame
 #' @importFrom dplyr bind_cols
 #' @examples 
-#' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-#' sample_db <- loadHDF5SummarizedExperiment(db_dir)
+#' db_path <- system.file("extdata", "sample_db.h5", 
+#'                        package = "signatureSearch")
+#' library(signatureSearchData)
+#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 #' query = as.numeric(query_mat); names(query) = rownames(query_mat)
 #' upset <- head(names(query[order(-query)]), 150)
 #' downset <- tail(names(query[order(-query)]), 150)
-#' qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), 
-#'                   gess_method = "CMAP", refdb = sample_db,
+#' qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
+#'                   gess_method = "CMAP", refdb = db_path,
 #'                   refdb_name="sample")
 #' cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 #' df <- drug_cell_ranks(cmap)
@@ -48,21 +50,23 @@ drug_cell_ranks <- function(gessResult){
 #' @param tib tibble in gessResult object. 
 #' @param grp1 character vector, group 1 of cell types, e.g., tumor cell types
 #' @param grp2 character vector, group 2 of cell types, e.g., normal cell types
-#' @param score_column character, column name of similairity scores to be 
+#' @param score_column character, column name of similarity scores to be 
 #' grouped 
 #' @return tibble
 #' @examples 
-#' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-#' sample_db <- loadHDF5SummarizedExperiment(db_dir)
+#' db_path <- system.file("extdata", "sample_db.h5", 
+#'                        package = "signatureSearch")
+#' library(signatureSearchData)
+#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 #' query = as.numeric(query_mat); names(query) = rownames(query_mat)
 #' upset <- head(names(query[order(-query)]), 150)
 #' downset <- tail(names(query[order(-query)]), 150)
-#' qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-#'                    gess_method = "LINCS", refdb = sample_db,
+#' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
+#'                    gess_method = "LINCS", refdb = db_path,
 #'                    refdb_name="sample")
-#' lincs <- gess_lincs(qsig_lincs, sortby="NCS")
+#' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 #' df <- sim_score_grp(result(lincs), grp1="SKB", grp2="MCF7", "NCS")
 #' @export
 
@@ -107,26 +111,30 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
 #' @param drugs character vector, a list of interesting drugs
 #' @param col name of the score column in 'gess_tb', e.g., "NCS" 
 #' @return plot
-#' @seealso 
-#' Subramanian et al., 2017,
-#' \url{https://www.sciencedirect.com/science/article/pii/S0092867417313090}
+#' @references  
+#' Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., 
+#' Natoli, T. E., Lu, X., … Golub, T. R. (2017). A Next Generation 
+#' Connectivity Map: L1000 Platform and the First 1,000,000 Profiles. Cell, 
+#' 171(6), 1437–1452.e17. \url{https://doi.org/10.1016/j.cell.2017.10.049}
 #' @importFrom readr read_tsv
 #' @importFrom dplyr mutate
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank
 #' @examples 
-#' db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-#' sample_db <- loadHDF5SummarizedExperiment(db_dir)
+#' db_path <- system.file("extdata", "sample_db.h5", 
+#'                        package = "signatureSearch")
+#' library(signatureSearchData)
+#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 #' query = as.numeric(query_mat); names(query) = rownames(query_mat)
 #' upset <- head(names(query[order(-query)]), 150)
 #' downset <- tail(names(query[order(-query)]), 150)
-#' qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-#'                    gess_method = "LINCS", refdb = sample_db,
+#' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
+#'                    gess_method = "LINCS", refdb = db_path,
 #'                    refdb_name="sample")
-#' lincs <- gess_lincs(qsig_lincs, sortby="NCS")
+#' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 #' data(drugs)
 #' gess_res_vis(result(lincs), drugs, col="NCS")
 #' @export

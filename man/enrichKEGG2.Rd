@@ -14,7 +14,7 @@ enrichKEGG2(gene, organism = "hsa", keyType = "kegg",
 \item{organism}{supported organism listed in 
 \url{http://www.genome.jp/kegg/catalog/org_list.html}}
 
-\item{keyType}{one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'}
+\item{keyType}{one of "kegg", 'ncbi-geneid', 'ncbi-proteinid' and 'uniprot'}
 
 \item{pvalueCutoff}{Cutoff value of pvalue.}
 

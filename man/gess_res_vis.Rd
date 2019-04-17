@@ -25,21 +25,25 @@ can be summarized and visualized. The summary method is according to the
 "Summarization Across Cell Lines" method from Subramanian et al., 2017.
 }
 \examples{
-db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-sample_db <- loadHDF5SummarizedExperiment(db_dir)
+db_path <- system.file("extdata", "sample_db.h5", 
+                       package = "signatureSearch")
+library(signatureSearchData)
+sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
-qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-                   gess_method = "LINCS", refdb = sample_db,
+qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
+                   gess_method = "LINCS", refdb = db_path,
                    refdb_name="sample")
-lincs <- gess_lincs(qsig_lincs, sortby="NCS")
+lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 data(drugs)
 gess_res_vis(result(lincs), drugs, col="NCS")
 }
-\seealso{
-Subramanian et al., 2017,
-\url{https://www.sciencedirect.com/science/article/pii/S0092867417313090}
+\references{
+Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., 
+Natoli, T. E., Lu, X., … Golub, T. R. (2017). A Next Generation 
+Connectivity Map: L1000 Platform and the First 1,000,000 Profiles. Cell, 
+171(6), 1437–1452.e17. \url{https://doi.org/10.1016/j.cell.2017.10.049}
 }

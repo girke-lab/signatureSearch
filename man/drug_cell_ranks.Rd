@@ -16,15 +16,17 @@ data.frame
 For drugs in GESS result, get their ranks in different cell types
 }
 \examples{
-db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-sample_db <- loadHDF5SummarizedExperiment(db_dir)
+db_path <- system.file("extdata", "sample_db.h5", 
+                       package = "signatureSearch")
+library(signatureSearchData)
+sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
-qsig_cmap <- qSig(qsig = list(upset=upset, downset=downset), 
-                  gess_method = "CMAP", refdb = sample_db,
+qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
+                  gess_method = "CMAP", refdb = db_path,
                   refdb_name="sample")
 cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 df <- drug_cell_ranks(cmap)

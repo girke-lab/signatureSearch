@@ -2,28 +2,30 @@
 % Please edit documentation in R/gess_lincs.R
 \name{randQueryES}
 \alias{randQueryES}
-\title{Generate ES null distribution with random queries}
+\title{Generate WTCS null distribution with random queries}
 \usage{
 randQueryES(se, N_queries = 1000, dest_ES_NULL_path)
 }
 \arguments{
-\item{se}{SummarizedExperiment object represents reference database}
-
 \item{N_queries}{number of random queries}
 
-\item{dest_ES_NULL_path}{file path to the generated "ES_NULL.txt" file}
+\item{h5file}{character(1), path to the HDF5 file representting the
+reference database}
+
+\item{dest}{file path to the generated "ES_NULL.txt" file}
 }
 \value{
-ES_NULL.txt file
+write 'ES_NULL.txt' file to the 'dest'
 }
 \description{
-Generate ES null distribution with specified number of random queryies 
-against the reference database (se) for computing nominal P-values for ES
+Generate null distribution of WTCS with specified number of random queries 
+against the reference database for computing nominal P-values for WTCS
 in the `gess_lincs` result.
 }
 \examples{
-dbpath = system.file("extdata", "sample_db", package="signatureSearch")
-se = HDF5Array::loadHDF5SummarizedExperiment(dbpath)
+db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")
+library(signatureSearchData)
+se = readHDF5chunk(db_path, colindex=1:100)
 randQueryES(se=se, N_queries=5, dest_ES_NULL_path="ES_NULL.txt")
 unlink("ES_NULL.txt")
 }

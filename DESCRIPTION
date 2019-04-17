@@ -1,18 +1,18 @@
 Package: signatureSearch
-Title: signatureSearch-Discovering novel modes of action of bioactive compounds
+Title: Discovering novel modes of action of bioactive compounds
 Version: 0.99.5
 Date: 2019-03-22
 Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
            role = c("aut", "cre"))
 Description: This package can be used to do Gene Expression Signature Search 
             (GESS) and downstream Functional Enrichment Analysis (FEA).
-Depends: R (>= 3.6), SummarizedExperiment, Rcpp, HDF5Array
-Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), R.utils,
-        data.table, magrittr, RSQLite, dplyr, fgsea, scales, methods, 
-        qvalue, stats, utils, org.Hs.eg.db, reshape2, visNetwork, BiocParallel, 
-        fastmatch, tools, DelayedArray, Biobase, clusterProfiler,
-        parallel, readr, gCMAP, DOSE, BiocFileCache, rappdirs
-Suggests: AnnotationHub, KEGG.db, knitr, testthat, rmarkdown, BiocStyle
+Depends: R (>= 3.6), SummarizedExperiment, Rcpp
+Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), data.table, 
+         magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats, 
+         utils, org.Hs.eg.db, reshape2, visNetwork, BiocParallel, fastmatch, 
+         Biobase, clusterProfiler, readr, gCMAP, DOSE, rhdf5, 
+         signatureSearchData, AnnotationHub
+Suggests: KEGG.db, knitr, testthat, rmarkdown, BiocStyle
 License: Artistic-2.0
 SystemRequirements: C++11
 LinkingTo: Rcpp

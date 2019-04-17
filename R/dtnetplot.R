@@ -27,11 +27,7 @@ dtnetplot <- function(drugs, set, ont = NULL, ...) {
       stop("The 'set' is a GO term ID, please set 'ont' as one of 
            BP, MF, CC or ALL")
     # download goAnno.rds and save it to cache
-    fl <- download_data_file(url=
-    "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/goAnno.rds",
-                             rname="goAnno")
-    goAnno <- readRDS(fl)
-    
+    goAnno <- suppressMessages(ah[["AH69084"]])
     go_gene <- unique(goAnno$SYMBOL[goAnno$ONTOLOGYALL == ont & 
                                       goAnno$GOALL == set])
   }

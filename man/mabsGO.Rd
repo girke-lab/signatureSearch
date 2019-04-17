@@ -36,9 +36,11 @@ MeanAbs Analysis of Gene Ontology
 \examples{
 data(targetList)
 library(org.Hs.eg.db)
-#mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
-#             pvalueCutoff = 1)
-#head(mg)
+\dontrun{
+mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
+             pvalueCutoff = 1)
+head(mg)
+}
 }
 \author{
 Yuzhu Duan

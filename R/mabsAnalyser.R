@@ -15,9 +15,12 @@
 ##' @examples 
 ##' data(targetList)
 ##' library(org.Hs.eg.db)
-##' #mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
-##' #             pvalueCutoff = 1)
-##' #head(mg)
+##' \dontrun{
+##' mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
+##'              pvalueCutoff = 1)
+##' head(mg)
+##' }
+
 ##' @export
 mabsGO <- function(geneList,
                   ont           = "BP",
@@ -33,11 +36,9 @@ mabsGO <- function(geneList,
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
 
     #GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
-    # download GO_DATA.rds and save it to cache to save time
-    fl <- download_data_file(url=
-        "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/GO_DATA.rds",
-                             rname="GO_DATA")
-    GO_DATA <- readRDS(fl)
+    # download GO_DATA.rds from AnnotationHub to save time by avoiding 
+    # builing GO_DATA from scratch
+    GO_DATA <- suppressMessages(ah[["AH69086"]])
     
     res <-  mabs_internal(geneList = geneList,
                           nPerm = nPerm,

@@ -38,9 +38,9 @@
 ##'          \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
 ##' @examples 
 ##' data(drugs)
-##' # GO annotation system
-##' #hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
-##' #result(hyperG_res)
+##' ## GO annotation system
+##' # hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
+##' # result(hyperG_res)
 ##' ## KEGG annotation system
 ##' hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
 ##'                             pvalueCutoff = 1, qvalueCutoff = 1, 
@@ -62,11 +62,9 @@ dsea_hyperG <- function(drugs,
     
     # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
     #                                  ont, keytype="SYMBOL")
-    # download GO_DATA_drug.rds and save it to cache to save time
-    fl <- download_data_file(url=
-    "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/GO_DATA_drug.rds",
-                             rname="GO_DATA_drug")
-    GO_DATA_drug <- readRDS(fl)
+    # download GO_DATA_drug.rds from AnnotationHub to save time by avoiding 
+    # builing it from scratch
+    GO_DATA_drug <- suppressMessages(ah[["AH69087"]])
     
     # get all the drugs in the corresponding annotation system as universe
     ext2path <- get("EXTID2PATHID", envir = GO_DATA_drug)
@@ -172,11 +170,9 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
     assign("organism", get_organism(OrgDb), envir=GO_Env)
   }
   
-  # download goAnno_drug.rds and save it to cache
-  fl <- download_data_file(url=
-    "http://biocluster.ucr.edu/~yduan004/signatureSearch_data/goAnno_drug.rds",
-                           rname="goAnno_drug")
-  goAnno_drug <- readRDS(fl) # "drug_name" in goAnno_drug are all lowercase
+  # download goAnno_drug.rds 
+  goAnno_drug <- suppressMessages(ah[["AH69085"]])
+  ## "drug_name" in goAnno_drug are all lowercase
   
   if (ont == "ALL") {
     GO2GENE <- goAnno_drug[,c("GOALL","drug_name")]
@@ -208,10 +204,7 @@ get_GO_data_drug <- function(OrgDb, ont, keytype) {
 prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
   kegg <- clusterProfiler::download_KEGG(species, KEGG_Type, keyType)
   # get dtlink_entrez
-  fl <- download_data_file(url=paste0("http://biocluster.ucr.edu/~yduan004/",
-                                  "signatureSearch_data/dtlink_db_clue_sti.db"),
-                           rname="dtlink")
-  conn <- dbConnect(SQLite(), fl)
+  conn <- load_sqlite("AH69083")
   dtlink_entrez <- dbGetQuery(conn, 'SELECT * FROM dtlink_entrez')
   dbDisconnect(conn)
   

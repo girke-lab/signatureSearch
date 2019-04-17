@@ -3,7 +3,7 @@
 ##' Summarize GESS results to get a list of MOA categories ranked by their 
 ##' connectivity to query signature in cells
 ##' @param gess_tb table in \code{\link{gessResult}} object
-##' @param moa_cats if set as "default", it uses MOA annotaions from CLUE 
+##' @param moa_cats if set as "default", it uses MOA annotations from CLUE 
 ##' website \url{https://clue.io/}. 
 ##' Users can customize it as a `list` with names as MOA categories and 
 ##' contents as drug names.

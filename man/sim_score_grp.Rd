@@ -13,7 +13,7 @@ sim_score_grp(tib, grp1, grp2, score_column)
 
 \item{grp2}{character vector, group 2 of cell types, e.g., normal cell types}
 
-\item{score_column}{character, column name of similairity scores to be 
+\item{score_column}{character, column name of similarity scores to be 
 grouped}
 }
 \value{
@@ -24,16 +24,18 @@ Append two columns (score_column_grp1, score_column_grp2) to GESS result,
 which represent cell summary scores of drugs in a cell group.
 }
 \examples{
-db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-sample_db <- loadHDF5SummarizedExperiment(db_dir)
+db_path <- system.file("extdata", "sample_db.h5", 
+                       package = "signatureSearch")
+library(signatureSearchData)
+sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
-qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-                   gess_method = "LINCS", refdb = sample_db,
+qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
+                   gess_method = "LINCS", refdb = db_path,
                    refdb_name="sample")
-lincs <- gess_lincs(qsig_lincs, sortby="NCS")
+lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 df <- sim_score_grp(result(lincs), grp1="SKB", grp2="MCF7", "NCS")
 }

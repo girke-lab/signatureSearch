@@ -12,7 +12,7 @@ tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000,
 \item{drugs}{query drug set used to do TSEA.
 Can be top ranking drugs in GESS result.}
 
-\item{type}{onoe of `GO` or `KEGG`}
+\item{type}{one of `GO` or `KEGG`}
 
 \item{ont}{if type is `GO`, set ontology, one of `BP`,`MF`,`CC` or `ALL`}
 

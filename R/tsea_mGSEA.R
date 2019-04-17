@@ -41,7 +41,7 @@
 #' @title mGSEA method for TSEA
 #' @param drugs query drug set used to do TSEA.
 #' Can be top ranking drugs in GESS result. 
-#' @param type onoe of `GO` or `KEGG`
+#' @param type one of `GO` or `KEGG`
 #' @param ont if type is `GO`, set ontology, one of `BP`,`MF`,`CC` or `ALL`
 #' @param nPerm permutation numbers used to calculate p value
 #' @param exponent weight of each step

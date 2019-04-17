@@ -9,7 +9,7 @@ moa_conn(gess_tb, moa_cats = "default", cells = "normal")
 \arguments{
 \item{gess_tb}{table in \code{\link{gessResult}} object}
 
-\item{moa_cats}{if set as "default", it uses MOA annotaions from CLUE 
+\item{moa_cats}{if set as "default", it uses MOA annotations from CLUE 
 website \url{https://clue.io/}. 
 Users can customize it as a `list` with names as MOA categories and 
 contents as drug names.}

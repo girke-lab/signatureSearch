@@ -48,25 +48,29 @@ ranking the drugs as it is required by the GSEA algorithm. The drugs
 with zero scores are excluded.
 }
 \examples{
-db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-sample_db <- loadHDF5SummarizedExperiment(db_dir)
+db_path <- system.file("extdata", "sample_db.h5", 
+                       package = "signatureSearch")
+library(signatureSearchData)
+sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
 qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-                   gess_method = "LINCS", refdb = sample_db,
+                   gess_method = "LINCS", refdb = db_path,
                    refdb_name="sample")
-lincs <- gess_lincs(qsig_lincs, sortby="NCS")
+lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
 dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]
-# GO annotation system
-#gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
-#                      nPerm=1000, pvalueCutoff=0.2, minGSSize=5)
-#                      result(gsea_res)
-# KEGG annotation system
+## GO annotation system
+\dontrun{
+gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
+                      nPerm=1000, pvalueCutoff=0.2, minGSSize=5)
+                      result(gsea_res)
+}
+## KEGG annotation system
 gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
                         pvalueCutoff=0.5, minGSSize=5)
 result(gsea_k_res)
@@ -81,5 +85,5 @@ America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}},
-         \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
+         \code{\link[signatureSearchData]{dtlink_db_clue_sti}}
 }

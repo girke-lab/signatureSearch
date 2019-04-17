@@ -4,8 +4,7 @@
 \alias{gess_gcmap}
 \title{gCMAP method for GESS}
 \usage{
-gess_gcmap(qSig, higher, lower, add_bs_score = FALSE,
-  chunk_size = 5000)
+gess_gcmap(qSig, higher, lower, chunk_size = 5000)
 }
 \arguments{
 \item{qSig}{`qSig` object, The 'gess_method' slot of 'qSig' should be 'gCMAP'}
@@ -18,9 +17,6 @@ At least one of 'lower' and 'higher' must be specified.}
 than 'lower' will be included in the gene set with sign -1. 
 At least one of 'lower' and 'higher' must be specified.}
 
-\item{add_bs_score}{TRUE or FALSE. If true, bootstrap scores are added to 
-measure the robustness of the result rankings.}
-
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
@@ -29,8 +25,8 @@ ranked by their similarity to the query signature
 }
 \description{
 It uses query signature to search against the reference database in the 
-\code{qSig} by gCMAP method, which is adapted from the gCMAP package 
-(Sandmann et al., 2014)
+\code{\link{qSig}} object by gCMAP method, which is adapted from the 
+gCMAP package (Sandmann et al., 2014)
 }
 \details{
 The \code{gCMAP} package provides access to related 
@@ -54,11 +50,13 @@ Description of the score columns in the gess_gcmap tibble result:
 }
 }
 \examples{
-db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-sample_db <- loadHDF5SummarizedExperiment(db_dir)
+db_path <- system.file("extdata", "sample_db.h5", 
+                       package = "signatureSearch")
+library(signatureSearchData)
+sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=sample_db,
+qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path,
                    refdb_name="sample")
 gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
 result(gcmap)
