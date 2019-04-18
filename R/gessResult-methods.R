@@ -16,8 +16,7 @@
 ##' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ##' # get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 ##' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-##' qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path,
-##'                     refdb_name="sample")
+##' qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
 ##' fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 ##' fisher
 setMethod("show", signature(object="gessResult"),
@@ -40,7 +39,7 @@ setMethod("show", signature(object="gessResult"),
               cat("# ... with", nrow(mat)-10, "more rows\n")
             }
             cat("\n@gess_method", "\t", object@gess_method, "\n")
-            cat("\n@refdb_name", "\t", object@refdb_name, "\n")
+            cat("\n@refdb", "\t", object@refdb, "\n")
           })
 
 ##' @description get 'result' slot of gessResult object
@@ -59,8 +58,7 @@ setMethod("show", signature(object="gessResult"),
 ##' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ##' # get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 ##' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-##' qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path,
-##'                     refdb_name="sample")
+##' qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
 ##' fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 ##' result(fisher)
 

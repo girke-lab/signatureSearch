@@ -22,15 +22,12 @@
 ##' the vignette in \code{\link[signatureSearchData]{signatureSearchData}}
 ##' package. The HDF5 file contains 
 ##' the reference signatures that the query signature is searched against. 
-##' @slot refdb_name character(1), name of the reference database. Like "cmap",
-##' "lincs" or other custom names.
 ##' @exportClass qSig
 ##' @keywords classes
 setClass("qSig", slots = c(
   query = "ANY",
   gess_method = "character",
-  refdb = "character",
-  refdb_name = "character"
+  refdb = "character"
 ))
 
 ##' Class "gessResult"
@@ -59,7 +56,7 @@ setClass("qSig", slots = c(
 ##' } 
 ##' @slot query query signature
 ##' @slot gess_method method for GESS analysis
-##' @slot refdb_name name of the reference database
+##' @slot refdb path to the reference database
 ##' @exportClass gessResult
 ##' @keywords classes
 setClass("gessResult",
@@ -67,13 +64,13 @@ setClass("gessResult",
            result = "data.frame",
            query = "ANY",
            gess_method = "character",
-           refdb_name = "character"
+           refdb = "character"
          ))
 
 ## Constructor for "gessResult"
-gessResult <- function(result, query, gess_method, refdb_name="UNKNOWN")
+gessResult <- function(result, query, gess_method, refdb)
   new("gessResult", result=result, query=query, 
-      gess_method=gess_method, refdb_name=refdb_name)
+      gess_method=gess_method, refdb=refdb)
 
 
 ## Defining the validity method for "qSig"

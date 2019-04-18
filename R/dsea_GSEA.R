@@ -44,8 +44,7 @@
 #' upset <- head(names(query[order(-query)]), 150)
 #' downset <- tail(names(query[order(-query)]), 150)
 #' qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
-#'                    gess_method = "LINCS", refdb = db_path,
-#'                    refdb_name="sample")
+#'                    gess_method = "LINCS", refdb = db_path)
 #' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 #' dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
 #' dl <- dl[dl>0]

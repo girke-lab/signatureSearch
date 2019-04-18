@@ -34,7 +34,7 @@ The description of the common tibble columns from different GESS methods:
 
 \item{\code{gess_method}}{method for GESS analysis}
 
-\item{\code{refdb_name}}{name of the reference database}
+\item{\code{refdb}}{path to the reference database}
 }}
 
 \keyword{classes}

@@ -45,8 +45,7 @@
 #' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path,
-#'                    refdb_name="sample")
+#' qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
 #' gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
 #' result(gcmap)
 #' @export
@@ -83,7 +82,7 @@ gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
   x <- gessResult(result = as_tibble(res),
                   query = qSig@query,
                   gess_method = qSig@gess_method,
-                  refdb_name = qSig@refdb_name)
+                  refdb = qSig@refdb)
   return(x)
 }
 

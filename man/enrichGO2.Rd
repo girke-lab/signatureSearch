@@ -9,7 +9,7 @@ enrichGO2(gene, OrgDb, keytype = "SYMBOL", ont = "MF",
   qvalueCutoff = 0.2, minGSSize = 5, maxGSSize = 500, pool = FALSE)
 }
 \arguments{
-\item{gene}{a vector of entrez gene id or gene SYMBOL.}
+\item{gene}{a vector of gene SYMBOL ids.}
 
 \item{OrgDb}{OrgDb}
 

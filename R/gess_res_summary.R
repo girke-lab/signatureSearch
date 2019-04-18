@@ -14,8 +14,7 @@
 #' upset <- head(names(query[order(-query)]), 150)
 #' downset <- tail(names(query[order(-query)]), 150)
 #' qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
-#'                   gess_method = "CMAP", refdb = db_path,
-#'                   refdb_name="sample")
+#'                   gess_method = "CMAP", refdb = db_path)
 #' cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 #' df <- drug_cell_ranks(cmap)
 #' @export
@@ -64,8 +63,7 @@ drug_cell_ranks <- function(gessResult){
 #' upset <- head(names(query[order(-query)]), 150)
 #' downset <- tail(names(query[order(-query)]), 150)
 #' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
-#'                    gess_method = "LINCS", refdb = db_path,
-#'                    refdb_name="sample")
+#'                    gess_method = "LINCS", refdb = db_path)
 #' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 #' df <- sim_score_grp(result(lincs), grp1="SKB", grp2="MCF7", "NCS")
 #' @export
@@ -132,8 +130,7 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
 #' upset <- head(names(query[order(-query)]), 150)
 #' downset <- tail(names(query[order(-query)]), 150)
 #' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
-#'                    gess_method = "LINCS", refdb = db_path,
-#'                    refdb_name="sample")
+#'                    gess_method = "LINCS", refdb = db_path)
 #' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 #' data(drugs)
 #' gess_res_vis(result(lincs), drugs, col="NCS")

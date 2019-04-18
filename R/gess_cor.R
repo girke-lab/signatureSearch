@@ -33,8 +33,7 @@
 #' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = db_path,
-#'                 refdb_name="sample")
+#' qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = db_path)
 #' sp <- gess_cor(qSig=qsig_sp, method="spearman")
 #' result(sp)
 #' @export
@@ -67,7 +66,7 @@ gess_cor <- function(qSig, method, chunk_size=5000){
   x <- gessResult(result = as_tibble(res),
                   query = qSig@query,
                   gess_method = qSig@gess_method,
-                  refdb_name = qSig@refdb_name)
+                  refdb = qSig@refdb)
   return(x)
 }
 

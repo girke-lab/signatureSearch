@@ -1,5 +1,6 @@
 Changes in version 0.99.5 (2019-05-01)
-+ Major change: Use HDF5 file to write and read the matrix by chunks
++ Major change: Use HDF5 file to read and write the matrix by chunks
++ reference signature database is path to the cmap/lincs/custom hdf5 file
 + Major change: load the intermediate datasets from AnnotationHub
 
 Changes in version 0.99.4 (2019-04-05)

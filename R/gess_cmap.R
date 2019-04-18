@@ -51,8 +51,7 @@
 #' upset <- head(names(query[order(-query)]), 150)
 #' downset <- tail(names(query[order(-query)]), 150)
 #' qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
-#'                   gess_method = "CMAP", refdb = db_path,
-#'                   refdb_name="sample")
+#'                   gess_method = "CMAP", refdb = db_path)
 #' cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 #' result(cmap)
 #' @export
@@ -76,7 +75,7 @@ gess_cmap <- function(qSig, chunk_size=5000){
     x <- gessResult(result = as_tibble(res),
                     query = qSig@query,
                     gess_method = qSig@gess_method,
-                    refdb_name = qSig@refdb_name)
+                    refdb = qSig@refdb)
     return(x)
 }
 

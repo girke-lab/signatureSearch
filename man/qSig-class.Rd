@@ -30,9 +30,6 @@ generated from the source files of CMAP/LINCS databases according to
 the vignette in \code{\link[signatureSearchData]{signatureSearchData}}
 package. The HDF5 file contains 
 the reference signatures that the query signature is searched against.}
-
-\item{\code{refdb_name}}{character(1), name of the reference database. Like "cmap",
-"lincs" or other custom names.}
 }}
 
 \keyword{classes}

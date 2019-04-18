@@ -7,13 +7,11 @@
 \alias{qSig,matrix,character,character,character-method}
 \title{qSig method}
 \usage{
-qSig(query, gess_method, refdb, refdb_name)
+qSig(query, gess_method, refdb)
 
-\S4method{qSig}{list,character,character,character}(query, gess_method,
-  refdb, refdb_name = "UNKNOWN")
+\S4method{qSig}{list,character,character}(query, gess_method, refdb)
 
-\S4method{qSig}{matrix,character,character,character}(query, gess_method,
-  refdb, refdb_name = "UNKNOWN")
+\S4method{qSig}{matrix,character,character}(query, gess_method, refdb)
 }
 \arguments{
 \item{gess_method}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
@@ -27,9 +25,6 @@ it should be the file path to the HDF5 file generated with
 generated from the source files of CMAP/LINCS databases according to 
 the vignette in \pkg{signatureSearchData} package. The HDF5 file contains 
 the reference signatures that the query signature is searched against.}
-
-\item{refdb_name}{character(1), name of the reference database. Like "cmap",
-"lincs" or other custom names.}
 
 \item{qsig}{When 'gess_method' is 'CMAP' or 'LINCS', 
 it should be a list of two elements, which are up and down regulated gene 
@@ -59,10 +54,8 @@ query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
 qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
-                   gess_method="LINCS", refdb=db_path,
-                   refdb_name="sample")
-qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=db_path,
-                   refdb_name="sample")
+                   gess_method="LINCS", refdb=db_path)
+qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=db_path)
 }
 \seealso{
 \code{\link{build_custom_db}}, 

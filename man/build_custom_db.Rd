@@ -13,10 +13,10 @@ z-scores \emph{etc.} from differential expression analysis, or gene
 expression intensity values from Affymetrix Chips, or read counts from 
 RNA-Seq data. 
 
-Rownames (gene SYMBOL) should be included. The colnames should be of 
+Rownames (gene Entrez id) should be included. The colnames should be of 
 `(drug)__(cell)__(factor)` format, e.g., `sirolimus__MCF7__trt_cp`.
 It can be generalized to any type of treatment, for example, gene knockdown
-or over expression by setting `drug` as gene symbol, `factor` as 'gene_ko' or
+or over expression by setting `drug` as gene name, `factor` as 'gene_ko' or
 other words, `cell` as treatment cell types. So, one example for 
 generalization format could be `P53__MCF7__gene_ko`.}
 

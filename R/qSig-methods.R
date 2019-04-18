@@ -22,8 +22,6 @@
 ##' generated from the source files of CMAP/LINCS databases according to 
 ##' the vignette in \pkg{signatureSearchData} package. The HDF5 file contains 
 ##' the reference signatures that the query signature is searched against. 
-##' @param refdb_name character(1), name of the reference database. Like "cmap",
-##' "lincs" or other custom names.
 ##' @return \code{qSig} object
 ##' @importFrom rhdf5 h5read
 ##' @seealso \code{\link{build_custom_db}}, 
@@ -40,15 +38,13 @@
 ##' upset <- head(names(query[order(-query)]), 150)
 ##' downset <- tail(names(query[order(-query)]), 150)
 ##' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
-##'                    gess_method="LINCS", refdb=db_path,
-##'                    refdb_name="sample")
-##' qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=db_path,
-##'                    refdb_name="sample")
+##'                    gess_method="LINCS", refdb=db_path)
+##' qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=db_path)
 ##' @exportMethod qSig
 setMethod("qSig",
   signature(query="list", gess_method="character", 
-            refdb="character", refdb_name="character"),
-  function(query, gess_method, refdb, refdb_name="UNKNOWN"){
+            refdb="character"),
+  function(query, gess_method, refdb){
     ## Validity check of refdb
     ref_val <- h5read(refdb, "assay", c(1,1))
     if(!is.numeric(ref_val)) 
@@ -88,8 +84,7 @@ setMethod("qSig",
     } else
       stop("'gess_method' slot must be one of 'CMAP', 'LINCS', or 'Fisher' if 
 'qsig' is a list of two elements representing up and down regulated gene sets!")
-    new("qSig", query=query, gess_method=gess_method, refdb=refdb,
-        refdb_name=refdb_name)
+    new("qSig", query=query, gess_method=gess_method, refdb=refdb)
   }
 )
 
@@ -101,9 +96,8 @@ setMethod("qSig",
 ##' @aliases qSig,matrix,character,character,character-method
 ##' @exportMethod qSig
 setMethod("qSig",
-  signature(query="matrix", gess_method="character", 
-            refdb="character", refdb_name="character"),
-  function(query, gess_method, refdb, refdb_name="UNKNOWN"){
+  signature(query="matrix", gess_method="character", refdb="character"),
+  function(query, gess_method, refdb){
     ## Validity check of refdb
     ref_val <- h5read(db_path, "assay", c(1,1))
     if(!is.numeric(ref_val)) 
@@ -123,8 +117,7 @@ setMethod("qSig",
     } else
       stop("'gess_method' slot must be one of 'gCMAP', 'Fisher' or 'Cor' 
   if 'qsig' is a numeric matrix representing genome-wide GEPs of treatments!")
-    new("qSig", query=query, gess_method=gess_method, refdb=refdb,
-        refdb_name=refdb_name)
+    new("qSig", query=query, gess_method=gess_method, refdb=refdb)
   }
 )
 
@@ -152,8 +145,6 @@ setMethod("show", signature(object="qSig"),
       }
       cat("\n@gess_method", "\t", object@gess_method, "\n")
       cat("\n@refdb", "\t")
-      cat(object@refdb)
-      cat("\n@refdb_name", "\t")
-      cat(object@refdb_name, "\n")
+      cat(object@refdb, "\n")
     })
 

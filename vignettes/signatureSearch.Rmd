@@ -211,7 +211,7 @@ upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
 ```
 
-## Searching with CMAP method for GESS
+## Search with CMAP method for GESS
 
 @Lamb2006-du introduced the gene expression-based search method known as 
 Connectivity Map (CMap) where a GES database is searched with a query GES for 
@@ -234,13 +234,13 @@ Generate `qSig` object for `gess_cmap` method and search against the sample
 reference database
 ```{r gess_cmap, eval=TRUE}
 qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
-                  gess_method="CMAP", refdb=db_path, refdb_name="sample")
+                  gess_method="CMAP", refdb=db_path)
 cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 cmap
 result(cmap)
 ```
 
-## Searching with LINCS method for GESS
+## Search with LINCS method for GESS
 
 @Subramanian2017-fu introduced a new GESS method (*LINCS*) that is similar
 with CMAP method but weights genes in the query set by using expression 
@@ -252,12 +252,12 @@ Generate `qSig` object for `gess_lincs` method and search against the sample
 database
 ```{r gess_lincs, eval=TRUE}
 qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
-                   gess_method="LINCS", refdb=db_path, refdb_name="sample")
+                   gess_method="LINCS", refdb=db_path)
 lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 result(lincs)
 ```
 
-## Searching with gCMAP method for GESS
+## Search with gCMAP method for GESS
 
 The *gCMAP* [@Sandmann2014-qm] package provides access to related but not 
 identical implementations of the original CMAP algorithm proposed by 
@@ -269,13 +269,12 @@ contains rank transformed GEPs.
 Generate `qSig` object for `gess_gcmap` method and search against 
 the sample database
 ```{r gess_gcmap, eval=TRUE}
-qsig_gcmap <- qSig(query = query_mat, gess_method = "gCMAP", 
-                   refdb = db_path, refdb_name="sample")
+qsig_gcmap <- qSig(query = query_mat, gess_method = "gCMAP", refdb = db_path)
 gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
 result(gcmap)
 ```
 
-## Searching with Fisher method for GESS
+## Search with Fisher method for GESS
 
 The Fisher’s exact test [@Graham_J_G_Upton1992-pg] can also be used as search 
 algorithm for querying GES databases for similar entries. This can be achieved 
@@ -284,13 +283,12 @@ if both the query and the database are composed of DEG sets.
 Generate `qSig` object for `gess_fisher` method and search against the
 sample database
 ```{r gess_fisher, eval=TRUE}
-qsig_fisher <- qSig(query = query_mat, gess_method = "Fisher", 
-                    refdb = db_path, refdb_name="sample")
+qsig_fisher <- qSig(query = query_mat, gess_method = "Fisher", refdb = db_path)
 fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
 ```
 
-## Searching with correlation based method for GESS
+## Search with correlation based method for GESS
 
 The correlation coefficients can be used as a GESS method by searching
 with a query expression profile a database of expression profiles.
@@ -307,8 +305,7 @@ sample database
 
 ### Genome-wide Spearman correlation
 ```{r gess_sp, eval=TRUE}
-qsig_sp <- qSig(query = query_mat, gess_method = "Cor", 
-                refdb = db_path, refdb_name="sample")
+qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
 sp <- gess_cor(qSig=qsig_sp, method="spearman")
 result(sp)
 ```
@@ -318,8 +315,7 @@ result(sp)
 # Subset z-scores of 150 up and down gene sets from 
 # "vorinostat__SKB__trt_cp" signature.
 query_mat_sub <- as.matrix(query_mat[c(upset, downset),])
-qsig_spsub <- qSig(query = query_mat_sub, gess_method = "Cor", 
-                   refdb = db_path, refdb_name="sample")
+qsig_spsub <- qSig(query = query_mat_sub, gess_method = "Cor", refdb = db_path)
 spsub <- gess_cor(qSig=qsig_spsub, method="spearman")
 result(spsub)
 ```

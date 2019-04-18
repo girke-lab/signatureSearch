@@ -40,8 +40,7 @@
 #' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path,
-#'                     refdb_name="sample")
+#' qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
 #' fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 #' result(fisher)
 #' @export
@@ -77,6 +76,6 @@ gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
   x <- gessResult(result = as_tibble(res),
                   query = qSig@query,
                   gess_method = qSig@gess_method,
-                  refdb_name = qSig@refdb_name)
+                  refdb = qSig@refdb)
   return(x)
 }
