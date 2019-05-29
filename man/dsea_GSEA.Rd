@@ -14,16 +14,18 @@ The similarity scores of the corresponding GESS method can be used for
 ranking the drugs as it is required by the GSEA algorithm. 
 The drugs with zero scores are excluded.}
 
-\item{type}{one of "GO" or "KEGG"}
+\item{type}{one of "GO", "KEGG" or "MOA"}
 
-\item{ont}{one of "BP", "MF", "CC" or "GO"}
+\item{ont}{one of "BP", "MF", "CC" or "ALL" if type is "GO"}
 
 \item{exponent}{weight of each step}
 
 \item{nPerm}{permutation numbers}
 
 \item{minGSSize}{minimal size of drug sets annotated by ontology term 
-after drug to functional category mappings.}
+after drug to functional category mappings. If type is "MOA", it is
+recommended to set minGSSize as 2 since some MOA categories only contain 2 
+drugs}
 
 \item{maxGSSize}{maximal size of drug sets annotated for testing}
 
@@ -37,14 +39,16 @@ one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
 represents enriched functional categories.
 }
 \description{
-The original GSEA method is used to do enrichment analysis on a scored
+The classical GSEA method is used to do enrichment analysis on a scored
 ranked drug list after mapping drugs to functional categories via 
-drug-target links in DrugBank, CLUE and STITCH databases
+drug-target links in DrugBank, CLUE and STITCH databases for GO and KEGG 
+pathway enrichment. It can also be used to get the enriched MOAs of a 
+scored ranked drug list.
 }
 \details{
-The ranked drug list consists of all drugs in the GESS result. 
-The similarity scores of the corresponding GESS method can be used for 
-ranking the drugs as it is required by the GSEA algorithm. The drugs 
+In the GESS/FEA workflow, the ranked drug list consists of all drugs in the 
+GESS result. The similarity scores of the corresponding GESS method can be 
+used for ranking the drugs as it is required by the GSEA algorithm. The drugs
 with zero scores are excluded.
 }
 \examples{
@@ -57,7 +61,7 @@ query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
-qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
+qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
                    gess_method = "LINCS", refdb = db_path)
 lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert

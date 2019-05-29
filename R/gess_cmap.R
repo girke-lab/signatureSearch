@@ -62,7 +62,7 @@ gess_cmap <- function(qSig, chunk_size=5000){
         stop(paste("The 'gess_method' slot of 'qSig' should be 'CMAP'",
                    "if using 'gess_cmap' function!"))
     }
-    db_path <- qSig@refdb
+    db_path <- determine_refdb(qSig@refdb)
     qsig_up <- qSig@query[[1]]
     qsig_dn <- qSig@query[[2]]
     res <- cmapEnrich(db_path, upset=qsig_up, downset=qsig_dn, 

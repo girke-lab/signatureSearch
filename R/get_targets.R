@@ -86,7 +86,7 @@ get_targets <- function(drugs, database="all"){
   res$drug_name = drugs_orig[idx]
   if(database=="all"){
     if(length(drugs_notar) > 0)
-      message("No targets found in DrugBank/LINCS/STITCH database for ", 
+      message("No targets found in DrugBank/CLUE/STITCH database for ", 
               length(drugs_notar), 
               " drugs: \n",
               paste(drugs_notar, collapse = " / "), "\n")

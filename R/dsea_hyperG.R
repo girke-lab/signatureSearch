@@ -2,9 +2,11 @@
 ##' 
 ##' The hypergeometric test is used to do enrichment analysis on a drug set 
 ##' after mapping drugs to functional categories via drug-target links in
-##' DrugBank, CLUE and STITCH databases
+##' DrugBank, CLUE and STITCH databases for GO and KEGG pathway enrichment. 
+##' It can also be used to get the enriched MOAs of a drug set. 
+##' The drugs MOA annotation come from CLUE website.
 ##' 
-##' The drug sets can also be directly used for functional enrichment testing 
+##' The drug sets can be directly used for GO/KEGG pathways enrichment testing 
 ##' by changing the mappings in the reference database from target-to-functional
 ##' category mappings to drug-to-functional category mappings. 
 ##' The latter can be generated based on the drug-target information provided 
@@ -19,14 +21,16 @@
 ##'
 ##' @param drugs query drug set used to do DSEA. 
 ##' Can be top ranking drugs in GESS result. 
-##' @param type one of "GO" or "KEGG"
-##' @param ont One of "MF", "BP", and "CC" or "ALL".
+##' @param type one of "GO", "KEGG" or "MOA"
+##' @param ont One of "MF", "BP", "CC" or "ALL" if type is "GO"
 ##' @param pvalueCutoff Cutoff value of p value.
 ##' @param pAdjustMethod p value adjustment method,
 ##' one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
 ##' @param qvalueCutoff q value cutoff
 ##' @param minGSSize minimal size of drug sets annotated by ontology term 
-##' after drug to functional category mappings.
+##' after drug to functional category mappings. If type is "MOA", it is
+##' recommended to set minGSSize as 2 since some MOA categories only contain 2 
+##' drugs.
 ##' @param maxGSSize maximal size of drug sets annotated for testing
 ##' @return \code{\link{feaResult}} object, 
 ##' represents enriched functional categories.
@@ -35,7 +39,7 @@
 ##' @importMethodsFrom AnnotationDbi mappedkeys
 ##' @importMethodsFrom AnnotationDbi mget
 ##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
-##'          \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
+##'          \code{\link[signatureSearchData]{dtlink_db_clue_sti.db}}
 ##' @examples 
 ##' data(drugs)
 ##' ## GO annotation system
@@ -48,13 +52,13 @@
 ##' result(hyperG_k_res) 
 ##' @export
 dsea_hyperG <- function(drugs,
-                        type = "GO",
+                        type="GO",
                         ont="BP",
                         pvalueCutoff=0.05,
                         pAdjustMethod="BH",
-                        qvalueCutoff = 0.2,
-                        minGSSize = 10,
-                        maxGSSize = 500) {
+                        qvalueCutoff=0.2,
+                        minGSSize=10,
+                        maxGSSize=500) {
   drugs <- as.character(unique(tolower(drugs)))
   if(type == "GO"){
     ont %<>% toupper
@@ -111,112 +115,29 @@ dsea_hyperG <- function(drugs,
     res@organism <- species
     return(res)
   }
-}
-
-##' @importFrom AnnotationDbi keys
-##' @importFrom AnnotationDbi select
-##' @importFrom AnnotationDbi keytypes
-##' @importFrom AnnotationDbi toTable
-##' @importFrom GO.db GOTERM
-##' @importFrom dplyr left_join
-##' @importFrom dplyr as_tibble
-##' @importFrom dplyr filter
-##' @importFrom dplyr distinct
-##' @importFrom magrittr %>%
-##' @importFrom RSQLite dbConnect
-##' @importFrom RSQLite dbGetQuery
-##' @importFrom RSQLite SQLite
-##' @importFrom RSQLite dbDisconnect
-##' @importFrom utils download.file
-##' @importFrom stats na.omit
-##' @importFrom GOSemSim load_OrgDb
-get_GO_data_drug <- function(OrgDb, ont, keytype) {
-  GO_Env <- get_GO_Env()
-  use_cached <- FALSE
-  
-  if (exists("organism", envir=GO_Env, inherits=FALSE) &&
-      exists("keytype", envir=GO_Env, inherits=FALSE)) {
-    
-    org <- get("organism", envir=GO_Env)
-    kt <- get("keytype", envir=GO_Env)
-    
-    if (org == get_organism(OrgDb) &&
-        keytype == kt &&
-        exists("goAnno", envir=GO_Env, inherits=FALSE) &&
-        exists("GO2TERM", envir=GO_Env, inherits=FALSE)){
+  if(type == "MOA"){
+      moa_list <- readRDS(system.file("extdata", "clue_moa_list.rds", 
+                                      package="signatureSearch"))
+      MOA_DATA <- get_MOA_data(moa_list, keytype="drug_name")
+      # get all the drugs in the corresponding annotation system as universe
+      ext2path <- get("EXTID2PATHID", envir = MOA_DATA)
+      universe = names(ext2path)
       
-      use_cached <- TRUE
-    }
+      res <- enricher_internal(gene=drugs,
+                               pvalueCutoff=pvalueCutoff,
+                               pAdjustMethod=pAdjustMethod,
+                               universe = universe,
+                               qvalueCutoff = qvalueCutoff,
+                               minGSSize = minGSSize,
+                               maxGSSize = maxGSSize,
+                               USER_DATA = MOA_DATA)
+      
+      if (is.null(res))
+          return(res)
+      
+      res@organism <- "Homo sapiens"
+      res@ontology <- "MOA"
+      res@targets <- NULL
+      return(res)
   }
-  
-  if (use_cached) {
-    goAnno <- get("goAnno", envir=GO_Env)
-  } else {
-    OrgDb <- load_OrgDb(OrgDb)
-    kt <- keytypes(OrgDb)
-    if (! keytype %in% kt) {
-      stop("keytype is not supported...")
-    }
-    
-    kk <- keys(OrgDb, keytype=keytype)
-    goAnno <- suppressMessages(
-      AnnotationDbi::select(OrgDb, keys=kk, keytype=keytype,
-                            columns=c("GOALL", "ONTOLOGYALL")))
-    
-    goAnno <- unique(goAnno[!is.na(goAnno$GOALL), ])
-    
-    assign("goAnno", goAnno, envir=GO_Env)
-    assign("keytype", keytype, envir=GO_Env)
-    assign("organism", get_organism(OrgDb), envir=GO_Env)
-  }
-  
-  # download goAnno_drug.rds 
-  goAnno_drug <- suppressMessages(ah[["AH69085"]])
-  ## "drug_name" in goAnno_drug are all lowercase
-  
-  if (ont == "ALL") {
-    GO2GENE <- goAnno_drug[,c("GOALL","drug_name")]
-  } else {
-    GO2GENE <- goAnno_drug[goAnno_drug$ONTOLOGYALL == ont, 
-                           c("GOALL","drug_name")]
-  }
-  
-  GO_DATA <- build_Anno(GO2GENE, get_GO2TERM_table())
-  
-  goOnt.df <- goAnno[, c("GOALL", "ONTOLOGYALL")] %>% unique
-  goOnt <- goOnt.df[,2]
-  names(goOnt) <- goOnt.df[,1]
-  assign("GO2ONT", goOnt, envir=GO_DATA)
-  return(GO_DATA)
 }
-
-##' @importFrom dplyr left_join
-##' @importFrom dplyr as_tibble
-##' @importFrom dplyr filter
-##' @importFrom dplyr distinct
-##' @importFrom magrittr %>%
-##' @importFrom RSQLite dbConnect
-##' @importFrom RSQLite dbGetQuery
-##' @importFrom RSQLite SQLite
-##' @importFrom RSQLite dbDisconnect
-##' @importFrom utils download.file
-##' @importFrom clusterProfiler download_KEGG
-prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
-  kegg <- clusterProfiler::download_KEGG(species, KEGG_Type, keyType)
-  # get dtlink_entrez
-  conn <- load_sqlite("AH69083")
-  dtlink_entrez <- dbGetQuery(conn, 'SELECT * FROM dtlink_entrez')
-  dbDisconnect(conn)
-  
-  # map entrez id to drug name
-  keggpath2entrez <- kegg$KEGGPATHID2EXTID
-  keggpath2entrez <- left_join(as_tibble(keggpath2entrez), 
-                               as_tibble(dtlink_entrez), 
-                               by = c("to"="ENTREZID")) %>% 
-    filter(!is.na(drug_name)) %>% distinct(from, drug_name, .keep_all = TRUE)
-  keggpath2entrez <- as.data.frame(keggpath2entrez)[,c("from","drug_name")]
-  kegg$KEGGPATHID2EXTID <- keggpath2entrez
-  build_Anno(kegg$KEGGPATHID2EXTID, kegg$KEGGPATHID2NAME)
-}
-## get rid of "Undefined global functions or variables" note
-cell = drug_name = from = . = NULL

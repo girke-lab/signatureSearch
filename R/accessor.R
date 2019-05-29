@@ -47,28 +47,28 @@ as.data.frame.gessResult <- function(x, ...) {
 ##' @method head feaResult
 ##' @export
 head.feaResult <- function(x, n=6L, ...) {
-    utils::head(x@result, n, ...)
+    utils::head(as.data.frame(x@result), n, ...)
 }
 
 ##' @importFrom utils head
 ##' @method head gessResult
 ##' @export
 head.gessResult <- function(x, n=6L, ...) {
-  utils::head(x@result, n, ...)
+  utils::head(as.data.frame(x@result), n, ...)
 }
 
 ##' @importFrom utils tail
 ##' @method tail feaResult
 ##' @export
 tail.feaResult <- function(x, n=6L, ...) {
-    utils::tail(x@result, n, ...)
+    utils::tail(as.data.frame(x@result), n, ...)
 }
 
 ##' @importFrom utils tail
 ##' @method tail gessResult
 ##' @export
 tail.gessResult <- function(x, n=6L, ...) {
-  utils::tail(x@result, n, ...)
+  utils::tail(as.data.frame(x@result), n, ...)
 }
 
 ##' @method dim feaResult

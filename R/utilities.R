@@ -25,3 +25,20 @@ getH5dim <- function(h5file){
 
 #' @importFrom AnnotationHub AnnotationHub
 ah <- suppressMessages(AnnotationHub())
+
+determine_refdb <- function(refdb){
+    if(refdb=="cmap"){
+        return(ah[["AH69090"]])
+    }
+    if(refdb=="cmap_expr"){
+        return(ah[["AH69091"]])
+    }
+    if(refdb=="lincs"){
+        return(ah[["AH69092"]])
+    }
+    if(refdb=="lincs_expr"){
+        return(ah[["AH69093"]])
+    } else {
+        return(refdb)
+    }
+}

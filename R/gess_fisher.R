@@ -53,7 +53,7 @@ gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
          if using 'gess_fisher' function")
   }
   query <- induceCMAPCollection(qSig@query, higher=higher, lower=lower)
-  db_path <- qSig@refdb
+  db_path <- determine_refdb(qSig@refdb)
   mat_dim <- getH5dim(db_path)
   mat_ncol <- mat_dim[2]
   ceil <- ceiling(mat_ncol/chunk_size)

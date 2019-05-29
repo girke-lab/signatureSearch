@@ -12,9 +12,9 @@ dsea_hyperG(drugs, type = "GO", ont = "BP", pvalueCutoff = 0.05,
 \item{drugs}{query drug set used to do DSEA. 
 Can be top ranking drugs in GESS result.}
 
-\item{type}{one of "GO" or "KEGG"}
+\item{type}{one of "GO", "KEGG" or "MOA"}
 
-\item{ont}{One of "MF", "BP", and "CC" or "ALL".}
+\item{ont}{One of "MF", "BP", "CC" or "ALL" if type is "GO"}
 
 \item{pvalueCutoff}{Cutoff value of p value.}
 
@@ -24,7 +24,9 @@ one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
 \item{qvalueCutoff}{q value cutoff}
 
 \item{minGSSize}{minimal size of drug sets annotated by ontology term 
-after drug to functional category mappings.}
+after drug to functional category mappings. If type is "MOA", it is
+recommended to set minGSSize as 2 since some MOA categories only contain 2 
+drugs.}
 
 \item{maxGSSize}{maximal size of drug sets annotated for testing}
 }
@@ -35,10 +37,12 @@ represents enriched functional categories.
 \description{
 The hypergeometric test is used to do enrichment analysis on a drug set 
 after mapping drugs to functional categories via drug-target links in
-DrugBank, CLUE and STITCH databases
+DrugBank, CLUE and STITCH databases for GO and KEGG pathway enrichment. 
+It can also be used to get the enriched MOAs of a drug set. 
+The drugs MOA annotation come from CLUE website.
 }
 \details{
-The drug sets can also be directly used for functional enrichment testing 
+The drug sets can be directly used for GO/KEGG pathways enrichment testing 
 by changing the mappings in the reference database from target-to-functional
 category mappings to drug-to-functional category mappings. 
 The latter can be generated based on the drug-target information provided 
@@ -64,5 +68,5 @@ result(hyperG_k_res)
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}},
-         \code{\link[signatureSearch_data]{dtlink_db_clue_sti.db}}
+         \code{\link[signatureSearchData]{dtlink_db_clue_sti.db}}
 }

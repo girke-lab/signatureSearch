@@ -1,10 +1,12 @@
-#' The original GSEA method is used to do enrichment analysis on a scored
+#' The classical GSEA method is used to do enrichment analysis on a scored
 #' ranked drug list after mapping drugs to functional categories via 
-#' drug-target links in DrugBank, CLUE and STITCH databases
+#' drug-target links in DrugBank, CLUE and STITCH databases for GO and KEGG 
+#' pathway enrichment. It can also be used to get the enriched MOAs of a 
+#' scored ranked drug list. 
 #' 
-#' The ranked drug list consists of all drugs in the GESS result. 
-#' The similarity scores of the corresponding GESS method can be used for 
-#' ranking the drugs as it is required by the GSEA algorithm. The drugs 
+#' In the GESS/FEA workflow, the ranked drug list consists of all drugs in the 
+#' GESS result. The similarity scores of the corresponding GESS method can be 
+#' used for ranking the drugs as it is required by the GSEA algorithm. The drugs
 #' with zero scores are excluded. 
 #'
 #' @title GSEA method for DSEA
@@ -12,12 +14,14 @@
 #' The similarity scores of the corresponding GESS method can be used for 
 #' ranking the drugs as it is required by the GSEA algorithm. 
 #' The drugs with zero scores are excluded.
-#' @param type one of "GO" or "KEGG"
-#' @param ont one of "BP", "MF", "CC" or "GO"
+#' @param type one of "GO", "KEGG" or "MOA"
+#' @param ont one of "BP", "MF", "CC" or "ALL" if type is "GO"
 #' @param exponent weight of each step
 #' @param nPerm permutation numbers
 #' @param minGSSize minimal size of drug sets annotated by ontology term 
-#' after drug to functional category mappings.
+#' after drug to functional category mappings. If type is "MOA", it is
+#' recommended to set minGSSize as 2 since some MOA categories only contain 2 
+#' drugs
 #' @param maxGSSize maximal size of drug sets annotated for testing
 #' @param pvalueCutoff pvalue Cutoff
 #' @param pAdjustMethod p value adjustment method,
@@ -43,7 +47,7 @@
 #' query = as.numeric(query_mat); names(query) = rownames(query_mat)
 #' upset <- head(names(query[order(-query)]), 150)
 #' downset <- tail(names(query[order(-query)]), 150)
-#' qsig_lincs <- qSig(qsig = list(upset=upset, downset=downset), 
+#' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
 #'                    gess_method = "LINCS", refdb = db_path)
 #' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 #' dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
@@ -127,6 +131,28 @@ dsea_GSEA <- function(drugList,
     res@organism <- species
     res@ontology <- "KEGG"
     return(res)
+  }
+  if(type == "MOA"){
+      moa_list <- readRDS(system.file("extdata", "clue_moa_list.rds", 
+                                      package="signatureSearch"))
+      MOA_DATA <- get_MOA_data(moa_list, keytype="drug_name")
+      res <- GSEA_internal(geneList = drugList,
+                           exponent = exponent,
+                           nPerm = nPerm,
+                           minGSSize = minGSSize,
+                           maxGSSize = maxGSSize,
+                           pvalueCutoff = pvalueCutoff,
+                           pAdjustMethod = pAdjustMethod,
+                           USER_DATA = MOA_DATA,
+                           seed = FALSE)
+      
+      if (is.null(res))
+          return(res)
+      res@drugs <- names(drugList)
+      res@targets <- NULL
+      res@organism <- "Homo sapiens"
+      res@ontology <- "MOA"
+      return(res)
   }
 }
 

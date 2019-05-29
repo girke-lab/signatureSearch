@@ -47,7 +47,7 @@ library(signatureSearchData)
 sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-qsig_sp <- qSig(qsig = query_mat, gess_method = "Cor", refdb = db_path)
+qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
 sp <- gess_cor(qSig=qsig_sp, method="spearman")
 result(sp)
 }

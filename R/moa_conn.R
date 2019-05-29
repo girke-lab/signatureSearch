@@ -23,7 +23,7 @@
 ##' sample_db <- loadHDF5SummarizedExperiment(db_dir)
 ##' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 ##' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-##' qsig_fisher <- qSig(qsig=query_mat, gess_method="Fisher", refdb=sample_db)
+##' qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=sample_db)
 ##' fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 ##' res_moa <- moa_conn(result(fisher))
 ##' @export

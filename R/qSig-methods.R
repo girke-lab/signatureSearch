@@ -13,8 +13,14 @@
 ##' When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
 ##' representing gene expression profiles (GEPs) of treatment(s). 
 ##' @param gess_method one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'
-##' @param refdb character(1), can be "cmap", "cmap_expr", "lincs", or 
-##' "lincs_expr" if users want to use the existing CMAP/LINCS databases. 
+##' @param refdb character(1), can be one of "cmap", "cmap_expr", "lincs", or 
+##' "lincs_expr" if users want to use the existing CMAP/LINCS databases. If 
+##' 'refdb' is 'cmap', it uses the CMAP database consists of log2FC scores
+##' after DE analysis as GEPs. If 'cmap_expr', it uses the CMAP database 
+##' consists of normalized expression values as GEPs. If 'refdb' is 'lincs', 
+##' it uses the LINCS databases consists of z-scores after DE analysis as GEPs, 
+##' if 'lincs_expr', it uses LINCS databases consists of normalized expression 
+##' values as GEPs.
 ##' 
 ##' If users want to use the custom signature database, 
 ##' it should be the file path to the HDF5 file generated with 
@@ -37,21 +43,24 @@
 ##' query = as.numeric(query_mat); names(query) = rownames(query_mat)
 ##' upset <- head(names(query[order(-query)]), 150)
 ##' downset <- tail(names(query[order(-query)]), 150)
-##' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
+##' qsig_lincs <- qSig(query=list(upset=upset, downset=downset), 
 ##'                    gess_method="LINCS", refdb=db_path)
-##' qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=db_path)
+##' qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
 ##' @exportMethod qSig
 setMethod("qSig",
   signature(query="list", gess_method="character", 
             refdb="character"),
   function(query, gess_method, refdb){
     ## Validity check of refdb
-    ref_val <- h5read(refdb, "assay", c(1,1))
-    if(!is.numeric(ref_val)) 
-      stop("The value stored in 'refdb' should be numeric!")
+    if(!any(refdb %in% c("cmap","cmap_expr","lincs","lincs_expr"))){
+        ref_val <- h5read(refdb, "assay", c(1,1))
+        if(!is.numeric(ref_val)) 
+            stop("The value stored in 'refdb' should be numeric!")
+    }
     if(any(gess_method %in% c("CMAP", "LINCS"))){
       upset = query[[1]]
       downset = query[[2]]
+      refdb = determine_refdb(refdb)
       gid_db <- h5read(refdb, "rownames", drop=TRUE)
       ## Validity checks of upset and downset
       if(all(c(!is.character(upset), !is.null(upset)))) 
@@ -99,11 +108,12 @@ setMethod("qSig",
   signature(query="matrix", gess_method="character", refdb="character"),
   function(query, gess_method, refdb){
     ## Validity check of refdb
-    ref_val <- h5read(db_path, "assay", c(1,1))
+    ref_val <- h5read(db_path, "assay", list(1,1))
     if(!is.numeric(ref_val)) 
       stop("The value stored in 'assays' slot of 'refdb' should be numeric")
     if(any(gess_method %in% c("gCMAP", "Fisher", "Cor"))){
       experiment = query
+      refdb = determine_refdb(refdb)
       gid_db <- h5read(refdb, "rownames", drop=TRUE)
       if(! is.numeric(experiment[1,1])) 
         stop("The 'qsig' should be a numeric matrix 

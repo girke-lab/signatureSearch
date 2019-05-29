@@ -126,7 +126,7 @@ database contains gene expression intensity values from 5,925 compound
 treatments in 30 cells (38,824 signatures in total). 
 
 The loaded `cmap` database represents the $log_2$ fold change of 12,437 genes 
-from 1,281 compound treatments in 4 cells (3,478 signatures in total).
+from 1,281 compound treatments in 5 cells (3,478 signatures in total).
 The `cmap_expr` database represents mean expression values of 1,309 drug
 treatment samples in 4 cells (3,587 signatures in total).
 
@@ -626,3 +626,5 @@ dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034",
 dtnetplot(drugs = drugs, set = "hsa04213", 
           desc="Longevity regulating pathway - multiple species")
 ```
+
+# References

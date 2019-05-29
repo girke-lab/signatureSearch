@@ -85,7 +85,7 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS", chunk_size=5000){
   }
   upset <- qSig@query[[1]]
   downset <- qSig@query[[2]]
-  db_path <- qSig@refdb
+  db_path <- determine_refdb(qSig@refdb)
   res <- lincsEnrich(db_path, upset=upset, downset=downset, 
                      tau=tau, sortby=sortby, chunk_size=chunk_size)
   # add target column

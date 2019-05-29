@@ -16,8 +16,14 @@ qSig(query, gess_method, refdb)
 \arguments{
 \item{gess_method}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
 
-\item{refdb}{character(1), can be "cmap", "cmap_expr", "lincs", or 
-"lincs_expr" if users want to use the existing CMAP/LINCS databases. 
+\item{refdb}{character(1), can be one of "cmap", "cmap_expr", "lincs", or 
+"lincs_expr" if users want to use the existing CMAP/LINCS databases. If 
+'refdb' is 'cmap', it uses the CMAP database consists of log2FC scores
+after DE analysis as GEPs. If 'cmap_expr', it uses the CMAP database 
+consists of normalized expression values as GEPs. If 'refdb' is 'lincs', 
+it uses the LINCS databases consists of z-scores after DE analysis as GEPs, 
+if 'lincs_expr', it uses LINCS databases consists of normalized expression 
+values as GEPs.
 
 If users want to use the custom signature database, 
 it should be the file path to the HDF5 file generated with 
@@ -53,9 +59,9 @@ query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
-qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
+qsig_lincs <- qSig(query=list(upset=upset, downset=downset), 
                    gess_method="LINCS", refdb=db_path)
-qsig_gcmap <- qSig(qsig=query_mat, gess_method="gCMAP", refdb=db_path)
+qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
 }
 \seealso{
 \code{\link{build_custom_db}}, 
