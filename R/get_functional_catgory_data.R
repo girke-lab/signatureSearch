@@ -107,12 +107,13 @@ prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
 ## Build MOA_DATA environment
 get_MOA_data <- function(moa_list, keytype="drug_name") {
     moa_list2 <- moa_list
-    names(moa_list2) <- paste0("MOA:", sprintf("%03d", seq_along(moa_list2)))
-    df <- data.frame(drug=unlist(moa_list), 
+    names(moa_list2) <- paste0("MOA:", sprintf("%04d", seq_along(moa_list2)))
+    df <- data.frame(unname=unlist(moa_list), 
                      moa_id=rep(names(moa_list2), lengths(moa_list2)),
                      description=rep(names(moa_list), lengths(moa_list)), 
                      stringsAsFactors=FALSE, row.names=NULL)
-    moaAnno <- df[,c("moa_id","drug")]
+    colnames(df)[1] = keytype
+    moaAnno <- df[,c("moa_id",keytype)]
     MOA_DATA <- build_Anno(moaAnno, df[,c("moa_id", "description")])
     return(MOA_DATA)
 }
