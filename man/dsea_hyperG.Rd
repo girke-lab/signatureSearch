@@ -68,5 +68,5 @@ result(hyperG_k_res)
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}},
-         \code{\link[signatureSearchData]{dtlink_db_clue_sti.db}}
+         \code{\link[signatureSearchData]{dtlink_db_clue_sti}}
 }

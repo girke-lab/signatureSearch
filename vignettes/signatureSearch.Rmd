@@ -4,6 +4,8 @@ title: _signatureSearch_ - Discovering novel modes of action
 author: "Author: Yuzhu Duan (yduan004@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
+  pdf_document:
+    toc: true
   html_document:
     toc: true
     toc_float:
@@ -13,8 +15,6 @@ output:
     fig_caption: yes
     code_folding: show
     number_sections: true
-  pdf_document:
-    toc: true
 fontsize: 15pt
 always_allow_html: yes
 bibliography: bibtex.bib
@@ -115,8 +115,8 @@ as follows, it returns to the file path to the downloaded databases:
 ```{r download_db, eval=FALSE}
 library(AnnotationHub)
 ah <- AnnotationHub()
-cmap <- ah[["AH69075"]]; cmap_expr <- ah[["AH69077"]]
-lincs <- ah[["AH69079"]]; lincs_expr <- ah[["AH69081"]]
+cmap <- ah[["AH69090"]]; cmap_expr <- ah[["AH69091"]]
+lincs <- ah[["AH69092"]]; lincs_expr <- ah[["AH69093"]]
 ```
 
 The loaded `lincs` database represents moderated z-scores from differential 
@@ -195,8 +195,9 @@ library(signatureSearch)
 As an example of running GESS/FEA workflow, 95 GEPs randomly sampled from 
 `lincs` database and 5 GEPs from `HDAC inhibitors` (`vorinostat`, `rhamnetin`, 
 `trichostatin A`, `pyroxamide`, and `HC toxin`) in human SKB (muscle)
-cell were combined to generate a sample reference database. The query signature 
-is the vorinostat treatment drawn from the sample database.
+cell were combined to generate a sample reference database. To reduce the size
+of the sample database, 5000 genes were randomly sampled from 12,328 genes.
+The query signature was the vorinostat treatment drawn from the sample database.
 
 ## Load database and get query signature
 ```{r db_sig, eval=TRUE}

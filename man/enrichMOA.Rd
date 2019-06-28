@@ -26,12 +26,9 @@ MOA categories after FDR control. The universe for the hypergeometric test
 are all the genes in the MOA annotation obtained from ChEMBL database.
 }
 \examples{
-library(org.Hs.eg.db)
 data(geneList, package="DOSE")
-\dontrun{
 emoa <- enrichMOA(gene = names(geneList)[seq(3)])
 head(emoa)
-}
 }
 \seealso{
 \code{\link{feaResult-class}}

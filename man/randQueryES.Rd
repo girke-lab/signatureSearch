@@ -4,13 +4,13 @@
 \alias{randQueryES}
 \title{Generate WTCS null distribution with random queries}
 \usage{
-randQueryES(se, N_queries = 1000, dest_ES_NULL_path)
+randQueryES(h5file, N_queries = 1000, dest)
 }
 \arguments{
-\item{N_queries}{number of random queries}
-
 \item{h5file}{character(1), path to the HDF5 file representting the
 reference database}
+
+\item{N_queries}{number of random queries}
 
 \item{dest}{file path to the generated "ES_NULL.txt" file}
 }
@@ -25,8 +25,7 @@ in the `gess_lincs` result.
 \examples{
 db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")
 library(signatureSearchData)
-se = readHDF5chunk(db_path, colindex=1:100)
-randQueryES(se=se, N_queries=5, dest_ES_NULL_path="ES_NULL.txt")
+randQueryES(h5file=db_path, N_queries=5, dest="ES_NULL.txt")
 unlink("ES_NULL.txt")
 }
 \references{

@@ -30,12 +30,24 @@ data.frame
 Summarize GESS results to get a list of MOA categories ranked by their 
 connectivity to query signature in cells
 }
+\details{
+Column description of the result table:
+
+moa: Mechanism Of Action
+
+cells: a group of interested cell types
+
+mean_rank: mean ranks in GESS result of drugs in the MOA category
+
+n_drug: number of drugs in the MOA category
+}
 \examples{
-db_dir <- system.file("extdata", "sample_db", package = "signatureSearch")
-sample_db <- loadHDF5SummarizedExperiment(db_dir)
+db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
+library(signatureSearchData)
+sample_db <- readHDF5chunk(db_path, colindex=seq_len(100))
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=sample_db)
+qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
 fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 res_moa <- moa_conn(result(fisher))
 }

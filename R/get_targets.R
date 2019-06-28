@@ -12,7 +12,7 @@
 ##' @importFrom RSQLite SQLite
 ##' @importFrom RSQLite dbDisconnect
 ##' @importFrom signatureSearchData load_sqlite
-##' @seealso \code{\link[signatureSearchData]{dtlink_dt_clue_sti}}
+##' @seealso \code{\link[signatureSearchData]{dtlink_db_clue_sti}}
 ##' @examples 
 ##' data(drugs)
 ##' dt <- get_targets(drugs)

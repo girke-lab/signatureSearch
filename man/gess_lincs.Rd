@@ -42,7 +42,7 @@ Description of the score columns in the gess_lincs tibble result:
   \item WTCS: Weighted Connectivity Score, a bi-directional Enrichment 
   Score of up and down query set. If ES of up and down sets are of different
   signs, WTCS is (ESup-ESdown)/2, otherwise, it is 0. WTCS ranges between 
-  −1 and 1. It will be positive for signatures that are positively related 
+  -1 and 1. It will be positive for signatures that are positively related 
   and negative for those that are inversely related, and near zero for 
   signatures that are unrelated.
   \item WTCS_Pval: Nominal p-value of WTCS computed by comparing WTCS 

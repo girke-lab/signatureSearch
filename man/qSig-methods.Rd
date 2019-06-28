@@ -3,8 +3,8 @@
 \docType{methods}
 \name{qSig}
 \alias{qSig}
-\alias{qSig,list,character,character,character-method}
-\alias{qSig,matrix,character,character,character-method}
+\alias{qSig,list,character,character-method}
+\alias{qSig,matrix,character,character-method}
 \title{qSig method}
 \usage{
 qSig(query, gess_method, refdb)
@@ -14,6 +14,13 @@ qSig(query, gess_method, refdb)
 \S4method{qSig}{matrix,character,character}(query, gess_method, refdb)
 }
 \arguments{
+\item{query}{When 'gess_method' is 'CMAP' or 'LINCS', 
+it should be a list of two elements, which are up and down regulated gene 
+sets of entrez ids.
+
+When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
+representing gene expression profiles (GEPs) of treatment(s).}
+
 \item{gess_method}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
 
 \item{refdb}{character(1), can be one of "cmap", "cmap_expr", "lincs", or 
@@ -31,22 +38,12 @@ it should be the file path to the HDF5 file generated with
 generated from the source files of CMAP/LINCS databases according to 
 the vignette in \pkg{signatureSearchData} package. The HDF5 file contains 
 the reference signatures that the query signature is searched against.}
-
-\item{qsig}{When 'gess_method' is 'CMAP' or 'LINCS', 
-it should be a list of two elements, which are up and down regulated gene 
-sets of entrez ids.
-
-When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
-representing gene expression profiles (GEPs) of treatment(s).}
 }
 \value{
 \code{qSig} object
 }
 \description{
 qSig generic
-
-It builds a `qSig` object to store the query signature, reference database
-and GESS method used to search for similarity
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
