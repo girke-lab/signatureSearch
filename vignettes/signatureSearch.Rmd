@@ -1,7 +1,6 @@
 ---
-title: _signatureSearch_ - Discovering novel modes of action 
-        of bioactive compounds
-author: "Author: Yuzhu Duan (yduan004@ucr.edu)"
+title: _signatureSearch_ - Environment for Gene Expression Searching Combined with Functional Enrichment Analysis
+author: "Authors: Yuzhu Duan & Thomas Girke"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
   html_document:
@@ -45,73 +44,179 @@ suppressPackageStartupMessages({
 })
 ```
 
-# Background
+# Introduction
 
-This project is about optimizing signature search and enrichment methods for 
-the discovery of novel modes of action (MOA) of bioactive compounds from 
-reference databases, such as LINCS, containing the genome-wide gene expression 
-signatures (GESs) from tens of thousands of drug and genetic perturbations. 
-The methods can be divided into two major classes. First, gene expression 
-signature search (GESS) methods are used to identify drugs that induce GESs 
-similar to those of query GESs of interest. The queries can be drug- or 
-disease-related GESs. Since the MOA of most drugs in the corresponding 
-reference databases are known, the resulting associations are useful to gain 
-insights into pharmacological and disease mechanisms and to develop novel drug 
-repurposing approaches. Second, functional enrichment analysis (FEA) methods 
-using Gene Ontology (GO) or pathway annotations have been developed to 
-functionally interpret the vast number of GESS results. The latter are 
-composed of lists of drugs ranked by the similarity metric of the corresponding 
-GESS method making the functional interpretation of their top ranking drugs 
-challenging. Importantly, the FEA methods developed by this study also support 
-the reconstruction of drug-target networks to guide the interpretation of the 
-results.
+## Background
 
-@Lamb2006-du generated a GES database, initially including 164 drugs screened 
-against four mammalian cell lines [@Lamb2006-du]. A few years later it was 
-extended to 1,309 drugs and eight cell lines. In 2017, the database was 
-increased to 19,811 drugs by the Library of Network-Based Cellular Signatures 
-(LINCS) Consortium [@Subramanian2017-fu], while the number of cell types 
-represented in the database has increased to over 70 normal and cancer cell 
-lines. The number of compound dosages and time points considered in the assays 
-has also been increased by 10-20 fold. The initial database used Affymetrix 
-Gene Chips as expression platform. To scale from a few thousand to many hundred 
-thousand GESs, the LINCS Consortium uses now the more economic L1000 assay. 
-This bead-based technology is a low cost, high-throughput reduced 
-representation expression profiling assay. It measures the expression of 978 
-landmark genes and 80 control genes by detecting fluorescent intensity of beads 
-after capturing the ligation-mediated amplification products of mRNAs 
-[@Peck2006-rf]. The expression of 11,350 additional genes is imputed from the 
-landmark genes by using as training data a collection of 12,063 Affymetrix gene 
-chips [@Edgar2002-di]. The substantial scale-up of the LINCS project provides 
-now many new opportunities to explore MOAs for a vast number of small molecules.
-Figure 1 illustrates the entire GESS/FEA workflow.
+<!--
+This package implements algorithms and data structures for searching gene
+expression signature (GESs) databases with query GESs to identify cellular
+states sharing similar expression responses (connections). This way one can
+discover perturbations, such as knockouts, diseases or drugs inducing
+expression phenotypes similar to a sample of interest. Establishing these GES
+connections can lead to the indentification of novel functional and regulatory
+relationships of molecular and cellular processes, _e.g._ drugs-target
+interactions.
+-->
+
+The _signatureSearch_ package implements algorithms and data structures for
+performing gene expression signature (GES) searches and subsequently
+interpreting the results functionally with specialized enrichment methods.
+These utilities are useful for studying the effects of genetic, chemical and
+environmental perturbations on biological systems. Specifically, in drug
+discovery they can be used for identifying novel modes of action (MOA) of
+bioactive compounds from reference databases such as LINCS containing the
+genome-wide GESs from tens of thousands of drug and genetic perturbations
+[@Subramanian2017-fu]. A typical GES search (GESS) workflow can be divided into
+two major steps (Figure 1).  First, GESS methods are used to identify
+perturbagens such as drugs that induce GESs similar to a query GES of interest.
+The queries can be drug- or disease-related GESs. Since the MOAs of most drugs
+in the corresponding reference databases are known, the resulting associations
+are useful to gain insights into pharmacological and/or disease mechanisms, and
+to develop novel drug repurposing approaches. Second, specialized functional
+enrichment analysis (FEA) methods using annotations systems, such as Gene
+Ontologies (GO), pathways or Disease Ontologies (DO), have been developed and
+implemented in this package to efficiently interpret GESS results. The latter
+are usually composed of lists of perturbagens (_e.g._ drugs) ranked by the
+similarity metric of the corresponding GESS method. Finally, network
+resconstruction functionalities are integrated for visualizing the final
+results, _e.g._ in form of drug-target networks. Figure 1 illustrates the major
+steps of a typical signature search workflow. Several alternative methods have
+been implemented in _signatureSearch_ for each GESS and FEA step. They are
+introduced in the corresponding sections of this vignette.
 
 <center>
 ![](images/ss_wf.png)
 </center>
 
-Figure 1: Overview of GESS and FEA methods. GES queries are used to search a 
-drug-based GES reference database for drugs inducing GESs similar to the query. 
-To interpret the results mechanistically, the GESS results are subjected to 
-functional enrichment analysis (FEA) including drug and target enrichment 
-analyses (DSEA, TSEA). Both identify enriched functional categories (GO terms 
-and/or KEGG pathways) in the GESS results. Subsequently, drug-target networks 
-are reconstructed for visualization and interpretation.
+<font size="-2"> __Figure 1:__ Overview of GESS and FEA methods. GES queries
+are used to search a perturbation-based GES reference database for perturbagens
+such as drugs inducing GESs similar to the query. To interpret the results, the
+GESS results are subjected to functional enrichment analysis (FEA) including
+drug set and target set enrichment analyses (DSEA, TSEA). Both identify
+functional categories (_e.g._ GO terms or KEGG pathways) over-represented in
+the GESS results. Subsequently, drug-target networks are reconstructed for
+visualization and interpretation. 
+</font> <font color="blue" size="-2">[ThG-Comment: (1) The headers in the top
+of the figure are inconsistently formatted. In one case you spell out the
+acronym in the other you don't. (2) The GESS data type representation lack
+rank-based GESs used by CMAP/gCMAP. The term profile refers to
+normalized/unnormalized intensities/count data. (3) Under the GESS panel your
+illustration would be more intuitive to understand if you provided informative
+sub-titles such as "Query & DB Types" and "Search Methods"]</font>
 
-# Terminology
+## Motivation and Design
 
-Gene Expression Signatures (GESs): can be gene expression profiles (GEPs), 
-which can be genome-wide profile from differential expression analysis ($log_2$ 
-ratios or z-scores) or gene expression intensity values from perturbagen 
-treatment in cell culture, or differentially expressed gene sets (DEGs) from 
-a treatment.
+Integrating the above described GESS and FEA methods into an R/Bioconductor
+package has several advantages. First, it simplifies the development of
+automated end-to-end workflows for conducting signature searches for many
+application areas. Second, it consolidates an extendable number of GESS and FEA
+algorithms into a single environment that allows users to choose the best
+selection of methods and parameter settings for a given research question.
+Third, the usage of generic data objects and classes improves maintainability
+and reproducibility of the provided functionalities, while the integration with
+the existing R/Bioconductor ecosystem maximizes their extensibility and
+reusability for other data analysis applications. Fourth, it provides access to
+several community perturbation reference databases along with options to build
+custom databases with support for most common gene expression profiling
+technologies (_e.g._ microarrays and RNA-Seq).  Figure 2 illustrates the design
+of the package with respect to its data containers and methods used by the
+individual signature search workflow steps.  Briefly, expression profiles from
+genome-wide gene expression profiling technologies (_e.g._ RNA-Seq or
+microarrays) are used to build a reference database stored as HDF5 file.
+Commonly, a pre-built database can be used here that is provided by the
+associated _signatureSearchData_ package. A search with a query signature
+against a reference database is initialized by declaring all parameter settings
+in a *qSig* search object. Users can choose here one of five different search
+algorithms implemented by _signatureSearch_. The nature of the query signature
+along with a chosen search method defines the type of expression data used for
+searching. For instance, a search with a query up/down gene set combined with
+the LINCS search method will be performed on ranked gene expression profiles
+(see left panel in Figure 1). To minimize memory requirements and improve time
+performance, large reference databases are searched in batches with
+user-definable chunk sizes. The search results are stored in a *gessResult*
+object. The latter contains all information required to be processed by the
+downstream functional enrichment analysis (FEA) methods, here drug set and
+target set enrichment analysis (TSEA and DSEA) methods. The obtained functional
+enrichment results are stored as *feaResult* object that can be passed on to
+various drug-target network construction and visualization methods implemented
+in _signatureSearch_. 
 
-# Reference Database
+<center>
+![](images/ss_fc.png)
+</center>
 
-The CMAP and LINCS signature databases were stored in HDF5 files and available
-at `signatureSearchData` package where the data were stored at `AnnotationHub`. 
-User can download the CMAP/LINCS databases we generated 
-as follows, it returns to the file path to the downloaded databases:
+<font size="-2">__Figure 2:__ Design of _signatureSearch_. Gene expression
+profiles are stored in a reference database (here HDF5 file). Prebuilt
+databases for community GES collections, such as CMAP2 and LINCS, are provided
+by the affiliated _signatureSearchData_ package. The GESS query parameters are defined
+in a *qSig* search object where users can choose among five GESS methods (CMAP, LINCS,
+gCMAP, Fisher, and Spearman correlation). Signature
+search results are stored in a *gessResult* object that can be functionally
+annotated with different TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA)
+methods. The enrichment results are stored as *feaResult* object that can be used
+for drug target-networks analysis and visualization.</font>
+
+## History of GES Databases
+
+@Lamb2006-du generated one of the first GES databases called CMAP. Initially,
+it included GESs for 164 drugs screened against four mammalian cell lines
+[@Lamb2006-du].  A few years later CMAP was extended to CMAP2 containing GESs
+for 1,309 drugs and eight cell lines. More recently, a much larger GES database
+was released by the Library of Network-Based Cellular Signatures (LINCS)
+Consortium [@Subramanian2017-fu]. In its initial release, the LINCS database
+contained perturbation-based GESs for 19,811 drugs tested on up to 70 cancer
+and non-cancer cell lines along with genetic perturbation experiments for
+several thousand genes. The number of compound dosages and time points
+considered in the assays has also been increased by 10-20 fold. The CMAP/CMAP2
+databases used Affymetrix Gene Chips as expression platform. To scale from a
+few thousand to many hundred thousand GESs, the LINCS Consortium uses now the
+more economic L1000 assay. This bead-based technology is a low cost,
+high-throughput reduced representation expression profiling assay. It measures
+the expression of 978 landmark genes and 80 control genes by detecting
+fluorescent intensity of beads after capturing the ligation-mediated
+amplification products of mRNAs [@Peck2006-rf]. The expression of 11,350
+additional genes is imputed from the landmark genes by using as training data a
+collection of 12,063 Affymetrix gene chips [@Edgar2002-di]. The substantial
+scale-up of the LINCS project provides now many new opportunities to explore
+MOAs for a large number of known drugs and experimental drug-like small
+molecules.
+
+## Terminology
+
+In the following text the term Gene Expression Signatures (GESs) can refer to
+at least four different situations of pre-processed gene expression data: (1)
+normalized gene expression intensity values (or counts for RNA-Seq); (2)
+$log_2$ fold changes (LFC), z-scores or p-values obtained from analysis
+routines of differentially expressed genes (DEGs); (3) rank transformed
+versions of the expression values obtained under (1) and (2); and (4) gene
+identifier sets extracted from the top and lowest ranks under (3), such as 
+`n` top up/down regulated DEGs. When unclear the text in this vignette specifies 
+which of the four pre-processing states are used and/or the term GES refers to.
+
+# Getting Started
+
+## Package Install
+
+As Bioconductor package `signatureSearch` can be installed with the `BiocManager::install()`
+function.
+```{r install, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("signatureSearch", version = "3.9")
+```
+
+Next the package needs to be loaded into a user's R session.
+```{r load, eval=TRUE}
+library(signatureSearch)
+```
+
+## Reference Databases
+
+The helper package _signatureSearchData_ provides access to pre-built GES
+databases, including CMAP2 and LINCS, that are stored on Bioconductor's
+`AnnotationHub` as HDF5 files. Users can download these databases as follows.
+
 ```{r download_db, eval=FALSE}
 library(AnnotationHub)
 ah <- AnnotationHub()
@@ -119,86 +224,77 @@ cmap <- ah[["AH69075"]]; cmap_expr <- ah[["AH69077"]]
 lincs <- ah[["AH69079"]]; lincs_expr <- ah[["AH69081"]]
 ```
 
-The loaded `lincs` database represents moderated z-scores from differential 
-expression (DE) analysis of 12,328 genes from 8,140 compound treatments in 
-30 cells (45,956 signatures in total). The `lincs_expr` 
-database contains gene expression intensity values from 5,925 compound
-treatments in 30 cells (38,824 signatures in total). 
+This will store the paths to the downloaded database files in the corresponding
+variables. The referenced databases store the following information: (1)
+`lincs` contains moderated z-scores from differential expression (DE) analysis
+of 12,328 genes from 8,140 compound treatments of 30 cell lines corresponding
+to a total of 45,956 signatures;  (2) `lincs_expr` contains gene expression
+intensity values from 5,925 compound treatments of 30 cell lines corresponding
+to a total of 38,824 signatures; (3) `cmap` contains $log_2$ fold changes of
+12,437 genes from 1,281 compound treatments of 5 cell lines corresponding to a
+total of 3,478 signatures; and (4) `cmap_expr` contains mean expression values
+from 1,309 drug treatments of 4 cell lines corresponding to a total of 3,587
+signatures. To minimize redundancy in the `lincs` and `lincs_expr` databases,
+they were assembled from GESs corresponding to a compound dosage and treatment
+time of ?? and ??, respectively. <font color="blue">[ThG-Comment: fill in
+values under '??', and or improve as necessary.]</font> If neccessary one can
+create here easily databases instances for all LINCS measurements.
+However, this will make the search results overwhelmingly complex which we
+wanted to avoid here.  For details how the CMAP2 and LINCS databases were
+constructed, please refer to the vignette of the `signatureSearchData` package.
+The command `browseVignettes("signatureSearchData")` will open this vignette
+from R.
 
-The loaded `cmap` database represents the $log_2$ fold change of 12,437 genes 
-from 1,281 compound treatments in 5 cells (3,478 signatures in total).
-The `cmap_expr` database represents mean expression values of 1,309 drug
-treatment samples in 4 cells (3,587 signatures in total).
+Custom databases can be built with the `build_custom_db` function. Here the
+user provides custom genome-wide gene expression data (_e.g._ for drug, disease
+or genetic perturbations) in a `data.frame` or `matrix`. The gene expression
+data can be most types of the pre-processed gene expression values described
+under section 1.4. 
 
-For documentations of generating the CMAP/LINCS databases, please refer to the 
-vignette of `signatureSearchData` package by running 
-`browseVignettes("signatureSearchData")` in R.
+<font color="blue">[ThG-Comment: it is confusing that the objects from this
+section are not used anywhere in the sample code of this vignette. I am also a
+bit lost why we went through the effort of developing `signatureSearchData` but
+don't use it here?]</font>
 
-The custom database can be built via `build_custom_db` function if a 
-`data.frame` or `matrix` representing genome-wide GEPs of compound or genetic 
-treatments in cells is provided. The GEPs can be log2 fold change, 
-z-scores *etc.* from differential expression analysis, or gene expression 
-intensity values from Affymetrix Chips, or read counts from RNA-Seq data.
 
-# Implementation of *signatureSearch* package
+# GESS Methods
 
-It is necessary to integrate the GESS and FEA methods into an R/Bioconductor 
-package since it enables efficient testing across large and extendable number 
-of statistical methods and expression data types, simplifies development of 
-automated analysis workflows, the usage of generic data objects and classes 
-improves maintainability and reproducibility, the integration with existing 
-R/Bioconductor ecosystem maximizes extensibility and reusability by other 
-groups. Figure 2 shows the workflow design of the package. The expression 
-profiles from RNA-Seq, Affymetrix chips or other technology can be used to 
-build the reference database and stored in HDF5 files. 
-The query signature and reference database were built into *qSig* 
-object and 5 methods are supported for searching. Since the reference database 
-could contain hundreds of thousands of signatures, the searching process
-was volumized for efficient memory usage and faster time performance. 
-The search results are stored in *gessResult* object and can be functionally 
-annotated by TSEA and DSEA methods. The enrichment results are stored in 
-*feaResult* object and the drug target networks can be built for visualization. 
+This tutorial section introduces the GESS algorithms implemented in
+_signatureSearch_. Currently, this includes five search algorithms, while
+additional ones will be added in the future. Based on the data types
+represented in the query and database, they can be classified into set- and
+correlation-based methods (see Figure 1). The first 4 methods described below
+are set-based, whereas the last one is a correlation-based method. We refer to
+a search method as set-based if at least one of the two data components (query
+and/or database) is composed of an identifier set (_e.g._ gene labels) that may
+be ranked or unranked. In contrast to this, correlation-based methods require
+quatitative values, usually of the same type such as normalized intensities,
+for both the query and the database entries.  An advantage of the set-based
+methods is that their queries can be the highest and lowest ranking gene sets
+derived from a genome-wide profiling technology that my differ from the one
+used to generate the reference database. However, the precision of correlation
+methods often outperforms set-based methods. On the other hand, due to the
+nature of the expected input, correlation-based methods are usually only an
+option when both the query and database entries are based on the same or at
+least comparable technologies. In other words, set-based methods are more technology 
+agnostic than correlation-based methods, but may not provide the best precision
+performance.
 
-<center>
-![](images/ss_fc.png)
-</center>
 
-Figure 2: Workflow of _signatureSearch_ package. The expression profiles from 
-RNA-Seq, Affymetrix chips or other technology can be used to build the 
-custom reference database and stored in an HDF5 file. The database can also be
-HDF5 files representing CMAP/LINCS databases available at _signatureSearchData_
-package. The query signature and reference database are built into a *qSig* 
-object and 5 GESS methods (CMAP, LINCS, gCMAP, Fisher, and Spearman correlation)
-are supported for searching. 
-The search results are stored in a *gessResult* object and can be 
-functionally annotated by TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA)
-methods. The enrichment results are stored in a *feaResult* object and the 
-drug target networks can be built for visualization. Cont: container.
+## Test Query and Database
 
-# Installation and Loading
+To minimize the run time of the following test code, a small toy database has been
+assembled from the LINCS database containing a total of 100 GESs from human SKB
+(muscle) cells. Of the 100 GESs in this toy database, 95 were random sampled
+and 5 were cherry-picked. The latter five are GESs from HDAC inhibitor
+treatments including the known drugs: vorinostat, rhamnetin, trichostatin A,
+pyroxamide, and HC toxin. The query signature used in the below sample code is
+the vorinostat GES drawn from the toy database. 
 
-`signatureSearch` is a R/Bioconductor package and can be installed through 
-`BiocManager::install()`
-```{r install, eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("signatureSearch", version = "3.9")
-```
+The following imports the toy GES database into a `SummarizedExperiment` container 
+(here  `sample_db`). In addition, a test query set of up/down DEGs (here `upset` and 
+`downset`) is extracted from the vorinostat GES entry in the database.
 
-After the package is installed, it can be loaded into *R* workspace by
-```{r load, eval=TRUE}
-library(signatureSearch)
-```
-
-# Methods for GESS
-
-As an example of running GESS/FEA workflow, 95 GEPs randomly sampled from 
-`lincs` database and 5 GEPs from `HDAC inhibitors` (`vorinostat`, `rhamnetin`, 
-`trichostatin A`, `pyroxamide`, and `HC toxin`) in human SKB (muscle)
-cell were combined to generate a sample reference database. The query signature 
-is the vorinostat treatment drawn from the sample database.
-
-## Load database and get query signature
 ```{r db_sig, eval=TRUE}
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 # Load sample_db as `SummarizedExperiment` object
@@ -211,27 +307,32 @@ upset <- head(names(query[order(-query)]), 150)
 downset <- tail(names(query[order(-query)]), 150)
 ```
 
-## Search with CMAP method for GESS
+## CMAP Search Method 
 
-@Lamb2006-du introduced the gene expression-based search method known as 
-Connectivity Map (CMap) where a GES database is searched with a query GES for 
-similar matches [@Lamb2006-du]. Here, we generalize this type of GES similarity 
-search method and refer to it as GES search (GESS). Specifically, the GESS 
-method from @Lamb2006-du, termed as *CMAP*, uses as query the most up- 
-and down-regulated DEGs from a genome-wide expression experiment. The GES query 
-is used to search a database of rank transformed GEPs and ranks the results by 
-the degree of enrichment of the up- and down-regulated query genes on the top 
-and bottom of the databases entries, respectively. The search results are a 
-list of drugs that have similar or opposing GESs as the query. Similar GESs 
-suggest similar physiological effects of the corresponding perturbagens. 
-These GES associations can be useful to uncover novel treatments for a variety 
-of diseases or connections among small molecules sharing a common MOA. 
-
-Since no correct implementations of the CMAP algorithm are available for 
-download, it is implemented in this package.
+@Lamb2006-du introduced the gene expression-based search method known as
+Connectivity Map (CMap) where a GES database is searched with a query GES for
+similar entries [@Lamb2006-du]. Specifically, the GESS method from
+@Lamb2006-du, here termed as *CMAP*, uses as query the label sets of the 
+most up- and down-regulated genes from a genome-wide expression experiment, while
+the reference database is composed of rank transformed expression profiles
+(_e.g._ ranks of LFC or Z-scores). The actual GESS algorithm is based on a vectorized
+rank difference calculation. The resulting Connectivity Score expresses to 
+what degree the query up/down gene sets are enriched on the top and bottom of 
+the databases entries, respectively. The search results are a list of perturbagens
+such as drugs that induce similar or opposing GESs as the query. Similar GESs 
+suggest similar physiological effects of the corresponding perturbagens. As discussed 
+in the introduction, these GES associations can be useful to uncover novel MOAs of drugs or 
+treatments for diseases. Although several variants of the CMAP algorithm are 
+available in other software packages including Bioconductor, the implementation 
+provided by `signatureSearch` follows the original description of the authors as 
+closely as possible and allows to reproduce the search results relatively well that are 
+obtainable from the corresponding CMAP2 web service provided by the Broad Institute.
 
 Generate `qSig` object for `gess_cmap` method and search against the sample
-reference database
+reference database <font color="blue">[ThG-Comment: please describe here what
+the following code does in more detail and complete sentences. If this is done
+well in this first instance of running one of the five GESSs, it will require
+much less effort for the other four GESS instances.]</font>
 ```{r gess_cmap, eval=TRUE}
 qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
                   gess_method="CMAP", refdb=db_path)
@@ -239,6 +340,19 @@ cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 cmap
 result(cmap)
 ```
+<font color="blue">[ThG-Comment: here and in the following you need to briefly
+describe what the GESS result object `cmap` contains, e.g. what do the column
+titles refer to and what type of values are stored in them. To minimize, effort
+you can align this with the corresponding description in the help
+files.]</font>
+
+<font color="blue">[ThG-Comment: this is as far as I have edited this vignette
+so far. Please make similar/corresponding improvements in the following
+sections so that I can continue editing; _e.g._ describe what the code in the
+code sections does more precisely and explain the content of the objects and
+results without creating too many duplications. In general, the vignette should
+be readable and understandable to someone who doesn't run the code and inspect
+the content of objects and help file.]</font>
 
 ## Search with LINCS method for GESS
 
