@@ -48,17 +48,6 @@ suppressPackageStartupMessages({
 
 ## Background
 
-<!--
-This package implements algorithms and data structures for searching gene
-expression signature (GESs) databases with query GESs to identify cellular
-states sharing similar expression responses (connections). This way one can
-discover perturbations, such as knockouts, diseases or drugs inducing
-expression phenotypes similar to a sample of interest. Establishing these GES
-connections can lead to the indentification of novel functional and regulatory
-relationships of molecular and cellular processes, _e.g._ drugs-target
-interactions.
--->
-
 The _signatureSearch_ package implements algorithms and data structures for
 performing gene expression signature (GES) searches and subsequently
 interpreting the results functionally with specialized enrichment methods.
