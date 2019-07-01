@@ -25,5 +25,5 @@ data(drugs)
 dt <- get_targets(drugs)
 }
 \seealso{
-\code{\link[signatureSearchData]{dtlink_dt_clue_sti}}
+\code{\link[signatureSearchData]{dtlink_db_clue_sti}}
 }

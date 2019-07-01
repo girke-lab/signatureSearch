@@ -1,12 +1,11 @@
-##' qSig method
 ##'
 ##' It builds a `qSig` object to store the query signature, reference database
 ##' and GESS method used to search for similarity
 ##' @docType methods
 ##' @name qSig
 ##' @rdname qSig-methods
-##' @aliases qSig,list,character,character,character-method
-##' @param qsig When 'gess_method' is 'CMAP' or 'LINCS', 
+##' @aliases qSig,list,character,character-method
+##' @param query When 'gess_method' is 'CMAP' or 'LINCS', 
 ##' it should be a list of two elements, which are up and down regulated gene 
 ##' sets of entrez ids.
 ##' 
@@ -102,15 +101,17 @@ setMethod("qSig",
 ##' @docType methods
 ##' @name qSig
 ##' @rdname qSig-methods
-##' @aliases qSig,matrix,character,character,character-method
+##' @aliases qSig,matrix,character,character-method
 ##' @exportMethod qSig
 setMethod("qSig",
   signature(query="matrix", gess_method="character", refdb="character"),
   function(query, gess_method, refdb){
     ## Validity check of refdb
-    ref_val <- h5read(db_path, "assay", list(1,1))
-    if(!is.numeric(ref_val)) 
-      stop("The value stored in 'assays' slot of 'refdb' should be numeric")
+    if(!any(refdb %in% c("cmap","cmap_expr","lincs","lincs_expr"))){
+      ref_val <- h5read(refdb, "assay", c(1,1))
+      if(!is.numeric(ref_val)) 
+        stop("The value stored in 'refdb' should be numeric!")
+    }
     if(any(gess_method %in% c("gCMAP", "Fisher", "Cor"))){
       experiment = query
       refdb = determine_refdb(refdb)

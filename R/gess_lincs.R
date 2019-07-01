@@ -18,7 +18,7 @@
 #'   \item WTCS: Weighted Connectivity Score, a bi-directional Enrichment 
 #'   Score of up and down query set. If ES of up and down sets are of different
 #'   signs, WTCS is (ESup-ESdown)/2, otherwise, it is 0. WTCS ranges between 
-#'   −1 and 1. It will be positive for signatures that are positively related 
+#'   -1 and 1. It will be positive for signatures that are positively related 
 #'   and negative for those that are inversely related, and near zero for 
 #'   signatures that are unrelated.
 #'   \item WTCS_Pval: Nominal p-value of WTCS computed by comparing WTCS 
@@ -297,7 +297,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 #' 
 #' @title Generate WTCS null distribution with random queries
 #' @param h5file character(1), path to the HDF5 file representting the
-#'  reference database
+#' reference database
 #' @param N_queries number of random queries
 #' @param dest file path to the generated "ES_NULL.txt" file
 #' @return write 'ES_NULL.txt' file to the 'dest'
@@ -305,8 +305,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 #' @examples 
 #' db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")
 #' library(signatureSearchData)
-#' se = readHDF5chunk(db_path, colindex=1:100)
-#' randQueryES(se=se, N_queries=5, dest_ES_NULL_path="ES_NULL.txt")
+#' randQueryES(h5file=db_path, N_queries=5, dest="ES_NULL.txt")
 #' unlink("ES_NULL.txt")
 #' @seealso \code{\link{gess_lincs}}
 #' @references 
@@ -316,23 +315,23 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 #' \url{https://doi.org/10.1016/j.cell.2017.10.049}
 #' @export
 
-randQueryES <- function(se, N_queries=1000, dest_ES_NULL_path) {
+randQueryES <- function(h5file, N_queries=1000, dest) {
   ## Create list of random queries
-  idnames <- rownames(se)
+  idnames <- drop(h5read(h5file, "rownames"))
   query_list <- randQuerySets(id_names=idnames, N_queries=N_queries, 
                               set_length=150)
   ## Define vapply function
-  f <- function(x, query_list, se) {
-      esout <- lincsEnrich(se, upset=query_list[[x]]$up, 
+  f <- function(x, query_list, h5file) {
+      esout <- lincsEnrich(h5file, upset=query_list[[x]]$up, 
                            downset=query_list[[x]]$down, sortby=NA, 
                            output="esonly", type=1)
-      names(esout) <- colData(se)$pert_cell_factor
+      names(esout) <- drop(h5read(h5file, "colnames"))
       # message("Random query ", sprintf("%04d", x), 
       #         " has been searched against reference database")
       wtcs = esout
   }
-  myMA <- vapply(seq(along=query_list), f, query_list, se, 
-                 FUN.VALUE=double(ncol(se)))
+  myMA <- vapply(seq(along=query_list), f, query_list, h5file, 
+                 FUN.VALUE=double(length(drop(h5read(h5file, "colnames")))))
   colnames(myMA) <- names(query_list)
   ## Collect results in frequency table with 3 diget accuracy
   esMA <- data.frame(WTCS=as.character(round(rev(seq(-1, 1, by=0.001)), 3)), 
@@ -342,7 +341,7 @@ randQueryES <- function(se, N_queries=1000, dest_ES_NULL_path) {
   freq <- freq[as.character(esMA[,1])]
   freq[is.na(freq)] <- 0
   esMA[,"Freq"] <- as.numeric(esMA[,"Freq"]) + as.numeric(freq)
-  write.table(esMA, file=dest_ES_NULL_path, quote=FALSE, 
+  write.table(esMA, file=dest, quote=FALSE, 
               row.names=FALSE, sep="\t")
 }
 
