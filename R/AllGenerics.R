@@ -1,4 +1,4 @@
-##' qSig generic
+##' Generate \code{qSig} object used for GESS methods
 ##' 
 ##' @title qSig method
 ##' @rdname qSig-methods
@@ -6,7 +6,7 @@
 setGeneric("qSig", function(query, gess_method, refdb) 
   standardGeneric("qSig"))
 
-##' result generic
+##' Get GESS or FEA result tables
 ##' 
 ##' @title result method
 ##' @rdname result-methods

@@ -22,8 +22,8 @@
 #'   and negative for those that are inversely related, and near zero for 
 #'   signatures that are unrelated.
 #'   \item WTCS_Pval: Nominal p-value of WTCS computed by comparing WTCS 
-#'   against WTCS null distribution obtained from 1000 random queries
-#'   \item WTCS_FDR: false discovery rate of WTCS P value
+#'   against WTCS null distribution obtained from 1000 random queries.
+#'   \item WTCS_FDR: false discovery rate of WTCS P value.
 #'   \item NCS: To make connectivity scores comparable across cell types and 
 #'   perturbation types, the scores are normalized. Given a vector of WTCS 
 #'   values w resulting from a query, the values are normalized within each 

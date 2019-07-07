@@ -98,7 +98,8 @@ prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
     keggpath2entrez <- left_join(as_tibble(keggpath2entrez), 
                                  as_tibble(dtlink_entrez), 
                                  by = c("to"="ENTREZID")) %>% 
-        filter(!is.na(drug_name)) %>% distinct(from, drug_name, .keep_all = TRUE)
+        filter(!is.na(drug_name)) %>% 
+        distinct(from, drug_name, .keep_all = TRUE)
     keggpath2entrez <- as.data.frame(keggpath2entrez)[,c("from","drug_name")]
     kegg$KEGGPATHID2EXTID <- keggpath2entrez
     build_Anno(kegg$KEGGPATHID2EXTID, kegg$KEGGPATHID2NAME)

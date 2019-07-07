@@ -7,7 +7,7 @@ sep_pcf <- function(res){
     return(res)
 }
 
-readHDF5mat <- function(h5file, colindex=1:10) {
+readHDF5mat <- function(h5file, colindex=seq_len(10)) {
     m <- h5read(h5file, "assay", index=list(NULL, colindex))
     mycol <- h5read(h5file, "colnames", index=list(colindex, 1))
     myrow <- h5read(h5file, "rownames")

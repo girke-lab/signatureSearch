@@ -22,7 +22,7 @@ RoxygenNote: 6.1.1
 NeedsCompilation: no
 Packaged: 2018-08-24 18:22:55 UTC; yduan004
 biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment, 
-           Sequencing, Coverage
+           Sequencing, Coverage, DifferentialExpression
 Maintainer: Yuzhu Duan <yduan004@ucr.edu>
 URL: https://github.com/yduan004/signatureSearch/
 BugReports: https://github.com/yduan004/signatureSearch/issues
