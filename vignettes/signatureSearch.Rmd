@@ -222,7 +222,7 @@ total of 3,478 signatures; and (4) `cmap_expr` contains mean expression values
 from 1,309 drug treatments of 4 cell lines corresponding to a total of 3,587
 signatures. To minimize redundancy in the `lincs` and `lincs_expr` databases,
 they were assembled from GESs corresponding to a compound dosage and treatment
-time of 10µM and 24h, respectively. If neccessary one can
+time of 10µM and 24h, respectively. If necessary one can
 create here easily databases instances for all LINCS measurements.
 However, this will make the search results overwhelmingly complex which we
 wanted to avoid here. For details how the CMAP2 and LINCS databases were
@@ -247,7 +247,7 @@ are set-based, whereas the last one is a correlation-based method. We refer to
 a search method as set-based if at least one of the two data components (query
 and/or database) is composed of an identifier set (_e.g._ gene labels) that may
 be ranked or unranked. In contrast to this, correlation-based methods require
-quatitative values, usually of the same type such as normalized intensities,
+quantitative values, usually of the same type such as normalized intensities,
 for both the query and the database entries.  An advantage of the set-based
 methods is that their queries can be the highest and lowest ranking gene sets
 derived from a genome-wide profiling technology that may differ from the one
@@ -344,7 +344,7 @@ signature can be searched against a reference database by the defined GESS
 method on the initialized `qSig` object. The type of the query signature and 
 the reference database needs to meet the requirement of the search algorithm. 
 Here the GESS method is CMAP, so the query should be a list of up and down
-regulated gene labels, the reference database should be rank tranformed 
+regulated gene labels, the reference database should be rank transformed 
 genome-wide expression profiles. It also works if genome-wide profiles with 
 scores are provided since it will be internally transformed to gene ranks. 
 Here, the `db_path` variable stores path to the toy database consists of 100 
@@ -367,11 +367,11 @@ containing the result table, query signature, GESS method and reference database
 that the result table was generated from. The `result` accessor is used to get
 the result table from the `gessResult` object. This table represents a list of
 perturbations (e.g. drugs) in the reference database ranked by their signature
-similairity to the query. For the _CMAP_ method, the similarity metrics are 
+similarity to the query. For the _CMAP_ method, the similarity metrics are 
 `raw_score` and `scaled_score`. Raw score represents the bi-directional 
 enrichment score (Kolmogorov-Smirnov statistic) of up and down set in the query 
-siganture. It was scaled to valules from 1 to -1 by dividing the positive scores
-with the maxmum positive score, and negative scores with the absolute value of
+signature. It was scaled to values from 1 to -1 by dividing the positive scores
+with the maximum positive score, and negative scores with the absolute value of
 minimum negative score.
 
 Description of other column titles that are common in `gessResult` table from
@@ -415,7 +415,8 @@ transformed as reference database. The bi-directional weighted Kolmogorov-
 Smirnov enrichment statistic (ES) is used as similarity metric. Since now, no 
 implementations of this algorithm available, it is implemented here.
 
-The generation of `qSig` object for _LINCS_ method is similar with _CMAP_. The `gess_method` argument is defined as "LINCS" and _LINCS_ method is applied on 
+The generation of `qSig` object for _LINCS_ method is similar with _CMAP_. The 
+`gess_method` argument is defined as "LINCS" and _LINCS_ method is applied on 
 the initialized `qSig` object.
 
 ```{r gess_lincs, eval=TRUE}
@@ -435,7 +436,8 @@ as FALSE.
 Description of column titles specific for _LINCS_ method:
 
 `WTCS`: Weighted Connectivity Score, a bi-directional ES of up and down query 
-set. If ES of up and down sets are of different signs, WTCS is (ESup-ESdown)/2, otherwise, it is 0. WTCS ranges between -1 and 1. It will be positive for 
+set. If ES of up and down sets are of different signs, WTCS is (ESup-ESdown)/2, 
+otherwise, it is 0. WTCS ranges between -1 and 1. It will be positive for 
 signatures that are positively related and negative for those that are inversely
 related, and near zero for signatures that are unrelated.
 
@@ -461,7 +463,8 @@ whichever is of higher absolute magnitude.
 signatures in reference database). It represents the percentage of reference 
 queries with a lower $|NCS|$ than $|NCSq,r|$, adjusted to retain the sign of 
 $NCSq,r$. $NCSq,r$ is the normalized connectivity score for signature $r$
-relative to query $q$. A tau of 90 indicates that only 10 percent of reference perturbations showed stronger connectivity to the query.
+relative to query $q$. A tau of 90 indicates that only 10 percent of reference
+perturbations showed stronger connectivity to the query.
 
 ## gCMAP Search Method
 
@@ -540,7 +543,8 @@ performance is as good as Pearson correlation and insensitive to outliers.
 ### SPall
 
 SPall represents genome-wide Spearman correlation. Here, the `query` and `refdb`
-are GESs with z-scores. The `gess_cor` function also support Pearson and Kendall correlation coefficiency.
+are GESs with z-scores. The `gess_cor` function also support Pearson and Kendall 
+correlation coefficiency.
 ```{r gess_sp, eval=TRUE}
 qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
 sp <- gess_cor(qSig=qsig_sp, method="spearman")
@@ -690,7 +694,7 @@ enrichment metric.
 Description of column titles common for tables in `feaResult` object from 
 different enrichment methods:
 
-`ont`: One of `BP`, `MF`, `CC` or `ALL` if GO anotation system. If KEGG 
+`ont`: One of `BP`, `MF`, `CC` or `ALL` if GO annotation system. If KEGG 
 annotation system, ont is shown as `KEGG`.
 
 `ID`: GO term or KEGG pathway ID.
@@ -785,20 +789,23 @@ Description of column titles specific for GSEA algorithm:
 is calculated by walking down the gene list $L$, increasing a running-sum 
 statistic when we encounter a gene in $S$ and decreasing when it is not. The 
 magnitude of the increment depends on the gene scores. The $ES$ is the maximum 
-deviation from zero encountered in the random walk. It corresponds to a weighted Kolmogorov-Smirnov-like statistic.
+deviation from zero encountered in the random walk. It corresponds to a weighted 
+Kolmogorov-Smirnov-like statistic.
 
 `NES`: Normalized enrichment score. The positive and negative enrichment scores 
 are normalized separately by permutating the gene labels of the gene list $L$ 
-"nPerm" times and dividing the enrichment score by mean of the permutaion $ES$
+"nPerm" times and dividing the enrichment score by mean of the permutation $ES$
 with the same sign.
 
-`pvalue`: The nominal p-value of the $ES$ is calculated using permutation test. Specifically, the gene labels of the gene list $L$ were permuted and the $ES$ of 
+`pvalue`: The nominal p-value of the $ES$ is calculated using permutation test. 
+Specifically, the gene labels of the gene list $L$ were permuted and the $ES$ of 
 the gene set was recomputed for the permutated data, which generate a null 
 distribution for the ES. The p-value of the observed $ES$ is then calculated 
 relative to this null distribution.
 
 `leadingEdge`: genes in the gene set S (functional category) that appear in the 
-ranked list L at, or before, the point where the running sum reaches its maximum deviation from zero. Can be interpreted as the core of a gene set that accounts 
+ranked list L at, or before, the point where the running sum reaches its maximum
+deviation from zero. Can be interpreted as the core of a gene set that accounts 
 for the enrichment signal.
 
 `ledge_rank`: ranks of genes in 'leadingEdge' at the gene list L.
