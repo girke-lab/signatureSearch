@@ -568,14 +568,17 @@ be the case.]</font>
 
 ## Summary of Search Results
 
-Four of the five cherry-picked HDAC inhibitors (vorinostat, trichostatin-a,
-HC-toxin, pyroxamide) were ranked among the top 10 ranking drugs in the search
-results of the  LINCS, Fisher and Spearman correlation methods. This
-demonstrates a promising performance of these search methods for grouping drugs
-by their MOA categories. In addition, the LINCS and Spearman methods were able
-to rank another HDAC inhibitor, here APHA-compound-8, at the top of their
-search results. This indicates a better sensitivity of these two methods
-compared to the other methods.
+Although the toy database is artificially small, one can still use the above
+search results for a preliminary performance assessment of the different GESS
+methods in ranking drugs based on known modes of action (MOA). Four of the five
+cherry-picked HDAC inhibitors (vorinostat, trichostatin-a, HC-toxin,
+pyroxamide) were ranked among the top 10 ranking drugs in the search results of
+the LINCS, Fisher and Spearman correlation methods. If generalizable, this
+result implies a promising performance of these search methods for grouping
+drugs by their MOA categories. In addition, the LINCS and Spearman methods were
+able to rank another HDAC inhibitor, APHA-compound-8, at the top of their search
+results, indicating a better sensitivity of these two methods compared to the
+other methods.
 
 ## GESS result visualization
 
@@ -610,15 +613,29 @@ in the one below from "cell_type" to "cell_class".]</font>
 
 # FEA
 
-GESS results are a list of drugs ranked by their signature similarity to a 
-query signature of interest. Prioritizing drugs based on these rankings alone 
-is challenging. To overcome this challenge, this project developed downstream 
-functional enrichment analysis (FEA) methods that automate the functional 
-interpretation and visualization of the GESS results. As of now, no methods 
-have been developed to address this need. FEA can be performed by two 
-approaches, target set enrichment analysis (TSEA) and drug set enrichment 
-analysis (DSEA). Here, the above GESS result from LINCS method is chosen as 
-input for the downstream FEA as demonstration of the method.
+GESS results are a list of drugs ranked by their signature similarity to a
+query signature of interest. Interpreting these search results with respect to
+the cellular networks and pathways affected by the top ranking drugs is
+difficult. To overcome this challenge, the knowledge of the target proteins of
+the top ranking drugs can be used to perform functional enrichment analysis
+(FEA) based on community annotation systems, such as Gene Ontologies (GO),
+pathways (e.g.  KEGG, Reactome), drug MOAs or Pfam domains. For this the ranked
+drug sets are converted into target gene or protein sets to perform Target Set
+Enrichment Analysis (TSEA) based on a chosen annotation system. Alternatively,
+the functional annotation categories of the targets can be assigned to the
+drugs directly to perform Drug Set Enrichment Analysis (DSEA). Although TSEA and DSEA
+are related, their enrichment results can be distinct. This is mainly due to
+duplications that are frequently present in test sets of TSEA, while the drugs
+in the test sets of DSEA are usually unique. Simply uniquifying the proteins in the 
+test sets of the TSEA approach would erase the most important enrichment information 
+leading to meaningless results. Thus, a weighting method is used to preserve this
+duplication information in case of TSEA as much as possilbe. To illustrate the 
+importance of this: the top ranking drugs of a GESS result may predominantly 
+bind to a single or a few target protein(s) resulting in a protein test set 
+with many duplications, which is a highly desirable outcome. Thus, maintaining 
+the duplications in the test set is essential for detecting these types of target 
+enrichments. 
+
 
 ## TSEA
 GO terms and KEGG pathway annotations were used to functionally annotate GESS 
