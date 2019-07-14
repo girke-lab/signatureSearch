@@ -50,7 +50,7 @@ suppressPackageStartupMessages({
 ## Background
 
 The _signatureSearch_ package implements algorithms and data structures for
-performing gene expression signature (GES) searches and subsequently
+performing gene expression signature (GES) searches, and subsequently
 interpreting the results functionally with specialized enrichment methods.
 These utilities are useful for studying the effects of genetic, chemical and
 environmental perturbations on biological systems. Specifically, in drug
@@ -71,9 +71,11 @@ are usually composed of lists of perturbagens (_e.g._ drugs) ranked by the
 similarity metric of the corresponding GESS method. Finally, network
 resconstruction functionalities are integrated for visualizing the final
 results, _e.g._ in form of drug-target networks. Figure 1 illustrates the major
-steps of a typical signature search workflow. Several alternative methods have
-been implemented in _signatureSearch_ for each GESS and FEA step. They are
-introduced in the corresponding sections of this vignette.
+steps of a typical signature search workflow. For each GESS and FEA step, 
+several alternative methods have been implemented in _signatureSearch_ to allow users
+to choose the best possible workflow configuration for their research application. 
+The individual search and enrichment methods are introduced in the corresponding 
+sections of this vignette.
 
 <center>
 ![](images/ss_wf.png)
@@ -86,7 +88,16 @@ GESS results are subjected to functional enrichment analysis (FEA) including
 drug set and target set enrichment analyses (DSEA, TSEA). Both identify
 functional categories (_e.g._ GO terms or KEGG pathways) over-represented in
 the GESS results. Subsequently, drug-target networks are reconstructed for
-visualization and interpretation. </font>
+visualization and interpretation. </font> 
+<font color="blue" size="-2">[ThG-Comment: under the CMAP/LINKS DB box on the
+left panel it would be better to sort the colored bars in the illustration by
+scores/ranks.  This would be helpful even if it is not stored this way in the
+object (i.e. the sorting may be performed on the fly), as the algorithm(s)
+expect the values sorted and that's what the illustration is supposed to
+explain. If I remember correctly, the time performance was actually much better
+if the vectors were stored in a sorted fashion but this comes with some extra
+overhead for storing the label index.  Not sure what you ended up
+using?]</font>
 
 ## Motivation and Design
 
@@ -102,28 +113,29 @@ the existing R/Bioconductor ecosystem maximizes their extensibility and
 reusability for other data analysis applications. Fourth, it provides access to
 several community perturbation reference databases along with options to build
 custom databases with support for most common gene expression profiling
-technologies (_e.g._ microarrays and RNA-Seq).  Figure 2 illustrates the design
-of the package with respect to its data containers and methods used by the
-individual signature search workflow steps.  Briefly, expression profiles from
-genome-wide gene expression profiling technologies (_e.g._ RNA-Seq or
-microarrays) are used to build a reference database stored as HDF5 file.
-Commonly, a pre-built database can be used here that is provided by the
-associated _signatureSearchData_ package. A search with a query signature
-against a reference database is initialized by declaring all parameter settings
-in a *qSig* search object. Users can choose here one of five different search
-algorithms implemented by _signatureSearch_. The nature of the query signature
-along with a chosen search method defines the type of expression data used for
-searching. For instance, a search with a query up/down gene set combined with
-the LINCS search method will be performed on scored gene expression profiles
-(see left panel in Figure 1). To minimize memory requirements and improve time
-performance, large reference databases are searched in batches with
-user-definable chunk sizes. The search results are stored in a *gessResult*
-object. The latter contains all information required to be processed by the
-downstream functional enrichment analysis (FEA) methods, here drug set and
-target set enrichment analysis (TSEA and DSEA) methods. The obtained functional
-enrichment results are stored as *feaResult* object that can be passed on to
-various drug-target network construction and visualization methods implemented
-in _signatureSearch_. 
+technologies (_e.g._ microarrays and RNA-Seq).  
+
+Figure 2 illustrates the design of the package with respect to its data
+containers and methods used by the individual signature search workflow steps.
+Briefly, expression profiles from genome-wide gene expression profiling
+technologies (_e.g._ RNA-Seq or microarrays) are used to build a reference
+database stored as HDF5 file.  Commonly, a pre-built database can be used here
+that is provided by the associated _signatureSearchData_ package. A search with
+a query signature against a reference database is initialized by declaring all
+parameter settings in a *qSig* search object. Users can choose here one of five
+different search algorithms implemented by _signatureSearch_. The nature of the
+query signature along with a chosen search method defines the type of
+expression data used for searching. For instance, a search with a query up/down
+gene set combined with the LINCS search method will be performed on sorted gene
+expression scores (see left panel in Figure 1). To minimize memory requirements
+and improve time performance, large reference databases are searched in batches
+with user-definable chunk sizes. The search results are stored in a
+*gessResult* object. The latter contains all information required to be
+processed by the downstream functional enrichment analysis (FEA) methods, here
+drug set and target set enrichment analysis (TSEA and DSEA) methods. The
+obtained functional enrichment results are stored as *feaResult* object that
+can be passed on to various drug-target network construction and visualization
+methods implemented in _signatureSearch_. 
 
 <center>
 ![](images/ss_fc.png)
@@ -173,11 +185,9 @@ normalized gene expression intensity values (or counts for RNA-Seq); (2)
 $log_2$ fold changes (LFC), z-scores or p-values obtained from analysis
 routines of differentially expressed genes (DEGs); (3) rank transformed
 versions of the expression values obtained under (1) and (2); and (4) gene
-identifier sets extracted from the top and lowest ranks under (3) or by setting
-upper and lower cutoffs under (2), such as `n` top up/down regulated DEGs or
-up/down DEGs from setting cutoffs. When unclear the text in this vignette 
-specifies which of the four pre-processing states are used and/or the term GES 
-refers to.
+identifier sets extracted from the top and lowest ranks under (3), such as 
+`n` top up/down regulated DEGs. When unclear the text in this vignette specifies 
+which of the four pre-processing states are used and/or the term GES refers to.
 
 # Getting Started
 
@@ -223,7 +233,7 @@ from 1,309 drug treatments of 4 cell lines corresponding to a total of 3,587
 signatures. To minimize redundancy in the `lincs` and `lincs_expr` databases,
 they were assembled from GESs corresponding to a compound dosage and treatment
 time of 10µM and 24h, respectively. If necessary one can
-create here easily databases instances for all LINCS measurements.
+create here easily database instances for all LINCS measurements.
 However, this will make the search results overwhelmingly complex which we
 wanted to avoid here. For details how the CMAP2 and LINCS databases were
 constructed, please refer to the vignette of the `signatureSearchData` package.
@@ -262,48 +272,23 @@ best precision performance.
 
 ## Test Query and Database
 
-To minimize the run time of the following test code, a small toy database has 
-been assembled from the LINCS database containing a total of 100 GESs from 
-human SKB (muscle) cells. Of the 100 GESs in this toy database, 95 were random 
+To minimize the run time of the following test code, a small toy database has
+been assembled from the LINCS database containing a total of 100 GESs from
+human SKB (muscle) cells. Of the 100 GESs in this toy database, 95 were random
 sampled and 5 were cherry-picked. The latter five are GESs from HDAC inhibitor
 treatments including the known drugs: vorinostat, rhamnetin, trichostatin A,
-pyroxamide, and HC toxin. To reduce the size of the toy database, 5000/12328
-genes were randomly selected. The query signature used in the sample code is
-the vorinostat GES drawn from the toy database. 
+pyroxamide, and HC toxin. To further reduce the size of the toy database, the
+number of its genes was reduced from 12,328 to 5,000 by random sampling. The
+query signature used in the sample code below is the vorinostat GES drawn from
+the toy database. For simplicity and to minimize the build time of this
+vignette, the following sample code uses a pre-generated instance of this toy
+database stored under the `extdata` directory of this package. The
+detailed code for generating the toy database and other custom instances of the
+LINCS database is given in the Supplementary Material section of this vignette. 
 
-### Generate Toy Database from LINCS Database
-
-The LINCS database is stored on AnnotationHub through the _signatureSearchData_ 
-package. The following code shows how the toy database is generated without 
-evaluating since it takes some time to run. For test purpose, the toy database 
-was pre-generated and stored under the `extdata` of this package
-```{r gen_toy_db, eval=FALSE}
-library(signatureSearchData); library(rhdf5)
-ah <- AnnotationHub::AnnotationHub()
-lincs <- ah[["AH69092"]]
-hdacs <- c("vorinostat","trichostatin-a","pyroxamide","HC-toxin","rhamnetin")
-hdacs_trts <- paste(hdacs,"SKB","trt_cp",sep="__")
-all_trts <- drop(h5read(lincs, "colnames"))
-# Select treatments in SKB cell and not BRD compounds
-all_trts2 <- all_trts[!grepl("BRD-", all_trts) & grepl("__SKB__", all_trts)]
-set.seed(11)
-rand_trts <- sample(setdiff(all_trts2, hdacs_trts), 95)
-toy_trts <- c(hdacs_trts, rand_trts)
-toy_db <- round(assay(readHDF5chunk(lincs, colnames=toy_trts)),2)
-set.seed(11)
-gene_idx <- sample.int(nrow(toy_db),5000)
-toy_db2 <- toy_db[gene_idx,]
-# The sample_db is stored in the current directory of user's R session
-getwd()
-createEmptyH5("sample_db.h5", level=9, delete_existing=TRUE)
-append2H5(toy_db2, "sample_db.h5")
-h5ls("sample_db.h5")
-```
-
-The following imports the toy GES database into a `SummarizedExperiment` 
-container (here `sample_db`). In addition, a test query set of up/down DEGs 
-(here `upset` and `downset`) is extracted from the vorinostat GES entry in the 
-database.
+The following imports the toy GES database into a `SummarizedExperiment` container 
+(here `sample_db`). In addition, the test query set of up/down DEGs (here `upset` and 
+`downset`) is extracted from the vorinostat GES entry in the database.
 
 ```{r db_sig, eval=TRUE}
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
@@ -321,39 +306,36 @@ downset <- tail(names(query[order(-query)]), 150)
 @Lamb2006-du introduced the gene expression-based search method known as
 Connectivity Map (CMap) where a GES database is searched with a query GES for
 similar entries [@Lamb2006-du]. Specifically, the GESS method from
-@Lamb2006-du, here termed as *CMAP*, uses as query the label sets of the 
-most up- and down-regulated genes from a genome-wide expression experiment, 
-while the reference database is composed of rank transformed expression profiles
-(_e.g._ ranks of LFC or z-scores). The actual GESS algorithm is based on a 
-vectorized rank difference calculation. The resulting Connectivity Score 
-expresses to what degree the query up/down gene sets are enriched on the top 
-and bottom of the databases entries, respectively. The search results are a 
-list of perturbagens such as drugs that induce similar or opposing GESs as the 
-query. Similar GESs suggest similar physiological effects of the corresponding 
-perturbagens. As discussed in the introduction, these GES associations can be 
-useful to uncover novel MOAs of drugs or treatments for diseases. Although 
-several variants of the CMAP algorithm are available in other software packages 
-including Bioconductor, the implementation provided by `signatureSearch` follows
-the original description of the authors as closely as possible and allows to 
-reproduce the search results relatively well that are obtainable from the 
-corresponding CMAP2 web service provided by the Broad Institute.
+@Lamb2006-du, here termed as *CMAP*, uses as query the two label sets of the
+most up- and down-regulated genes from a genome-wide expression experiment,
+while the reference database is composed of rank transformed expression
+profiles (_e.g._ ranks of LFC or z-scores). The actual GESS algorithm is based
+on a vectorized rank difference calculation. The resulting Connectivity Score
+expresses to what degree the query up/down gene sets are enriched on the top
+and bottom of the database entries, respectively. The search results are a list
+of perturbagens such as drugs that induce similar or opposing GESs as the
+query. Similar GESs suggest similar physiological effects of the corresponding
+perturbagens. As discussed in the introduction, these GES associations can be
+useful to uncover novel MOAs of drugs or treatments for diseases. Although
+several variants of the *CMAP* algorithm are available in other software packages
+including Bioconductor, the implementation provided by `signatureSearch`
+follows the original description of the authors as closely as possible. This
+allows to reproduce in our tests the search results from the corresponding
+CMAP2 web service of the Broad Institute.
 
-The `qSig` function is used to generate a `qSig` object by defining the query
-signature, GESS method and path to the reference database. Then, the query 
-signature can be searched against a reference database by the defined GESS 
-method on the initialized `qSig` object. The type of the query signature and 
-the reference database needs to meet the requirement of the search algorithm. 
-Here the GESS method is CMAP, so the query should be a list of up and down
-regulated gene labels, the reference database should be rank transformed 
-genome-wide expression profiles. It also works if genome-wide profiles with 
-scores are provided since it will be internally transformed to gene ranks. 
-Here, the `db_path` variable stores path to the toy database consists of 100 
-GESs of z-scores.
+In the following code block, the `qSig` function is used to generate a `qSig`
+object by defining (i) the query signature, (ii) the GESS method and (iii) the
+path to the reference database. Next, the query signature is used to search the
+reference database with the chosen GESS method. The type of the query signature
+and the reference database needs to meet the requirement of the search
+algorithm. In the chosen example the GESS method is *CMAP*, where the query
+signature needs to be the labels of up and down regulated genes, and the
+reference database contains rank transformed genome-wide expression profiles.
+Alternatively, the database can contain the genome-wide profiles themselves. In
+this case they will be transformed to gene ranks during the search. Note, in
+the given example the `db_path` variable stores the path to the toy database
+containing 100 GESs composed of z-scores.
 
-<font color="white">[ThG-Comment: please describe here what
-the following code does in more detail and complete sentences. If this is done
-well in this first instance of running one of the five GESSs, it will require
-much less effort for the other four GESS instances.]</font>
 ```{r gess_cmap, eval=TRUE}
 qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
                   gess_method="CMAP", refdb=db_path)
@@ -362,62 +344,47 @@ cmap
 result(cmap)
 ```
 
-The search result is stored in `cmap` variable, which is a `gessResult` object
-containing the result table, query signature, GESS method and reference database
-that the result table was generated from. The `result` accessor is used to get
-the result table from the `gessResult` object. This table represents a list of
-perturbations (e.g. drugs) in the reference database ranked by their signature
-similarity to the query. For the _CMAP_ method, the similarity metrics are 
-`raw_score` and `scaled_score`. Raw score represents the bi-directional 
-enrichment score (Kolmogorov-Smirnov statistic) of up and down set in the query 
-signature. It was scaled to values from 1 to -1 by dividing the positive scores
-with the maximum positive score, and negative scores with the absolute value of
-minimum negative score.
+<font color="blue">[ThG-Comment: note the help file for the the qSig
+method (?qSig) is incomplete, e.g. it lacks an explicit description of the `query` 
+argument.]</font>
 
-Description of other column titles that are common in `gessResult` table from
-different GESS methods:
+The search result is stored in a `gessResult` object (here named `cmap`)
+containing the following components: search result table, query signature, name
+of the GESS method and path to the reference database. The `result` accessor
+function can be used to extract the search result table from the `gessResult`
+object.  This table contains the search results for each perturbagen (here
+drugs) in the reference database ranked by their signature similarity to the
+query. For the *CMAP* method, the similarity metrics are `raw_score` and
+`scaled_score`. The raw score represents the bi-directional enrichment score
+(Kolmogorov-Smirnov statistic) for a given up/down query signature. Under the
+`scaled_score` column, the `raw_score` has been scaled to values from 1 to -1
+by dividing positive scores and negative scores with the maximum positive score
+and the absolute value of the minimum negative score, respectively. The
+remaining columns in the search result table contain the following information.
+`pert`: name of perturbagen (_e.g._ drug) in the reference database; `cell`:
+acronym of cell type; `type`: perturbation type, _e.g._ compound treatment is
+`trt_cp`; `trend`: up or down when reference signature is positively or
+negatively connected with the query signature, respectively; `N_upset` or
+`N_downset`: number of genes in the query up or down sets, respectively;
+`t_gn_sym`: gene symbols of the corresponding drug targets.
 
-`pert`: Perturbations (_e.g._ drug names) in the reference database.
-
-`cell`: Cell types.
-
-`type`: Type of perturbation.
-
-`trend`: Up or down. up: the reference signature is positively 
-connected with query signature; down: negatively connected.
-
-`N_upset`: Number of genes in the up set of query signature.
-
-`N_downset`: Number of genes in the down set of query signature.
-
-`t_gn_sym`: Gene SYMBOL id of target genes/proteins of drugs.
-
-<font color="white">[ThG-Comment: here and in the following you need to briefly
-describe what the GESS result object `cmap` contains, e.g. what do the column
-titles refer to and what type of values are stored in them. To minimize, effort
-you can align this with the corresponding description in the help
-files.]</font>
-
-<font color="white">[ThG-Comment: this is as far as I have edited this vignette
-so far. Please make similar/corresponding improvements in the following
-sections so that I can continue editing; _e.g._ describe what the code in the
-code sections does more precisely and explain the content of the objects and
-results without creating too many duplications. In general, the vignette should
-be readable and understandable to someone who doesn't run the code and inspect
-the content of objects and help file.]</font>
 
 ## LINCS Search Method
 
-@Subramanian2017-fu introduced a new GESS method (*LINCS*) that is similar
-with CMAP method but weights genes in the query set by using GES with 
-differential expression scores (_e.g._ LFC or z-scores) instead of rank 
-transformed as reference database. The bi-directional weighted Kolmogorov-
-Smirnov enrichment statistic (ES) is used as similarity metric. Since now, no 
-implementations of this algorithm available, it is implemented here.
+@Subramanian2017-fu introduced a more complex GESS algorithm, here referred to
+as *LINCS*. While related to *CMAP*, there are several important differences
+among the two approaches. First, *LINCS* weights the query genes based on the
+corresponding differential expression scores of the GESs in the reference database
+(_e.g._ LFC or z-scores). Thus, the reference database used by *LINCS* needs
+to store the actual score values rather than their ranks. Another relevant
+difference is that the *LINCS* algorithm uses a bi-directional weighted
+Kolmogorov-Smirnov enrichment statistic (ES) as similarity metric. To the best
+of our knowledge, the `LINCS` search functionality in `signatureSearch` provides the
+first downloadable standalone software implementation of this algorithm.
 
-The generation of `qSig` object for _LINCS_ method is similar with _CMAP_. The 
-`gess_method` argument is defined as "LINCS" and _LINCS_ method is applied on 
-the initialized `qSig` object.
+In the following example the `qSig` object for the *LINCS* method is
+initialized the same way as the corresponding *CMAP* object above with the
+exception that "LINCS" needs to be specified under the `gess_method` argument.
 
 ```{r gess_lincs, eval=TRUE}
 qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
@@ -426,89 +393,98 @@ lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 result(lincs)
 ```
 
-The search result is stored in `gessResult` object as _CMAP_ method. The 
-similarity metrics specific for _LINCS_ method in the result table are `WTCS`,
-`WTCS_Pval`, `WTCS_FDR`, `NCS`, `NCSct`. `Tau` scores will also be included if
-`tau` argument in `gess_lincs` function is set as TRUE. The `Tau` scores are
-only meaningful if the full LINCS GES database is used as reference, so here set
-as FALSE. 
+The search results are stored in a `gessResult` object as under the _CMAP_
+example above. The similarity scores stored in the _LINCS_ result table are
+summarized here. `WTCS`: Weighted Connectivity Score; `WTCS_Pval`: nominal
+p-value of WTCS; `WTCS_FDR`: false discovery rate of `WTCS_Pval`; `NCS`:
+normalized connectivity score; `NCSct`: NCS summarized across cell types;
+`Tau`: enrichment score standardized for a given database. The latter is only
+included in the result table if `tau=TRUE` in a `gess_lincs` function call. The
+example given is run with `tau=FALSE`, because the tau values are only
+meaningful when the complete LINCS database is used which is not the case for
+the toy database.  
 
-Description of column titles specific for _LINCS_ method:
+The following provides a more detailed description of the similarity scores 
+computed by the _LINCS_ method. Additional details are available in the Supplementary
+Material Section of the @Subramanian2017-fu paper.
 
-`WTCS`: Weighted Connectivity Score, a bi-directional ES of up and down query 
-set. If ES of up and down sets are of different signs, WTCS is (ESup-ESdown)/2, 
-otherwise, it is 0. WTCS ranges between -1 and 1. It will be positive for 
-signatures that are positively related and negative for those that are inversely
-related, and near zero for signatures that are unrelated.
+`WTCS`: The Weighted Connectivity Score is a bi-directional ES for an up/down query 
+set. If the ES values of an up set and a down set are of different signs, then 
+WTCS is (ESup-ESdown)/2, otherwise, it is 0. WTCS values range from -1 to 1. They 
+are positive or negative for signatures that are positively or inversely
+related, respectively, and close to zero for signatures that are unrelated.
 
-`WTCS_Pval`: Nominal p-value of WTCS computed by comparing WTCS against WTCS 
-null distribution obtained from 1000 random queries.
+`WTCS_Pval` and `WTCS_FDR`: The nominal p-value of the WTCS and the corresponding
+false discovery rate (FDR) are computed by comparing the WTCS against a null
+distribution of WTCS values obtained from a large number of random queries
+(_e.g._ 1000).
 
-`WTCS_FDR`: False discovery rate of WTCS p-value.
+`NCS`: To make connectivity scores comparable across cell types and
+perturbation types, the scores are normalized. Given a vector of $WTCS$ values
+$w$ resulting from a query, the values are normalized within each cell line $c$
+and perturbagen type $t$ to obtain the Normalized Connectivity Score ($NCS$) by
+dividing the $WTCS$ value by the signed mean of the $WTCS$ values within the subset
+of signatures in the reference database corresponding to $c$ and $t$.
 
-`NCS`: To make connectivity scores comparable across cell types and 
-perturbation types, the scores are normalized. Given a vector of $WTCS$ values 
-$w$ resulting from a query, the values are normalized within each cell line $c$ 
-and perturbagen type $t$ to obtain Normalized Connectivity Scores ($NCS$) by 
-dividing the WTCS score with signed mean of WTCS scores within the subset of 
-signatures in reference database corresponding to $c$ and $t$.
+`NCSct`: The NCS is summarized across cell types as follows. Given a vector of
+$NCS$ values for perturbagen $p$, relative to query $q$, across all cell lines
+$c$ in which $p$ was profiled, a cell-summarized connectivity score is obtained
+using a maximum quantile statistic. It compares the 67 and 33 quantiles of
+$NCSp,c$ and retains whichever is of higher absolute magnitude.
 
-`NCSct`: Summarized NCS across cell types. Given a vector of $NCS$ for 
-perturbagen $p$, relative to query $q$, across all cell lines $c$ in which $p$
-was profiled, a cell-summarized connectivity score is obtained using a maximum 
-quantile statistic. It compares the 67 and 33 quantiles of $NCSp,c$ and retains 
-whichever is of higher absolute magnitude.
+`Tau`: The standardized score Tau compares an observed $NCS$ to a large set of
+$NCS$ values that have been pre-computed for a specific reference database. The
+query results are scored with Tau as a standardized measure ranging from 100 to
+-100. A Tau of 90 indicates that only 10% of reference perturbations exhibit 
+stronger connectivity to the query. This way one can make more meaningful
+comparisons across query results. 
 
-`Tau`: Tau score compares observed $NCS$ to all others in Qref (All query 
-signatures in reference database). It represents the percentage of reference 
-queries with a lower $|NCS|$ than $|NCSq,r|$, adjusted to retain the sign of 
-$NCSq,r$. $NCSq,r$ is the normalized connectivity score for signature $r$
-relative to query $q$. A tau of 90 indicates that only 10 percent of reference
-perturbations showed stronger connectivity to the query.
 
 ## gCMAP Search Method
 
-The *gCMAP* [@Sandmann2014-qm] package provides access to related but not 
-identical implementations of the original _CMAP_ algorithm proposed by 
-@Lamb2006-du. It uses as query a rank transformed GES and the reference 
-database is composed of DEG sets. This is the opposite situation of the 
-*CMAP* method, where the query is a DEG set and the database 
-contains rank transformed GESs.
+The Bioconductor *gCMAP* [@Sandmann2014-qm] package provides access to a related but not
+identical implementation of the original _CMAP_ algorithm proposed by
+@Lamb2006-du. It uses as query a rank transformed GES and the reference
+database is composed of the labels of up and down regulated DEG sets. This is
+the opposite situation of the *CMAP* method, where the query is composed of the
+labels of up and down regulated DEGs and the database contains rank transformed
+GESs.
 
-For _gCMAP_ method, the query GES is a matrix representing gene ranks from a 
-biological state of interest, here, vorinostat treatment in SKB cell. It also
-works if gene scores (_e.g._ z-scores) are provided since it will be internally 
-transformed to ranks. The reference database consists of gene sets by setting
-higher and lower cutoffs (1 and -1, respectively) to the toy database. 
+In case of the _gCMAP_ GESS method, the query GES is a matrix with a single
+column representing gene ranks from a biological state of interest, here
+vorinostat treatment in SKB cells. The corresponding gene labels are stored in
+the row name slot of the matrix.  Instead of ranks one can provide scores
+(_e.g._ z-scores) as in the example given below. In such a case the scores will
+be internally transformed to ranks. The reference database consists of gene
+label sets that were extracted from the toy databases by applying a `higher`
+and `lower` filter, here set to `1` and `-1`, respectively.
+
 ```{r gess_gcmap, eval=TRUE}
 qsig_gcmap <- qSig(query = query_mat, gess_method = "gCMAP", refdb = db_path)
 gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
 result(gcmap)
 ```
 
-Column titles specific for _gCMAP_ method:
-
-`effect`: Scaled bi-directional enrichment score, the same as the `scaled_score`
-in the _CMAP_ result.
-
-`nSet`: Number of genes in the reference gene sets after setting the 
-higher and lower cutoff.
-
-`nFound`: Number of genes in the reference gene sets also found in the query 
-signature.
-
-`signed`: Whether gene sets in the reference database have signs, representing 
-up and down regulated genes when computing scores.
+As in the other search methods, the _gCMAP_ results are stored in a
+`gessResult` object. The columns in the corresponding search result table, that
+are specific to the _gCMAP_ method, contain the following information. `effect`: scaled
+bi-directional enrichment score corresponding to the `scaled_score` under the
+_CMAP_ result; `nSet`: number of genes in the reference gene sets after
+applying the higher and lower cutoff; `nFound`: number of genes in the
+reference gene sets that are present in the query signature; `signed`: whether
+the gene sets in the reference database have signs, _e.g._ representing up and
+down regulated genes when computing scores.
 
 ## Fisher Search Method
 
-The Fisher’s exact test [@Graham_J_G_Upton1992-pg] can also be used as search 
-algorithm for querying GES databases for similar entries. This can be achieved 
-if both the query and database are composed of DEG sets.
+Fisher's exact test [@Graham_J_G_Upton1992-pg] can also be used to search a GES
+databases for entries that are similar to a query GES. In this case both the
+query and the database are composed of gene label sets, such as DEG sets.
 
-Here, the `query` and `refdb` passed to `qSig` are genome-wide signatures with 
-z-scores. The gene sets are obtained by setting higher and lower cutoffs to 
-generate up and down regulated genes.
+In the following example, both the `query` and the `refdb` used under the `qSig` 
+call are genome-wide signatures, here z-scores. The actual gene sets requied for
+the Fisher's exact test are obtained by setting `higher` and `lower` cutoffs
+corresponding in this case to up and down regulated genes, repectively.
 
 ```{r gess_fisher, eval=TRUE}
 qsig_fisher <- qSig(query = query_mat, gess_method = "Fisher", refdb = db_path)
@@ -516,46 +492,61 @@ fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
 ```
 
-Column titles specific for _Fisher_ method:
-
-`pval`: P-value of the Fisher's exact test.
-
-`padj`: P-value adjusted for multiple hypothesis testing using `p.adjust` 
-function with Benjamini & Hochberg (BH) method.
-
-`effect`: Z-score based on the standard normal distribution.
-
-`LOR`: Log Odds Ratio.
+The columns in the result table specific to the _Fisher_ method include the
+following information.  `pval`: p-value of the Fisher's exact test; `padj`:
+p-value adjusted for multiple hypothesis testing using R's `p.adjust` function
+with the Benjamini & Hochberg (BH) method; `effect`: z-score based on the
+standard normal distribution; `LOR`: log odds ratio.
 
 ## Correlation-based Search Method
 
-The correlation coefficients can be used as a GESS method by searching
-with a query GES with scores a database of GESs with scores.
-Correlation-based queries were performed with genome-wide GESs as well as
-with GESs subset to the same query genes used for the set enrichment
-methods (*CMAP*, *LINCS* and *Fisher*).
-The latter situation makes the correlation-based results more comparable
-to the set enrichment methods by providing to each method a more equal
-amount of information than this is the case for the correlation method with
-genome-wide GESs. Here, we choose to use Spearman correlation since its 
-performance is as good as Pearson correlation and insensitive to outliers.
+Correlation-based similarity metrics, such as Spearman or Pearson coefficients,
+can also be used as GESS methods. As non-set-based methods, they require
+quantitative gene expression values for both the query and the database
+entries, that usually need to be of the same type to obtain meaningful results,
+such as normalized intensities or read counts from microarrays or RNA-Seq
+experiments, respectively. For correlation searches to work, it is important that
+the query contains the same gene identifiers as used in the reference database. The
+expected data structure of the query is a matrix with a single numeric column and the
+gene labels (_e.g._ Entrez Gene IDs) in the row name slot. For convenience,
+the correlation-based searches can either be performed with the full set of genes
+represented in the database or a subset of them. The latter can be useful
+to focus the computation for the correlation values on certain genes of interest
+such as a DEG set or a pathway of interest. For comparing the performance of 
+different GESS methods, it can also be advantageous to subset the genes 
+used for a correlation-based search to same set used in a set-based search
+such as the up/down DEGs used in a _LINCS_ GESS. This way correlation-based 
+search results can be more comparable to a set-based method by providing to each 
+method a more equal amount of information than this is the case for the 
+correlation method with genome-wide GESs. 
 
-### SPall
+### CORall
 
-SPall represents genome-wide Spearman correlation. Here, the `query` and `refdb`
-are GESs with z-scores. The `gess_cor` function also support Pearson and Kendall 
-correlation coefficiency.
+The following example runs a correlation-based search with the Spearman method
+using all genes present in the reference database. The GESs used for both the 
+`query` and `refdb` are z-scores. The `gess_cor` function also supports Pearson 
+and Kendall correlation coefficients by assigning the corresponding names to
+the `method` argument. For details, users want to consult the help file of the 
+`gess_cor` function. 
+
 ```{r gess_sp, eval=TRUE}
 qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
 sp <- gess_cor(qSig=qsig_sp, method="spearman")
 result(sp)
 ```
 
-### SPsub
+The column specific to the correlation-based search methods contains the following 
+information. `cor_score`: correlation coefficient based on the method defined in 
+`gess_cor` function call.
 
-SPsub represents Spearman correlation of subset genes. The query GES was 
-subset to contain only 150 highest and 150 lowest z-scores. Spearman correlation
-coefficiency is computed on z-scores of subset genes.
+### CORsub
+
+To perform a correlation-based search on a subset of genes represented in the 
+database, one can simply provide the chosen gene subset in the query. During the
+search the database entries will be subsetted to the genes provided in the 
+query signature. The given example uses a query GES that is subsetted to the 
+genes with the 150 highest and lowest z-scores. 
+
 ```{r gess_spsub, eval=TRUE}
 # Subset z-scores of 150 up and down gene sets from 
 # "vorinostat__SKB__trt_cp" signature.
@@ -565,16 +556,27 @@ spsub <- gess_cor(qSig=qsig_spsub, method="spearman")
 result(spsub)
 ```
 
-Column titles specific to correlation based method:
+<font color="blue">[ThG-Comment: note in the text I have changed SPall/SPsub to
+CORall/CORsub. Unless there is a reason to use SP, I find COR more intuitive
+since SP implies the method is specific to Spearman which isn't and shouldn't
+be the case.]</font>
 
-`cor_score`: Correlation coefficiency of correlation method defined in 
-`gess_cor` function.
+## Summary of Search Results
 
-## GESS result visulization
+Four of the five cherry-picked HDAC inhibitors (vorinostat, trichostatin-a,
+HC-toxin, pyroxamide) were ranked among the top 10 ranking drugs in the search
+results of the  LINCS, Fisher and Spearman correlation methods. This
+demonstrates a promising performance of these search methods for grouping drugs
+by their MOA categories. In addition, the LINCS and Spearman methods were able
+to rank another HDAC inhibitor, here APHA-compound-8, at the top of their
+search results. This indicates a better sensitivity of these two methods
+compared to the other methods.
 
-If the reference database contains drug treatments in different cell types, 
-including normal and tumor, the GESS result can be visualized by summarizing 
-rankings/scores of selected drugs across difference cells. The sample databases 
+## GESS result visualization
+
+If the reference database contains perturbations (_e.g._ drugs) of different cell 
+types, including normal and tumor cell classifications, the GESS result can be 
+visualized by summarizing rankings/scores of selected drugs across difference cells. The sample databases 
 used in this vignette only contains treatments in SKB cell, so there is no need 
 to summarize the result. I used the same `vorinostat` query signature to search 
 against the full LINCS database via `gess_lincs` method, then use `gess_res_vis`
@@ -590,14 +592,16 @@ from left to right: top 10 drugs in the above search result against the toy
 database with *LINCS* method. The other drugs are HDAC inhibitors not selected 
 in the toy database. </font>
 
-## Conclusion
+<font color="blue">[ThG-Comment: This section needs to include the code for
+generating the plot. You don't need to evaluate the code to show this more
+interesting example that depends on a more complete search result. Just state
+in the texts that the plot is based on such a search. Also, the text above and the
+corresponding gess_res_vis help file are not clear enough to understand what
+is plotted here, e.g. what is does each dot represent: a single NCS value, an 
+average or something else? In the legend of the plot you may want to change the 
+subtitle on right side "cell" to "cell_type" and the one below from "cell_type" to
+"cell_class"]</font>
 
-4/5 HDAC inhibitors (vorinostat, trichostatin-a, HC-toxin, pyroxamide) were 
-found by LINCS, Fisher and Spearman correlation methods in their top 10 
-results, demonstrating their ability to cluster drugs in the same MOA category. 
-Specifically, LINCS and Spearman correlation (both genome-wide and sub) methods 
-could discover another HDAC inhibitor (APHA-compound-8) in the database, which 
-is promising as a discovery tool.
 
 # FEA
 
@@ -940,7 +944,7 @@ deacetylase pathways that the query drug vorinostat is involved in. Since each
 method have their advantages and disadvantages, it is reasonable to combine and 
 re-rank their enrichment results to increase confidence.
 
-# Visulization
+# Visualization
 
 The `dtnetplot` function can be used to build drug-target networks if `drugs` 
 and `set` arguments are provided. Here, the `drugs` could be drug sets used for
@@ -970,5 +974,50 @@ dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034",
 dtnetplot(drugs = drugs, set = "hsa04213", 
           desc="Longevity regulating pathway - multiple species")
 ```
+
+# Supplemental Material
+
+## Construction of Toy Database 
+
+Access to the LINCS database is provided via the associated _signatureSearchData_ 
+package hosted on Bioconductor's `AnnotationHub`. The following provides the code for 
+constructing the toy database used by the sample code of this vignette. To save time
+building this vignette, the evaluated components of its sample code use a pre-generated 
+instance of the toy database that is stored in the `extdata` directory of the 
+`signatureSearch` package. Thus, the following code section is not evaluated. It 
+also serves as an example how to construct other custom instances of the LINCS database.
+Additional details on this topic are provided in the vignette of the `signatureSearchData` 
+package. 
+
+```{r gen_toy_db, eval=FALSE}
+library(signatureSearchData); library(rhdf5)
+ah <- AnnotationHub::AnnotationHub()
+lincs <- ah[["AH69092"]]
+hdacs <- c("vorinostat", "trichostatin-a", "pyroxamide", "HC-toxin", "rhamnetin")
+hdacs_trts <- paste(hdacs, "SKB", "trt_cp", sep="__")
+all_trts <- drop(h5read(lincs, "colnames"))
+# Select treatments in SKB cell and not BRD compounds
+all_trts2 <- all_trts[!grepl("BRD-", all_trts) & grepl("__SKB__", all_trts)]
+set.seed(11)
+rand_trts <- sample(setdiff(all_trts2, hdacs_trts), 95)
+toy_trts <- c(hdacs_trts, rand_trts)
+toy_db <- round(assay(readHDF5chunk(lincs, colnames=toy_trts)),2)
+set.seed(11)
+gene_idx <- sample.int(nrow(toy_db),5000)
+toy_db2 <- toy_db[gene_idx,]
+# The sample_db is stored in the current directory of user's R session
+getwd()
+createEmptyH5("sample_db.h5", level=9, delete_existing=TRUE)
+append2H5(toy_db2, "sample_db.h5")
+h5ls("sample_db.h5")
+```
+
+# Session Info
+
+```{r sessionInfo}
+sessionInfo()
+```
+
+
 
 # References
