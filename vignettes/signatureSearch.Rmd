@@ -595,12 +595,12 @@ in the toy database. </font>
 <font color="blue">[ThG-Comment: This section needs to include the code for
 generating the plot. You don't need to evaluate the code to show this more
 interesting example that depends on a more complete search result. Just state
-in the texts that the plot is based on such a search. Also, the text above and the
-corresponding gess_res_vis help file are not clear enough to understand what
-is plotted here, e.g. what is does each dot represent: a single NCS value, an 
-average or something else? In the legend of the plot you may want to change the 
-subtitle on right side "cell" to "cell_type" and the one below from "cell_type" to
-"cell_class"]</font>
+in the text that the plot is based on such a search. Also, the text above and the
+text in the corresponding gess_res_vis help file are not clear enough to understand 
+what is plotted here. For instance, what does each dot represent, e.g. a single NCS 
+value, an average or something else? In the legend of the plot you may want to 
+change the subtitle on the top of the right side from "cell" to "cell_type" and 
+in the one below from "cell_type" to "cell_class".]</font>
 
 
 # FEA
