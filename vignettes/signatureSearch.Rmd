@@ -501,8 +501,8 @@ standard normal distribution; `LOR`: log odds ratio.
 <font color="blue">[ThG-Comment: note in the above qSig call it is not clear whether and
 how one can provide under the query argument a gene id label set rather than a matrix
 of scores. When a matrix is provided you also need to mention here and in the help
-file how it is converted to a gene set. One can guess how this is done but it should
-be explained.]</font>
+file how it is converted to a gene set. One can guess that this is done the same way
+as for the database but it should be explained.]</font>
 
 ## Correlation-based Search Method
 
@@ -512,8 +512,8 @@ quantitative gene expression values for both the query and the database
 entries, that usually need to be of the same type to obtain meaningful results,
 such as normalized intensities or read counts from microarrays or RNA-Seq
 experiments, respectively. For correlation searches to work, it is important that
-the query contains the same gene identifiers as used in the reference database. The
-expected data structure of the query is a matrix with a single numeric column and the
+both the query and reference database contains the same type of gene identifiers. 
+The expected data structure of the query is a matrix with a single numeric column and the
 gene labels (_e.g._ Entrez Gene IDs) in the row name slot. For convenience,
 the correlation-based searches can either be performed with the full set of genes
 represented in the database or a subset of them. The latter can be useful
@@ -523,8 +523,8 @@ different GESS methods, it can also be advantageous to subset the genes
 used for a correlation-based search to same set used in a set-based search
 such as the up/down DEGs used in a _LINCS_ GESS. This way correlation-based 
 search results can be more comparable to a set-based method by providing to each 
-method a more equal amount of information than this is the case for the 
-correlation method with genome-wide GESs. 
+method a more comparable amount of information than this is the case for 
+correlation methods with genome-wide GESs. 
 
 ### CORall
 
