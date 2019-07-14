@@ -512,19 +512,18 @@ quantitative gene expression values for both the query and the database
 entries, that usually need to be of the same type to obtain meaningful results,
 such as normalized intensities or read counts from microarrays or RNA-Seq
 experiments, respectively. For correlation searches to work, it is important that
-both the query and reference database contains the same type of gene identifiers. 
+both the query and reference database contain the same type of gene identifiers. 
 The expected data structure of the query is a matrix with a single numeric column and the
 gene labels (_e.g._ Entrez Gene IDs) in the row name slot. For convenience,
 the correlation-based searches can either be performed with the full set of genes
 represented in the database or a subset of them. The latter can be useful
 to focus the computation for the correlation values on certain genes of interest
-such as a DEG set or a pathway of interest. For comparing the performance of 
+such as a DEG set or the genes in a pathway of interest. For comparing the performance of 
 different GESS methods, it can also be advantageous to subset the genes 
-used for a correlation-based search to same set used in a set-based search
-such as the up/down DEGs used in a _LINCS_ GESS. This way correlation-based 
-search results can be more comparable to a set-based method by providing to each 
-method a more comparable amount of information than this is the case for 
-correlation methods with genome-wide GESs. 
+used for a correlation-based search to same set used in a set-based search,
+such as the up/down DEGs used in a _LINCS_ GESS. This way the search results of 
+correlation- and set-based methods can be more comparable because both are provided
+with equivalent information content. 
 
 ### CORall
 
@@ -564,7 +563,7 @@ result(spsub)
 
 <font color="blue">[ThG-Comment: note in the text I have changed SPall/SPsub to
 CORall/CORsub. Unless there is a reason to use SP, I find COR more intuitive
-since SP implies the method is specific to Spearman which isn't and shouldn't
+since SP implies the method is limited to Spearman which isn't and shouldn't
 be the case.]</font>
 
 ## Summary of Search Results
