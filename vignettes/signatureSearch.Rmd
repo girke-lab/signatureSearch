@@ -482,9 +482,9 @@ databases for entries that are similar to a query GES. In this case both the
 query and the database are composed of gene label sets, such as DEG sets.
 
 In the following example, both the `query` and the `refdb` used under the `qSig` 
-call are genome-wide signatures, here z-scores. The actual gene sets requied for
-the Fisher's exact test are obtained by setting `higher` and `lower` cutoffs
-corresponding in this case to up and down regulated genes, repectively.
+call are genome-wide signatures, here z-scores. The actual gene sets required for
+the Fisher's exact test are obtained by setting the `higher` and `lower` cutoffs
+to 1 and -1, respectively.
 
 ```{r gess_fisher, eval=TRUE}
 qsig_fisher <- qSig(query = query_mat, gess_method = "Fisher", refdb = db_path)
@@ -497,6 +497,12 @@ following information.  `pval`: p-value of the Fisher's exact test; `padj`:
 p-value adjusted for multiple hypothesis testing using R's `p.adjust` function
 with the Benjamini & Hochberg (BH) method; `effect`: z-score based on the
 standard normal distribution; `LOR`: log odds ratio.
+
+<font color="blue">[ThG-Comment: note in the above qSig call it is not clear whether and
+how one can provide under the query argument a gene id label set rather than a matrix
+of scores. When a matrix is provided you also need to mention here and in the help
+file how it is converted to a gene set. One can guess how this is done but it should
+be explained.]</font>
 
 ## Correlation-based Search Method
 
