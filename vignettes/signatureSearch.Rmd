@@ -641,8 +641,8 @@ the frequency of the targets in the test set.
 To perform TSEA and DSEA, drug-target annotations are essential. They can be
 obtained from several sources, including DrugBank, ChEMBL, STITCH, and the
 [Touchstone](https://clue.io/) dataset from the LINCS project [@Wishart2018-ap;
-Gaulton2017-su; @Kuhn2010-hz; @Subramanian2017-fu]. Most drug-target
-annotations provide UniProt identifiers for the target proteins. These can be
+@Gaulton2017-su; @Kuhn2010-hz; @Subramanian2017-fu]. Most drug-target
+annotations provide UniProt identifiers for the target proteins. They can be
 mapped, if necessary via their encoding genes, to the chosen functional
 annotation categories, such as GO or KEGG. To minimize bias in TSEA or DSEA,
 often caused by promiscuous binders, it can be beneficial to remove drugs or
@@ -654,10 +654,14 @@ automating the mapping, often reaching from _drug sets_ to _target sets_ to
 _functional categories_.
 
 <font color="blue">[ThG-Comment: I am wondering whether we should limit the
-drug-target mapping resource provide by the data package to the most reliable
-and maintainable resource (e.g. DrugBank and/or ChEMBL). Especially, including
-STICH seems redundant.  I also don't like their predicted drug-target
-associations. If necessary the same could be obtained from ChEMBL.] </font>
+drug-target mapping resources provided by the data package to the most reliable
+and maintainable one(s), e.g. DrugBank and/or ChEMBL. Especially, including
+STITCH seems questionable and redundant. I also don't like STITCH's predicted
+drug-target associations. If necessary the same could be obtained from ChEMBL.
+Based on the sample code in the vignette, it is also not clear why you have
+discussed STITCH here. I don't see it being used which is confusing for readers, 
+but perhaps I have missed it?]
+</font>
 
 ## TSEA
 GO terms and KEGG pathway annotations were used to functionally annotate GESS 
