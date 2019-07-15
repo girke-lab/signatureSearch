@@ -613,29 +613,45 @@ in the one below from "cell_type" to "cell_class".]</font>
 
 # FEA
 
-GESS results are a list of drugs ranked by their signature similarity to a
+GESS results are lists of drugs ranked by their signature similarity to a
 query signature of interest. Interpreting these search results with respect to
 the cellular networks and pathways affected by the top ranking drugs is
 difficult. To overcome this challenge, the knowledge of the target proteins of
 the top ranking drugs can be used to perform functional enrichment analysis
 (FEA) based on community annotation systems, such as Gene Ontologies (GO),
 pathways (e.g.  KEGG, Reactome), drug MOAs or Pfam domains. For this the ranked
-drug sets are converted into target gene or protein sets to perform Target Set
+drug sets are converted into target gene/protein sets to perform Target Set
 Enrichment Analysis (TSEA) based on a chosen annotation system. Alternatively,
 the functional annotation categories of the targets can be assigned to the
-drugs directly to perform Drug Set Enrichment Analysis (DSEA). Although TSEA and DSEA
-are related, their enrichment results can be distinct. This is mainly due to
-duplications that are frequently present in test sets of TSEA, while the drugs
-in the test sets of DSEA are usually unique. Simply uniquifying the proteins in the 
-test sets of the TSEA approach would erase the most important enrichment information 
-leading to meaningless results. Thus, a weighting method is used to preserve this
-duplication information in case of TSEA as much as possilbe. To illustrate the 
-importance of this: the top ranking drugs of a GESS result may predominantly 
-bind to a single or a few target protein(s) resulting in a protein test set 
-with many duplications, which is a highly desirable outcome. Thus, maintaining 
-the duplications in the test set is essential for detecting these types of target 
-enrichments. 
+drugs directly to perform Drug Set Enrichment Analysis (DSEA). Although TSEA
+and DSEA are related, their enrichment results can be distinct. This is mainly
+due to duplicated targets present in the test sets of the TSEA methods, whereas
+the drugs in the test sets of DSEA are usually unique. Another reason are
+differences in the universe sizes used for TSEA and DSEA. 
 
+Importantly, the duplications in the test sets of the TSEA are due to the fact
+that many drugs share the same target proteins. Standard enrichment methods
+would eliminate these duplications since they assume uniqueness in the test
+sets. Removing duplications in TSEA would be inappropriate since it would erase
+one of the most important pieces of information of this approach. To solve this
+problem, we have developed and implemented in the `signatureSearch` package a
+weighting method for duplicated targets, where the weighting is proportional to
+the frequency of the targets in the test set. 
+
+To perform TSEA and DSEA, drug-target annotations are essential. They can be
+obtained from several sources, including DrugBank, ChEMBL, STITCH, and the
+[Touchstone](https://clue.io/) dataset from the LINCS project [@Wishart2018-ap;
+Gaulton2017-su; @Kuhn2010-hz; @Subramanian2017-fu]. Most drug-target
+annotations provide UniProt identifiers for the target proteins. These can be
+mapped, if necessary via their encoding genes, to the chosen functional
+annotation categories, such as GO or KEGG. To minimize bias in TSEA or DSEA,
+often caused by promiscuous binders, it can be beneficial to remove drugs or
+targets that bind to large numbers of distinct proteins or drugs (e.g. more
+than 100), respectively. To conduct TSEA and DSEA efficiently,
+`signatureSearch` along with its helper package `signatureSearchData` provide
+many convenience utilities along with drug-target lookup resources for
+automating the mapping reaching from _drug sets_ to _target sets_ to
+_functional categories_.
 
 ## TSEA
 GO terms and KEGG pathway annotations were used to functionally annotate GESS 
@@ -643,26 +659,9 @@ results. For this, drug-target mapping information is required to link drugs
 via their targets proteins to GO terms and KEGG pathways. The TSEA approach 
 uses the target proteins for the top connected drugs in the GESS results and 
 then applies one of three functional enrichment methods: *dup\_hyperG*, 
-*mGSEA* and *mabs*. The drug-target annotations required for this 
-approach were obtained from DrugBank [@Wishart2018-ap], 
-[Touchstone](https://clue.io/) and STITCH [@Kuhn2010-hz]. 
-The STITCH database provides 
-confidence scores for each drug-target interaction. Only interactions 
-with confidence scores $\ge$ 0.7
-were considered reliable and used for this approach. To minimize noise, 
-*e.g.* from promiscuous binders, drugs with more than 100 distinct 
-targets were removed. Similarly, targets with more than 100 annotated drugs 
-were excluded. The remaining drug-target space considered by this study 
-included 5,729 target proteins and 22,647 small molecules.
+*mGSEA* and *mabs*. 
 
-It is important to note here that the target protein sets used for the TSEA 
-method contain often duplicated proteins. This is due to the fact that many 
-drugs share the same target proteins. Standard enrichment methods would 
-eliminate these duplications since they assume uniqueness in the test sets. 
-Removing duplications in TSEA would be inappropriate since it would erase one 
-of the most important pieces of information. To solve this problem, this 
-project developed a weighting method for duplicated targets where the weighting 
-is proportional to the frequency of the targets in the test set. 
+
 
 ### dup_hyperG Method
 
