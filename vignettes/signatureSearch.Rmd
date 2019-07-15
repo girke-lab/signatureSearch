@@ -619,7 +619,7 @@ the cellular networks and pathways affected by the top ranking drugs is
 difficult. To overcome this challenge, the knowledge of the target proteins of
 the top ranking drugs can be used to perform functional enrichment analysis
 (FEA) based on community annotation systems, such as Gene Ontologies (GO),
-pathways (e.g.  KEGG, Reactome), drug MOAs or Pfam domains. For this the ranked
+pathways (e.g.  KEGG, Reactome), drug MOAs or Pfam domains. For this, the ranked
 drug sets are converted into target gene/protein sets to perform Target Set
 Enrichment Analysis (TSEA) based on a chosen annotation system. Alternatively,
 the functional annotation categories of the targets can be assigned to the
@@ -650,8 +650,14 @@ targets that bind to large numbers of distinct proteins or drugs (e.g. more
 than 100), respectively. To conduct TSEA and DSEA efficiently,
 `signatureSearch` along with its helper package `signatureSearchData` provide
 many convenience utilities along with drug-target lookup resources for
-automating the mapping reaching from _drug sets_ to _target sets_ to
+automating the mapping, often reaching from _drug sets_ to _target sets_ to
 _functional categories_.
+
+<font color="blue">[ThG-Comment: I am wondering whether we should limit the
+drug-target mapping resource provide by the data package to the most reliable
+and maintainable resource (e.g. DrugBank and/or ChEMBL). Especially, including
+STICH seems redundant.  I also don't like their predicted drug-target
+associations. If necessary the same could be obtained from ChEMBL.] </font>
 
 ## TSEA
 GO terms and KEGG pathway annotations were used to functionally annotate GESS 
