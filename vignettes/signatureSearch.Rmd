@@ -626,7 +626,7 @@ the functional annotation categories of the targets can be assigned to the
 drugs directly to perform Drug Set Enrichment Analysis (DSEA). Although TSEA
 and DSEA are related, their enrichment results can be distinct. This is mainly
 due to duplicated targets present in the test sets of the TSEA methods, whereas
-the drugs in the test sets of DSEA are usually unique. Another reason are
+the drugs in the test sets of DSEA are usually unique. Additional reasons include
 differences in the universe sizes used for TSEA and DSEA. 
 
 Importantly, the duplications in the test sets of the TSEA are due to the fact
@@ -648,9 +648,9 @@ annotation categories, such as GO or KEGG. To minimize bias in TSEA or DSEA,
 often caused by promiscuous binders, it can be beneficial to remove drugs or
 targets that bind to large numbers of distinct proteins or drugs (e.g. more
 than 100), respectively. To conduct TSEA and DSEA efficiently,
-`signatureSearch` along with its helper package `signatureSearchData` provide
-many convenience utilities along with drug-target lookup resources for
-automating the mapping, often reaching from _drug sets_ to _target sets_ to
+`signatureSearch` and its helper package `signatureSearchData` provide
+several convenience utilities along with drug-target lookup resources for
+automating the mapping of _drug sets_ to _target sets_ to
 _functional categories_.
 
 <font color="blue">[ThG-Comment: I am wondering whether we should limit the
@@ -664,115 +664,114 @@ but perhaps I have missed it?]
 </font>
 
 ## TSEA
-GO terms and KEGG pathway annotations were used to functionally annotate GESS 
-results. For this, drug-target mapping information is required to link drugs 
-via their targets proteins to GO terms and KEGG pathways. The TSEA approach 
-uses the target proteins for the top connected drugs in the GESS results and 
-then applies one of three functional enrichment methods: *dup\_hyperG*, 
-*mGSEA* and *mabs*. 
+The following introduces how to perform TSEA on drug-based GESS results using
+as functional annotation systems GO and KEGG pathways. The enrichment tests are
+performed with three widely used algorithms that have been modified in
+`signatureSearch` to take advantage of duplication information present in the
+test sets used for TSEA. The source and importance of these target duplications
+is explained above. The specialized enrichment algorithms include *duplication
+adjusted hypergeometric test* (`dup_hyperG`), *modified gene set enrichment
+analysis* (`mGSEA`) and *meanAbs* (`mabs`).
 
 
-
-### dup_hyperG Method
+### Hypergeometric Test
 
 The classical hypergeometric test assumes uniqueness in its gene/protein 
-test sets. Its p value is calculated according to equation
+test sets. Its p-value is calculated according to equation
 
 \begin{equation}
-   p=\sum_{k=x}^{n} \frac {{D \choose k}{{N-D} \choose {n-k}}}{{N \choose n}}
+   p=\sum_{k=x}^{n} \frac {{D \choose k}{{N-D} \choose {n-k}}}{{N \choose n}}.
 \end{equation}
 
-In case of GO term enrichment analysis the individual variables are assigned 
-the following components.
-$N$ is the total number of genes/proteins contained in the entire annotation 
-(universe); $D$ is the number of genes annotated at a specific GO node; $n$ is 
-the total number of genes in the test set; and $x$ is the number of genes in 
-the test set annotated at a specific GO node.
+In case of GO term enrichment analysis the individual variables are assigned
+the following components. $N$ is the total number of genes/proteins contained
+in the entire annotation universe; $D$ is the number of genes annotated at a
+specific GO node; $n$ is the total number of genes in the test set; and $x$ is
+the number of genes in the test set annotated at a specific GO node.  To
+maintain the duplication information in the test sets used for TSEA, the values
+of $n$ and $x$ in the above equation are adjusted by the frequency of the
+target proteins in the test set. Effectively, the approach removes the
+duplications, but maintains their frequency information in form of weighting
+values.
 
-To maintain the duplication information in the test sets used for TSEA, the 
-values of $n$ and $x$ in the above equation are adjusted by the 
-frequency of the target proteins in the test set. Effectively, the approach 
-removes the duplications, but maintains their frequency information in form of 
-weighting values.
+#### With GO 
 
-The following code subsets top 10 ranking drugs in the GESS result as input of 
-the *dup\_hyperG* method, which internally gets the target set 
-(with duplications) of the drugs and conducts the duplication support 
-hypergeometric test.
-```{r tsea_dup_hyperG, eval=TRUE}
+The following example code uses the $n$ top ranking drugs (here $n=10$) from the LINCS
+GESS result as input to the `tsea_dup_hyperG` method. Internally, the latter converts 
+the drug set to a target set, and then computes for it enrichment scores for
+each MF GO term based on the hypergeometric distribution. The enrichment
+results are stored in a `feaResult` object. It contains the organism
+information of the annotation system, ontology type of the GO annotation
+system. If the annotation system is KEGG, the latter will be "KEGG". The object
+also stores the input drugs used for the enrichment test, as well as their
+target information. 
+
+```{r tsea_dup_hyperG_go, eval=TRUE}
 drugs <- unique(result(lincs)$pert[1:10])
-# GO annotation system
 dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
                                   type = "GO", ont="MF", pvalueCutoff=0.05, 
                                   pAdjustMethod="BH", qvalueCutoff = 0.1, 
                                   minGSSize = 10, maxGSSize = 500)
 dup_hyperG_res
+```
+
+The `result` accessor function can be used to extract a tabular result from the
+`feaResult` object. The rows of this result table contain the functional
+categories (_e.g._ GO terms or KEGG pathways) ranked by the corresponding
+enrichment statistic. 
+
+```{r tsea_dup_hyperG_go_result, eval=TRUE}
 result(dup_hyperG_res)
-# KEGG annotation system
+```
+
+The columns in the result table extracted from the `feaResult` object contain
+the following information. Note, some columns are only present in the result
+tables of specific FEA methods. `ont`: in case of GO one of BP, MF, CC,
+or ALL; `ID`: GO or KEGG IDs; `Description`: description of functional
+category; `pvalue`: raw p-value of enrichment test; `p.adjust`: p-value
+adjusted for multiple hypothesis testing based on method specified under
+`pAdjustMethod`; `qvalue`: q value calculated with R's `qvalue` function to
+control FDR; `geneID`: IDs of items overlapping among test and annotation sets;
+`setSize`: size of the functional category; `GeneRatio`: ratio of genes in the
+test set that are annotated at a specific GO node or KEGG pathway; `BgRatio`:
+ratio of background genes that are annotated at a specific GO node or KEGG
+pathway.
+
+#### With KEGG 
+
+The same enrichment test can be performed for KEGG pathways as follows.
+
+```{r tsea_dup_hyperG_kegg, eval=TRUE}
 dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
                                     type = "KEGG", pvalueCutoff=0.1, 
                                     pAdjustMethod="BH", qvalueCutoff = 0.2, 
                                     minGSSize = 10, maxGSSize = 500)
-dup_hyperG_k_res
 result(dup_hyperG_k_res)
 ```
 
-The enrichment result is stored in a `feaResult` object. It contains the 
-organism information of the annotation system, ontology information of the 
-GO annotation system. If the annotation system is KEGG pathways, ontology will
-be "KEGG". It also contains the input drugs of the enrichment as well as their
-targets information with duplication. The `result` accessor can be used to
-get the result table of the `feaResult` object. This table contains a list of 
-functional categories (_e.g._ GO terms or KEGG pathways) ranked by the 
-enrichment metric. 
+The content of the columns extracted from the `feaResult` object is described
+under section 4.1.1.1. 
 
-Description of column titles common for tables in `feaResult` object from 
-different enrichment methods:
-
-`ont`: One of `BP`, `MF`, `CC` or `ALL` if GO annotation system. If KEGG 
-annotation system, ont is shown as `KEGG`.
-
-`ID`: GO term or KEGG pathway ID.
-
-`Description`: Description of the functional categories.
-
-`pvalue`: p-value of the enrichment.
-
-`p.adjust`: p value adjusted for multiple hypothesis testing using defined
-method in `pAdjustMethod` argument.
-
-`qvalue`: q value calculated via `qvalue` function in R for FDR control.
-
-`geneID`: genes/drugs overlapped between test set and annotation sets.
-
-`setSize`: size of the functional category
-
-Column titles specific for hypergeometric test:
-
-`GeneRatio`: Ratio of genes in the test set that are annotated at a specific GO
-node or KEGG pathway.
-
-`BgRatio`: Ratio of background genes that are annotated at a specific GO node 
-or KEGG pathway.
 
 ### mGSEA Method
 
-The original GSEA method proposed by @Subramanian2005-ro uses predefined 
-gene sets $S$ given by the GO or KEGG annotations. The goal is to determine 
-whether the genes in $S$ are randomly distributed throughout a ranked test 
-gene list $L$ (*e.g.* all genes ranked by LFC) or 
-enriched at the top or bottom. This is expressed by an Enrichment Score ($ES$) 
-reflecting the degree to which a set $S$ is overrepresented at the extremes 
-of $L$. 
+The original GSEA method proposed by @Subramanian2005-ro uses predefined gene
+sets $S$ defined by functional annotation systems such as GO and KEGG.  The
+goal is to determine whether the genes in $S$ are randomly distributed
+throughout a ranked test gene list $L$ (*e.g.* all genes ranked by LFC) or
+enriched at the top or bottom of the test list. This is expressed by an
+Enrichment Score ($ES$) reflecting the degree to which a set $S$ is
+overrepresented at the extremes of $L$. 
 
-For TSEA, the query is a target set where duplicated entries are maintained. 
-To perform GSEA, this target set with duplications was transformed to a scored 
-ranked target list $L_{tar}$ of all targets provided by the corresponding 
-annotation system. For each target in the query target set, its frequency is 
-divided by the number of targets in the target set, which is the weight of that 
-target. For targets present in the annotation system but absent in the target 
-set, their scores are set to 0. Thus, every target in the annotation system 
-will be assigned a score and then sorted decreasingly to obtain $L_{tar}$.
+For TSEA, the query is a target set where duplicated entries need to be
+maintained.  To perform GSEA with duplication support, the target set is
+transformed to a scored ranked target list $L_{tar}$ of all targets provided by
+the corresponding annotation system. For each target in the query target set,
+its frequency is divided by the number of targets in the target set, which is
+the weight of that target. For targets present in the annotation system but
+absent in the target test set, their scores are set to 0. Thus, every target in
+the annotation system will be assigned a score and then sorted decreasingly to
+obtain $L_{tar}$.
 
 In case of TSEA, the original GSEA method cannot be used directly since a large 
 portion of zeros exists in $L_{tar}$. If the scores of the genes in set $S$ are 
@@ -802,23 +801,23 @@ non-zero scores, thereby decrease the false positive rate. To favor truly
 enriched GO terms and KEGG pathways (gene set $S$) at the top of $L_{tar}$, 
 only gene sets with positive $ES$ are selected. 
 
+#### With GO
+
 The following code uses the same drug set as *dup\_hyperG* method to do 
 functional annotation on GO and KEGG system with *mGSEA* method, which
 internally gets their target set and transforms it to a scored ranked target 
 list for modified GSEA algorithm. The scores of the target list represent 
 weights of targets in the target set.
-```{r tsea_mgsea, eval=TRUE}
-# GO annotation system
+
+```{r tsea_mgsea_go, eval=TRUE}
 mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
                         nPerm=1000, pvalueCutoff=1, minGSSize=5)
 result(mgsea_res)
-# KEGG annotation system
-mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
-                          nPerm=1000, pvalueCutoff=1, minGSSize=2)
-result(mgsea_k_res)
 ```
 
-Description of column titles specific for GSEA algorithm:
+The content of the columns extracted from the `feaResult` object is described
+under section 4.1.1.1. The columns specific to the GSEA algorithm are described
+below.
 
 `enrichmentScore`: ES from the GSEA algorithm [@Subramanian2005-ro]. The score 
 is calculated by walking down the gene list $L$, increasing a running-sum 
@@ -845,6 +844,18 @@ for the enrichment signal.
 
 `ledge_rank`: ranks of genes in 'leadingEdge' at the gene list L.
 
+#### With KEGG 
+
+```{r tsea_mgsea_kegg, eval=TRUE}
+mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
+                          nPerm=1000, pvalueCutoff=1, minGSSize=2)
+result(mgsea_k_res)
+```
+
+The content of the columns extracted from the `feaResult` object is described
+under sections 4.1.1.1 and 4.1.2.1. 
+
+
 ### mabs Method
 
 The input for the *mabs* method is $L_{tar}$, the same as for 
@@ -858,15 +869,21 @@ the portion of $mabs(S,\pi)$ that is greater than $mabs(S)$ is used as nominal
 p value. The resulting nominal p values are adjusted for multiple hypothesis 
 testing using the Benjamini-Hochberg method [@Fang2012-ms].
 
+#### With GO
+
 The following code used the same drug set as query. Like *mGSEA* method,
 *mabs* method internally gets their target set and transforms to $L_{tar}$, 
 which represents weights of targets. 
-```{r tsea_mabs, eval=TRUE}
-# GO annotation system
+
+```{r tsea_mabs_go, eval=TRUE}
 mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
                       pvalueCutoff=0.05, minGSSize=5)
 result(mabs_res)
-# KEGG annotation system
+```
+
+#### With KEGG
+
+```{r tsea_mabs_kegg, eval=TRUE}
 mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
                         pvalueCutoff=0.05, minGSSize=5)
 result(mabs_k_res)
