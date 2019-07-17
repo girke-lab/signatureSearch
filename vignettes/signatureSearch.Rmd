@@ -1126,7 +1126,7 @@ This project is funded by NIH grants
 Institute on Aging (NIA). Subcomponents of the environment are based on methods
 developed by projects funded by NSF awards ABI-1661152 and PGRP-1810468. The
 computational HPC resources used for optimizing and applying the the code of
-this project were funded by NIH and NSF grants 1S10OD016290-01A1 and MRI-1429826
+this project were funded by NIH and NSF grants 1S10OD016290-01A1 and MRI-1429826,
 respectively. 
 
 # References
