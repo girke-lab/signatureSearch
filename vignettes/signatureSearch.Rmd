@@ -1118,6 +1118,8 @@ h5ls("sample_db.h5")
 sessionInfo()
 ```
 
+# Funding
 
+This project is funded by NIH grants U19AG02312 and U24AG051129 awarded by the National Institute on Aging (NIA).
 
 # References
