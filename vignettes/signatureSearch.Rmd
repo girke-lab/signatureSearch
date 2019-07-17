@@ -60,22 +60,22 @@ genome-wide GESs from tens of thousands of drug and genetic perturbations
 [@Subramanian2017-fu]. A typical GES search (GESS) workflow can be divided into
 two major steps (Figure 1).  First, GESS methods are used to identify
 perturbagens such as drugs that induce GESs similar to a query GES of interest.
-The queries can be drug- or disease-related GESs. Since the MOAs of most drugs
-in the corresponding reference databases are known, the resulting associations
-are useful to gain insights into pharmacological and/or disease mechanisms, and
-to develop novel drug repurposing approaches. Second, specialized functional
-enrichment analysis (FEA) methods using annotations systems, such as Gene
-Ontologies (GO), pathways or Disease Ontologies (DO), have been developed and
-implemented in this package to efficiently interpret GESS results. The latter
-are usually composed of lists of perturbagens (_e.g._ drugs) ranked by the
-similarity metric of the corresponding GESS method. Finally, network
-resconstruction functionalities are integrated for visualizing the final
-results, _e.g._ in form of drug-target networks. Figure 1 illustrates the major
-steps of a typical signature search workflow. For each GESS and FEA step, 
-several alternative methods have been implemented in _signatureSearch_ to allow users
-to choose the best possible workflow configuration for their research application. 
-The individual search and enrichment methods are introduced in the corresponding 
-sections of this vignette.
+The queries can be drug-, disease- or phenotype-related GESs. Since the
+MOAs of most drugs in the corresponding reference databases are known, the
+resulting associations are useful to gain insights into pharmacological and/or
+disease mechanisms, and to develop novel drug repurposing approaches. Second,
+specialized functional enrichment analysis (FEA) methods using annotations
+systems, such as Gene Ontologies (GO), pathways or Disease Ontologies (DO),
+have been developed and implemented in this package to efficiently interpret
+GESS results. The latter are usually composed of lists of perturbagens (_e.g._
+drugs) ranked by the similarity metric of the corresponding GESS method.
+Finally, network resconstruction functionalities are integrated for visualizing
+the final results, _e.g._ in form of drug-target networks. Figure 1 illustrates
+the major steps of a typical signature search workflow. For each GESS and FEA
+step, several alternative methods have been implemented in _signatureSearch_ to
+allow users to choose the best possible workflow configuration for their
+research application.  The individual search and enrichment methods are
+introduced in the corresponding sections of this vignette.
 
 <center>
 ![](images/ss_wf.png)
@@ -144,13 +144,14 @@ methods implemented in _signatureSearch_.
 <font size="-2">__Figure 2:__ Design of _signatureSearch_. Gene expression
 profiles are stored in a reference database (here HDF5 file). Prebuilt
 databases for community GES collections, such as CMAP2 and LINCS, are provided
-by the affiliated _signatureSearchData_ package. The GESS query parameters are 
-defined in a *qSig* search object where users can choose among five GESS methods
-(CMAP, LINCS, gCMAP, Fisher, and Spearman correlation). Signature
-search results are stored in a *gessResult* object that can be functionally
-annotated with different TSEA (dup_hyperG, mGSEA, mabs) and DSEA (hyperG, GSEA)
-methods. The enrichment results are stored as *feaResult* object that can be 
-used for drug target-networks analysis and visualization.</font>
+by the affiliated _signatureSearchData_ package. The GESS query parameters are
+defined in a *qSig* search object where users can choose among over five GESS
+methods (CMAP, LINCS, gCMAP, Fisher, and various correlation methods).
+Signature search results are stored in a *gessResult* object that can be
+functionally annotated with different TSEA (*dup_hyperG*, *mGSEA*, *mabs*) and
+DSEA (*hyperG*, *GSEA*) methods. The enrichment results are stored as
+`feaResult` object that can be used for drug target-networks analysis and
+visualization.</font>
 
 ## History of GES Databases
 
@@ -164,7 +165,7 @@ contained perturbation-based GESs for 19,811 drugs tested on up to 70 cancer
 and non-cancer cell lines along with genetic perturbation experiments for
 several thousand genes. The number of compound dosages and time points
 considered in the assays has also been increased by 10-20 fold. The CMAP/CMAP2
-databases used Affymetrix Gene Chips as expression platform. To scale from a
+databases use Affymetrix Gene Chips as expression platform. To scale from a
 few thousand to many hundred thousand GESs, the LINCS Consortium uses now the
 more economic L1000 assay. This bead-based technology is a low cost,
 high-throughput reduced representation expression profiling assay. It measures
@@ -542,7 +543,7 @@ result(sp)
 
 The column specific to the correlation-based search methods contains the following 
 information. `cor_score`: correlation coefficient based on the method defined in 
-`gess_cor` function call.
+the `gess_cor` function call.
 
 ### CORsub
 
@@ -646,12 +647,11 @@ annotations provide UniProt identifiers for the target proteins. They can be
 mapped, if necessary via their encoding genes, to the chosen functional
 annotation categories, such as GO or KEGG. To minimize bias in TSEA or DSEA,
 often caused by promiscuous binders, it can be beneficial to remove drugs or
-targets that bind to large numbers of distinct proteins or drugs (e.g. more
-than 100), respectively. To conduct TSEA and DSEA efficiently,
-`signatureSearch` and its helper package `signatureSearchData` provide
-several convenience utilities along with drug-target lookup resources for
-automating the mapping of _drug sets_ to _target sets_ to
-_functional categories_.
+targets that bind to large numbers of distinct proteins or drugs, respectively.
+To conduct TSEA and DSEA efficiently, `signatureSearch` and its helper package
+`signatureSearchData` provide several convenience utilities along with
+drug-target lookup resources for automating the mapping from _drug sets_ to
+_target sets_ to _functional categories_.
 
 <font color="blue">[ThG-Comment: I am wondering whether we should limit the
 drug-target mapping resources provided by the data package to the most reliable
@@ -669,9 +669,9 @@ as functional annotation systems GO and KEGG pathways. The enrichment tests are
 performed with three widely used algorithms that have been modified in
 `signatureSearch` to take advantage of duplication information present in the
 test sets used for TSEA. The source and importance of these target duplications
-is explained above. The specialized enrichment algorithms include *duplication
-adjusted hypergeometric test* (`dup_hyperG`), *modified gene set enrichment
-analysis* (`mGSEA`) and *meanAbs* (`mabs`).
+is explained above. The specialized enrichment algorithms include *Duplication
+Adjusted Hypergeometric Test* (`dup_hyperG`), *Modified Gene Set Enrichment
+Analysis* (`mGSEA`) and *MeanAbs* (`mabs`).
 
 
 ### Hypergeometric Test
@@ -724,7 +724,7 @@ enrichment statistic.
 result(dup_hyperG_res)
 ```
 
-The columns in the result table extracted from the `feaResult` object contain
+The columns in the result table, extracted from the `feaResult` object, contain
 the following information. Note, some columns are only present in the result
 tables of specific FEA methods. `ont`: in case of GO one of BP, MF, CC,
 or ALL; `ID`: GO or KEGG IDs; `Description`: description of functional
@@ -752,6 +752,11 @@ result(dup_hyperG_k_res)
 The content of the columns extracted from the `feaResult` object is described
 under section 4.1.1.1. 
 
+<font color="blue">[ThG-Comment: in the feaResult object it is not clear what
+drug-target annotation was used. Also, how can the user choose a specific 
+drug-target annotation resource. Shouldn't there be an argument in the tsea_/dsea_ 
+functions to make this choice?]</font>
+
 
 ### mGSEA Method
 
@@ -764,14 +769,14 @@ Enrichment Score ($ES$) reflecting the degree to which a set $S$ is
 overrepresented at the extremes of $L$. 
 
 For TSEA, the query is a target set where duplicated entries need to be
-maintained.  To perform GSEA with duplication support, the target set is
-transformed to a scored ranked target list $L_{tar}$ of all targets provided by
-the corresponding annotation system. For each target in the query target set,
-its frequency is divided by the number of targets in the target set, which is
-the weight of that target. For targets present in the annotation system but
-absent in the target test set, their scores are set to 0. Thus, every target in
-the annotation system will be assigned a score and then sorted decreasingly to
-obtain $L_{tar}$.
+maintained. To perform GSEA with duplication support, here referred to as
+mGSEA, the target set is transformed to a score ranked target list $L_{tar}$ of
+all targets provided by the corresponding annotation system. For each target in
+the query target set, its frequency is divided by the number of targets in the
+target set, which is the weight of that target. For targets present in the
+annotation system but absent in the target test set, their scores are set to 0.
+Thus, every target in the annotation system will be assigned a score and then
+sorted decreasingly to obtain $L_{tar}$.
 
 In case of TSEA, the original GSEA method cannot be used directly since a large 
 portion of zeros exists in $L_{tar}$. If the scores of the genes in set $S$ are 
@@ -796,18 +801,17 @@ will be 1 resulting in an $ES(S)$ close to 1. Thus, the original GSEA method
 will score the gene set $S$ as significantly enriched. However, this is 
 undesirable because in this example only one gene is shared among the target 
 set and the gene set $S$. Therefore, giving small weights to genes in $S$ that
-have zero scores could decrease the weight of the genes in $S$ that have 
-non-zero scores, thereby decrease the false positive rate. To favor truly 
+have scores of zero would decrease the weight of the genes in $S$ that have 
+scores other than zero, thereby decreasing the false positive rate. To favor truly 
 enriched GO terms and KEGG pathways (gene set $S$) at the top of $L_{tar}$, 
 only gene sets with positive $ES$ are selected. 
 
 #### With GO
 
-The following code uses the same drug set as *dup\_hyperG* method to do 
-functional annotation on GO and KEGG system with *mGSEA* method, which
-internally gets their target set and transforms it to a scored ranked target 
-list for modified GSEA algorithm. The scores of the target list represent 
-weights of targets in the target set.
+The following performs TSEA with the *mGSEA* method using the same drug test set
+as the example given under the *dup\_hyperG* section. The arguments of the 
+`tsea_mGSEA` function are explained in its help file that can be opened from R 
+with `?tsea_mGSEA`.
 
 ```{r tsea_mgsea_go, eval=TRUE}
 mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
@@ -816,8 +820,8 @@ result(mgsea_res)
 ```
 
 The content of the columns extracted from the `feaResult` object is described
-under section 4.1.1.1. The columns specific to the GSEA algorithm are described
-below.
+under section 4.1.1.1. The additional columns specific to the GSEA algorithm 
+are described here.
 
 `enrichmentScore`: ES from the GSEA algorithm [@Subramanian2005-ro]. The score 
 is calculated by walking down the gene list $L$, increasing a running-sum 
@@ -827,24 +831,26 @@ deviation from zero encountered in the random walk. It corresponds to a weighted
 Kolmogorov-Smirnov-like statistic.
 
 `NES`: Normalized enrichment score. The positive and negative enrichment scores 
-are normalized separately by permutating the gene labels of the gene list $L$ 
-"nPerm" times and dividing the enrichment score by mean of the permutation $ES$
-with the same sign.
+are normalized separately by permutating the composition of the gene list $L$ 
+`nPerm` times, and dividing the enrichment score by the mean of the permutation 
+$ES$ with the same sign.
 
-`pvalue`: The nominal p-value of the $ES$ is calculated using permutation test. 
-Specifically, the gene labels of the gene list $L$ were permuted and the $ES$ of 
-the gene set was recomputed for the permutated data, which generate a null 
-distribution for the ES. The p-value of the observed $ES$ is then calculated 
+`pvalue`: The nominal p-value of the $ES$ is calculated using a permutation
+test.  Specifically, the composition of the gene list $L$ is permuted and the
+$ES$ of the gene set is recomputed for the permutated data generating a null
+distribution for the ES. The p-value of the observed $ES$ is then calculated
 relative to this null distribution.
 
-`leadingEdge`: genes in the gene set S (functional category) that appear in the 
-ranked list L at, or before, the point where the running sum reaches its maximum
-deviation from zero. Can be interpreted as the core of a gene set that accounts 
+`leadingEdge`: Genes in the gene set S (functional category) that appear in the 
+ranked list $L$ at, or before, the point where the running sum reaches its maximum
+deviation from zero. It can be interpreted as the core of a gene set that accounts 
 for the enrichment signal.
 
-`ledge_rank`: ranks of genes in 'leadingEdge' at the gene list L.
+`ledge_rank`: Ranks of genes in 'leadingEdge' in gene list $L$.
 
 #### With KEGG 
+
+The same enrichment test can be performed for KEGG pathways as follows.
 
 ```{r tsea_mgsea_kegg, eval=TRUE}
 mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
@@ -856,24 +862,25 @@ The content of the columns extracted from the `feaResult` object is described
 under sections 4.1.1.1 and 4.1.2.1. 
 
 
-### mabs Method
+### MeanAbs Method
 
-The input for the *mabs* method is $L_{tar}$, the same as for 
-*mGSEA*. The *meanAbs* statistic ($mabs(S)$) of a gene set $S$ is 
-calculated as mean absolute scores of the genes in $S$. In order to adjust for 
-size variations in gene set $S$, 1000 random permutations of $L_{tar}$ are 
-performed to determine $mabs(S,\pi)$. Subsequently, $mabs(S)$ is normalized by 
-subtracting the median of the $mabs(S,\pi)$ and then dividing by the standard 
-deviation of $mabs(S,\pi)$ yielding the normalized scores $Nmabs(S)$. Finally, 
-the portion of $mabs(S,\pi)$ that is greater than $mabs(S)$ is used as nominal 
-p value. The resulting nominal p values are adjusted for multiple hypothesis 
-testing using the Benjamini-Hochberg method [@Fang2012-ms].
+The input for the *MeanAbs* method is $L_{tar}$, the same as for *mGSEA*. In this 
+enrichment statistic, $mabs(S)$, of a gene set $S$ is calculated as mean
+absolute scores of the genes in $S$ [@Fang2012-ms]. In order to adjust for size
+variations in gene set $S$, 1000 random permutations of $L_{tar}$ are performed
+to determine $mabs(S,\pi)$. Subsequently, $mabs(S)$ is normalized by
+subtracting the median of the $mabs(S,\pi)$ and then dividing by the standard
+deviation of $mabs(S,\pi)$ yielding the normalized scores $Nmabs(S)$. Finally,
+the portion of $mabs(S,\pi)$ that is greater than $mabs(S)$ is used as nominal
+p-value. The resulting nominal p-values are adjusted for multiple hypothesis
+testing using the Benjamini-Hochberg method [@Benjamini1995-vk].
 
 #### With GO
 
-The following code used the same drug set as query. Like *mGSEA* method,
-*mabs* method internally gets their target set and transforms to $L_{tar}$, 
-which represents weights of targets. 
+The following performs TSEA with the *mabs* method using the same drug test set
+as the examples given under the *dup\_hyperG* and *tsea_mGSEA* sections. The 
+arguments of the `tsea_mabs` function are explained in its help file that can be 
+opened from R with `?tsea_mabs`.
 
 ```{r tsea_mabs_go, eval=TRUE}
 mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
@@ -881,7 +888,18 @@ mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000,
 result(mabs_res)
 ```
 
+The content of the columns extracted from the `feaResult` object is described
+under section 4.1.1.1. The columns specific to the *mabs* algorithm are described
+below.
+
+`mabs`: Given a scored ranked gene list $L$, $mabs(S)$ represents the mean 
+absolute score of the genes in set $S$.
+
+`Nmabs`: $mabs(S)$ normalized.
+
 #### With KEGG
+
+The same enrichment test can be performed for KEGG pathways as follows.
 
 ```{r tsea_mabs_kegg, eval=TRUE}
 mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
@@ -889,82 +907,95 @@ mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000,
 result(mabs_k_res)
 ```
 
-Description of column titles specific for *meanAbs* algorithm:
-
-`mabs`: Given a scored ranked gene list $L$, $mabs(S)$ represents the mean 
-absolute scores of the genes in set $S$.
-
-`Nmabs`: Normalized $mabs(S)$.
-
 ## DSEA
 
-TSEA performs the FEA on target sets obtained by converting the drug sets from 
-GESS results to the corresponding target sets given by known drug-target 
-associations. Alternatively, one can use the drug sets for functional 
-enrichment testing  directly by changing the mappings in the reference database 
-from target-to-functional category mappings to drug-to-functional category 
-mappings. The latter can be generated based on the drug-target information 
-provided by DrugBank or related databases. As a result, one can perform the FEA 
-on ranked drug lists directly. This so called Drug Set Enrichment Analysis 
-(DSEA) approach has the advantage that the drugs in the query test sets are 
-usually unique allowing to use them without any changes for functional 
-enrichment methods. In contrast to this, the target query sets of the TSEA 
-approach are not unique. Thus, they cannot be used without major changes 
-(*e.g.* frequency weighting) with most existing functional enrichment 
-methods where uniqueness in the test sets is one of the main assumptions. 
-In case of DSEA, however, classical enrichment methods such as the 
-hypergeometric test (*hyperG*) and GSEA can be used without any 
-modifications. When DSEA is used with the hypergeometric test, the query is 
-usually composed of the top ranking drugs from a GESS result, while it is 
-ranked lists of all drugs in the reference database when GSEA is used. The 
-similarity scores of the corresponding GESS method can be used for ranking the 
-drugs as it is required by the GSEA algorithm. 
-The drugs in the GESS results with zero scores are excluded.
+Instead of translating ranked lists of drugs into target sets, as for TSEA, the
+functional annotation categories of the targets can be assigned to the drugs
+directly to perform Drug Set Enrichment Analysis (DSEA) instead. Since the ranked 
+drug lists from GESS results are usually unique, this strategy overcomes the
+duplication problem of the TSEA approach. This way classical enrichment
+methods, such as GSEA or tests based on the hypergeometric distribution, can be
+readily applied without major modifications to the underlying statistical
+methods. As explained above, TSEA and DSEA performed with the same enrichment
+statistics are not expected to generate identical results. Rather they often
+complement each other's strengths and weaknesses.
 
-### hyperG Method
+### Hypergeometric Test
 
-The following code uses the same query drug set as input for *hyperG* method,
-which uses functional annotations of drug sets instead of gene sets after 
-gene to drug mappings.
-```{r dsea_hyperG, eval=TRUE}
+The following performs DSEA with `signatureSearch's` hypergeometric test
+function called `dsea_hyperG` using the same drug test set as the examples
+given under in the TSEA section. The arguments are explained in its help file
+that can be opened from R with `?dsea_hyperG`.
+
+#### With GO
+
+As functional categories the following DSEA example uses GO.
+
+```{r dsea_hyperG_go, eval=TRUE}
 drugs <- unique(result(lincs)$pert[1:10])
-# GO annotation system
 hyperG_res <- dsea_hyperG(drugs=drugs, type="GO", ont="MF")
 result(hyperG_res)
-# KEGG annotation system
+```
+
+#### With KEGG
+
+The same DSEA test can be performed for KEGG pathways as follows.
+
+```{r dsea_hyperG_kegg, eval=TRUE}
 hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
                             pvalueCutoff = 1, qvalueCutoff = 1, 
                             minGSSize = 10, maxGSSize = 2000)
 result(hyperG_k_res)
 ```
 
-Since the annotation system are drug to functional category mappings, the 
-"geneID" column contains overlapping drugs of query drug set and reference drug
-sets.
+The content of the columns extracted from the feaResult object is described
+under section 4.1.1.1.
+
+<font color="blue">[ThG-Comment: I suggest to change "geneID" in the result
+tables from the DSEA to drugID. Or if you want to use the same for both TSEA
+and DSEA, then use something like "testID" or similar.]</font>
 
 ### GSEA Method
 
-Instead of using top drug set, the *GSEA* method uses a scored ranked drug 
-list in GESS result as input, the scores are similarity 
-metrics of the corresponding GESS methods. 
-```{r dsea_gsea, eval=TRUE}
+The following performs DSEA with the *GSEA* method using the same drug test set
+as in the previous section. Instead of using only the drug labels in the test
+set, the *GSEA* method requires the labels as well as the scores used for
+ranking the drug list in the GESS result. The scores are usually the similarity
+metric used to rank the results of the corresponding GESS method, here the NCS
+values from LINCS. The arguments of the `dsea_GSEA` function are explained in its help
+file that can be opened from R with `?dsea_GSEA`.
+
+#### With GO
+
+As functional categories the following DSEA example uses GO.
+
+```{r dsea_gsea_go, eval=TRUE}
 dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
 dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]
-# GO annotation system
 gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000,
                       pvalueCutoff=0.2, minGSSize=5)
 result(gsea_res)
-# KEGG annotation system
+```
+
+#### With KEGG
+
+The same DSEA test can be performed for KEGG pathways as follows.
+
+```{r dsea_gsea_kegg, eval=TRUE}
 gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
                         pvalueCutoff=0.5, minGSSize=5)
 result(gsea_k_res)
 ```
 
 Since the annotation system are drug to functional category mappings, the 
-"leadingEdge" column contains leading drugs of reference drug sets.
+"leadingEdge" column contains identifiers of drugs instead of targets.
 
-## Consistency Comparison of FEA Results from 5 Methods
+## Comparison FEA Results 
+
+<font color="blue">[ThG-Comment: I am not able understand the text in the following 
+paragraph. I can guess what was done based on the figure but the text is not 
+understandable.]</font>
 
 The enriched GO/KEGG categories were re-ranked by putting the terms supported 
 by more methods to topper. For terms supported by the same number of methods, 
@@ -984,13 +1015,18 @@ comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_k_res, hyperG_k_res,
              gsea_k_res, Ntop=20, type="KEGG")
 ```
 
-## Conclusion
+<font color="blue">[ThG-Comment: the text along x-axis is over-plotting. To resolve
+this you want to plot the labels vertically by turning them 90 degrees.]</font>
 
-The consistency of the enriched GO terms/KEGG pathways from the five functional 
-enrichment methods is pretty good. All of them could discovery the histone 
-deacetylase pathways that the query drug vorinostat is involved in. Since each 
-method have their advantages and disadvantages, it is reasonable to combine and 
-re-rank their enrichment results to increase confidence.
+## Summary of FEA Results
+
+The enrichment rankings of the functional categories (GO and KEGG) show a
+reasonable degree of agreement among the five FEA methods. For instance, all
+five showed a high degree of enrichment for histone deacetylase pathways that
+are indeed targeted by one of the query drugs, here vorinostat. Since each 
+method has its strengths and weaknesses, the usage of a consensus approach 
+could be considered by combining the rankings of functional categories from 
+all or several FEA methods.
 
 # Visualization
 
