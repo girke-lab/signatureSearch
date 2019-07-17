@@ -991,7 +991,7 @@ result(gsea_k_res)
 Since the annotation system are drug to functional category mappings, the 
 "leadingEdge" column contains identifiers of drugs instead of targets.
 
-## Comparison FEA Results 
+## Comparing FEA Results 
 
 <font color="blue">[ThG-Comment: I am not able understand the text in the following 
 paragraph. I can guess what was done based on the figure but the text is not 
