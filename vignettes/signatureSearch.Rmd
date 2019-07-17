@@ -247,7 +247,7 @@ or genetic perturbations) in a `data.frame` or `matrix`. The gene expression
 data can be most types of the pre-processed gene expression values described
 under section 1.4. 
 
-# GESS Methods
+# Signature Searches (GESS)
 
 This tutorial section introduces the GESS algorithms implemented in
 _signatureSearch_. Currently, this includes five search algorithms, while
@@ -569,17 +569,17 @@ be the case.]</font>
 
 ## Summary of Search Results
 
-Although the toy database is artificially small, one can still use the above
-search results for a preliminary performance assessment of the different GESS
-methods in ranking drugs based on known modes of action (MOA). Four of the five
+Although the toy database is artificially small, one can use the above search
+results for a preliminary performance assessment of the different GESS methods
+in ranking drugs based on known modes of action (MOA). Four of the five
 cherry-picked HDAC inhibitors (vorinostat, trichostatin-a, HC-toxin,
 pyroxamide) were ranked among the top 10 ranking drugs in the search results of
 the LINCS, Fisher and Spearman correlation methods. If generalizable, this
 result implies a promising performance of these search methods for grouping
 drugs by their MOA categories. In addition, the LINCS and Spearman methods were
-able to rank another HDAC inhibitor, APHA-compound-8, at the top of their search
-results, indicating a better sensitivity of these two methods compared to the
-other methods.
+able to rank another HDAC inhibitor, APHA-compound-8, at the top of their
+search results, indicating a better sensitivity of these two methods compared
+to the other methods.
 
 ## GESS result visualization
 
@@ -612,7 +612,7 @@ change the subtitle on the top of the right side from "cell" to "cell_type" and
 in the one below from "cell_type" to "cell_class".]</font>
 
 
-# FEA
+# Functional Enrichment (FEA)
 
 GESS results are lists of drugs ranked by their signature similarity to a
 query signature of interest. Interpreting these search results with respect to
@@ -668,8 +668,8 @@ The following introduces how to perform TSEA on drug-based GESS results using
 as functional annotation systems GO and KEGG pathways. The enrichment tests are
 performed with three widely used algorithms that have been modified in
 `signatureSearch` to take advantage of duplication information present in the
-test sets used for TSEA. The source and importance of these target duplications
-is explained above. The specialized enrichment algorithms include *Duplication
+test sets used for TSEA. The relevance of these target duplications is
+explained above. The specialized enrichment algorithms include *Duplication
 Adjusted Hypergeometric Test* (`dup_hyperG`), *Modified Gene Set Enrichment
 Analysis* (`mGSEA`) and *MeanAbs* (`mabs`).
 
@@ -701,7 +701,7 @@ GESS result as input to the `tsea_dup_hyperG` method. Internally, the latter con
 the drug set to a target set, and then computes for it enrichment scores for
 each MF GO term based on the hypergeometric distribution. The enrichment
 results are stored in a `feaResult` object. It contains the organism
-information of the annotation system, ontology type of the GO annotation
+information of the annotation system, and the ontology type of the GO annotation
 system. If the annotation system is KEGG, the latter will be "KEGG". The object
 also stores the input drugs used for the enrichment test, as well as their
 target information. 
@@ -808,9 +808,9 @@ only gene sets with positive $ES$ are selected.
 
 #### With GO
 
-The following performs TSEA with the *mGSEA* method using the same drug test set
-as the example given under the *dup\_hyperG* section. The arguments of the 
-`tsea_mGSEA` function are explained in its help file that can be opened from R 
+The following performs TSEA with the *mGSEA* method using the same drug test
+set as in the above `tsea_dup\_hyperG` function call. The arguments of the
+`tsea_mGSEA` function are explained in its help file that can be opened from R
 with `?tsea_mGSEA`.
 
 ```{r tsea_mgsea_go, eval=TRUE}
@@ -888,7 +888,7 @@ mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000,
 result(mabs_res)
 ```
 
-The content of the columns extracted from the `feaResult` object is described
+The content of the columns extracted from the `feaResult` object is explained
 under section 4.1.1.1. The columns specific to the *mabs* algorithm are described
 below.
 
@@ -911,7 +911,7 @@ result(mabs_k_res)
 
 Instead of translating ranked lists of drugs into target sets, as for TSEA, the
 functional annotation categories of the targets can be assigned to the drugs
-directly to perform Drug Set Enrichment Analysis (DSEA) instead. Since the ranked 
+directly to perform Drug Set Enrichment Analysis (DSEA) instead. Since the  
 drug lists from GESS results are usually unique, this strategy overcomes the
 duplication problem of the TSEA approach. This way classical enrichment
 methods, such as GSEA or tests based on the hypergeometric distribution, can be
@@ -929,7 +929,7 @@ that can be opened from R with `?dsea_hyperG`.
 
 #### With GO
 
-As functional categories the following DSEA example uses GO.
+As functional annotation system the following DSEA example uses GO.
 
 ```{r dsea_hyperG_go, eval=TRUE}
 drugs <- unique(result(lincs)$pert[1:10])
@@ -951,9 +951,9 @@ result(hyperG_k_res)
 The content of the columns extracted from the feaResult object is described
 under section 4.1.1.1.
 
-<font color="blue">[ThG-Comment: I suggest to change "geneID" in the result
-tables from the DSEA to drugID. Or if you want to use the same for both TSEA
-and DSEA, then use something like "testID" or similar.]</font>
+<font color="blue">[ThG-Comment: I suggest to change the column title "geneID"
+in the result tables from the DSEA to "drugID". Or if you want to use the same
+for both TSEA and DSEA, then use something like "itemID" or similar.]</font>
 
 ### GSEA Method
 
@@ -967,7 +967,7 @@ file that can be opened from R with `?dsea_GSEA`.
 
 #### With GO
 
-As functional categories the following DSEA example uses GO.
+As functional annotation system the following DSEA example uses GO.
 
 ```{r dsea_gsea_go, eval=TRUE}
 dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
@@ -988,7 +988,7 @@ gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000,
 result(gsea_k_res)
 ```
 
-Since the annotation system are drug to functional category mappings, the 
+Since the annotation system are drug-to-functional category mappings, the 
 "leadingEdge" column contains identifiers of drugs instead of targets.
 
 ## Comparing FEA Results 
@@ -1028,33 +1028,49 @@ method has its strengths and weaknesses, the usage of a consensus approach
 could be considered by combining the rankings of functional categories from 
 all or several FEA methods.
 
-# Visualization
+# Drug-Target Network Visualization
 
-The `dtnetplot` function can be used to build drug-target networks if `drugs` 
-and `set` arguments are provided. Here, the `drugs` could be drug sets used for
-enrichment analysis, which are top ranking drugs in GESS result or self-defined
-drug set. The `set` could be interesting functional categories in the enrichment
-results (_e.g._, GO or KEGG ids) or self-defined gene/protein set. 
-The resulting plot shows the drug-target interaction network. 
+The above GESS and TSA results can be rendered as interactive drug-target
+networks using the `dtnetplot` function from `signatureSearch`. For this, a
+character vector of drug names along with an identifier of a chosen functional
+category are passed on to the `drug` and `set` arguments, respectively. The
+resulting plot depicts the corresponding drug-target interaction network.  Its
+interactive features allow the user to zoom in and out of the network, and to 
+select network components in the drop-down menu located in the upper left corner 
+of the plot.
 
-## Drug-Target Interaction Networks in GO Categories
+## With GO
 
-The following code shows constructing drug-target networks in two GO categories
-that are enriched by FEA methods, which functionally annotate a drug set.
-```{r dtnet_go, eval=TRUE}
+The following example demonstrates how to construct a drug-target network for
+two GO categories that are enriched in the results obtained in the FEA section
+of this vignette. This way one can visualize drug sets in the context of the
+cellular networks and pathways they affect. 
+
+Network for *NAD-dependent histone deacetylase activity* (GO:0032041)
+```{r dtnet_go_0032041, eval=TRUE}
 dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF", 
           desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
+```
+
+Network for *NF-kappaB binding* (GO:0051059)
+```{r dtnet_go_0051059, eval=TRUE}
 dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF", 
           desc="NF-kappaB binding")
 ```
 
-## Drug-Target Interaction Networks in KEGG Pathways
+## With KEGG
 
-The following code shows constructing drug-target networks in two KEGG pathways
-that are enriched by FEA methods.
-```{r dtnet_kegg, eval=TRUE}
+The same drug-target network plots can be rendered for KEGG pathways as follows.
+
+
+Network for KEGG pathway: *Alcoholism* (hsa05034)
+```{r dtnet_kegg_05034, eval=TRUE}
 dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034", 
           desc="Alcoholism")
+```
+
+Network for KEGG pathway: *Longevity regulating pathway* (hsa04213)
+```{r dtnet_kegg_04213, eval=TRUE}
 dtnetplot(drugs = drugs, set = "hsa04213", 
           desc="Longevity regulating pathway - multiple species")
 ```
