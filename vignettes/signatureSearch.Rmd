@@ -233,7 +233,7 @@ total of 3,478 signatures; and (4) `cmap_expr` contains mean expression values
 from 1,309 drug treatments of 4 cell lines corresponding to a total of 3,587
 signatures. To minimize redundancy in the `lincs` and `lincs_expr` databases,
 they were assembled from GESs corresponding to a compound dosage and treatment
-time of 10µM and 24h, respectively. If necessary one can
+time of 10$\mu$M and 24h, respectively. If necessary one can
 create here easily database instances for all LINCS measurements.
 However, this will make the search results overwhelmingly complex which we
 wanted to avoid here. For details how the CMAP2 and LINCS databases were
