@@ -112,6 +112,8 @@ GSEA_internal2 <- function(geneList,
                      pAdjustMethod     = pAdjustMethod,
                      verbose           = verbose,
                      USER_DATA         = USER_DATA)
+  if(is.null(res))
+    return(NULL)
   res@organism <- "UNKNOWN"
   return(res)
 }

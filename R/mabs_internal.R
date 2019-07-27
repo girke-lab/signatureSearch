@@ -61,7 +61,7 @@ mabs_internal <- function(geneList,
         pvalue = pvals,
         p.adjust = p.adj,
         qvalues = qvalues,
-        geneID = geneID,
+        itemID = geneID,
         stringsAsFactors = FALSE
     )
 

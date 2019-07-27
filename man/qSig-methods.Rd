@@ -15,22 +15,42 @@ qSig(query, gess_method, refdb)
 }
 \arguments{
 \item{query}{When 'gess_method' is 'CMAP' or 'LINCS', 
-it should be a list of two elements, which are up and down regulated gene 
-sets of entrez ids.
+it should be a list of two elements, which are labels of up and down 
+regulated genes. The labels should be gene Entrez ids if the reference
+database is pre-built CMAP or LINCS database. If custom database is used,
+the labels should share identifiers with the reference database.
 
-When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
-representing gene expression profiles (GEPs) of treatment(s).}
+When 'gess_method' is 'gCMAP', the query is a matrix with a single column
+representing gene ranks from a biological state of interest. The 
+corresponding gene labels are stored in the row name slot of the matrix. 
+Instead of ranks one can provide scores (e.g. z-scores). In such case 
+the scores will be internally transformed to ranks. 
+
+If 'gess_method' is 'Fisher', the query could be a list of two 
+elements (up and down gene labels) as with 'CMAP' or 'LINCS' method. In 
+this case, genes in up and down sets are combined into a single gene set
+for Fisher's exact test with reference gene sets, which means genes in 
+the query set are unsigned. The query could also be a matrix with a single 
+numeric column and the gene labels (e.g. Entrez gene ids) in the row name 
+slot from a biological state of interest. The scores could be z-scores 
+or LFC scores. In this case, the actual gene set query is obtained by 
+setting the higher and lower cutoffs. 
+
+If 'gess_method' is 'Cor', the query is a matrix with a single 
+numeric column and the gene labels in the row name slot.
+The scores could be z-scores, LFC scores or gene expression intensity values 
+or read counts for correlation-based method.}
 
 \item{gess_method}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
 
 \item{refdb}{character(1), can be one of "cmap", "cmap_expr", "lincs", or 
 "lincs_expr" if users want to use the existing CMAP/LINCS databases. If 
-'refdb' is 'cmap', it uses the CMAP database consists of log2FC scores
-after DE analysis as GEPs. If 'cmap_expr', it uses the CMAP database 
-consists of normalized expression values as GEPs. If 'refdb' is 'lincs', 
-it uses the LINCS databases consists of z-scores after DE analysis as GEPs, 
-if 'lincs_expr', it uses LINCS databases consists of normalized expression 
-values as GEPs.
+'refdb' is 'cmap', it is a collection of signatures of LFC scores
+after DE analysis. If 'cmap_expr', it is CMAP database 
+consists of normalized gene expression values. If 'refdb' is 'lincs', 
+it is LINCS database consists of z-scores after DE analysis, 
+if 'lincs_expr', it is LINCS database consists of normalized expression 
+values.
 
 If users want to use the custom signature database, 
 it should be the file path to the HDF5 file generated with 
@@ -43,7 +63,7 @@ the reference signatures that the query signature is searched against.}
 \code{qSig} object
 }
 \description{
-qSig generic
+Generate \code{qSig} object used for GESS methods
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 

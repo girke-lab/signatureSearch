@@ -8,9 +8,9 @@
 #' 
 #' Description of the score columns in the gess_fisher tibble result:
 #' \itemize{
-#'     \item pval: p value of the Fisher's exact test.
-#'     \item padj: p value adjusted for multiple hypothesis testing using
-#'     'p.adjust' function with Benjamini & Hochberg (BH) method. 
+#'     \item pval: p-value of the Fisher's exact test.
+#'     \item padj: p-value adjusted for multiple hypothesis testing using
+#'     R's p.adjust function with the Benjamini & Hochberg (BH) method. 
 #'     \item effect: z-score based on the standard normal distribution.
 #'     \item LOR: Log Odds Ratio.
 #'     \item nSet: number of genes of the drug signature in the reference 
@@ -32,6 +32,7 @@
 #' @param chunk_size size of chunk per processing
 #' @return gessResult object, containing drugs in the reference database
 #' ranked by their similarity to the query signature
+#' @importMethodsFrom GSEABase GeneSet
 #' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
@@ -52,7 +53,11 @@ gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
     stop("The 'gess_method' slot of 'qSig' should be 'Fisher' 
          if using 'gess_fisher' function")
   }
-  query <- induceCMAPCollection(qSig@query, higher=higher, lower=lower)
+  if(is.list(qSig@query)){
+    query <- GeneSet(unique(unlist(qSig@query)))
+  } else {
+    query <- induceCMAPCollection(qSig@query, higher=higher, lower=lower)
+  }
   db_path <- determine_refdb(qSig@refdb)
   mat_dim <- getH5dim(db_path)
   mat_ncol <- mat_dim[2]

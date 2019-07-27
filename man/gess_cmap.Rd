@@ -37,10 +37,10 @@ a single signature against 10,000 signatures in the LINCS database.
 Description of the score columns in the gess_cmap tibble result:
 \itemize{
     \item raw_score: bi-directional enrichment score (Kolmogorov-Smirnov 
-    enrichment statistic) of up and down set in the query siganture
+    statistic) of up and down set in the query siganture
     \item scaled_score: raw_score was scaled to valules from 1 to -1 by 
-    dividing the positive scores with maxmum positive score, and negative
-    scores with minimum negative score.
+    dividing the positive scores with the maxmum positive score, and negative
+    scores with the absolute value of minimum negative score.
 }
 }
 \examples{

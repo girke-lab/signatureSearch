@@ -37,7 +37,8 @@ genome-wide GEPs.
 
 Description of the score columns in the gess_cor tibble result:
 \itemize{
-    \item cor_score: correlation coefficiency.
+    \item cor_score: Correlation coefficient based on the method defined in 
+    the gess_cor function.
 }
 }
 \examples{

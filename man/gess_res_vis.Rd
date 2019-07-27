@@ -4,7 +4,7 @@
 \alias{gess_res_vis}
 \title{GESS result visualization}
 \usage{
-gess_res_vis(gess_tb, drugs, col)
+gess_res_vis(gess_tb, drugs, col, cell_group = "all")
 }
 \arguments{
 \item{gess_tb}{tibble in \code{\link{gessResult}} object, can be accessed
@@ -12,7 +12,12 @@ via \code{\link{result}} method.}
 
 \item{drugs}{character vector, a list of interesting drugs}
 
-\item{col}{name of the score column in 'gess_tb', e.g., "NCS"}
+\item{col}{name of the score column in 'gess_tb', e.g., "NCS". Can also be 
+set as "rank", in this way, it will show the drug ranks in different cell
+types.}
+
+\item{cell_group}{one of "all", "normal", or "tumor". "all" represents both 
+tumor and normal cells.}
 }
 \value{
 plot

@@ -131,7 +131,7 @@ enricher_internal <- function(gene,
   Over <- data.frame(Over,
                      p.adjust = p.adj,
                      qvalue = qvalues,
-                     geneID = geneID,
+                     itemID = geneID,
                      Count = k,
                      stringsAsFactors = FALSE)
 
@@ -163,8 +163,6 @@ enricher_internal <- function(gene,
            result         = Over,
            drugs          = as.character(gene),
            targets        = as.character(gene),
-           #universe       = extID,
-           #refSets        = geneSets,
            organism       = "UNKNOWN",
            ontology       = "UNKNOWN"
            )

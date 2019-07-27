@@ -1,25 +1,45 @@
 ##'
 ##' It builds a `qSig` object to store the query signature, reference database
-##' and GESS method used to search for similarity
+##' and GESS method used for GESS methods
 ##' @docType methods
 ##' @name qSig
 ##' @rdname qSig-methods
 ##' @aliases qSig,list,character,character-method
 ##' @param query When 'gess_method' is 'CMAP' or 'LINCS', 
-##' it should be a list of two elements, which are up and down regulated gene 
-##' sets of entrez ids.
+##' it should be a list of two elements, which are labels of up and down 
+##' regulated genes. The labels should be gene Entrez ids if the reference
+##' database is pre-built CMAP or LINCS database. If custom database is used,
+##' the labels should share identifiers with the reference database.
 ##' 
-##' When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
-##' representing gene expression profiles (GEPs) of treatment(s). 
+##' When 'gess_method' is 'gCMAP', the query is a matrix with a single column
+##' representing gene ranks from a biological state of interest. The 
+##' corresponding gene labels are stored in the row name slot of the matrix. 
+##' Instead of ranks one can provide scores (e.g. z-scores). In such case 
+##' the scores will be internally transformed to ranks. 
+##' 
+##' If 'gess_method' is 'Fisher', the query could be a list of two 
+##' elements (up and down gene labels) as with 'CMAP' or 'LINCS' method. In 
+##' this case, genes in up and down sets are combined into a single gene set
+##' for Fisher's exact test with reference gene sets, which means genes in 
+##' the query set are unsigned. The query could also be a matrix with a single 
+##' numeric column and the gene labels (e.g. Entrez gene ids) in the row name 
+##' slot from a biological state of interest. The scores could be z-scores 
+##' or LFC scores. In this case, the actual gene set query is obtained by 
+##' setting the higher and lower cutoffs. 
+##' 
+##' If 'gess_method' is 'Cor', the query is a matrix with a single 
+##' numeric column and the gene labels in the row name slot.
+##' The scores could be z-scores, LFC scores or gene expression intensity values 
+##' or read counts for correlation-based method.
 ##' @param gess_method one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'
 ##' @param refdb character(1), can be one of "cmap", "cmap_expr", "lincs", or 
 ##' "lincs_expr" if users want to use the existing CMAP/LINCS databases. If 
-##' 'refdb' is 'cmap', it uses the CMAP database consists of log2FC scores
-##' after DE analysis as GEPs. If 'cmap_expr', it uses the CMAP database 
-##' consists of normalized expression values as GEPs. If 'refdb' is 'lincs', 
-##' it uses the LINCS databases consists of z-scores after DE analysis as GEPs, 
-##' if 'lincs_expr', it uses LINCS databases consists of normalized expression 
-##' values as GEPs.
+##' 'refdb' is 'cmap', it is a collection of signatures of LFC scores
+##' after DE analysis. If 'cmap_expr', it is CMAP database 
+##' consists of normalized gene expression values. If 'refdb' is 'lincs', 
+##' it is LINCS database consists of z-scores after DE analysis, 
+##' if 'lincs_expr', it is LINCS database consists of normalized expression 
+##' values.
 ##' 
 ##' If users want to use the custom signature database, 
 ##' it should be the file path to the HDF5 file generated with 
@@ -56,7 +76,7 @@ setMethod("qSig",
         if(!is.numeric(ref_val)) 
             stop("The value stored in 'refdb' should be numeric!")
     }
-    if(any(gess_method %in% c("CMAP", "LINCS"))){
+    if(any(gess_method %in% c("CMAP", "LINCS", "Fisher"))){
       upset = query[[1]]
       downset = query[[2]]
       refdb = determine_refdb(refdb)
@@ -118,16 +138,16 @@ setMethod("qSig",
       gid_db <- h5read(refdb, "rownames", drop=TRUE)
       if(! is.numeric(experiment[1,1])) 
         stop("The 'qsig' should be a numeric matrix 
-             representing genome-wide GEPs from treatments")
+             representing genome-wide signature from a treatment")
       if(is.null(rownames(experiment))) 
-        stop("The 'query' should be a numeric matrix with rownames as gene 
-             Entrez ids representing genome-wide GEPs")
+        stop("The gene labels should be stored in the row name slot of the 
+             matrix!")
       if(sum(rownames(experiment) %in% gid_db)==0) 
-        stop("The rownames of 'query' share 0 identifiers with 
+        stop("The gene labels in the query matrix share 0 identifiers with 
              reference database!")
     } else
       stop("'gess_method' slot must be one of 'gCMAP', 'Fisher' or 'Cor' 
-  if 'qsig' is a numeric matrix representing genome-wide GEPs of treatments!")
+  if 'qsig' is a numeric matrix with gene labels in the row name slot!")
     new("qSig", query=query, gess_method=gess_method, refdb=refdb)
   }
 )

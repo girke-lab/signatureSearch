@@ -54,6 +54,9 @@ without any changes for functional enrichment methods.
 So the hypergeometric test is directly used when the query is a vector of 
 drugs, e.g., top ranking drugs from GESS result since the functional
 categories also contains drug sets after gene to drug mappings.
+
+The description of columns in the result table can be found at 
+\code{\link{tsea_dup_hyperG}} function.
 }
 \examples{
 data(drugs)

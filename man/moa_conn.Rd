@@ -42,7 +42,7 @@ mean_rank: mean ranks in GESS result of drugs in the MOA category
 n_drug: number of drugs in the MOA category
 }
 \examples{
-db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
+db_path <- system.file("extdata", "sample_db.h5", package="signatureSearch")
 library(signatureSearchData)
 sample_db <- readHDF5chunk(db_path, colindex=seq_len(100))
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass

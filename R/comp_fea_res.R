@@ -85,7 +85,8 @@ comp_fea_res <- function(dup_hyperG_res=NULL, mgsea_res=NULL, mabs_res=NULL,
   p <- ggplot(df2, aes_(x = ~method, y = ~Description)) +
     geom_point(size=4) + aes_string(color="p.adjust") + 
     scale_colour_gradient(low="red", high="blue") +
-    ggtitle(title) + theme_dose(font.size=12)
+    ggtitle(title) + theme_dose(font.size=12) +
+    ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1))
   return(p)
 }
 

@@ -8,7 +8,8 @@
 ##' gene set with SYMBOL ids.
 ##' @param ont if the `set` is a GO term ID, `ont` is the ontology that GO term 
 ##' is belong to. One of "BP", "MF", "CC" or "ALL"
-##' @param ... additional parameters
+##' @param ... additional parameters for \code{\link[visNetwork]{visNetwork}} 
+##' function.
 ##' @return visNetwork plot
 ##' @import visNetwork
 ##' @importFrom AnnotationDbi select
@@ -100,7 +101,7 @@ dtnetplot <- function(drugs, set, ont = NULL, ...) {
                       value = c(5*table(dtlink_go$drug_name), 
                                 rep(5, length(go_gene))))
   edges <- dtlink_go; colnames(edges) = c("from", "to")
-  visNetwork(nodes, edges, height = "500px", width = "100%") %>%
+  visNetwork(nodes, edges, width = "100%", ...) %>%
     visLegend(width = 0.05, position = "right", addNodes = lnodes, 
               useGroups = FALSE) %>%
     visOptions(highlightNearest=list(enabled=TRUE, degree=1, hover=TRUE), 

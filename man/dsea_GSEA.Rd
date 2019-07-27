@@ -50,6 +50,9 @@ In the GESS/FEA workflow, the ranked drug list consists of all drugs in the
 GESS result. The similarity scores of the corresponding GESS method can be 
 used for ranking the drugs as it is required by the GSEA algorithm. The drugs
 with zero scores are excluded.
+
+The description of columns in the result table can be found at 
+\code{\link{tsea_mGSEA}} function.
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 

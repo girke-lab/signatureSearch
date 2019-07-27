@@ -34,15 +34,6 @@ as.data.frame.gessResult <- function(x, ...) {
   x@result[, name]
 }
 
-##' @method [[ feaResult
-##' @export
-`[[.feaResult` <- function(x, i) {
-    gc <- geneInCategory(x)
-    if (!i %in% names(gc))
-        stop("input term not found...")
-    gc[[i]]
-}
-
 ##' @importFrom utils head
 ##' @method head feaResult
 ##' @export
@@ -82,18 +73,6 @@ dim.feaResult <- function(x) {
 dim.gessResult <- function(x) {
   dim(x@result)
 }
-
-##' @importFrom DOSE geneID
-##' @method geneID feaResult
-##' @export
-geneID.feaResult <- function(x) as.character(x@result$geneID)
-
-##' @importFrom DOSE geneInCategory
-##' @importFrom stats setNames
-##' @method geneInCategory feaResult
-##' @export
-geneInCategory.feaResult <- function(x)
-  setNames(strsplit(geneID(x), "/", fixed=TRUE), x@result$ID)
 
 
 

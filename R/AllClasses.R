@@ -41,22 +41,21 @@ setClass("qSig", slots = c(
 ##' 
 ##' The description of the common tibble columns from different GESS methods:
 ##' \itemize{
-##'     \item pert: character, perturbations (e.g., drug names) in the 
-##'     reference database
-##'     \item cell: character, cell types
-##'     \item type: character, type of perturbation. In CMAP and LINCS 
-##'     databases, the perturbation types are all treatment compound (trt_cp). 
+##'     \item pert: character, name of perturbagen (e.g. drug) in the reference 
+##'     database
+##'     \item cell: character, acronym of cell type
+##'     \item type: character, perturbation type. In CMAP and LINCS 
+##'     databases, the perturbation types are all compound treatment(trt_cp). 
 ##'     Users can build their custom signature database with other types of 
 ##'     perturbation, e.g., gene knockdown or overexpression via 
 ##'     \code{\link{build_custom_db}} function
-##'     \item trend: character, up or down. up: the signature in the GESS 
-##'     result is positively connected with query signature; down: negatively 
-##'     connected.
-##'     \item N_upset: integer, number of genes in the up set of query signature
-##'     \item N_downset: integer, number of genes in the down set of query 
-##'     signature
-##'     \item t_gn_sym: character, gene SYMBOL id of target genes/proteins of 
-##'     drugs.
+##'     \item trend: character, up or down when reference signature is 
+##'     positively or negatively connected with the query signature, 
+##'     respectively.
+##'     \item N_upset: integer, number of genes in the query up set
+##'     \item N_downset: integer, number of genes in the query down set
+##'     \item t_gn_sym: character, gene symbols of the corresponding drug 
+##'     targets
 ##' } 
 ##' @slot query query signature
 ##' @slot gess_method method for GESS analysis
@@ -86,53 +85,18 @@ gessResult <- function(result, query, gess_method, refdb)
 ##' 
 ##' This class represents the result of functional enrichment analysis.
 ##'
-##' The description of the tibble columns in the result slot:
+##' Description of the common columns in the result table from different 
+##' enrichment methods:
 ##' \itemize{
-##'     \item ID: GO term or KEGG pathway ID.
-##'     \item Description: description of the functional categories
-##'     \item GeneRatio: ratio of genes in the test set that are annotated
-##'     at a specific GO node or KEGG pathway
-##'     \item BgRatio: ratio of background genes that are annotated
-##'     at a specific GO node or KEGG pathway
-##'     \item pvalue: p value of the enrichment
-##'     \item p.adjust: p value adjusted for multiple hypothesis testing using
-#'     'p.adjust' function with defined method. 
-##'     \item qvalue: q value
-##'     \item geneID: genes/drugs overlapped between test set and annotation 
-##'     sets.
+##'     \item ont: in case of GO, one of BP, MF, CC, or ALL
+##'     \item ID: GO or KEGG IDs
+##'     \item Description: description of functional category
+##'     \item p.adjust: p-value adjusted for multiple hypothesis testing based 
+##'     on method specified under pAdjustMethod argument
+##'     \item qvalue: q value calculated with R’s qvalue function to control FDR
+##'     \item itemID: IDs of items (genes for TSEA, drugs for DSEA) overlapping 
+##'     among test and annotation sets.
 ##'     \item setSize: size of the functional category
-##'     \item enrichmentScore: Enrichment Score (ES) from the GSEA algorithm 
-##'     (Subramanian et al., 2005). It represents the degree to which a set S 
-##'     is over-represented at the top or bottom of the scored ranked list L. 
-##'     The score is calculated by walking down the list L, 
-##'     increasing a running-sum statistic when we encounter a gene in S and 
-##'     decreasing when it is not. The magnitude of the increment depends on 
-##'     the gene scores (e.g., correlation of the gene with phenotype). 
-##'     The ES is the maximum deviation from zero encountered in the random 
-##'     walk; it corresponds to a weighted Kolmogorov-Smirnov-like statistic.
-##'     \item NES: normalized enrichment score. The positive and negative
-##'     enrichment scores are normalized separately by permutating the 
-##'     gene labels of the gene list L 'nPerm' times and dividing the 
-##'     enrichment score by mean of the permutaion ES with the same sign.
-##'     \item pvalue: The nominal p-value of the ES is calculated using 
-##'     permutation test. Specifically, the gene labels of the gene list L were
-##'     permuted and the ES of the gene set was recomputed for the permutated 
-##'     data, which generate a null distribution for the ES. The p-value of the 
-##'     observed ES is then calculated relative to this null distribution.
-##'     \item p.adjust: p values adjusted for multiple hypothesis testing 
-##'     \item qvalues: q value calculated for FDR control 
-##'     \item leadingEdge: genes in the gene set S (functional category) that 
-##'     appear in the ranked list L at, or before, the point where the running 
-##'     sum reaches its maximum deviation from zero. Can be interpreted as the 
-##'     core of a gene set that accounts for the enrichment signal.
-##'     \item ledge_rank: ranks of genes in 'leadingEdge' at the gene list L.
-##'     \item mabs: Given a scored ranked gene list L, mabs(S) represents
-##'     the mean absolute scores of the genes in set S. 
-##'     \item Nmabs: In order to adjust for size variations in gene set S, 
-##'     'nPerm' random permutations of L are performed to determine 
-##'     permutation mabs. Subsequently, mabs(S) is normalized by subtracting 
-##'     the median of the permutation mabs and then dividing by its standard 
-##'     deviation yielding the normalized scores Nmabs(S).
 ##' } 
 ##' @name feaResult-class
 ##' @aliases feaResult

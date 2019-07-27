@@ -99,6 +99,10 @@ if the vectors were stored in a sorted fashion but this comes with some extra
 overhead for storing the label index.  Not sure what you ended up
 using?]</font>
 
+<font color="green">[YD-response: I used the matrix of gene scores in unsorted
+way, not the sorted list since in this way, the format is matrix, which is unit,
+easy to understand and could save the storage space.]</font>
+
 ## Motivation and Design
 
 Integrating the above described GESS and FEA methods into an R/Bioconductor
@@ -199,7 +203,7 @@ As Bioconductor package `signatureSearch` can be installed with the
 ```{r install, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install("signatureSearch", version = "3.9")
+BiocManager::install("signatureSearch")
 ```
 
 Next the package needs to be loaded into a user's R session.
@@ -295,7 +299,7 @@ The following imports the toy GES database into a `SummarizedExperiment` contain
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 # Load sample_db as `SummarizedExperiment` object
 sample_db <- signatureSearchData::readHDF5chunk(db_path, colindex=1:100)
-# get "vorinostat__SKB__trt_cp" signature drawn from sample database
+# get "vorinostat__SKB__trt_cp" signature drawn from toy database
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
@@ -337,17 +341,13 @@ this case they will be transformed to gene ranks during the search. Note, in
 the given example the `db_path` variable stores the path to the toy database
 containing 100 GESs composed of z-scores.
 
-```{r gess_cmap, eval=TRUE}
+```{r gess_cmap, eval=TRUE, warning=FALSE}
 qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
                   gess_method="CMAP", refdb=db_path)
 cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 cmap
 result(cmap)
 ```
-
-<font color="blue">[ThG-Comment: note the help file for the the qSig
-method (?qSig) is incomplete, e.g. it lacks an explicit description of the `query` 
-argument.]</font>
 
 The search result is stored in a `gessResult` object (here named `cmap`)
 containing the following components: search result table, query signature, name
@@ -487,10 +487,24 @@ call are genome-wide signatures, here z-scores. The actual gene sets required fo
 the Fisher's exact test are obtained by setting the `higher` and `lower` cutoffs
 to 1 and -1, respectively.
 
-```{r gess_fisher, eval=TRUE}
+```{r gess_fisher, eval=TRUE, message=FALSE}
 qsig_fisher <- qSig(query = query_mat, gess_method = "Fisher", refdb = db_path)
 fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
+```
+
+The `query` could also be a list of up and down regulated gene id label sets
+as with the *CMAP* or *LINCS* method. In this case, genes in up and down sets 
+are combined into a single gene set for Fisher's exact test with reference 
+gene sets, which means genes in the query set are unsigned. The `refdb` is 
+still genome-wide z-scores, the gene sets in reference database is obtained by 
+setting the `higher` and  `lower` cutoffs to 1 and -1, respectively.
+
+```{r gess_fisher_set, eval=TRUE, message=FALSE}
+qsig_fisher2 <- qSig(query = list(upset=upset, downset=downset), 
+                     gess_method = "Fisher", refdb = db_path)
+fisher2 <- gess_fisher(qSig=qsig_fisher2, higher=1, lower=-1)
+result(fisher2)
 ```
 
 The columns in the result table specific to the _Fisher_ method include the
@@ -498,12 +512,6 @@ following information.  `pval`: p-value of the Fisher's exact test; `padj`:
 p-value adjusted for multiple hypothesis testing using R's `p.adjust` function
 with the Benjamini & Hochberg (BH) method; `effect`: z-score based on the
 standard normal distribution; `LOR`: log odds ratio.
-
-<font color="blue">[ThG-Comment: note in the above qSig call it is not clear whether and
-how one can provide under the query argument a gene id label set rather than a matrix
-of scores. When a matrix is provided you also need to mention here and in the help
-file how it is converted to a gene set. One can guess that this is done the same way
-as for the database but it should be explained.]</font>
 
 ## Correlation-based Search Method
 
@@ -562,11 +570,6 @@ spsub <- gess_cor(qSig=qsig_spsub, method="spearman")
 result(spsub)
 ```
 
-<font color="blue">[ThG-Comment: note in the text I have changed SPall/SPsub to
-CORall/CORsub. Unless there is a reason to use SP, I find COR more intuitive
-since SP implies the method is limited to Spearman which isn't and shouldn't
-be the case.]</font>
-
 ## Summary of Search Results
 
 Although the toy database is artificially small, one can use the above search
@@ -583,13 +586,27 @@ to the other methods.
 
 ## GESS result visualization
 
-If the reference database contains perturbations (_e.g._ drugs) of different cell 
-types, including normal and tumor cell classifications, the GESS result can be 
-visualized by summarizing rankings/scores of selected drugs across difference cells. The sample databases 
-used in this vignette only contains treatments in SKB cell, so there is no need 
-to summarize the result. I used the same `vorinostat` query signature to search 
-against the full LINCS database via `gess_lincs` method, then use `gess_res_vis`
-function to visualize the GESS result (Figure 3).
+If the reference database contains perturbations (_e.g._ drugs) of different 
+cell types, including normal and tumor cell classifications, the GESS result 
+can be visualized by summarizing rankings/scores of selected drugs across 
+difference cells. The sample databases used in this vignette only contains 
+treatments in SKB cell, so there is no need to summarize the result. 
+To show the visualization of the complete search result, the following code uses
+the same `vorinostat` query signature to search against the full LINCS database 
+via `gess_lincs` method, then uses `gess_res_vis` function to generate the
+plot (Figure 3). 
+
+```{r gess_vis, eval=FALSE}
+vor_qsig_full <- qSig(query = list(upset=upset, downset=downset), 
+                   gess_method="LINCS", refdb="lincs")
+vori_res_full <- gess_lincs(qSig=vor_qsig_full, sortby="NCS", tau=TRUE)
+vori_tb <- result(vori_res_full)
+drugs_top10 <- unique(result(lincs)$pert)[1:10]
+drugs_hdac <- c("panobinostat","mocetinostat","ISOX","scriptaid","entinostat",
+      "belinostat","HDAC3-selective","tubastatin-a","tacedinaline","depudecin")
+drugs = c(drugs_top10, drugs_hdac)
+gess_res_vis(vori_tb, drugs = drugs, col = "NCS")
+```
 
 <center>
 ![](images/vorinostat_SKB_lincs_gess_res_vis.png)
@@ -598,10 +615,17 @@ function to visualize the GESS result (Figure 3).
 <font size="-2"> Figure 3: Summary of NCS scores across cell types of selected 
 drugs in vorinostat GESS result searching against LINCS database. Drugs 1 to 10 
 from left to right: top 10 drugs in the above search result against the toy
-database with *LINCS* method. The other drugs are HDAC inhibitors not selected 
-in the toy database. </font>
+database with *LINCS* method. The other drugs are 10 HDAC inhibitors not 
+selected in the toy database. For each drug, the colored dots represent NCS scores in
+normal cell types. The colored triangles represent NCS scores in tumor cell
+types. The black dot and triangle represent summarized NCS scores across normal
+and tumor cell types, respectively. The NCS is summarized across cell types 
+by obtaining a maximum quantile statistic. It compares the 67 and 33 quantiles 
+of NCS in different cells and retains whichever is of higher absolute magnitude,
+which is similar as `NCSct` score in the result table from `gess_lincs` 
+function. </font>
 
-<font color="blue">[ThG-Comment: This section needs to include the code for
+<font color="green">[ThG-Comment: This section needs to include the code for
 generating the plot. You don't need to evaluate the code to show this more
 interesting example that depends on a more complete search result. Just state
 in the text that the plot is based on such a search. Also, the text above and the
@@ -661,6 +685,13 @@ drug-target associations. If necessary the same could be obtained from ChEMBL.
 Based on the sample code in the vignette, it is also not clear why you have
 discussed STITCH here. I don't see it being used which is confusing for readers, 
 but perhaps I have missed it?]
+</font>
+
+<font color="green">[YD-response: I think if it is necessary, we could add
+the ChEMBL to the drug-target mapping resources as updates after 
+submitting/releasing the package. For a query drug, I use the combined target
+set from DrugBank, CLUE and STITCH databases as its targets. I think the 
+combined target set is more complete than individual ones.]
 </font>
 
 ## TSEA
@@ -731,7 +762,8 @@ or ALL; `ID`: GO or KEGG IDs; `Description`: description of functional
 category; `pvalue`: raw p-value of enrichment test; `p.adjust`: p-value
 adjusted for multiple hypothesis testing based on method specified under
 `pAdjustMethod`; `qvalue`: q value calculated with R's `qvalue` function to
-control FDR; `geneID`: IDs of items overlapping among test and annotation sets;
+control FDR; `itemID`: IDs of items (genes for TSEA, drugs for DSEA) overlapping 
+among test and annotation sets;
 `setSize`: size of the functional category; `GeneRatio`: ratio of genes in the
 test set that are annotated at a specific GO node or KEGG pathway; `BgRatio`:
 ratio of background genes that are annotated at a specific GO node or KEGG
@@ -741,10 +773,10 @@ pathway.
 
 The same enrichment test can be performed for KEGG pathways as follows.
 
-```{r tsea_dup_hyperG_kegg, eval=TRUE}
+```{r tsea_dup_hyperG_kegg, eval=TRUE, message=FALSE}
 dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-                                    type = "KEGG", pvalueCutoff=0.1, 
-                                    pAdjustMethod="BH", qvalueCutoff = 0.2, 
+                                    type = "KEGG", pvalueCutoff=0.5, 
+                                    pAdjustMethod="BH", qvalueCutoff = 0.5, 
                                     minGSSize = 10, maxGSSize = 500)
 result(dup_hyperG_k_res)
 ```
@@ -757,6 +789,10 @@ drug-target annotation was used. Also, how can the user choose a specific
 drug-target annotation resource. Shouldn't there be an argument in the tsea_/dsea_ 
 functions to make this choice?]</font>
 
+<font color="green">[YD-response: The combined targets from DrugBank, CLUE and
+STITCH databases are used because if choosing specific annotation resource, such
+as DrugBank, the drugs included is limited, many drugs will not get targets. 
+The combined one could get targets of as many drugs as possible and the target set is more complete. So, I don't recommend allowing users to choose specific resource, in this way, the result will also depend on the chosen resource, which increases the complex and not complete.]</font>
 
 ### mGSEA Method
 
@@ -809,11 +845,11 @@ only gene sets with positive $ES$ are selected.
 #### With GO
 
 The following performs TSEA with the *mGSEA* method using the same drug test
-set as in the above `tsea_dup\_hyperG` function call. The arguments of the
+set as in the above `tsea_dup_hyperG` function call. The arguments of the
 `tsea_mGSEA` function are explained in its help file that can be opened from R
 with `?tsea_mGSEA`.
 
-```{r tsea_mgsea_go, eval=TRUE}
+```{r tsea_mgsea_go, eval=TRUE, message=FALSE}
 mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
                         nPerm=1000, pvalueCutoff=1, minGSSize=5)
 result(mgsea_res)
@@ -852,7 +888,7 @@ for the enrichment signal.
 
 The same enrichment test can be performed for KEGG pathways as follows.
 
-```{r tsea_mgsea_kegg, eval=TRUE}
+```{r tsea_mgsea_kegg, eval=TRUE, message=FALSE}
 mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
                           nPerm=1000, pvalueCutoff=1, minGSSize=2)
 result(mgsea_k_res)
@@ -882,7 +918,7 @@ as the examples given under the *dup\_hyperG* and *tsea_mGSEA* sections. The
 arguments of the `tsea_mabs` function are explained in its help file that can be 
 opened from R with `?tsea_mabs`.
 
-```{r tsea_mabs_go, eval=TRUE}
+```{r tsea_mabs_go, eval=TRUE, message=FALSE}
 mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
                       pvalueCutoff=0.05, minGSSize=5)
 result(mabs_res)
@@ -901,9 +937,9 @@ absolute score of the genes in set $S$.
 
 The same enrichment test can be performed for KEGG pathways as follows.
 
-```{r tsea_mabs_kegg, eval=TRUE}
+```{r tsea_mabs_kegg, eval=TRUE, message=FALSE}
 mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
-                        pvalueCutoff=0.05, minGSSize=5)
+                        pvalueCutoff=0.2, minGSSize=5)
 result(mabs_k_res)
 ```
 
@@ -931,7 +967,7 @@ that can be opened from R with `?dsea_hyperG`.
 
 As functional annotation system the following DSEA example uses GO.
 
-```{r dsea_hyperG_go, eval=TRUE}
+```{r dsea_hyperG_go, eval=TRUE, message=FALSE}
 drugs <- unique(result(lincs)$pert[1:10])
 hyperG_res <- dsea_hyperG(drugs=drugs, type="GO", ont="MF")
 result(hyperG_res)
@@ -941,7 +977,7 @@ result(hyperG_res)
 
 The same DSEA test can be performed for KEGG pathways as follows.
 
-```{r dsea_hyperG_kegg, eval=TRUE}
+```{r dsea_hyperG_kegg, eval=TRUE, message=FALSE}
 hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
                             pvalueCutoff = 1, qvalueCutoff = 1, 
                             minGSSize = 10, maxGSSize = 2000)
@@ -951,19 +987,15 @@ result(hyperG_k_res)
 The content of the columns extracted from the feaResult object is described
 under section 4.1.1.1.
 
-<font color="blue">[ThG-Comment: I suggest to change the column title "geneID"
-in the result tables from the DSEA to "drugID". Or if you want to use the same
-for both TSEA and DSEA, then use something like "itemID" or similar.]</font>
-
 ### GSEA Method
 
-The following performs DSEA with the *GSEA* method using the same drug test set
-as in the previous section. Instead of using only the drug labels in the test
+The following performs DSEA with the *GSEA* method using the drug test set
+with scores. Instead of using only the drug labels in the test
 set, the *GSEA* method requires the labels as well as the scores used for
 ranking the drug list in the GESS result. The scores are usually the similarity
 metric used to rank the results of the corresponding GESS method, here the NCS
-values from LINCS. The arguments of the `dsea_GSEA` function are explained in its help
-file that can be opened from R with `?dsea_GSEA`.
+values from LINCS. The arguments of the `dsea_GSEA` function are explained in 
+its help file that can be opened from R with `?dsea_GSEA`.
 
 #### With GO
 
@@ -982,9 +1014,9 @@ result(gsea_res)
 
 The same DSEA test can be performed for KEGG pathways as follows.
 
-```{r dsea_gsea_kegg, eval=TRUE}
+```{r dsea_gsea_kegg, eval=TRUE, message=FALSE}
 gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
-                        pvalueCutoff=0.5, minGSSize=5)
+                        pvalueCutoff=1, minGSSize=5)
 result(gsea_k_res)
 ```
 
@@ -993,17 +1025,25 @@ Since the annotation system are drug-to-functional category mappings, the
 
 ## Comparing FEA Results 
 
-<font color="blue">[ThG-Comment: I am not able understand the text in the following 
+<font color="green">[ThG-Comment: I am not able understand the text in the following 
 paragraph. I can guess what was done based on the figure but the text is not 
 understandable.]</font>
 
-The enriched GO/KEGG categories were re-ranked by putting the terms supported 
-by more methods to topper. For terms supported by the same number of methods, 
-the lower of the mean ranks of the terms across enrichment methods, 
-the topper of the terms. Thus, the GO or KEGG functional categories could be 
-re-ranked by putting the most confident ones at top. Additionally, the adjusted 
-p-values of top 20 re-ranked terms from 5 FEA methods were plotted for better 
-visualization.
+The adjusted p-values from *mGSEA* and *GSEA* enrichment methods are much higher
+than other methods, it is unfair and not applicable to select significantly 
+enriched GO terms or KEGG pathways by setting cutoff (e.g. 0.05) on adjusted
+p-values since in this way, no term will be selected from *mGSEA* method and 
+too many terms will be selected from hypergeometric test. So here, the 
+collection of top 20 terms from each FEA method is seemed as significant. 
+To find the most confident and significant ones that are supported by most 
+methods, the functional categories is re-ranked by putting the 
+terms supported by more methods to topper. For terms supported by the same 
+number of methods, the lower of the mean of ranks of the terms across 
+enrichment methods, the topper of the terms. The `comp_fea_res` function 
+shows the adjusted p-values and supported enrichment methods of the top 20 
+re-ranked GO terms or KEGG pathways. It shows whether the terms are in the top
+20 of the enrichment results from 5 methods and their corresponding adjusted 
+p-values.
 
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
 comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, 
@@ -1014,9 +1054,6 @@ comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res,
 comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_k_res, hyperG_k_res, 
              gsea_k_res, Ntop=20, type="KEGG")
 ```
-
-<font color="blue">[ThG-Comment: the text along x-axis is over-plotting. To resolve
-this you want to plot the labels vertically by turning them 90 degrees.]</font>
 
 ## Summary of FEA Results
 
@@ -1030,7 +1067,7 @@ all or several FEA methods.
 
 # Drug-Target Network Visualization
 
-The above GESS and TSA results can be rendered as interactive drug-target
+The above GESS and TSEA results can be rendered as interactive drug-target
 networks using the `dtnetplot` function from `signatureSearch`. For this, a
 character vector of drug names along with an identifier of a chosen functional
 category are passed on to the `drug` and `set` arguments, respectively. The
@@ -1117,7 +1154,5 @@ h5ls("sample_db.h5")
 ```{r sessionInfo}
 sessionInfo()
 ```
-
-
 
 # References

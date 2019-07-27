@@ -16,7 +16,8 @@ gene set with SYMBOL ids.}
 \item{ont}{if the `set` is a GO term ID, `ont` is the ontology that GO term 
 is belong to. One of "BP", "MF", "CC" or "ALL"}
 
-\item{...}{additional parameters}
+\item{...}{additional parameters for \code{\link[visNetwork]{visNetwork}} 
+function.}
 }
 \value{
 visNetwork plot

@@ -21,7 +21,7 @@ result(x)
 tibble
 }
 \description{
-result generic
+Get GESS or FEA result tables
 
 get 'result' slot of feaResult object
 

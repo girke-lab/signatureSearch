@@ -19,6 +19,9 @@
 ##' drugs, e.g., top ranking drugs from GESS result since the functional
 ##' categories also contains drug sets after gene to drug mappings.
 ##'
+##' The description of columns in the result table can be found at 
+##' \code{\link{tsea_dup_hyperG}} function.
+##' 
 ##' @param drugs query drug set used to do DSEA. 
 ##' Can be top ranking drugs in GESS result. 
 ##' @param type one of "GO", "KEGG" or "MOA"

@@ -10,7 +10,7 @@ Depends: R (>= 3.6), SummarizedExperiment, Rcpp
 Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), data.table, 
          magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats, 
          utils, org.Hs.eg.db, reshape2, visNetwork, BiocParallel, fastmatch, 
-         Biobase, clusterProfiler, readr, gCMAP, DOSE, rhdf5, 
+         Biobase, clusterProfiler, readr, gCMAP, DOSE, rhdf5, GSEABase,
          signatureSearchData, AnnotationHub
 Suggests: KEGG.db, knitr, testthat, rmarkdown, BiocStyle
 License: Artistic-2.0

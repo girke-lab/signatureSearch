@@ -16,6 +16,14 @@
 #' used as nominal p value (Fang et al., 2012). 
 #' The resulting nominal p values are adjusted for 
 #' multiple hypothesis testing using the Benjamini-Hochberg method.
+#' 
+#' Description of the columns in the result table specific to the MeanAbs 
+#' algorithm:
+#' \itemize{
+#'     \item mabs: Given a scored ranked gene list L, mabs(S) represents
+#'     the mean absolute scores of the genes in set S. 
+#'     \item Nmabs: mabs(S) normalized
+#' }
 #' @param drugs query drug set used to do TSEA. 
 #' Can be top ranking drugs in GESS result. 
 #' @param type can be `GO` or `KEGG`

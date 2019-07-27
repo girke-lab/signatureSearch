@@ -37,32 +37,34 @@ implemented here.
 The LINCS method takes about 1 min on a single CPU core for querying 
 with a single signature against 10,000 signatures in the LINCS database.
 
-Description of the score columns in the gess_lincs tibble result:
+Description of the score columns in the gess_lincs result table:
 \itemize{
   \item WTCS: Weighted Connectivity Score, a bi-directional Enrichment 
-  Score of up and down query set. If ES of up and down sets are of different
-  signs, WTCS is (ESup-ESdown)/2, otherwise, it is 0. WTCS ranges between 
-  -1 and 1. It will be positive for signatures that are positively related 
-  and negative for those that are inversely related, and near zero for 
-  signatures that are unrelated.
+  Score for an up/down query set. If the ES values of an up set and a down 
+  set are of different signs, then WTCS is (ESup-ESdown)/2, otherwise, 
+  it is 0. WTCS values range from -1 to 1. They are positive or negative 
+  for signatures that are positively or inversely related, respectively, 
+  and close to zero for signatures that are unrelated.
   \item WTCS_Pval: Nominal p-value of WTCS computed by comparing WTCS 
-  against WTCS null distribution obtained from 1000 random queries
-  \item WTCS_FDR: false discovery rate of WTCS P value
-  \item NCS: To make connectivity scores comparable across cell types and 
-  perturbation types, the scores are normalized. Given a vector of WTCS 
+  against a null distribution of WTCS values obtained from a large number
+  of random queries (e.g. 1000).
+  \item WTCS_FDR: False discovery rate of WTCS_Pval.
+  \item NCS: Normalized Connectivity Score. To make connectivity scores 
+  comparable across cell types and perturbation types, 
+  the scores are normalized. Given a vector of WTCS 
   values w resulting from a query, the values are normalized within each 
-  cell line c and perturbagen type t to obtain Normalized Connectivity Scores
-   (NCS) by dividing the WTCS score with signed mean of WTCS scores within 
+  cell line c and perturbagen type t to obtain (NCS) by dividing the WTCS 
+  value with signed mean of the WTCS values within 
   the subset of signatures in reference database corresponding to c and t.
-  \item Tau: Tau score compares observed NCS to all others in Qref (All 
-  query signatures in reference database). It represents the percentage of 
-  reference queries with a lower |NCS| than |NCSq,r|, adjusted to retain 
-  the sign of NCSq,r. NCSq,r is the normalized connectivity score for 
-  signature r relative to query q. A tau of 90 indicates that only 10 
-  percent of reference perturbations showed stronger connectivity to the 
-  query. 
+  \item Tau: Enrichment score standardized for a given database. 
+  Tau score compares an observed NCS to a large set of NCS values that have 
+  been pre-computed for a specific reference database. The query results 
+  are scored with Tau as a standardized measure ranging from 100 to -100. 
+  A Tau of 90 indicates that only 10% of reference perturbations exhibit 
+  stronger connectivity to the query. This way one can make more meaningful 
+  comparisons across query results.
   \item TauRefSize: Size of reference perturbations for computing Tau.
-  \item NCSct: Summarized NCS across cell types. Given a vector of NCS
+  \item NCSct: NCS summarized across cell types. Given a vector of NCS values
   for perturbagen p, relative to query q, across all cell lines c in which p 
   was profiled, a cell-summarized connectivity score is obtained using a 
   maximum quantile statistic. It compares the 67 and 33 quantiles of 

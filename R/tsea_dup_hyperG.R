@@ -2,11 +2,21 @@
 #' 
 #' This method support target set with duplications by adjusting the frequency 
 #' of the duplicated proteins in the target set instead of taking the unique.
-#' 
+#' @details 
 #' The classical hypergeometric test assumes uniqueness in its gene/protein 
 #' test sets. To maintain the duplication information in the test sets used for 
 #' TSEA, the duplication information in the test set is maintained by adjusting
 #' their frequency.
+#' 
+#' Description of the columns in the result table specific to the 
+#' hypergeometric test: 
+#' \itemize{
+#'     \item GeneRatio: ratio of genes in the test set that are annotated at a 
+#'     specific GO node or KEGG pathway
+#'     \item BgRatio: ratio of background genes that are annotated
+#'     at a specific GO node or KEGG pathway
+#'     \item pvalue: raw p-value of enrichment test
+#' }
 #' @param drugs query drug set used to do TSEA.
 #' Can be top ranking drugs in the GESS result. 
 #' @param universe background genes/targets. If set as `Default`, 

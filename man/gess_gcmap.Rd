@@ -38,15 +38,14 @@ contains rank transformed GEPs.
 
 Description of the score columns in the gess_gcmap tibble result:
 \itemize{
-    \item effect: scaled bi-directional enrichment score, the same as 
-    the 'scaled_score' in the \code{\link{gess_cmap}} result
-    \item nSet: number of genes of the drug signature in the reference 
-    database (gene sets) after setting the higher and lower cutoff.
-    \item nFound: number of genes of the drug signature in the reference 
-    database (gene sets) also found in the query signature 
-    (whole genome profile).
-    \item signed: whether gene sets in the reference database have signs, 
-    representing up and down regulated genes when computing scores 
+    \item effect: Scaled bi-directional enrichment score corresponding to 
+    the scaled_score under the CMAP result.
+    \item nSet: Number of genes in the reference gene sets after applying
+    the higher and lower cutoff.
+    \item nFound: Number of genes in the reference gene sets that are 
+    present in the query signature.
+    \item signed: Whether the gene sets in the reference database have signs, 
+    e.g. representing up and down regulated genes when computing scores.
 }
 }
 \examples{

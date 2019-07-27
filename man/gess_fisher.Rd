@@ -34,18 +34,18 @@ both the query and the database are composed of DEG sets.
 
 Description of the score columns in the gess_fisher tibble result:
 \itemize{
-    \item pval: p value of the Fisher's exact test
-    \item padj: p value adjusted for multiple hypothesis testing using
-    'p.adjust' function with defined method. 
-    \item effect: z-score based on the standard normal distribution
-    \item LOR: Log Odds Ratio
+    \item pval: p-value of the Fisher's exact test.
+    \item padj: p-value adjusted for multiple hypothesis testing using
+    R's p.adjust function with the Benjamini & Hochberg (BH) method. 
+    \item effect: z-score based on the standard normal distribution.
+    \item LOR: Log Odds Ratio.
     \item nSet: number of genes of the drug signature in the reference 
     database (gene sets) after setting the higher and lower cutoff.
     \item nFound: number of genes of the drug signature in the reference 
-    database (gene sets) also found in the query signature 
+    database (gene sets) also found in the query signature
     (whole genome profile).
     \item signed: whether gene sets in the reference database have signs, 
-    representing up and down regulated genes when computing scores  
+    representing up and down regulated genes when computing scores.  
 }
 }
 \examples{

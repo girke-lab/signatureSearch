@@ -38,6 +38,33 @@
 #' \emph{S}. Therefore, giving small weights to genes in \emph{S} that
 #' have zero scores could decrease the weight of the genes in \emph{S} that 
 #' have non-zero scores, thereby decrease the false positive rate. 
+#' 
+#' Description of the columns in the result table specific to the GSEA 
+#' algorithm:
+#' \itemize{
+#'     \item enrichmentScore: ES from the GSEA algorithm 
+#'     (Subramanian et al., 2005). The score is calculated by walking down the 
+#'     gene list L, increasing a running-sum statistic when we encounter a gene 
+#'     in S and decreasing when it is not. The magnitude of the increment 
+#'     depends on the gene scores. The ES is the maximum deviation from zero 
+#'     encountered in the random walk. It corresponds to a weighted 
+#'     Kolmogorov-Smirnov-like statistic.
+#'     \item NES: Normalized enrichment score. The positive and negative 
+#'     enrichment scores are normalized separately by permutating the 
+#'     composition of the gene list L nPerm times, and dividing the enrichment 
+#'     score by the mean of the permutation ES with the same sign.
+#'     \item pvalue:  The nominal p-value of the ES is calculated using a 
+#'     permutation test. Specifically, the composition of the gene list L is 
+#'     permuted and the ES of the gene set is recomputed for the permutated 
+#'     data generating a null distribution for the ES. The p-value of the 
+#'     observed ES is then calculated relative to this null distribution.
+#'     \item leadingEdge: Genes in the gene set S (functional category) that 
+#'     appear in the ranked list L at, or before, the point where the running 
+#'     sum reaches its maximum deviation from zero. It can be interpreted as 
+#'     the core of a gene set that accounts for the enrichment signal.
+#'     \item ledge_rank: Ranks of genes in 'leadingEdge' in gene list L.
+#' }
+#' 
 #' @title mGSEA method for TSEA
 #' @param drugs query drug set used to do TSEA.
 #' Can be top ranking drugs in GESS result. 
