@@ -1,7 +1,7 @@
 ---
 title: _signatureSearch_ - Environment for Gene Expression Searching Combined 
        with Functional Enrichment Analysis
-author: "Authors: Yuzhu Duan & Thomas Girke"
+author: "Authors: Yuzhu Duan, Dan S Evans, Nicholas J. Schork, Steven R. Cummings and Thomas Girke"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
   html_document:
@@ -237,7 +237,7 @@ total of 3,478 signatures; and (4) `cmap_expr` contains mean expression values
 from 1,309 drug treatments of 4 cell lines corresponding to a total of 3,587
 signatures. To minimize redundancy in the `lincs` and `lincs_expr` databases,
 they were assembled from GESs corresponding to a compound dosage and treatment
-time of 10µM and 24h, respectively. If necessary one can
+time of 10$\mu$M and 24h, respectively. If necessary one can
 create here easily database instances for all LINCS measurements.
 However, this will make the search results overwhelmingly complex which we
 wanted to avoid here. For details how the CMAP2 and LINCS databases were
@@ -792,7 +792,10 @@ functions to make this choice?]</font>
 <font color="green">[YD-response: The combined targets from DrugBank, CLUE and
 STITCH databases are used because if choosing specific annotation resource, such
 as DrugBank, the drugs included is limited, many drugs will not get targets. 
-The combined one could get targets of as many drugs as possible and the target set is more complete. So, I don't recommend allowing users to choose specific resource, in this way, the result will also depend on the chosen resource, which increases the complex and not complete.]</font>
+The combined one could get targets of as many drugs as possible and the target 
+set is more complete. So, I don't recommend allowing users to choose specific 
+resource, in this way, the result will also depend on the chosen resource, which 
+increases the complex and not complete.]</font>
 
 ### mGSEA Method
 
@@ -1067,14 +1070,14 @@ all or several FEA methods.
 
 # Drug-Target Network Visualization
 
-The above GESS and TSEA results can be rendered as interactive drug-target
-networks using the `dtnetplot` function from `signatureSearch`. For this, a
-character vector of drug names along with an identifier of a chosen functional
-category are passed on to the `drug` and `set` arguments, respectively. The
-resulting plot depicts the corresponding drug-target interaction network.  Its
-interactive features allow the user to zoom in and out of the network, and to 
-select network components in the drop-down menu located in the upper left corner 
-of the plot.
+Functional modules of the above GESS and TSA results can be rendered as
+interactive drug-target networks using the `dtnetplot` function from
+`signatureSearch`. For this, a character vector of drug names along with an
+identifier of a chosen functional category are passed on to the `drug` and
+`set` arguments, respectively. The resulting plot depicts the corresponding
+drug-target interaction network. Its interactive features allow the user to
+zoom in and out of the network, and to select network components in the
+drop-down menu located in the upper left corner of the plot.
 
 ## With GO
 
@@ -1154,5 +1157,16 @@ h5ls("sample_db.h5")
 ```{r sessionInfo}
 sessionInfo()
 ```
+
+# Funding
+
+This project is funded by NIH grants
+[U19AG02312](https://www.longevityconsortium.org/) and
+[U24AG051129](https://www.longevitygenomics.org/) awarded by the National
+Institute on Aging (NIA). Subcomponents of the environment are based on methods
+developed by projects funded by NSF awards ABI-1661152 and PGRP-1810468. The
+High-Performance Computing (HPC) resources used for optimizing and applying the the code of
+this project were funded by NIH and NSF grants 1S10OD016290-01A1 and MRI-1429826,
+respectively. 
 
 # References
