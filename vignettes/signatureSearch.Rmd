@@ -490,7 +490,7 @@ query and the database are composed of gene label sets, such as DEG sets.
 In the following example, both the `query` and the `refdb` used under the `qSig` 
 call are genome-wide signatures, here z-scores. The actual gene sets required for
 the Fisher's exact test are obtained by setting the `higher` and `lower` cutoffs
-to 1 and -1, respectively.
+to 1 and -1, respectively. 
 
 ```{r gess_fisher, eval=TRUE, message=FALSE}
 qsig_fisher <- qSig(query = query_mat, gess_method = "Fisher", refdb = db_path)
@@ -498,8 +498,15 @@ fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
 ```
 
+The columns in the result table specific to the _Fisher_ method include the
+following information. `pval`: p-value of the Fisher's exact test; `padj`:
+p-value adjusted for multiple hypothesis testing using R's `p.adjust` function
+with the Benjamini & Hochberg (BH) method; `effect`: z-score based on the
+standard normal distribution; `LOR`: log odds ratio.
+
+
 If the `query` contains the labels of up and down regulated genes then the two 
-sets can be provided as a list. Internally, the two sets will be combined into a single
+sets can be provided as a list. Internally, they will be combined into a single
 unsigned set, while the reference database is processed the same way as in the 
 previous example. 
 
@@ -509,12 +516,6 @@ qsig_fisher2 <- qSig(query = list(upset=upset, downset=downset),
 fisher2 <- gess_fisher(qSig=qsig_fisher2, higher=1, lower=-1)
 result(fisher2)
 ```
-
-The columns in the result table specific to the _Fisher_ method include the
-following information.  `pval`: p-value of the Fisher's exact test; `padj`:
-p-value adjusted for multiple hypothesis testing using R's `p.adjust` function
-with the Benjamini & Hochberg (BH) method; `effect`: z-score based on the
-standard normal distribution; `LOR`: log odds ratio.
 
 ## Correlation-based Search Method
 
@@ -631,21 +632,22 @@ Additional details are provided in the text of this sub-section. </font>
 
 # Functional Enrichment (FEA)
 
-GESS results are lists of drugs ranked by their signature similarity to a
-query signature of interest. Interpreting these search results with respect to
-the cellular networks and pathways affected by the top ranking drugs is
-difficult. To overcome this challenge, the knowledge of the target proteins of
-the top ranking drugs can be used to perform functional enrichment analysis
-(FEA) based on community annotation systems, such as Gene Ontologies (GO),
-pathways (e.g.  KEGG, Reactome), drug MOAs or Pfam domains. For this, the ranked
-drug sets are converted into target gene/protein sets to perform Target Set
-Enrichment Analysis (TSEA) based on a chosen annotation system. Alternatively,
-the functional annotation categories of the targets can be assigned to the
-drugs directly to perform Drug Set Enrichment Analysis (DSEA). Although TSEA
-and DSEA are related, their enrichment results can be distinct. This is mainly
-due to duplicated targets present in the test sets of the TSEA methods, whereas
-the drugs in the test sets of DSEA are usually unique. Additional reasons include
-differences in the universe sizes used for TSEA and DSEA. 
+GESS results are lists of perturbagens (here drugs) ranked by their signature
+similarity to a query signature of interest. Interpreting these search results
+with respect to the cellular networks and pathways affected by the top ranking
+drugs is difficult. To overcome this challenge, the knowledge of the target
+proteins of the top ranking drugs can be used to perform functional enrichment
+analysis (FEA) based on community annotation systems, such as Gene Ontologies
+(GO), pathways (e.g.  KEGG, Reactome), drug MOAs or Pfam domains. For this, the
+ranked drug sets are converted into target gene/protein sets to perform Target
+Set Enrichment Analysis (TSEA) based on a chosen annotation system.
+Alternatively, the functional annotation categories of the targets can be
+assigned to the drugs directly to perform Drug Set Enrichment Analysis (DSEA).
+Although TSEA and DSEA are related, their enrichment results can be distinct.
+This is mainly due to duplicated targets present in the test sets of the TSEA
+methods, whereas the drugs in the test sets of DSEA are usually unique.
+Additional reasons include differences in the universe sizes used for TSEA and
+DSEA. 
 
 Importantly, the duplications in the test sets of the TSEA are due to the fact
 that many drugs share the same target proteins. Standard enrichment methods
@@ -1053,9 +1055,21 @@ re-ranked GO terms or KEGG pathways. It shows whether the terms are in the top
 20 of the enrichment results from 5 methods and their corresponding adjusted 
 p-values.
 
-<font color="green">[ThG-Comment: I am still confused about this section. Now
-even concerned that there may be a problem with the p-value calculation. We
-should discuss this.]</font>
+<font color="blue">[ThG-Comment: I am still confused after reading this
+section several times. I am wondering whether you are using here a voting-based
+reranking mechanism that considers the top 20 categories of each FEA method. If
+so then I suggest to state this at the beginning of the above text and drop the
+discussion of the p-value differences. To me this doesn't belong here. For the
+reranking have you considered using the mean rank of each functional category
+across the 5 FEA methods which would less often result in ambiguities for
+reranking than a voting mechanism. Also why doesn't the function have an
+argument to choose the actual statisics used for the ranking, e.g. raw p-value
+or adjusted p-value. By choosing for the toy example the raw p-value, the plot
+would not be so desert-like with respect to the colors used for the dots. Right
+now they are all the same within each method as well as across most methods. To
+the reader this would mean that the ranking shown in the plots is rather
+arbitrary which you may want to avoid. We should discuss both the plotting
+function and the write-up of this section.]</font>
 
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
 comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, 
@@ -1066,6 +1080,14 @@ comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res,
 comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_k_res, hyperG_k_res, 
              gsea_k_res, Ntop=20, type="KEGG")
 ```
+
+<font color="blue">[ThG-Comment: I don't see that you have addressed the
+text overplotting problem along the x-axis. To resolve
+this you want to plot the labels vertically by turning them 90 degrees or 
+use a plot legend on the side instead. In ggplot2 this is so super easy. 
+In addition, the plots should include a short Figure legend. The titles
+included on the top of the plots themselves could be dropped or at least 
+shortened.]</font>
 
 ## Summary of FEA Results
 
