@@ -103,6 +103,10 @@ using?]</font>
 way, not the sorted list since in this way, the format is matrix, which is unit,
 easy to understand and could save the storage space.]</font>
 
+<font color="blue" size="-2">[ThG-Comment: still the illustration it would
+be easier to understand the method since the sorting is important here. Keep
+in mind the illustration is more for explaining the algorithm than the implementation details.]</font>
+
 ## Motivation and Design
 
 Integrating the above described GESS and FEA methods into an R/Bioconductor
@@ -322,11 +326,11 @@ of perturbagens such as drugs that induce similar or opposing GESs as the
 query. Similar GESs suggest similar physiological effects of the corresponding
 perturbagens. As discussed in the introduction, these GES associations can be
 useful to uncover novel MOAs of drugs or treatments for diseases. Although
-several variants of the *CMAP* algorithm are available in other software packages
-including Bioconductor, the implementation provided by `signatureSearch`
-follows the original description of the authors as closely as possible. This
-allows to reproduce in our tests the search results from the corresponding
-CMAP2 web service of the Broad Institute.
+several variants of the *CMAP* algorithm are available in other software
+packages including Bioconductor, the implementation provided by
+`signatureSearch` follows the original description of the authors as closely as
+possible. This allows to reproduce in our tests the search results from the
+corresponding CMAP2 web service of the Broad Institute.
 
 In the following code block, the `qSig` function is used to generate a `qSig`
 object by defining (i) the query signature, (ii) the GESS method and (iii) the
@@ -353,7 +357,7 @@ The search result is stored in a `gessResult` object (here named `cmap`)
 containing the following components: search result table, query signature, name
 of the GESS method and path to the reference database. The `result` accessor
 function can be used to extract the search result table from the `gessResult`
-object.  This table contains the search results for each perturbagen (here
+object. This table contains the search results for each perturbagen (here
 drugs) in the reference database ranked by their signature similarity to the
 query. For the *CMAP* method, the similarity metrics are `raw_score` and
 `scaled_score`. The raw score represents the bi-directional enrichment score
@@ -375,13 +379,14 @@ negatively connected with the query signature, respectively; `N_upset` or
 @Subramanian2017-fu introduced a more complex GESS algorithm, here referred to
 as *LINCS*. While related to *CMAP*, there are several important differences
 among the two approaches. First, *LINCS* weights the query genes based on the
-corresponding differential expression scores of the GESs in the reference database
-(_e.g._ LFC or z-scores). Thus, the reference database used by *LINCS* needs
-to store the actual score values rather than their ranks. Another relevant
-difference is that the *LINCS* algorithm uses a bi-directional weighted
-Kolmogorov-Smirnov enrichment statistic (ES) as similarity metric. To the best
-of our knowledge, the `LINCS` search functionality in `signatureSearch` provides the
-first downloadable standalone software implementation of this algorithm.
+corresponding differential expression scores of the GESs in the reference
+database (_e.g._ LFC or z-scores). Thus, the reference database used by *LINCS*
+needs to store the actual score values rather than their ranks. Another
+relevant difference is that the *LINCS* algorithm uses a bi-directional
+weighted Kolmogorov-Smirnov enrichment statistic (ES) as similarity metric. To
+the best of our knowledge, the `LINCS` search functionality in
+`signatureSearch` provides the first downloadable standalone software
+implementation of this algorithm.
 
 In the following example the `qSig` object for the *LINCS* method is
 initialized the same way as the corresponding *CMAP* object above with the
@@ -493,14 +498,12 @@ fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
 ```
 
-The `query` could also be a list of up and down regulated gene id label sets
-as with the *CMAP* or *LINCS* method. In this case, genes in up and down sets 
-are combined into a single gene set for Fisher's exact test with reference 
-gene sets, which means genes in the query set are unsigned. The `refdb` is 
-still genome-wide z-scores, the gene sets in reference database is obtained by 
-setting the `higher` and  `lower` cutoffs to 1 and -1, respectively.
+If the `query` contains the labels of up and down regulated genes then the two 
+sets can be provided as a list. Internally, the two sets will be combined into a single
+unsigned set, while the reference database is processed the same way as in the 
+previous example. 
 
-```{r gess_fisher_set, eval=TRUE, message=FALSE}
+```{r gess_fisher_set, eval=FALSE, message=FALSE}
 qsig_fisher2 <- qSig(query = list(upset=upset, downset=downset), 
                      gess_method = "Fisher", refdb = db_path)
 fisher2 <- gess_fisher(qSig=qsig_fisher2, higher=1, lower=-1)
@@ -584,17 +587,22 @@ able to rank another HDAC inhibitor, APHA-compound-8, at the top of their
 search results, indicating a better sensitivity of these two methods compared
 to the other methods.
 
-## GESS result visualization
+## GESS Result Visualization
 
-If the reference database contains perturbations (_e.g._ drugs) of different 
-cell types, including normal and tumor cell classifications, the GESS result 
-can be visualized by summarizing rankings/scores of selected drugs across 
-difference cells. The sample databases used in this vignette only contains 
-treatments in SKB cell, so there is no need to summarize the result. 
-To show the visualization of the complete search result, the following code uses
-the same `vorinostat` query signature to search against the full LINCS database 
-via `gess_lincs` method, then uses `gess_res_vis` function to generate the
-plot (Figure 3). 
+The `gess_res_vis` function allows to summarize the ranking scores of selected
+perturbagens for GESS results across cell types along with cell type
+classifications, such as normal and tumor cells. In the following plot (Figure
+3) the perturbagens are drugs (along x-axis) and the ranking scores are LINCS'
+NCS values (y-axis). For each drug the NCS values are plotted for each cell
+type as differently colored dots, while their shape indicates the cell type
+class. Note, the code for generating the plot is not evaluated here since the
+toy database used by this vignette contains only treatments for one cell type
+(here SKB cells). This would result in a not very informative plot. To illustrate 
+the full potential of the `gess_res_vis` function, the following code section
+applies to a search where the `vorinostat` signature was used to query with the
+`gess_lincs` method the full LINCS database. Subsequently, the search result is
+processed by the `gess_res_vis` function to generate the plot shown in
+Figure 3. 
 
 ```{r gess_vis, eval=FALSE}
 vor_qsig_full <- qSig(query = list(upset=upset, downset=downset), 
@@ -612,28 +620,13 @@ gess_res_vis(vori_tb, drugs = drugs, col = "NCS")
 ![](images/vorinostat_SKB_lincs_gess_res_vis.png)
 </center>
 
-<font size="-2"> Figure 3: Summary of NCS scores across cell types of selected 
-drugs in vorinostat GESS result searching against LINCS database. Drugs 1 to 10 
-from left to right: top 10 drugs in the above search result against the toy
-database with *LINCS* method. The other drugs are 10 HDAC inhibitors not 
-selected in the toy database. For each drug, the colored dots represent NCS scores in
-normal cell types. The colored triangles represent NCS scores in tumor cell
-types. The black dot and triangle represent summarized NCS scores across normal
-and tumor cell types, respectively. The NCS is summarized across cell types 
-by obtaining a maximum quantile statistic. It compares the 67 and 33 quantiles 
-of NCS in different cells and retains whichever is of higher absolute magnitude,
-which is similar as `NCSct` score in the result table from `gess_lincs` 
-function. </font>
+<font size="-2"> Figure 3: Summary of NCS scores across cell types (y-axis) for
+selected drugs (x-axis). The plot shown here is based on a search result where
+the vorinostat signature was used to query the entire LINCS database with 
+the `gess_lincs` method. The drugs included here are the 10 top ranking drugs 
+of the search result plus 10 cherry-picked drugs that are all HDAC inhibitors. 
+Additional details are provided in the text of this sub-section. </font>
 
-<font color="green">[ThG-Comment: This section needs to include the code for
-generating the plot. You don't need to evaluate the code to show this more
-interesting example that depends on a more complete search result. Just state
-in the text that the plot is based on such a search. Also, the text above and the
-text in the corresponding gess_res_vis help file are not clear enough to understand 
-what is plotted here. For instance, what does each dot represent, e.g. a single NCS 
-value, an average or something else? In the legend of the plot you may want to 
-change the subtitle on the top of the right side from "cell" to "cell_type" and 
-in the one below from "cell_type" to "cell_class".]</font>
 
 
 # Functional Enrichment (FEA)
@@ -693,6 +686,10 @@ submitting/releasing the package. For a query drug, I use the combined target
 set from DrugBank, CLUE and STITCH databases as its targets. I think the 
 combined target set is more complete than individual ones.]
 </font>
+
+<font color="blue">[ThG-Comment: after the submission of the signatureSearch
+package let's design a function in the drugTargetInteraction package that
+accomplishes this.]</font>
 
 ## TSEA
 The following introduces how to perform TSEA on drug-based GESS results using
@@ -762,8 +759,8 @@ or ALL; `ID`: GO or KEGG IDs; `Description`: description of functional
 category; `pvalue`: raw p-value of enrichment test; `p.adjust`: p-value
 adjusted for multiple hypothesis testing based on method specified under
 `pAdjustMethod`; `qvalue`: q value calculated with R's `qvalue` function to
-control FDR; `itemID`: IDs of items (genes for TSEA, drugs for DSEA) overlapping 
-among test and annotation sets;
+control FDR; `itemID`: IDs of items (genes for TSEA, drugs for DSEA)
+overlapping among test and annotation sets;
 `setSize`: size of the functional category; `GeneRatio`: ratio of genes in the
 test set that are annotated at a specific GO node or KEGG pathway; `BgRatio`:
 ratio of background genes that are annotated at a specific GO node or KEGG
@@ -796,6 +793,14 @@ The combined one could get targets of as many drugs as possible and the target
 set is more complete. So, I don't recommend allowing users to choose specific 
 resource, in this way, the result will also depend on the chosen resource, which 
 increases the complex and not complete.]</font>
+
+<font color="blue">[ThG-Comment: allowing users to choose here their own
+drug-target annotations seems essential to me. Your concerns could easily be
+addressed by a default argument using your current drug-target
+annotations. Most users would want this option. It would also be a more generic
+and extendable design of the software if it were supported. The corresponding
+argument description in the help file could point out limitations of what to
+expect when too sparse drug-target annotations are used instead.]</font>
 
 ### mGSEA Method
 
@@ -992,13 +997,13 @@ under section 4.1.1.1.
 
 ### GSEA Method
 
-The following performs DSEA with the *GSEA* method using the drug test set
-with scores. Instead of using only the drug labels in the test
+The following performs DSEA with the *GSEA* method using as test set drug
+labels combined with scores. Instead of using only the drug labels in the test
 set, the *GSEA* method requires the labels as well as the scores used for
 ranking the drug list in the GESS result. The scores are usually the similarity
 metric used to rank the results of the corresponding GESS method, here the NCS
-values from LINCS. The arguments of the `dsea_GSEA` function are explained in 
-its help file that can be opened from R with `?dsea_GSEA`.
+values from the LINCS method. The arguments of the `dsea_GSEA` function are
+explained in its help file that can be opened from R with `?dsea_GSEA`.
 
 #### With GO
 
@@ -1047,6 +1052,9 @@ shows the adjusted p-values and supported enrichment methods of the top 20
 re-ranked GO terms or KEGG pathways. It shows whether the terms are in the top
 20 of the enrichment results from 5 methods and their corresponding adjusted 
 p-values.
+
+<font color="green">[ThG-Comment: I am still confused about this section. Now
+even concerned that there may be a problem with the p-value calculation.]</font>
 
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
 comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, 
@@ -1165,8 +1173,8 @@ This project is funded by NIH grants
 [U24AG051129](https://www.longevitygenomics.org/) awarded by the National
 Institute on Aging (NIA). Subcomponents of the environment are based on methods
 developed by projects funded by NSF awards ABI-1661152 and PGRP-1810468. The
-High-Performance Computing (HPC) resources used for optimizing and applying the the code of
-this project were funded by NIH and NSF grants 1S10OD016290-01A1 and MRI-1429826,
+High-Performance Computing (HPC) resources used for optimizing and applying the 
+code of this project were funded by NIH and NSF grants 1S10OD016290-01A1 and MRI-1429826,
 respectively. 
 
 # References
