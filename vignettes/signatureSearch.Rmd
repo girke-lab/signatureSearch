@@ -103,9 +103,10 @@ using?]</font>
 way, not the sorted list since in this way, the format is matrix, which is unit,
 easy to understand and could save the storage space.]</font>
 
-<font color="blue" size="-2">[ThG-Comment: still the illustration it would
-be easier to understand the method since the sorting is important here. Keep
-in mind the illustration is more for explaining the algorithm than the implementation details.]</font>
+<font color="blue" size="-2">[ThG-Comment: still the illustration of the method 
+would be easier to understand if it showed here sorted values which is important 
+for the algorithm. Keep in mind the illustration is more for explaining the algorithm
+than the details of the implementation.]</font>
 
 ## Motivation and Design
 
@@ -1069,7 +1070,12 @@ would not be so desert-like with respect to the colors used for the dots. Right
 now they are all the same within each method as well as across most methods. To
 the reader this would mean that the ranking shown in the plots is rather
 arbitrary which you may want to avoid. We should discuss both the plotting
-function and the write-up of this section.]</font>
+function and the write-up of this section. 
+
+Another concern I have with the design of this function, is the choice of the
+many arguments for the input result tables. To me there should be just one
+argurment where the result objects are provided in a list-like structure. This
+way the user can provide any number of input result tables.]</font>
 
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
 comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, 
