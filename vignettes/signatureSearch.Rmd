@@ -1054,7 +1054,8 @@ re-ranked GO terms or KEGG pathways. It shows whether the terms are in the top
 p-values.
 
 <font color="green">[ThG-Comment: I am still confused about this section. Now
-even concerned that there may be a problem with the p-value calculation.]</font>
+even concerned that there may be a problem with the p-value calculation. We
+should discuss this.]</font>
 
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
 comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, 
