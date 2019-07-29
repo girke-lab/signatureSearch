@@ -12,7 +12,7 @@ discovery they can be used for identifying novel modes of action (MOA) of
 bioactive compounds from reference databases such as LINCS containing the
 genome-wide GESs from tens of thousands of drug and genetic perturbations
 (Subramanian et al. 2017). A typical GES search (GESS) workflow can be divided into
-two major steps (Figure 1).  First, GESS methods are used to identify
+two major steps.  First, GESS methods are used to identify
 perturbagens such as drugs that induce GESs similar to a query GES of interest.
 The queries can be drug-, disease- or phenotype-related GESs. Since the
 MOAs of most drugs in the corresponding reference databases are known, the
@@ -24,12 +24,10 @@ have been developed and implemented in this package to efficiently interpret
 GESS results. The latter are usually composed of lists of perturbagens (_e.g._
 drugs) ranked by the similarity metric of the corresponding GESS method.
 Finally, network resconstruction functionalities are integrated for visualizing
-the final results, _e.g._ in form of drug-target networks. Figure 1 illustrates
-the major steps of a typical signature search workflow. For each GESS and FEA
+the final results, _e.g._ in form of drug-target networks. For each GESS and FEA
 step, several alternative methods have been implemented in _signatureSearch_ to
 allow users to choose the best possible workflow configuration for their
-research application.  The individual search and enrichment methods are
-introduced in the corresponding sections of this vignette.
+research application. 
 
 # Installation and Loading
 
