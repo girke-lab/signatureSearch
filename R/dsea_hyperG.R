@@ -1,48 +1,52 @@
-##' hyperG method for DSEA
+##' hyperG Enrichment Method
 ##' 
-##' The hypergeometric test is used to do enrichment analysis on a drug set 
-##' after mapping drugs to functional categories via drug-target links in
-##' DrugBank, CLUE and STITCH databases for GO and KEGG pathway enrichment. 
-##' It can also be used to get the enriched MOAs of a drug set. 
-##' The drugs MOA annotation come from CLUE website.
+##' This function uses hypergeometric test to do enrichment analysis on a 
+##' drug set after mapping drugs to functional categories via drug-target 
+##' links in DrugBank, CLUE and STITCH databases for GO and KEGG annotation 
+##' system. It can also be used to get the enriched MOAs of a drug set if 
+##' type is set as 'MOA'. The drugs MOA annotation is from CLUE website 
+##' (\url{https://clue.io/}).
 ##' 
-##' The drug sets can be directly used for GO/KEGG pathways enrichment testing 
-##' by changing the mappings in the reference database from target-to-functional
+##' The drug set can be directly used to perform enrichment testing 
+##' by changing the mappings in the annotation system from gene-to-functional
 ##' category mappings to drug-to-functional category mappings. 
 ##' The latter can be generated based on the drug-target information provided 
 ##' by DrugBank or related databases. As a result, one can perform the FEA on 
-##' ranked drug lists directly. This DSEA approach has the advantage that the 
+##' ranked drug list directly. This DSEA approach has the advantage that the 
 ##' drugs in the query test sets are usually unique allowing to use them 
 ##' without any changes for functional enrichment methods. 
 ##' 
-##' So the hypergeometric test is directly used when the query is a vector of 
-##' drugs, e.g., top ranking drugs from GESS result since the functional
-##' categories also contains drug sets after gene to drug mappings.
-##'
-##' The description of columns in the result table can be found at 
+##' Here, the hypergeometric test is directly used on a query drug test set,
+##' e.g., top ranking drugs in GESS result since the functional
+##' annotation system also contains drug sets after gene to drug mappings.
+##' 
+##' Note, description of the columns in the result table can be found at 
 ##' \code{\link{tsea_dup_hyperG}} function.
 ##' 
-##' @param drugs query drug set used to do DSEA. 
-##' Can be top ranking drugs in GESS result. 
-##' @param type one of "GO", "KEGG" or "MOA"
-##' @param ont One of "MF", "BP", "CC" or "ALL" if type is "GO"
-##' @param pvalueCutoff Cutoff value of p value.
-##' @param pAdjustMethod p value adjustment method,
-##' one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"
-##' @param qvalueCutoff q value cutoff
-##' @param minGSSize minimal size of drug sets annotated by ontology term 
-##' after drug to functional category mappings. If type is "MOA", it is
-##' recommended to set minGSSize as 2 since some MOA categories only contain 2 
-##' drugs.
-##' @param maxGSSize maximal size of drug sets annotated for testing
-##' @return \code{\link{feaResult}} object, 
-##' represents enriched functional categories.
+##' @param drugs character vector, query drug set used for functional 
+##' enrichment. Can be top ranking drugs in the GESS result. 
+##' @param type one of 'GO', 'KEGG' or 'MOA'
+##' @param ont character(1). If type is `GO`, set ontology as one of `BP`,`MF`,
+#' `CC` or `ALL`. If type is 'KEGG', it is ignored.
+##' @param pvalueCutoff double, p-value cutoff
+##' @param pAdjustMethod p-value adjustment method, 
+#' one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'
+##' @param qvalueCutoff double, qvalue cutoff
+##' @param minGSSize integer, minimum size of each drug set in annotation 
+##' system after drug to functional category mappings. If type is 'MOA', it is
+##' recommended to set 'minGSSize' as 2 since some MOA categories only contain 
+##' 2 drugs.
+##' @param maxGSSize integer, maximum size of each drug set in annotation 
+##' system 
+##' @return \code{\link{feaResult}} object, the result table contains the
+#' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
+#' the corresponding enrichment statistic.
 ##' @import org.Hs.eg.db
 ##' @importFrom magrittr %<>%
 ##' @importMethodsFrom AnnotationDbi mappedkeys
 ##' @importMethodsFrom AnnotationDbi mget
 ##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
-##'          \code{\link[signatureSearchData]{dtlink_db_clue_sti}}
+##'          \code{\link[signatureSearchData]{goAnno_drug}}
 ##' @examples 
 ##' data(drugs)
 ##' ## GO annotation system

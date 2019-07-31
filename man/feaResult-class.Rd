@@ -4,11 +4,22 @@
 \name{feaResult-class}
 \alias{feaResult-class}
 \alias{feaResult}
-\title{Class "feaResult"}
+\title{feaResult object}
 \description{
-This class represents the result of functional enrichment analysis.
+The feaResult object stores the enrichment result table, organism 
+information of the annotation system, and the ontology type of the GO 
+annotation system. If the annotation system is KEGG, the latter will be 
+'KEGG'. It also stores the input drugs used for the enrichment test, 
+as well as their target information.
 }
-\details{
+\section{Slots}{
+
+\describe{
+\item{\code{result}}{tibble object, this result table contains the
+enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
+the corresponding enrichment statistic. The result table can be extracted 
+via \code{\link{result}} accessor function.
+
 Description of the common columns in the result table from different 
 enrichment methods:
 \itemize{
@@ -21,31 +32,18 @@ enrichment methods:
     \item itemID: IDs of items (genes for TSEA, drugs for DSEA) overlapping 
     among test and annotation sets.
     \item setSize: size of the functional category
-}
-}
-\section{Slots}{
-
-\describe{
-\item{\code{result}}{tibble representing enriched functional categories}
-
-\item{\code{organism}}{only "human" supported}
-
-\item{\code{ontology}}{biological ontology}
-
-\item{\code{drugs}}{Drug IDs}
-
-\item{\code{targets}}{Target IDs of drugs in DrugBank/LINCS/STITCH databases or 
-target list with scores.}
 }}
 
-\references{
-Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
-Gillette, M. A., … Mesirov, J. P. (2005). Gene set enrichment analysis: a 
-knowledge-based approach for interpreting genome-wide expression profiles. 
-Proceedings of the National Academy of Sciences of the United States of
-America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
-}
-\author{
-Yuzhu Duan
-}
+\item{\code{organism}}{organism information of the annotation system, 
+only 'human' supported.}
+
+\item{\code{ontology}}{ontology type of the GO annotation system. If the annotation 
+system is KEGG, it will be 'KEGG'}
+
+\item{\code{drugs}}{input drugs used for the enrichment test}
+
+\item{\code{targets}}{target information of the drugs in the defined drug-target 
+annotation resource.}
+}}
+
 \keyword{classes}

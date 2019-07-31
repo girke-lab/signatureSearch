@@ -4,17 +4,21 @@
 \name{gessResult-class}
 \alias{gessResult-class}
 \alias{gessResult}
-\title{Class "gessResult"}
+\title{gessResult object}
 \description{
-The class stores the result of GESS analysis
+The gessResult object stores the search result table, query signature, 
+name of the GESS method and path to the reference database from the 
+GESS methods.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{result}}{tibble from GESS analysis, represents a list of drugs 
-in the reference database ranked by their signature similarity to the query.
+\item{\code{result}}{tibble object, this result table contains the search results 
+for each perturbagen in the reference database ranked by their signature 
+similarity to the query. The result table can be extracted via 
+\code{\link{result}} accessor function.
 
-The description of the common tibble columns from different GESS methods:
+Description of the common columns from different GESS methods:
 \itemize{
     \item pert: character, name of perturbagen (e.g. drug) in the reference 
     database
@@ -35,7 +39,7 @@ The description of the common tibble columns from different GESS methods:
 
 \item{\code{query}}{query signature}
 
-\item{\code{gess_method}}{method for GESS analysis}
+\item{\code{gess_method}}{name of the GESS method}
 
 \item{\code{refdb}}{path to the reference database}
 }}

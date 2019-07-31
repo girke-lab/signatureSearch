@@ -1,31 +1,58 @@
-#' @title Correlation based method for GESS
+#' @title Correlation-based Search Method
 #' @description 
-#' It uses query signature to search against the reference database in the 
-#' \code{\link{qSig}} object by measuring correlation coefficient.
+#' It uses query signature to search against the reference database defined 
+#' in the \code{\link{qSig}} object by calculating correlation coefficients.
 #' @details 
-#' The correlation coefficients can be used as a GESS method by searching 
-#' with a query expression profile a database of expression profiles. 
-#' Correlation-based queries were performed with genome-wide GEPs as well as 
-#' with GEPs subset to the same query genes used for the set enrichment 
-#' methods (\code{CMAP}, \code{LINCS} and \code{Fisher}). 
-#' The latter situation makes the correlation-based results more comparable 
-#' to the set enrichment methods by providing to each method a more equal 
-#' amount of information than this is the case for the correlation method with 
-#' genome-wide GEPs. 
+#' Correlation-based similarity metrics, such as Spearman or Pearson 
+#' coefficients, can also be used as GESS methods. As non-set-based methods, 
+#' they require quantitative gene expression values for both the query and the 
+#' database entries, that usually need to be of the same type to obtain 
+#' meaningful results, such as normalized intensities or read counts from 
+#' microarrays or RNA-Seq experiments, respectively. For correlation searches 
+#' to work, it is important that both the query and reference database contain 
+#' the same type of gene identifiers. The expected data structure of the query 
+#' is a matrix with a single numeric column and the gene labels 
+#' (e.g. Entrez Gene IDs) in the row name slot. For convenience, the 
+#' correlation-based searches can either be performed with the full set of 
+#' genes represented in the database or a subset of them. The latter can be 
+#' useful to focus the computation for the correlation values on certain genes 
+#' of interest such as a DEG set or the genes in a pathway of interest. 
 #' 
-#' Description of the score columns in the gess_cor tibble result:
+#' For comparing the performance of different GESS methods, it can also be 
+#' advantageous to subset the genes used for a correlation-based search to 
+#' same set used in a set-based search, such as the up/down DEGs used in a 
+#' LINCS GESS. This way the search results of correlation- and set-based 
+#' methods can be more comparable because both are provided with equivalent 
+#' information content.
+#' 
+#' To perform a correlation-based search on a subset of genes represented in 
+#' the database, one can simply provide the chosen gene subset in the query. 
+#' During the search the database entries will be subsetted to the genes 
+#' provided in the query signature.
+#' 
+#' The Spearman correlation coeffient calculation takes about 1 minute on a 
+#' single CPU core for querying with a single genome-wide signature against 
+#' 10,000 signatures in the reference database. However, It only takes about 10 
+#' seconds if the query genes are subsetted to DEGs.
+#' 
+#' @section Column description:
+#' Description of the score columns in the result table specific for 
+#' correlation-based methods:
 #' \itemize{
 #'     \item cor_score: Correlation coefficient based on the method defined in 
-#'     the gess_cor function.
+#'     the \code{gess_cor} function.
 #' }
-#' @param qSig `qSig` object, The 'gess_method' slot should be 'Cor'. 
-#' The reference database in the \code{qsig} could either store gene expression 
-#' values or differential expression scores.
+#' Description of the other columns are available at the 'result' slot of the
+#' \code{\link{gessResult}} object.
+#' 
+#' @param qSig \code{\link{qSig}} object defining the query signature, the GESS
+#' method (should be 'Cor') and the path to the reference database.
 #' @param method One of 'spearman' (default), 'kendall', or 'pearson',
 #' indicating which correlation coefficient to be used.
 #' @param chunk_size size of chunk per processing
-#' @return gessResult object, containing drugs in the reference database
-#' ranked by their similarity to the query signature
+#' @return \code{\link{gessResult}} object, the result table contains the 
+#' search results for each perturbagen in the reference database ranked by 
+#' their signature similarity to the query.
 #' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 

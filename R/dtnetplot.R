@@ -1,13 +1,20 @@
-##' A drug-target interaction network can be built if a drug set and a 
-##' target/protein set is provided. If the target set is a GO category or a 
-##' KEGG pathway, their term ID could be directly used.
-##' @title plot drug-target interaction network
-##' @param drugs A character vector representing drugs used to build a 
-##' drug-target network 
-##' @param set could be GO term ID, KEGG pathway ID or a character vector of 
-##' gene set with SYMBOL ids.
-##' @param ont if the `set` is a GO term ID, `ont` is the ontology that GO term 
-##' is belong to. One of "BP", "MF", "CC" or "ALL"
+##' Functional modules of the GESS and FEA results can be rendered as 
+##' interactive drug-target networks using this function. For this, 
+##' a character vector of drug names along with an identifier of a chosen 
+##' functional category are passed on to the drugs and set arguments, 
+##' respectively. The resulting plot depicts the corresponding drug-target 
+##' interaction network. Its interactive features allow the user to zoom in 
+##' and out of the network, and to select network components in the drop-down 
+##' menu located in the upper left corner of the plot.
+##' @title Drug-Target Network Visualization
+##' @param drugs A character vector of drug names
+##' @param set character(1) if identifier of a functional category (GO term ID
+##' or KEGG pathway ID) is chosen. It could also be a character vector of 
+##' gene SYMBOL IDs.
+##' @param ont if `set` is a GO term ID, `ont` is the ontology that GO term 
+##' is belong to. One of 'BP', 'MF' or 'CC'
+##' @param desc character(1), description of the functional category or the 
+##' target set
 ##' @param ... additional parameters for \code{\link[visNetwork]{visNetwork}} 
 ##' function.
 ##' @return visNetwork plot
@@ -21,12 +28,12 @@
 ##'     desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 ##' @export dtnetplot
 ##' 
-dtnetplot <- function(drugs, set, ont = NULL, ...) {
+dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, ...) {
   if(grepl("GO:\\d{7}",set)){
     ont %<>% toupper
-    if(is.null(ont) | !any(ont %in% c("BP","MF","CC","ALL"))) 
+    if(is.null(ont) | !any(ont %in% c("BP","MF","CC"))) 
       stop("The 'set' is a GO term ID, please set 'ont' as one of 
-           BP, MF, CC or ALL")
+           BP, MF or CC")
     # download goAnno.rds and save it to cache
     goAnno <- suppressMessages(ah[["AH69084"]])
     go_gene <- unique(goAnno$SYMBOL[goAnno$ONTOLOGYALL == ont & 

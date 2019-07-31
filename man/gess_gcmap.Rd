@@ -2,12 +2,13 @@
 % Please edit documentation in R/gess_gcmap.R
 \name{gess_gcmap}
 \alias{gess_gcmap}
-\title{gCMAP method for GESS}
+\title{gCMAP Search Method}
 \usage{
 gess_gcmap(qSig, higher, lower, chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{`qSig` object, The 'gess_method' slot of 'qSig' should be 'gCMAP'}
+\item{qSig}{\code{\link{qSig}} object defining the query signature, the GESS
+method (should be 'gCMAP') and the path to the reference database.}
 
 \item{higher}{The 'higher' threshold. If not 'NULL', genes with a score 
 larger than 'higher' will be included in the gene set with sign +1. 
@@ -20,23 +21,28 @@ At least one of 'lower' and 'higher' must be specified.}
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-gessResult object, containing drugs in the reference database
-ranked by their similarity to the query signature
+\code{\link{gessResult}} object, the result table contains the 
+search results for each perturbagen in the reference database ranked by 
+their signature similarity to the query.
 }
 \description{
-It uses query signature to search against the reference database in the 
-\code{\link{qSig}} object by gCMAP method, which is adapted from the 
+It uses query signature to search against the reference database defined in 
+the \code{\link{qSig}} object by gCMAP method, which is adapted from the 
 gCMAP package (Sandmann et al., 2014)
 }
 \details{
-The \code{gCMAP} package provides access to related 
-but not identical implementations of the original CMAP algorithm proposed by 
-Lamb et al., 2006. It uses as query a rank transformed GEP and the reference 
-database is composed of DEG sets. This is the opposite situation of the 
-original \code{CMAP} method, where the query is a DEG set and the database 
-contains rank transformed GEPs.
+The Bioconductor gCMAP (Sandmann et al. 2014) package provides access to a 
+related but not identical implementation of the original CMAP algorithm 
+proposed by Lamb et al. (2006). It uses as query a rank transformed GES and 
+the reference database is composed of the labels of up and down regulated 
+DEG sets. This is the opposite situation of the CMAP method, where the query 
+is composed of the labels of up and down regulated DEGs and the database 
+contains rank transformed GESs.
+}
+\section{Column description}{
 
-Description of the score columns in the gess_gcmap tibble result:
+Description of the score columns in the result table specific for gCMAP 
+method:
 \itemize{
     \item effect: Scaled bi-directional enrichment score corresponding to 
     the scaled_score under the CMAP result.
@@ -47,7 +53,10 @@ Description of the score columns in the gess_gcmap tibble result:
     \item signed: Whether the gene sets in the reference database have signs, 
     e.g. representing up and down regulated genes when computing scores.
 }
+Description of the other columns are available at the 'result' slot of the
+\code{\link{gessResult}} object.
 }
+
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")

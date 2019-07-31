@@ -2,39 +2,54 @@
 % Please edit documentation in R/gess_cmap.R
 \name{gess_cmap}
 \alias{gess_cmap}
-\title{CMAP method for GESS}
+\title{CMAP Search Method}
 \usage{
 gess_cmap(qSig, chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{\code{qSig} object, The 'gess_method' slot should be 'CMAP'.}
+\item{qSig}{\code{\link{qSig}} object defining the query signature, the GESS
+method (should be 'CMAP') and the path to the reference database.}
 
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-\code{\link{gessResult}} object, represents drugs in the reference 
-database ranked by their similarity to the query signature
+\code{\link{gessResult}} object, the result table contains the 
+search results for each perturbagen in the reference database ranked by 
+their signature similarity to the query.
 }
 \description{
-It uses query signature to search against the reference database in the 
-\code{\link{qSig}} object by CMAP method, which is an implementation of 
-the original CMap method from Lamb et al, 2006.
+It uses query signature to search against the reference database defined
+in the \code{\link{qSig}} object by CMAP method, which is an implementation 
+of the CMap method from Lamb et al, 2006.
 }
 \details{
-Lamb et at., 2006 introduced the gene expression-based search method known as
-Connectivity Map (CMap) where a GES database is searched with a query GES for
-similar matches. It uses as query the most up- and down-regulated DEGs from 
-a genome-wide expression experiment. The GES query is used to search a 
-database of rank transformed GEPs and ranks the results by the degree of 
-enrichment of the up- and down-regulated query genes on the top and bottom 
-of the databases entries, respectively. The search results are a list of 
-drugs that have similar or opposing GESs as the query. Similar GESs suggest 
-similar physiological effects of the corresponding perturbagens. 
+Lamb et al. (2006) introduced the gene expression-based search method known 
+as Connectivity Map (CMap) where a GES database is searched with a query GES 
+for similar entries (Lamb et al. 2006). Specifically, the GESS method from 
+Lamb et al. (2006), here termed as CMAP, uses as query the two label sets of 
+the most up- and down-regulated genes from a genome-wide expression 
+experiment, while the reference database is composed of rank transformed 
+expression profiles (e.g. ranks of LFC or z-scores). The actual GESS 
+algorithm is based on a vectorized rank difference calculation. The 
+resulting Connectivity Score expresses to what degree the query up/down 
+gene sets are enriched on the top and bottom of the database entries, 
+respectively. The search results are a list of perturbagens such as drugs 
+that induce similar or opposing GESs as the query. Similar GESs suggest 
+similar physiological effects of the corresponding perturbagens. These GES 
+associations can be useful to uncover novel MOAs of drugs or treatments for 
+diseases. Although several variants of the CMAP algorithm are available in 
+other software packages including Bioconductor, the implementation provided 
+by this package follows the original description of the authors as closely 
+as possible. This allows to reproduce in our tests the search results from 
+the corresponding CMAP2 web service of the Broad Institute.
 
-The CMAP method takes about 1 minute on a single CPU core for querying with 
-a single signature against 10,000 signatures in the LINCS database.
+The CMAP algorithm takes about 1 minute on a single CPU core for querying 
+with a single signature against 10,000 signatures in the reference database.
+}
+\section{Column description}{
 
-Description of the score columns in the gess_cmap tibble result:
+Description of the score columns in the result table specific for CMAP 
+method:
 \itemize{
     \item raw_score: bi-directional enrichment score (Kolmogorov-Smirnov 
     statistic) of up and down set in the query siganture
@@ -42,7 +57,10 @@ Description of the score columns in the gess_cmap tibble result:
     dividing the positive scores with the maxmum positive score, and negative
     scores with the absolute value of minimum negative score.
 }
+Description of the other columns are available at the 'result' slot of the
+\code{\link{gessResult}} object.
 }
+
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")

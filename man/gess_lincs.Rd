@@ -2,16 +2,17 @@
 % Please edit documentation in R/gess_lincs.R
 \name{gess_lincs}
 \alias{gess_lincs}
-\title{LINCS method for GESS}
+\title{LINCS Search Method}
 \usage{
 gess_lincs(qSig, tau = FALSE, sortby = "NCS", chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{`qSig` object, The 'gess_method' slot should be 'LINCS'}
+\item{qSig}{\code{\link{qSig}} object defining the query signature, the GESS
+method (should be 'LINCS') and the path to the reference database.}
 
 \item{tau}{TRUE or FALSE, whether to compute the tau score. It is only 
-meaningful when the "refdb" in "qSig" is LINCS database since the reference
-queries we generated for computing tau score are from LINCS database.}
+meaningful when the full LINCS database is used since the reference
+queries we generated for computing Tau scores are from LINCS database.}
 
 \item{sortby}{rank the GESS result by one of the following scores: 
 `WTCS`, `NCS`, `Tau`, `NCSct` or `NA`}
@@ -19,25 +20,35 @@ queries we generated for computing tau score are from LINCS database.}
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-\code{\link{gessResult}} object, containing drugs in the reference 
-database ranked by their similarity to the query signature
+\code{\link{gessResult}} object, the result table contains the 
+search results for each perturbagen in the reference database ranked by 
+their signature similarity to the query.
 }
 \description{
-It uses query signature to search against the reference database in the 
-\code{\link{qSig}} object by LINCS method, which is an implementation of the 
-method from Subramanian et al, 2017.
+It uses query signature to search against the reference database defined
+in the \code{\link{qSig}} object by LINCS method, which is an implementation
+of the method from Subramanian et al, 2017.
 }
 \details{
-Subramanian et al., 2017 introduced a new GESS method (\code{LINCS}) that is 
-similar with the CMAP method but weights genes in the query set by using 
-expression profiles with scores instead of rank transformed as reference 
-database. Since now, no implementations of this algorithm available, it is 
-implemented here. 
+Subramanian et al. (2017) introduced a more complex GESS algorithm, 
+here referred to as LINCS. While related to CMAP, there are several important
+differences among the two approaches. First, LINCS weights the query genes 
+based on the corresponding differential expression scores of the GESs in the 
+reference database (e.g. LFC or z-scores). Thus, the reference database used 
+by LINCS needs to store the actual score values rather than their ranks. 
+Another relevant difference is that the LINCS algorithm uses a bi-directional
+weighted Kolmogorov-Smirnov enrichment statistic (ES) as similarity metric. 
+To the best of our knowledge, the LINCS search functionality in this package
+provides the first downloadable standalone software implementation of this 
+algorithm.
 
 The LINCS method takes about 1 min on a single CPU core for querying 
-with a single signature against 10,000 signatures in the LINCS database.
+with a single signature against 10,000 signatures in the reference database.
+}
+\section{Column description}{
 
-Description of the score columns in the gess_lincs result table:
+Description of the score columns in the result table specific for LINCS 
+method:
 \itemize{
   \item WTCS: Weighted Connectivity Score, a bi-directional Enrichment 
   Score for an up/down query set. If the ES values of an up set and a down 
@@ -70,7 +81,10 @@ Description of the score columns in the gess_lincs result table:
   maximum quantile statistic. It compares the 67 and 33 quantiles of 
   NCSp,c and retains whichever is of higher absolute magnitude.
 }
+Description of the other columns are available at the 'result' slot of the
+\code{\link{gessResult}} object.
 }
+
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")

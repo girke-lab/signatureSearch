@@ -2,43 +2,55 @@
 % Please edit documentation in R/tsea_mabs.R
 \name{tsea_mabs}
 \alias{tsea_mabs}
-\title{meanAbs method for TSEA}
+\title{meanAbs Search Method}
 \usage{
 tsea_mabs(drugs, type = "GO", ont = "MF", nPerm = 1000,
   pAdjustMethod = "BH", pvalueCutoff = 0.05, minGSSize = 5,
-  maxGSSize = 500)
+  maxGSSize = 500, dt_anno = "all")
 }
 \arguments{
-\item{drugs}{query drug set used to do TSEA. 
-Can be top ranking drugs in GESS result.}
+\item{drugs}{character vector, query drug set used for functional enrichment.
+Can be top ranking drugs in the GESS result.}
 
-\item{type}{can be `GO` or `KEGG`}
+\item{type}{one of `GO` or `KEGG`}
 
-\item{ont}{if type is `GO`, set ontology, can be `BP`,`MF`,`CC` or `ALL`}
+\item{ont}{character(1). If type is `GO`, set ontology as one of `BP`,`MF`,
+`CC` or `ALL`. If type is 'KEGG', it is ignored.}
 
-\item{nPerm}{permutation numbers used to calculate p value}
+\item{nPerm}{integer, permutation numbers used to calculate p-value}
 
-\item{pAdjustMethod}{p value adjustment method,
-one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
+\item{pAdjustMethod}{p-value adjustment method, 
+one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'}
 
-\item{pvalueCutoff}{p value cutoff}
+\item{pvalueCutoff}{double, p-value cutoff}
 
-\item{minGSSize}{minimum size of each gene set in annotation system}
+\item{minGSSize}{integer, minimum size of each gene set in annotation system}
 
-\item{maxGSSize}{maximum size of each gene set in annotation system}
+\item{maxGSSize}{integer, maximum size of each gene set in annotation system}
+
+\item{dt_anno}{drug-target annotation resource. one of 'DrugBank', 'CLUE', 
+'STITCH' or 'all'. If 'dt_anno' is 'all', the targets from DrugBank, CLUE 
+and STITCH databases will be combined. It is recommended to set the 'dt_anno'
+as 'all' since it will get the most complete target set of as many drugs
+as possible. Users could also choose individual annotation resource if 
+wanted, but should be aware that if the chosen drug-target annotation
+resource contains limited drugs (such as CLUE), many query drugs will not
+get targets and the target set may not be complete, which could affect
+the enrichment result.}
 }
 \value{
-\code{\link{feaResult}} object, 
-represents enriched functional categories.
+\code{\link{feaResult}} object, the result table contains the
+enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
+the corresponding enrichment statistic.
 }
 \description{
-This method support target set with duplications by transforming it to a 
-scored ranked target list and calculating mean absolute scores of genes
-in gene set \emph{S}
+The meanAbs (mabs) method supports target set with duplications by 
+transforming it to a score ranked target list and calculating mean absolute 
+scores of genes sin gene set \emph{S}
 }
 \details{
 The input for the \emph{mabs} method is \emph{L_tar}, the same as for 
-\code{m_GSEA}. The \emph{meanAbs} statistic (\emph{mabs(S)}) of a gene set 
+\code{mGSEA}. In this enrichment statistic, \emph{mabs(S)}, of a gene set 
 \emph{S} is calculated as mean absolute scores of the genes in \emph{S}. 
 In order to adjust for size variations in gene set \emph{S}, 1000 random 
 permutations of \emph{L_tar} are performed to determine \emph{mabs(S,pi)}. 
@@ -46,9 +58,11 @@ Subsequently, \emph{mabs(S)} is normalized by subtracting the median of the
 \emph{mabs(S,pi)} and then dividing by the standard deviation of 
 \emph{mabs(S,pi)} yielding the normalized scores \emph{Nmabs(S)}. Finally, 
 the portion of \emph{mabs(S,pi)} that is greater than \emph{mabs(S)} is 
-used as nominal p value (Fang et al., 2012). 
-The resulting nominal p values are adjusted for 
+used as nominal p-value (Fang et al., 2012). 
+The resulting nominal p-values are adjusted for 
 multiple hypothesis testing using the Benjamini-Hochberg method.
+}
+\section{Column description}{
 
 Description of the columns in the result table specific to the MeanAbs 
 algorithm:
@@ -57,7 +71,10 @@ algorithm:
     the mean absolute scores of the genes in set S. 
     \item Nmabs: mabs(S) normalized
 }
+Description of the other columns are available at the 'result' slot of the
+\code{\link{feaResult}} object.
 }
+
 \examples{
 data(drugs)
 ## GO annotation system

@@ -2,61 +2,68 @@
 % Please edit documentation in R/dsea_GSEA.R
 \name{dsea_GSEA}
 \alias{dsea_GSEA}
-\title{GSEA method for DSEA}
+\title{GSEA Enrichment Method}
 \usage{
 dsea_GSEA(drugList, type = "GO", ont = "BP", exponent = 1,
   nPerm = 1000, minGSSize = 10, maxGSSize = 500,
   pvalueCutoff = 0.05, pAdjustMethod = "BH")
 }
 \arguments{
-\item{drugList}{scored ranked list of all drugs in the GESS result. 
-The similarity scores of the corresponding GESS method can be used for 
-ranking the drugs as it is required by the GSEA algorithm. 
+\item{drugList}{named numeric vector, the names represent drug labels, the
+numeric vector represents scores. It could be ranked list of all drugs in 
+the GESS result. The similarity scores of the corresponding GESS method 
+can be used for ranking the drugs as it is required by the GSEA algorithm. 
 The drugs with zero scores are excluded.}
 
-\item{type}{one of "GO", "KEGG" or "MOA"}
+\item{type}{one of 'GO', 'KEGG' or 'MOA'}
 
-\item{ont}{one of "BP", "MF", "CC" or "ALL" if type is "GO"}
+\item{ont}{character(1). If type is `GO`, set ontology as one of `BP`,`MF`,
+`CC` or `ALL`. If type is 'KEGG', it is ignored.}
 
-\item{exponent}{weight of each step}
+\item{exponent}{integer, exponent in GSEA algorithm defines the weight of 
+genes in gene set \emph{S}.}
 
-\item{nPerm}{permutation numbers}
+\item{nPerm}{integer, permutation numbers used to calculate p-value}
 
-\item{minGSSize}{minimal size of drug sets annotated by ontology term 
-after drug to functional category mappings. If type is "MOA", it is
-recommended to set minGSSize as 2 since some MOA categories only contain 2 
-drugs}
+\item{minGSSize}{integer, minimum size of each drug set in annotation 
+system after drug to functional category mappings. If type is 'MOA', it is
+recommended to set 'minGSSize' as 2 since some MOA categories only contain 
+2 drugs.}
 
-\item{maxGSSize}{maximal size of drug sets annotated for testing}
+\item{maxGSSize}{integer, maximum size of each drug set in annotation 
+system}
 
-\item{pvalueCutoff}{pvalue Cutoff}
+\item{pvalueCutoff}{double, p-value cutoff}
 
-\item{pAdjustMethod}{p value adjustment method,
-one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"}
+\item{pAdjustMethod}{p-value adjustment method, 
+one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'}
 }
 \value{
-\code{\link{feaResult}} object, 
-represents enriched functional categories.
+\code{\link{feaResult}} object, the result table contains the
+enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
+the corresponding enrichment statistic.
 }
 \description{
-The classical GSEA method is used to do enrichment analysis on a scored
-ranked drug list after mapping drugs to functional categories via 
+This function uses the classical GSEA algorithm to do enrichment analysis 
+on a score ranked drug list after mapping drugs to functional categories via 
 drug-target links in DrugBank, CLUE and STITCH databases for GO and KEGG 
-pathway enrichment. It can also be used to get the enriched MOAs of a 
-scored ranked drug list.
+annotation system. It can also be used to get the enriched MOAs of a 
+score ranked drug list if type is set as 'MOA'.
 }
 \details{
-In the GESS/FEA workflow, the ranked drug list consists of all drugs in the 
-GESS result. The similarity scores of the corresponding GESS method can be 
-used for ranking the drugs as it is required by the GSEA algorithm. The drugs
-with zero scores are excluded.
+Instead of using only the drug labels in the test set, the GSEA method 
+requires the labels as well as the scores used for ranking the drug list in 
+the GESS result. The scores are usually the similarity metric used to rank 
+the results of the corresponding GESS method. The drugs with zero scores 
+are excluded.
 
-The description of columns in the result table can be found at 
+Note, description of the columns in the result table can be found at 
 \code{\link{tsea_mGSEA}} function.
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")
+\dontrun{
 library(signatureSearchData)
 sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
@@ -71,15 +78,14 @@ dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
 dl <- dl[dl>0]
 dl <- dl[!duplicated(names(dl))]
 ## GO annotation system
-\dontrun{
 gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
                       nPerm=1000, pvalueCutoff=0.2, minGSSize=5)
                       result(gsea_res)
-}
 ## KEGG annotation system
 gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
                         pvalueCutoff=0.5, minGSSize=5)
 result(gsea_k_res)
+}
 }
 \references{
 GSEA algorithm: 
@@ -91,5 +97,5 @@ America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}},
-         \code{\link[signatureSearchData]{dtlink_db_clue_sti}}
+         \code{\link[signatureSearchData]{goAnno_drug}}
 }

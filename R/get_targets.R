@@ -1,12 +1,16 @@
-##' This function can be used to get protein targets of query drugs in 
-##' DrugBank, CLUE and STITCH databases. A SQLite database storing drug-target
-##' links in the above three databases can be found at 
+##' This function can be used to get gene/protein target annotation of query 
+##' drugs in specified drug-target annotation resource, such as DrugBank, CLUE 
+##' and STITCH. A SQLite database storing drug-target links in the above 
+##' three databases can be found at 
 ##' \code{\link[signatureSearchData]{signatureSearchData}} package. 
 ##'
-##' @title get targets of query drugs
-##' @param drugs a character vector storing a list of drug names
-##' @param database one of "DrugBank", "LINCS", "STITCH" or "all"  
-##' @return data.frame with drugs and target gene symbols columns
+##' @title Get gene/protein targets of query drugs
+##' @param drugs character vector of drug names
+##' @param database drug-target annotation resource. one of 'DrugBank', 'CLUE', 
+##' 'STITCH' or 'all'. If 'all', the targets from DrugBank, CLUE 
+##' and STITCH databases will be combined.  
+##' @return data.frame, one column is query drugs, the other column is
+##' target gene symbols.
 ##' @importFrom RSQLite dbConnect
 ##' @importFrom RSQLite dbGetQuery
 ##' @importFrom RSQLite SQLite
@@ -52,7 +56,7 @@ get_targets <- function(drugs, database="all"){
   res_lincs <- list2slash(dtlist_lincs_drugs)
   idx_lincs <- match(res_lincs$drug_name, drugs)
   res_lincs$drug_name = drugs_orig[idx_lincs]
-  if(database=="LINCS"){
+  if(database=="CLUE"){
     if(length(drugs_notar_lincs) > 0)
       message("No targets found in LINCS database for ", 
               length(drugs_notar_lincs), 

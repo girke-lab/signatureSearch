@@ -2,13 +2,13 @@
 % Please edit documentation in R/gess_fisher.R
 \name{gess_fisher}
 \alias{gess_fisher}
-\title{Fisher method for GESS}
+\title{Fisher Search Method}
 \usage{
 gess_fisher(qSig, higher, lower, chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{`qSig` object, 
-The 'gess_method' slot of 'qSig' should be 'Fisher'}
+\item{qSig}{\code{\link{qSig}} object defining the query signature, the GESS
+method (should be 'Fisher') and the path to the reference database.}
 
 \item{higher}{The 'higher' threshold. If not 'NULL', genes with a score 
 larger than 'higher' will be included in the gene set with sign +1. 
@@ -21,18 +21,23 @@ At least one of 'lower' and 'higher' must be specified.}
 \item{chunk_size}{size of chunk per processing}
 }
 \value{
-gessResult object, containing drugs in the reference database
-ranked by their similarity to the query signature
+\code{\link{gessResult}} object, the result table contains the 
+search results for each perturbagen in the reference database ranked by 
+their signature similarity to the query.
 }
 \description{
-It uses query signature to search against the reference database in the 
-\code{\link{qSig}} object by Fisher's exact test
+It uses query signature to search against the reference database defined
+in the \code{\link{qSig}} object by Fisher's exact test
 }
 \details{
-The Fisher’s exact test can also be used as similarity search algorithm if 
-both the query and the database are composed of DEG sets.
+Fisher’s exact test (Graham J. G. Upton 1992) can also be used to search a 
+GES databases for entries that are similar to a query GES. In this case both 
+the query and the database are composed of gene label sets, such as DEG sets.
+}
+\section{Column description}{
 
-Description of the score columns in the gess_fisher tibble result:
+Description of the score columns in the result table specific for Fisher 
+method:
 \itemize{
     \item pval: p-value of the Fisher's exact test.
     \item padj: p-value adjusted for multiple hypothesis testing using
@@ -47,7 +52,10 @@ Description of the score columns in the gess_fisher tibble result:
     \item signed: whether gene sets in the reference database have signs, 
     representing up and down regulated genes when computing scores.  
 }
+Description of the other columns are available at the 'result' slot of the
+\code{\link{gessResult}} object.
 }
+
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")
@@ -58,6 +66,11 @@ query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
 fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 result(fisher)
+}
+\references{
+Graham J. G. Upton. 1992. “Fisher’s Exact Test.” J. R. Stat. Soc. Ser. A 
+Stat. Soc. 155 (3). [Wiley, Royal Statistical Society]: 395–402. 
+\url{http://www.jstor.org/stable/2982890}
 }
 \seealso{
 \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}

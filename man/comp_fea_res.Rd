@@ -2,42 +2,44 @@
 % Please edit documentation in R/comp_fea_res.R
 \name{comp_fea_res}
 \alias{comp_fea_res}
-\title{plot comparison of FEA enrichment results}
+\title{Plot Comparing FEA Results}
 \usage{
-comp_fea_res(dup_hyperG_res = NULL, mgsea_res = NULL,
-  mabs_res = NULL, hyperG_res = NULL, gsea_res = NULL, Ntop = 20,
-  type = "GO")
+comp_fea_res(table_list, rank_stat = "pvalue", Nshow = 20)
 }
 \arguments{
-\item{dup_hyperG_res}{feaResult object from 'dup_hyperG' method}
+\item{table_list}{a named list of tables extracted from feaResults from 
+different FEA methods. The names of the list is required, which could be 
+name of the enrichment methods.}
 
-\item{mgsea_res}{feaResult object from 'mGSEA' method}
+\item{rank_stat}{character(1), column name of the enrichment statisic used 
+for ranking the functional categories, e.g. 'pvalue' or 'p.adjust'. Note,
+the column name should exist in each table in the 'table_list'.}
 
-\item{mabs_res}{feaResult object from 'mabs' method}
-
-\item{hyperG_res}{feaResult object from 'hyperG' method}
-
-\item{gsea_res}{feaResult object from 'GSEA' method}
-
-\item{Ntop}{number of top enriched categories from each method used to do 
-comparison. By default, the plot only compare the top 20 ranking terms}
-
-\item{type}{"GO" or "KEGG", indicating the type of enriched terms}
+\item{Nshow}{integer, number of top re-ranking functional categories shown 
+in the plot}
 }
 \value{
 igraph object
 }
 \description{
-Plot consistency comparison of enriched terms from FEA methods
+Plot top re-ranking functional categories from different enrichment methods.
 }
 \details{
-The enriched GO/KEGG categories were re-ranked by putting the terms 
-supported by more methods to topper. For terms supported by the same number
-of methods, the lower of the mean ranks of the terms across 
-enrichment methods, the topper of the terms.
+The `comp_fea_res` function re-ranks the functional categories from 
+differentFEA methods by using the mean rank of each functional category
+across the 5 FEA methods, the lower of the mean rank, the topper of the 
+functional category. Since the functional categories have different number 
+of support methods, the mean rank of a functional category is adjusted by 
+multiplying the total number of methods and divided by the number of support 
+methods. In this way, if a functional category is supported by only one 
+method, the mean rank will be increased 5 times for penalty.
 }
 \examples{
 data(drugs)
-#comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, 
-#             hyperG_res, gsea_res, Ntop=20, type="GO")
+# table_list = list("dup_hyperG" = result(dup_hyperG_res), 
+#                   "mGSEA" = result(mgsea_res), 
+#                   "mabs" = result(mabs_res), 
+#                   "hyperG" = result(hyperG_res), 
+#                   "GSEA" = result(gsea_res))
+# comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 }

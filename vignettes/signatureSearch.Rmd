@@ -88,25 +88,7 @@ GESS results are subjected to functional enrichment analysis (FEA) including
 drug set and target set enrichment analyses (DSEA, TSEA). Both identify
 functional categories (_e.g._ GO terms or KEGG pathways) over-represented in
 the GESS results. Subsequently, drug-target networks are reconstructed for
-visualization and interpretation. </font> 
-<font color="blue" size="-2">[ThG-Comment: under the CMAP/LINKS DB box on the
-left panel it would be better to sort the colored bars in the illustration by
-scores/ranks.  This would be helpful even if it is not stored this way in the
-object (i.e. the sorting may be performed on the fly), as the algorithm(s)
-expect the values sorted and that's what the illustration is supposed to
-explain. If I remember correctly, the time performance was actually much better
-if the vectors were stored in a sorted fashion but this comes with some extra
-overhead for storing the label index.  Not sure what you ended up
-using?]</font>
-
-<font color="green">[YD-response: I used the matrix of gene scores in unsorted
-way, not the sorted list since in this way, the format is matrix, which is unit,
-easy to understand and could save the storage space.]</font>
-
-<font color="blue" size="-2">[ThG-Comment: still the illustration of the method 
-would be easier to understand if it showed here sorted values which is important 
-for the algorithm. Keep in mind the illustration is more for explaining the algorithm
-than the details of the implementation.]</font>
+visualization and interpretation. </font>
 
 ## Motivation and Design
 
@@ -673,27 +655,6 @@ To conduct TSEA and DSEA efficiently, `signatureSearch` and its helper package
 drug-target lookup resources for automating the mapping from _drug sets_ to
 _target sets_ to _functional categories_.
 
-<font color="blue">[ThG-Comment: I am wondering whether we should limit the
-drug-target mapping resources provided by the data package to the most reliable
-and maintainable one(s), e.g. DrugBank and/or ChEMBL. Especially, including
-STITCH seems questionable and redundant. I also don't like STITCH's predicted
-drug-target associations. If necessary the same could be obtained from ChEMBL.
-Based on the sample code in the vignette, it is also not clear why you have
-discussed STITCH here. I don't see it being used which is confusing for readers, 
-but perhaps I have missed it?]
-</font>
-
-<font color="green">[YD-response: I think if it is necessary, we could add
-the ChEMBL to the drug-target mapping resources as updates after 
-submitting/releasing the package. For a query drug, I use the combined target
-set from DrugBank, CLUE and STITCH databases as its targets. I think the 
-combined target set is more complete than individual ones.]
-</font>
-
-<font color="blue">[ThG-Comment: after the submission of the signatureSearch
-package let's design a function in the drugTargetInteraction package that
-accomplishes this.]</font>
-
 ## TSEA
 The following introduces how to perform TSEA on drug-based GESS results using
 as functional annotation systems GO and KEGG pathways. The enrichment tests are
@@ -784,27 +745,6 @@ result(dup_hyperG_k_res)
 The content of the columns extracted from the `feaResult` object is described
 under section 4.1.1.1. 
 
-<font color="blue">[ThG-Comment: in the feaResult object it is not clear what
-drug-target annotation was used. Also, how can the user choose a specific 
-drug-target annotation resource. Shouldn't there be an argument in the tsea_/dsea_ 
-functions to make this choice?]</font>
-
-<font color="green">[YD-response: The combined targets from DrugBank, CLUE and
-STITCH databases are used because if choosing specific annotation resource, such
-as DrugBank, the drugs included is limited, many drugs will not get targets. 
-The combined one could get targets of as many drugs as possible and the target 
-set is more complete. So, I don't recommend allowing users to choose specific 
-resource, in this way, the result will also depend on the chosen resource, which 
-increases the complex and not complete.]</font>
-
-<font color="blue">[ThG-Comment: allowing users to choose here their own
-drug-target annotations seems essential to me. Your concerns could easily be
-addressed by a default argument using your current drug-target
-annotations. Most users would want this option. It would also be a more generic
-and extendable design of the software if it were supported. The corresponding
-argument description in the help file could point out limitations of what to
-expect when too sparse drug-target annotations are used instead.]</font>
-
 ### mGSEA Method
 
 The original GSEA method proposed by @Subramanian2005-ro uses predefined gene
@@ -870,7 +810,7 @@ The content of the columns extracted from the `feaResult` object is described
 under section 4.1.1.1. The additional columns specific to the GSEA algorithm 
 are described here.
 
-`enrichmentScore`: ES from the GSEA algorithm [@Subramanian2005-ro]. The score 
+`enrichmentScore`: $ES$ from the GSEA algorithm [@Subramanian2005-ro]. The score 
 is calculated by walking down the gene list $L$, increasing a running-sum 
 statistic when we encounter a gene in $S$ and decreasing when it is not. The 
 magnitude of the increment depends on the gene scores. The $ES$ is the maximum 
@@ -1036,64 +976,35 @@ Since the annotation system are drug-to-functional category mappings, the
 
 ## Comparing FEA Results 
 
-<font color="green">[ThG-Comment: I am not able understand the text in the following 
-paragraph. I can guess what was done based on the figure but the text is not 
-understandable.]</font>
+The `comp_fea_res` function re-ranks the functional categories from different
+FEA methods by using the mean rank of each functional category
+across the 5 FEA methods, the lower of the mean rank, the topper of the 
+functional category. Since the functional categories have different number of 
+support methods, the mean rank of a functional category is adjusted by 
+multiplying the total number of methods and divided by the number of support 
+methods. In this way, if a functional category is supported by only one method,
+the mean rank will be increased 5 times for penalty. 
 
-The adjusted p-values from *mGSEA* and *GSEA* enrichment methods are much higher
-than other methods, it is unfair and not applicable to select significantly 
-enriched GO terms or KEGG pathways by setting cutoff (e.g. 0.05) on adjusted
-p-values since in this way, no term will be selected from *mGSEA* method and 
-too many terms will be selected from hypergeometric test. So here, the 
-collection of top 20 terms from each FEA method is seemed as significant. 
-To find the most confident and significant ones that are supported by most 
-methods, the functional categories is re-ranked by putting the 
-terms supported by more methods to topper. For terms supported by the same 
-number of methods, the lower of the mean of ranks of the terms across 
-enrichment methods, the topper of the terms. The `comp_fea_res` function 
-shows the adjusted p-values and supported enrichment methods of the top 20 
-re-ranked GO terms or KEGG pathways. It shows whether the terms are in the top
-20 of the enrichment results from 5 methods and their corresponding adjusted 
-p-values.
-
-<font color="blue">[ThG-Comment: I am still confused after reading this
-section several times. I am wondering whether you are using here a voting-based
-reranking mechanism that considers the top 20 categories of each FEA method. If
-so then I suggest to state this at the beginning of the above text and drop the
-discussion of the p-value differences. To me this doesn't belong here. For the
-reranking have you considered using the mean rank of each functional category
-across the 5 FEA methods which would less often result in ambiguities for
-reranking than a voting mechanism. Also why doesn't the function have an
-argument to choose the actual statisics used for the ranking, e.g. raw p-value
-or adjusted p-value. By choosing for the toy example the raw p-value, the plot
-would not be so desert-like with respect to the colors used for the dots. Right
-now they are all the same within each method as well as across most methods. To
-the reader this would mean that the ranking shown in the plots is rather
-arbitrary which you may want to avoid. We should discuss both the plotting
-function and the write-up of this section. 
-
-Another concern I have with the design of this function, is the choice of the
-many arguments for the input result tables. To me there should be just one
-argurment where the result objects are provided in a list-like structure. This
-way the user can provide any number of input result tables.]</font>
+The following plots rank the functional categories of each method by `pvalue`
+and show the p-values of the top 20 re-ranking functional categories. 
 
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
-comp_fea_res(dup_hyperG_res, mgsea_res, mabs_res, hyperG_res, gsea_res, 
-             Ntop=20, type="GO")
+table_list = list("dup_hyperG" = result(dup_hyperG_res), 
+                  "mGSEA" = result(mgsea_res), 
+                  "mabs" = result(mabs_res), 
+                  "hyperG" = result(hyperG_res), 
+                  "GSEA" = result(gsea_res))
+comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ```
 
 ```{r cmp_enrich_k, eval=TRUE, fig.width=8}
-comp_fea_res(dup_hyperG_k_res, mgsea_k_res, mabs_k_res, hyperG_k_res, 
-             gsea_k_res, Ntop=20, type="KEGG")
+table_list = list("dup_hyperG" = result(dup_hyperG_k_res), 
+                  "mGSEA" = result(mgsea_k_res), 
+                  "mabs" = result(mabs_k_res), 
+                  "hyperG" = result(hyperG_k_res), 
+                  "GSEA" = result(gsea_k_res))
+comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ```
-
-<font color="blue">[ThG-Comment: I don't see that you have addressed the
-text overplotting problem along the x-axis. To resolve
-this you want to plot the labels vertically by turning them 90 degrees or 
-use a plot legend on the side instead. In ggplot2 this is so super easy. 
-In addition, the plots should include a short Figure legend. The titles
-included on the top of the plots themselves could be dropped or at least 
-shortened.]</font>
 
 ## Summary of FEA Results
 
@@ -1107,10 +1018,10 @@ all or several FEA methods.
 
 # Drug-Target Network Visualization
 
-Functional modules of the above GESS and TSA results can be rendered as
+Functional modules of the above GESS and FEA results can be rendered as
 interactive drug-target networks using the `dtnetplot` function from
 `signatureSearch`. For this, a character vector of drug names along with an
-identifier of a chosen functional category are passed on to the `drug` and
+identifier of a chosen functional category are passed on to the `drugs` and
 `set` arguments, respectively. The resulting plot depicts the corresponding
 drug-target interaction network. Its interactive features allow the user to
 zoom in and out of the network, and to select network components in the

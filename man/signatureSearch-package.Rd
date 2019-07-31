@@ -8,42 +8,105 @@
 \alias{fea}
 \title{signatureSearch}
 \description{
-Welcome to the signatureSearch package! This package integrates methods for
-Gene Expression Signature Search (GESS) and Functional Enrichment Analysis 
-(FEA). GESS methods use gene sets or Gene Expression Profiles (GEPs) 
-of log2 fold change, z-scores or intensity value to search against large 
-reference database containing tens to hundreds of thousands of GEPs or 
-gene sets from compounds or genetic treatments. The large database was 
-searched with very moderate memory requirements by setting chunks.
+Welcome to the signatureSearch package! This package implements algorithms 
+and data structures for performing gene expression signature (GES) searches, 
+and subsequently interpreting the results functionally with specialized 
+enrichment methods. These utilities are useful for studying the effects of 
+genetic, chemical and environmental perturbations on biological systems. 
+Specifically, in drug discovery they can be used for identifying novel modes 
+of action (MOA) of bioactive compounds from reference databases such as 
+LINCS containing the genome-wide GESs from tens of thousands of drug and 
+genetic perturbations (Subramanian et al. 2017)
 
-The FEA methods could be used to functionally annotate top ranking drugs in 
-the GESS results in terms of GO categories or KEGG pathways.
+A typical GES search (GESS) workflow can be divided into two major steps.
+First, GESS methods are used to identify perturbagens such as drugs that 
+induce GESs similar to a query GES of interest. The queries can be drug-, 
+disease- or phenotype-related GESs. Since the MOAs of most drugs in the 
+corresponding reference databases are known, the resulting associations are 
+useful to gain insights into pharmacological and/or disease mechanisms, and 
+to develop novel drug repurposing approaches.
+
+Second, specialized functional enrichment analysis (FEA) methods using 
+annotations systems, such as Gene Ontologies (GO), pathways or Disease 
+Ontologies (DO), have been developed and implemented in this package to 
+efficiently interpret GESS results. The latter are usually composed of lists 
+of perturbagens (e.g. drugs) ranked by the similarity metric of the 
+corresponding GESS method.
+
+Finally, network resconstruction functionalities are integrated for 
+visualizing the final results, e.g. in form of drug-target networks.
 }
 \details{
 The GESS methods include \code{CMAP}, \code{LINCS}, \code{gCMAP}, 
 \code{Fisher} and \code{Cor}. For detailed
-description, please see document of each method. Most methods 
+description, please see help files of each method. Most methods 
 can be easily paralleled for multiple query signatures.
 
-The FEA can be done by two approaches, Target Set Enrichment Analysis (TSEA)
-and Drug Set Enrichment Analysis (DSEA). The TSEA methods first get target
-set of query drugs and do enrichment on the target protein/gene set. 
-What should be noted is that different drugs may have the same targets. 
-The target protein sets used for the TSEA contain often duplicated proteins. 
-Standard enrichment methods would eliminate these duplications since they 
-assume uniqueness in the test sets. Removing duplications in TSEA would be 
-inappropriate since it would erase one of the most important pieces of 
-information. To solve this problem, this project developed a weighting 
-method for duplicated targets where the weighting is proportional to the 
-frequency of the targets in the test set. The TSEA
-includes \code{dup_hyperG}, \code{mGSEA} and \code{meanAbs} methods.
+GESS results are lists of perturbagens (here drugs) ranked by their 
+signature similarity to a query signature of interest. Interpreting these 
+search results with respect to the cellular networks and pathways affected 
+by the top ranking drugs is difficult. To overcome this challenge, the 
+knowledge of the target proteins of the top ranking drugs can be used to 
+perform functional enrichment analysis (FEA) based on community annotation 
+systems, such as Gene Ontologies (GO), pathways (e.g. KEGG, Reactome), drug 
+MOAs or Pfam domains. For this, the ranked drug sets are converted into 
+target gene/protein sets to perform Target Set Enrichment Analysis (TSEA) 
+based on a chosen annotation system. Alternatively, the functional 
+annotation categories of the targets can be assigned to the drugs directly 
+to perform Drug Set Enrichment Analysis (DSEA). Although TSEA and DSEA are 
+related, their enrichment results can be distinct. This is mainly due to 
+duplicated targets present in the test sets of the TSEA methods, whereas 
+the drugs in the test sets of DSEA are usually unique. Additional reasons 
+include differences in the universe sizes used for TSEA and DSEA.
 
-Instead of doing enrichment on the target set, the DSEA methods 
-do enrichment directly on the drug set by mapping drugs to 
-functional categories via drug-target mapping information. Since drugs in 
-the test sets are usually unique, it allows to use the classical enrichment
-methods without any changes. The DSEA methods include \code{hyperG} and 
-\code{GSEA}. For detailed description, please see document of each method.
+Importantly, the duplications in the test sets of the TSEA are due to the 
+fact that many drugs share the same target proteins. Standard enrichment 
+methods would eliminate these duplications since they assume uniqueness 
+in the test sets. Removing duplications in TSEA would be inappropriate 
+since it would erase one of the most important pieces of information of 
+this approach. To solve this problem, we have developed and implemented in 
+this package weighting methods (\code{dup_hyperG}, \code{mGSEA} and 
+\code{meanAbs}) for duplicated targets, where the weighting 
+is proportional to the frequency of the targets in the test set.
+
+Instead of translating ranked lists of drugs into target sets, as for TSEA, 
+the functional annotation categories of the targets can be assigned to the 
+drugs directly to perform DSEA instead. Since the drug lists from GESS 
+results are usually unique, this strategy overcomes the duplication problem 
+of the TSEA approach. This way classical enrichment methods, such as GSEA or 
+tests based on the hypergeometric distribution, can be readily applied 
+without major modifications to the underlying statistical methods. As 
+explained above, TSEA and DSEA performed with the same enrichment statistics 
+are not expected to generate identical results. Rather they often complement 
+each other’s strengths and weaknesses.
+
+To perform TSEA and DSEA, drug-target annotations are essential. They can be
+obtained from several sources, including DrugBank, ChEMBL, STITCH, and the 
+Touchstone dataset from the LINCS project (\url{https://clue.io/}). Most 
+drug-target annotations provide UniProt identifiers for the target proteins. 
+They can be mapped, if necessary via their encoding genes, to the chosen 
+functional annotation categories, such as GO or KEGG. To minimize bias in 
+TSEA or DSEA, often caused by promiscuous binders, it can be beneficial to 
+remove drugs or targets that bind to large numbers of distinct proteins or 
+drugs, respectively.
+}
+\section{Terminology}{
+
+The term Gene Expression Signatures (GESs) can refer to at least four 
+different situations of pre-processed gene expression data: (1) normalized 
+gene expression intensity values (or counts for RNA-Seq); (2) log2 fold 
+changes (LFC), z-scores or p-values obtained from analysis routines of 
+differentially expressed genes (DEGs); (3) rank transformed versions of the 
+expression values obtained under (1) and (2); and (4) gene identifier sets 
+extracted from the top and lowest ranks under (3), such as n top up/down 
+regulated DEGs.
+}
+
+\references{
+Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., 
+Natoli, T. E., Lu, X., … Golub, T. R. (2017). A Next Generation 
+Connectivity Map: L1000 Platform and the First 1,000,000 Profiles. Cell, 
+171(6), 1437–1452.e17. \url{https://doi.org/10.1016/j.cell.2017.10.049}
 }
 \seealso{
 Methods for GESS:

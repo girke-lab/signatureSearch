@@ -2,19 +2,22 @@
 % Please edit documentation in R/dtnetplot.R
 \name{dtnetplot}
 \alias{dtnetplot}
-\title{plot drug-target interaction network}
+\title{Drug-Target Network Visualization}
 \usage{
-dtnetplot(drugs, set, ont = NULL, ...)
+dtnetplot(drugs, set, ont = NULL, desc = NULL, ...)
 }
 \arguments{
-\item{drugs}{A character vector representing drugs used to build a 
-drug-target network}
+\item{drugs}{A character vector of drug names}
 
-\item{set}{could be GO term ID, KEGG pathway ID or a character vector of 
-gene set with SYMBOL ids.}
+\item{set}{character(1) if identifier of a functional category (GO term ID
+or KEGG pathway ID) is chosen. It could also be a character vector of 
+gene SYMBOL IDs.}
 
-\item{ont}{if the `set` is a GO term ID, `ont` is the ontology that GO term 
-is belong to. One of "BP", "MF", "CC" or "ALL"}
+\item{ont}{if `set` is a GO term ID, `ont` is the ontology that GO term 
+is belong to. One of 'BP', 'MF' or 'CC'}
+
+\item{desc}{character(1), description of the functional category or the 
+target set}
 
 \item{...}{additional parameters for \code{\link[visNetwork]{visNetwork}} 
 function.}
@@ -23,9 +26,14 @@ function.}
 visNetwork plot
 }
 \description{
-A drug-target interaction network can be built if a drug set and a 
-target/protein set is provided. If the target set is a GO category or a 
-KEGG pathway, their term ID could be directly used.
+Functional modules of the GESS and FEA results can be rendered as 
+interactive drug-target networks using this function. For this, 
+a character vector of drug names along with an identifier of a chosen 
+functional category are passed on to the drugs and set arguments, 
+respectively. The resulting plot depicts the corresponding drug-target 
+interaction network. Its interactive features allow the user to zoom in 
+and out of the network, and to select network components in the drop-down 
+menu located in the upper left corner of the plot.
 }
 \examples{
 data(drugs)

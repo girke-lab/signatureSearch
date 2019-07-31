@@ -30,16 +30,20 @@ setClass("qSig", slots = c(
   refdb = "character"
 ))
 
-##' Class "gessResult"
+##' gessResult object
 ##' 
-##' The class stores the result of GESS analysis
+##' The gessResult object stores the search result table, query signature, 
+##' name of the GESS method and path to the reference database from the 
+##' GESS methods.
 ##' @name gessResult-class
 ##' @aliases gessResult
 ##' @docType class
-##' @slot result tibble from GESS analysis, represents a list of drugs 
-##' in the reference database ranked by their signature similarity to the query.
+##' @slot result tibble object, this result table contains the search results 
+##' for each perturbagen in the reference database ranked by their signature 
+##' similarity to the query. The result table can be extracted via 
+##' \code{\link{result}} accessor function.
 ##' 
-##' The description of the common tibble columns from different GESS methods:
+##' Description of the common columns from different GESS methods:
 ##' \itemize{
 ##'     \item pert: character, name of perturbagen (e.g. drug) in the reference 
 ##'     database
@@ -58,7 +62,7 @@ setClass("qSig", slots = c(
 ##'     targets
 ##' } 
 ##' @slot query query signature
-##' @slot gess_method method for GESS analysis
+##' @slot gess_method name of the GESS method 
 ##' @slot refdb path to the reference database
 ##' @exportClass gessResult
 ##' @keywords classes
@@ -81,10 +85,21 @@ gessResult <- function(result, query, gess_method, refdb)
 #      TRUE
 # })
 
-##' Class "feaResult"
+##' feaResult object
 ##' 
-##' This class represents the result of functional enrichment analysis.
-##'
+##' The feaResult object stores the enrichment result table, organism 
+##' information of the annotation system, and the ontology type of the GO 
+##' annotation system. If the annotation system is KEGG, the latter will be 
+##' 'KEGG'. It also stores the input drugs used for the enrichment test, 
+##' as well as their target information.
+##' @name feaResult-class
+##' @aliases feaResult
+##' @docType class
+##' @slot result tibble object, this result table contains the
+##' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
+##' the corresponding enrichment statistic. The result table can be extracted 
+##' via \code{\link{result}} accessor function.
+##' 
 ##' Description of the common columns in the result table from different 
 ##' enrichment methods:
 ##' \itemize{
@@ -98,23 +113,14 @@ gessResult <- function(result, query, gess_method, refdb)
 ##'     among test and annotation sets.
 ##'     \item setSize: size of the functional category
 ##' } 
-##' @name feaResult-class
-##' @aliases feaResult
-##' @docType class
-##' @slot result tibble representing enriched functional categories
-##' @slot organism only "human" supported
-##' @slot ontology biological ontology
-##' @slot drugs Drug IDs
-##' @slot targets Target IDs of drugs in DrugBank/LINCS/STITCH databases or 
-##' target list with scores.
+##' @slot organism organism information of the annotation system, 
+##' only 'human' supported.
+##' @slot ontology ontology type of the GO annotation system. If the annotation 
+##' system is KEGG, it will be 'KEGG'
+##' @slot drugs input drugs used for the enrichment test
+##' @slot targets target information of the drugs in the defined drug-target 
+##' annotation resource.
 ##' @exportClass feaResult
-##' @author Yuzhu Duan
-##' @references 
-##' Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
-##' Gillette, M. A., … Mesirov, J. P. (2005). Gene set enrichment analysis: a 
-##' knowledge-based approach for interpreting genome-wide expression profiles. 
-##' Proceedings of the National Academy of Sciences of the United States of
-##' America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
 ##' @keywords classes
 setClass("feaResult",
          representation=representation(
