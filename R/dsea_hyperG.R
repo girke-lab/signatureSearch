@@ -46,7 +46,7 @@
 ##' @importMethodsFrom AnnotationDbi mappedkeys
 ##' @importMethodsFrom AnnotationDbi mget
 ##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
-##'          \code{\link[signatureSearchData]{goAnno_drug}}
+##'          \code{\link[signatureSearchData]{GO_DATA_drug}}
 ##' @examples 
 ##' data(drugs)
 ##' ## GO annotation system

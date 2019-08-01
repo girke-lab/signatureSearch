@@ -38,7 +38,7 @@
 #' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
 #' the corresponding enrichment statistic.
 #' @seealso \code{\link{feaResult}}, \code{\link{fea}},
-#'          \code{\link[signatureSearchData]{goAnno_drug}}
+#'          \code{\link[signatureSearchData]{GO_DATA_drug}}
 #' @references 
 #' GSEA algorithm: 
 #' Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 

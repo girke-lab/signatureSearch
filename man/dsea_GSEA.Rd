@@ -97,5 +97,5 @@ America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}},
-         \code{\link[signatureSearchData]{goAnno_drug}}
+         \code{\link[signatureSearchData]{GO_DATA_drug}}
 }

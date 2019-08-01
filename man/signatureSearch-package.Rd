@@ -6,7 +6,8 @@
 \alias{signatureSearch}
 \alias{gess}
 \alias{fea}
-\title{signatureSearch}
+\title{signatureSearch: Environment for Gene Expression Searching Combined with 
+Functional Enrichment Analysis}
 \description{
 Welcome to the signatureSearch package! This package implements algorithms 
 and data structures for performing gene expression signature (GES) searches, 
@@ -103,10 +104,25 @@ regulated DEGs.
 }
 
 \references{
-Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., 
-Natoli, T. E., Lu, X., … Golub, T. R. (2017). A Next Generation 
-Connectivity Map: L1000 Platform and the First 1,000,000 Profiles. Cell, 
-171(6), 1437–1452.e17. \url{https://doi.org/10.1016/j.cell.2017.10.049}
+Subramanian, Aravind, Rajiv Narayan, Steven M Corsello, David D Peck, Ted E 
+Natoli, Xiaodong Lu, Joshua Gould, et al. 2017. “A Next Generation 
+Connectivity Map: L1000 Platform and the First 1,000,000 Profiles.” Cell 171 
+(6): 1437–1452.e17. \url{http://dx.doi.org/10.1016/j.cell.2017.10.049}.
+
+Lamb, Justin, Emily D Crawford, David Peck, Joshua W Modell, Irene C Blat, 
+Matthew J Wrobel, Jim Lerner, et al. 2006. “The Connectivity Map: Using 
+Gene-Expression Signatures to Connect Small Molecules, Genes, and Disease.” 
+Science 313 (5795): 1929–35. \url{http://dx.doi.org/10.1126/science.1132939}.
+
+Sandmann, Thomas, Sarah K Kummerfeld, Robert Gentleman, and Richard Bourgon. 
+2014. “gCMAP: User-Friendly Connectivity Mapping with R.” Bioinformatics 30 
+(1): 127–28. \url{http://dx.doi.org/10.1093/bioinformatics/btt592}.
+
+Subramanian, Aravind, Pablo Tamayo, Vamsi K Mootha, Sayan Mukherjee, 
+Benjamin L Ebert, Michael A Gillette, Amanda Paulovich, et al. 2005. 
+“Gene Set Enrichment Analysis: A Knowledge-Based Approach for Interpreting 
+Genome-Wide Expression Profiles.” Proc. Natl. Acad. Sci. U. S. A. 102 (43): 
+15545–50. \url{http://dx.doi.org/10.1073/pnas.0506580102}.
 }
 \seealso{
 Methods for GESS:

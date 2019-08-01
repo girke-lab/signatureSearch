@@ -75,5 +75,5 @@ result(hyperG_k_res)
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}},
-         \code{\link[signatureSearchData]{goAnno_drug}}
+         \code{\link[signatureSearchData]{GO_DATA_drug}}
 }
