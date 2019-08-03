@@ -745,6 +745,29 @@ result(dup_hyperG_k_res)
 The content of the columns extracted from the `feaResult` object is described
 under section 4.1.1.1. 
 
+<font color="blue">[ThG-Comment: in the feaResult object it is not clear what
+drug-target annotation was used. Also, how can the user choose a specific 
+drug-target annotation resource. Shouldn't there be an argument in the tsea_/dsea_ 
+functions to make this choice?]</font>
+
+<font color="green">[YD-response: The combined targets from DrugBank, CLUE and
+STITCH databases are used because if choosing specific annotation resource, such
+as DrugBank, the drugs included is limited, many drugs will not get targets. 
+The combined one could get targets of as many drugs as possible and the target 
+set is more complete. So, I don't recommend allowing users to choose specific 
+resource, in this way, the result will also depend on the chosen resource, which 
+increases the complex and not complete.]</font>
+
+<font color="blue">[ThG-Comment: allowing users to choose here their own
+drug-target annotations seems essential to me. Your concerns could easily be
+addressed by a default argument using your current drug-target
+annotations. Most users would want this option. It would also be a more generic
+and extendable design of the software if it were supported. The corresponding
+argument description in the help file could point out limitations of what to
+expect when too sparse drug-target annotations are used instead.]</font>
+
+<font color="red">[ThG-Comment: how has this discussion been addressed?]</font>
+
 ### mGSEA Method
 
 The original GSEA method proposed by @Subramanian2005-ro uses predefined gene
@@ -976,17 +999,22 @@ Since the annotation system are drug-to-functional category mappings, the
 
 ## Comparing FEA Results 
 
-The `comp_fea_res` function re-ranks the functional categories from different
-FEA methods by using the mean rank of each functional category
-across the 5 FEA methods, the lower of the mean rank, the topper of the 
-functional category. Since the functional categories have different number of 
-support methods, the mean rank of a functional category is adjusted by 
-multiplying the total number of methods and divided by the number of support 
-methods. In this way, if a functional category is supported by only one method,
-the mean rank will be increased 5 times for penalty. 
+The `comp_fea_res` function ranks the functional categories across the
+different FEA methods by using the mean rank of each functional category across
+the 5 FEA methods, <font color="green">the lower of the mean rank, the topper
+of the functional category</font>. <font color="blue">[ThG-Comment: I don't
+understand the green part of this sentence. Please revise.]</font> Since the
+functional categories are not always present in all enrichment results, the mean 
+rank of a functional category is corrected by an adjustment factor that is the
+the total number of occurences of a functional category divided by the number of 
+result methods. For instance, if a functional category is only present in the
+result of one method, its mean rank will be downgraded accordingly. 
+The following plots use the `pvalue` column in the result tables for this ranking 
+approach. Alternative columns can be chosen under the `rank_stat` argument. After 
+re-ranking only the top ranking functional categories are shown, here 20. Their 
+number can be changed under the `Nshow` argument. 
 
-The following plots rank the functional categories of each method by `pvalue`
-and show the p-values of the top 20 re-ranking functional categories. 
+<font color="blue">[ThG-Comment: you missed to add a legend/caption under the plots.]</font>
 
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
 table_list = list("dup_hyperG" = result(dup_hyperG_res), 
