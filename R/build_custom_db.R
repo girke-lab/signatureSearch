@@ -1,24 +1,29 @@
 #' Build custom reference signature database for GESS methods
 #' 
-#' It stores a data.frame or matrix containing genome-wide gene expression 
-#' data (e.g. for drug, disease or genetic perturbations) into an HDF5 file as
-#' reference database. The gene expression data can be most types of the 
-#' pre-processed gene expression values, such as gene expression intensity 
-#' values (or counts for RNA-Seq), log2 fold changes (LFC), z-scores or 
-#' p-values obtained from DE analysis.
+#' The perturbation-based gene expression data, here provided as data.frame or 
+#' matrix, will be stored in an HDF5 file. The latter can be used as reference 
+#' database by compatible GESS methods of signatureSearch. Various types of 
+#' pre-processed gene expression data can be used here, such as normalized 
+#' gene expression intensities (or counts for RNA-Seq); log2 fold changes (LFC), 
+#' Z-scores or p-values obtained from analysis routines of differentially expressed
+#' genes (DEGs).
 #' 
 #' @title build_custom_db
 #' @aliases build_custom_db
-#' @param df data.frame or matrix, represents genome-wide GESs
-#' of compound or genetic treatments in cells.
+#' @param df data.frame or matrix containing genome-wide or close to
+#' genome-wide GESs of perturbation experiments.
 #' 
-#' Rownames representing gene IDs (e.g. Entrez ids) should be included. 
-#' The colnames should be of `(drug)__(cell)__(factor)` format, e.g., 
-#' `sirolimus__MCF7__trt_cp`. It can be generalized to any type of treatment, 
-#' for example, gene knockdown or over expression by setting `drug` as gene 
-#' name, `factor` as 'ko' or other words, `cell` as treatment cell types. So, 
-#' one example for generalization format could be `P53__MCF7__ko`.  
-#' @param h5file character(1), path to the destination hdf5 file
+#' The row name slots are expected to contain gene or transcript IDs 
+#' (e.g. Entrez ids), while the column names are expected to have this structure:
+#' `(drug)__(cell)__(factor)`, e.g. `sirolimus__MCF7__trt_cp`. This format is 
+#' flexible enough to encode most perturbation types of biological samples. For 
+#' example, gene knockdown or over expression treatments can be specified by 
+#' assigning the ID of the affected gene to `drug`, and `ko` or `ov` to `factor`, 
+#' respectively. An example for a knockdown treatment would look like this: 
+#' `P53__MCF7__ko`.
+#' 
+#' @param h5file character vector of length 1 containing the path to the destination 
+#'         hdf5 file
 #' @return HDF5 file
 #' @importFrom readr read_tsv
 #' @importFrom stats rnorm

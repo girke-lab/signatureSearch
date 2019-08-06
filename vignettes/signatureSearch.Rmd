@@ -745,29 +745,6 @@ result(dup_hyperG_k_res)
 The content of the columns extracted from the `feaResult` object is described
 under section 4.1.1.1. 
 
-<font color="blue">[ThG-Comment: in the feaResult object it is not clear what
-drug-target annotation was used. Also, how can the user choose a specific 
-drug-target annotation resource. Shouldn't there be an argument in the tsea_/dsea_ 
-functions to make this choice?]</font>
-
-<font color="green">[YD-response: The combined targets from DrugBank, CLUE and
-STITCH databases are used because if choosing specific annotation resource, such
-as DrugBank, the drugs included is limited, many drugs will not get targets. 
-The combined one could get targets of as many drugs as possible and the target 
-set is more complete. So, I don't recommend allowing users to choose specific 
-resource, in this way, the result will also depend on the chosen resource, which 
-increases the complex and not complete.]</font>
-
-<font color="blue">[ThG-Comment: allowing users to choose here their own
-drug-target annotations seems essential to me. Your concerns could easily be
-addressed by a default argument using your current drug-target
-annotations. Most users would want this option. It would also be a more generic
-and extendable design of the software if it were supported. The corresponding
-argument description in the help file could point out limitations of what to
-expect when too sparse drug-target annotations are used instead.]</font>
-
-<font color="red">[ThG-Comment: how has this discussion been addressed?]</font>
-
 ### mGSEA Method
 
 The original GSEA method proposed by @Subramanian2005-ro uses predefined gene
@@ -999,22 +976,18 @@ Since the annotation system are drug-to-functional category mappings, the
 
 ## Comparing FEA Results 
 
-The `comp_fea_res` function ranks the functional categories across the
+The `comp_fea_res` function re-ranks the functional categories across the
 different FEA methods by using the mean rank of each functional category across
-the 5 FEA methods, <font color="green">the lower of the mean rank, the topper
-of the functional category</font>. <font color="blue">[ThG-Comment: I don't
-understand the green part of this sentence. Please revise.]</font> Since the
+the 5 FEA methods. The functional categories are ranked from top to bottom
+according to mean ranks increased from lowest to largest. Since the
 functional categories are not always present in all enrichment results, the mean 
 rank of a functional category is corrected by an adjustment factor that is the
-the total number of occurences of a functional category divided by the number of 
-result methods. For instance, if a functional category is only present in the
-result of one method, its mean rank will be downgraded accordingly. 
+number of result methods divided by the total number of occurences of a functional category. For instance, if a functional category is only present in the
+result of one method, its mean rank will be increased accordingly. 
 The following plots use the `pvalue` column in the result tables for this ranking 
 approach. Alternative columns can be chosen under the `rank_stat` argument. After 
 re-ranking only the top ranking functional categories are shown, here 20. Their 
 number can be changed under the `Nshow` argument. 
-
-<font color="blue">[ThG-Comment: you missed to add a legend/caption under the plots.]</font>
 
 ```{r cmp_enrich, eval=TRUE, fig.width=10.5, fig.height=5.5}
 table_list = list("dup_hyperG" = result(dup_hyperG_res), 
@@ -1025,6 +998,12 @@ table_list = list("dup_hyperG" = result(dup_hyperG_res),
 comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ```
 
+<font size="-2"> Figure 4: Top 20 re-ranking GO terms in MF ontology (y-axis) 
+across 5 FEA methods (x-axis). This plot shows the top 20 GO terms re-ranked by 
+comparing the adjusted mean rank of each functional category across the 5 
+methods. The dot represents p-value of the functional category across different 
+methods. </font>
+
 ```{r cmp_enrich_k, eval=TRUE, fig.width=8}
 table_list = list("dup_hyperG" = result(dup_hyperG_k_res), 
                   "mGSEA" = result(mgsea_k_res), 
@@ -1033,6 +1012,10 @@ table_list = list("dup_hyperG" = result(dup_hyperG_k_res),
                   "GSEA" = result(gsea_k_res))
 comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ```
+
+<font size="-2"> Figure 5: Top 20 re-ranking KEGG pathways (y-axis) across 5
+FEA methods (x-axis). This plot shows the top 20 KEGG pathways re-ranked as 
+Figure 4. </font>
 
 ## Summary of FEA Results
 
@@ -1068,16 +1051,26 @@ dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF",
           desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 ```
 
+<font size="-2"> Figure 6: Drug-target network for *NAD-dependent histone 
+deacetylase activity*. This network shows the interactions of input drugs
+and gene/proteins in the selected pathway. Only those drugs that have targets 
+are presented. Drugs are in square shape with orange color, 
+targets are in circle shape with red color. The connection line is not weighted,
+indicating yes or no. The color depth is scaled with the number of connections.
+The more of the targets/drugs, the higher of the color of the drugs/targets.</font>
+
 Network for *NF-kappaB binding* (GO:0051059)
 ```{r dtnet_go_0051059, eval=TRUE}
 dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF", 
           desc="NF-kappaB binding")
 ```
 
+<font size="-2"> Figure 7: Drug-target network for *NF-kappaB binding*. The 
+legend is the same with Figure 6.</font>
+
 ## With KEGG
 
 The same drug-target network plots can be rendered for KEGG pathways as follows.
-
 
 Network for KEGG pathway: *Alcoholism* (hsa05034)
 ```{r dtnet_kegg_05034, eval=TRUE}
@@ -1085,11 +1078,17 @@ dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034",
           desc="Alcoholism")
 ```
 
+<font size="-2"> Figure 8: Drug-target network for *Alcoholism*. The 
+legend is the same with Figure 6.</font>
+
 Network for KEGG pathway: *Longevity regulating pathway* (hsa04213)
 ```{r dtnet_kegg_04213, eval=TRUE}
 dtnetplot(drugs = drugs, set = "hsa04213", 
           desc="Longevity regulating pathway - multiple species")
 ```
+
+<font size="-2"> Figure 9: Drug-target network for *Longevity regulating pathway*. 
+The legend is the same with Figure 6.</font>
 
 # Supplemental Material
 

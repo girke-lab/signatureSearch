@@ -6,7 +6,7 @@
 \alias{signatureSearch}
 \alias{gess}
 \alias{fea}
-\title{signatureSearch: Environment for Gene Expression Searching Combined with 
+\title{Environment for Gene Expression Signature Searching Combined with 
 Functional Enrichment Analysis}
 \description{
 Welcome to the signatureSearch package! This package implements algorithms 
@@ -79,11 +79,11 @@ tests based on the hypergeometric distribution, can be readily applied
 without major modifications to the underlying statistical methods. As 
 explained above, TSEA and DSEA performed with the same enrichment statistics 
 are not expected to generate identical results. Rather they often complement 
-each other’s strengths and weaknesses.
+each other's strengths and weaknesses.
 
 To perform TSEA and DSEA, drug-target annotations are essential. They can be
 obtained from several sources, including DrugBank, ChEMBL, STITCH, and the 
-Touchstone dataset from the LINCS project (\url{https://clue.io/}). Most 
+Touchstone dataset from the LINCS project (https://clue.io/). Most 
 drug-target annotations provide UniProt identifiers for the target proteins. 
 They can be mapped, if necessary via their encoding genes, to the chosen 
 functional annotation categories, such as GO or KEGG. To minimize bias in 
@@ -105,24 +105,24 @@ regulated DEGs.
 
 \references{
 Subramanian, Aravind, Rajiv Narayan, Steven M Corsello, David D Peck, Ted E 
-Natoli, Xiaodong Lu, Joshua Gould, et al. 2017. “A Next Generation 
-Connectivity Map: L1000 Platform and the First 1,000,000 Profiles.” Cell 171 
-(6): 1437–1452.e17. \url{http://dx.doi.org/10.1016/j.cell.2017.10.049}.
+Natoli, Xiaodong Lu, Joshua Gould, et al. 2017. A Next Generation 
+Connectivity Map: L1000 Platform and the First 1,000,000 Profiles. Cell 171 
+(6): 1437-1452.e17. http://dx.doi.org/10.1016/j.cell.2017.10.049
 
 Lamb, Justin, Emily D Crawford, David Peck, Joshua W Modell, Irene C Blat, 
-Matthew J Wrobel, Jim Lerner, et al. 2006. “The Connectivity Map: Using 
-Gene-Expression Signatures to Connect Small Molecules, Genes, and Disease.” 
-Science 313 (5795): 1929–35. \url{http://dx.doi.org/10.1126/science.1132939}.
+Matthew J Wrobel, Jim Lerner, et al. 2006. The Connectivity Map: Using 
+Gene-Expression Signatures to Connect Small Molecules, Genes, and Disease. 
+Science 313 (5795): 1929-35. http://dx.doi.org/10.1126/science.1132939
 
 Sandmann, Thomas, Sarah K Kummerfeld, Robert Gentleman, and Richard Bourgon. 
-2014. “gCMAP: User-Friendly Connectivity Mapping with R.” Bioinformatics 30 
-(1): 127–28. \url{http://dx.doi.org/10.1093/bioinformatics/btt592}.
+2014. gCMAP: User-Friendly Connectivity Mapping with R. Bioinformatics 30 
+(1): 127-28. http://dx.doi.org/10.1093/bioinformatics/btt592
 
 Subramanian, Aravind, Pablo Tamayo, Vamsi K Mootha, Sayan Mukherjee, 
 Benjamin L Ebert, Michael A Gillette, Amanda Paulovich, et al. 2005. 
-“Gene Set Enrichment Analysis: A Knowledge-Based Approach for Interpreting 
-Genome-Wide Expression Profiles.” Proc. Natl. Acad. Sci. U. S. A. 102 (43): 
-15545–50. \url{http://dx.doi.org/10.1073/pnas.0506580102}.
+Gene Set Enrichment Analysis: A Knowledge-Based Approach for Interpreting 
+Genome-Wide Expression Profiles. Proc. Natl. Acad. Sci. U. S. A. 102 (43): 
+15545-50. http://dx.doi.org/10.1073/pnas.0506580102
 }
 \seealso{
 Methods for GESS:
