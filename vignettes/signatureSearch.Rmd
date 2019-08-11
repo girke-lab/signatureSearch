@@ -978,12 +978,13 @@ Since the annotation system are drug-to-functional category mappings, the
 
 The `comp_fea_res` function re-ranks the functional categories across the
 different FEA methods by using the mean rank of each functional category across
-the 5 FEA methods. The functional categories are ranked from top to bottom
-according to mean ranks increased from lowest to largest. Since the
-functional categories are not always present in all enrichment results, the mean 
-rank of a functional category is corrected by an adjustment factor that is the
-number of result methods divided by the total number of occurences of a functional category. For instance, if a functional category is only present in the
-result of one method, its mean rank will be increased accordingly. 
+the 5 FEA methods. Here the functional categories are re-ranked by their mean 
+rank values in increasing order. Since the functional categories are not always 
+present in all enrichment results, the mean rank of a functional category is 
+corrected by an adjustment factor that is the number of enrichment result 
+methods used divided by the number of occurences of a functional category. 
+For instance, if a functional category is only present in the result of one 
+method, its mean rank will be increased accordingly. 
 The following plots use the `pvalue` column in the result tables for this ranking 
 approach. Alternative columns can be chosen under the `rank_stat` argument. After 
 re-ranking only the top ranking functional categories are shown, here 20. Their 
@@ -998,11 +999,12 @@ table_list = list("dup_hyperG" = result(dup_hyperG_res),
 comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ```
 
-<font size="-2"> Figure 4: Top 20 re-ranking GO terms in MF ontology (y-axis) 
-across 5 FEA methods (x-axis). This plot shows the top 20 GO terms re-ranked by 
-comparing the adjusted mean rank of each functional category across the 5 
-methods. The dot represents p-value of the functional category across different 
-methods. </font>
+<font size="-2"> Figure 4: Ranking comparison of top GO terms across FEA
+methods. The dots in the plot represent the p-values of the 20 top ranking MF
+GO terms (y-axis) with heat color coding according to the color gradient in the 
+legend on the right. The GO terms have been ordered from the top to the bottom of the plot by
+increasing mean rank values calculated for each GO term across the 5 FEA
+methods (x-axis).</font>
 
 ```{r cmp_enrich_k, eval=TRUE, fig.width=8}
 table_list = list("dup_hyperG" = result(dup_hyperG_k_res), 
@@ -1013,9 +1015,9 @@ table_list = list("dup_hyperG" = result(dup_hyperG_k_res),
 comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ```
 
-<font size="-2"> Figure 5: Top 20 re-ranking KEGG pathways (y-axis) across 5
-FEA methods (x-axis). This plot shows the top 20 KEGG pathways re-ranked as 
-Figure 4. </font>
+<font size="-2"> Figure 5: Ranking comparison among top KEGG pathways across FEA 
+methods. The plot depicts the same information as the previous plot but using 
+KEGG pathways instead of GO terms as functional annotation system. </font>
 
 ## Summary of FEA Results
 
@@ -1051,13 +1053,14 @@ dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF",
           desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 ```
 
-<font size="-2"> Figure 6: Drug-target network for *NAD-dependent histone 
-deacetylase activity*. This network shows the interactions of input drugs
-and gene/proteins in the selected pathway. Only those drugs that have targets 
-are presented. Drugs are in square shape with orange color, 
-targets are in circle shape with red color. The connection line is not weighted,
-indicating yes or no. The color depth is scaled with the number of connections.
-The more of the targets/drugs, the higher of the color of the drugs/targets.</font>
+<font size="-2"> Figure 6: Drug-target network for *NAD-dependent histone
+deacetylase activity*. The given network graph illustrates the interactions
+among drugs and their target proteins in the chosen pathway. Only drugs with at
+least one target protein are included. The nodes in the network represent drugs
+and targets depicted as squares and circles, respectively. The interactions
+among drugs and targets are indicated by non-weighted lines (yes/no
+relationship). The color of the nodes is defined by the number of their
+connections to other nodes. </font>
 
 Network for *NF-kappaB binding* (GO:0051059)
 ```{r dtnet_go_0051059, eval=TRUE}
@@ -1065,8 +1068,8 @@ dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF",
           desc="NF-kappaB binding")
 ```
 
-<font size="-2"> Figure 7: Drug-target network for *NF-kappaB binding*. The 
-legend is the same with Figure 6.</font>
+<font size="-2"> Figure 7: Drug-target network for *NF-kappaB binding*. The details 
+of the plot are given in the legend of Figure 6.</font>
 
 ## With KEGG
 
@@ -1078,8 +1081,8 @@ dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034",
           desc="Alcoholism")
 ```
 
-<font size="-2"> Figure 8: Drug-target network for *Alcoholism*. The 
-legend is the same with Figure 6.</font>
+<font size="-2"> Figure 8: Drug-target network for *Alcoholism*. The details of
+the plot are given in the legend of Figure 6.</font>
 
 Network for KEGG pathway: *Longevity regulating pathway* (hsa04213)
 ```{r dtnet_kegg_04213, eval=TRUE}
@@ -1087,8 +1090,8 @@ dtnetplot(drugs = drugs, set = "hsa04213",
           desc="Longevity regulating pathway - multiple species")
 ```
 
-<font size="-2"> Figure 9: Drug-target network for *Longevity regulating pathway*. 
-The legend is the same with Figure 6.</font>
+<font size="-2"> Figure 9: Drug-target network for *Longevity regulating
+pathway*. The details of the plot are given in the legend of Figure 6.</font>
 
 # Supplemental Material
 
@@ -1140,7 +1143,7 @@ This project is funded by NIH grants
 [U24AG051129](https://www.longevitygenomics.org/) awarded by the National
 Institute on Aging (NIA). Subcomponents of the environment are based on methods
 developed by projects funded by NSF awards ABI-1661152 and PGRP-1810468. The
-High-Performance Computing (HPC) resources used for optimizing and applying the 
+High-Performance Computing (HPC) resources used for testing and optimizing the 
 code of this project were funded by NIH and NSF grants 1S10OD016290-01A1 and MRI-1429826,
 respectively. 
 
