@@ -10,7 +10,9 @@ tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000,
 }
 \arguments{
 \item{drugs}{character vector containing drug identifiers used for functional enrichment
-    testing. This can be the top ranking drugs from a GESS result.}
+    testing. This can be the top ranking drugs from a GESS result. Internally, drug
+    test sets are translated to the corresponding target protein test sets based on the
+    drug-target annotations provided under the \code{dt_anno} argument.}
 
 \item{type}{one of `GO` or `KEGG`}
 
@@ -97,7 +99,7 @@ To favor truly enriched GO terms and KEGG pathways (gene set \emph{S}) at
 the top of \emph{L_tar}, only gene sets with positive \emph{ES} are selected.
 }
 \section{Column description}{
-The TSEA results (including \code{gsea_mGSEA}) stored in the \code{feaResult} object 
+The TSEA results (including \code{tsea_mGSEA}) stored in the \code{feaResult} object 
 can be returned with the \code{result} method in tabular format, here \code{tibble}. 
 The columns of this \code{tibble} are described below. 
 \itemize{
