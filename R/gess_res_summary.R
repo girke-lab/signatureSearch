@@ -1,5 +1,9 @@
-#' For drugs in GESS result, get their ranks in different cell types
-#' @title Summarize ranks of drugs in different cells
+#' The \code{drug_cell_ranks} function returns from a \code{gessResult} object the
+#' ranks of the perturbagens (e.g. drugs) for each cell type. The results are
+#' arranged in separate columns of a \code{data.frame}. Additionally, it includes in
+#' the last columns summary ranking statistics across all cell types, such as min, mean 
+#' and max values.
+#' @title Summary ranking statistics across cell types
 #' @param gessResult `gessResult` object
 #' @return data.frame
 #' @importFrom dplyr bind_cols
@@ -42,11 +46,11 @@ drug_cell_ranks <- function(gessResult){
   return(res)
 }
 
-#' Append two columns (score_column_grp1, score_column_grp2) to GESS result,
-#' which represent cell summary scores of drugs in a cell group.
-#' 
-#' @title Get summary scores of drugs in cell groups
-#' @param tib tibble in gessResult object. 
+#' Function appends two columns (score_column_grp1, score_column_grp2) to GESS result
+#' tibble. The appended columns contain summary scores for groups of cell types, such 
+#' as normal and tumor cells.
+#' @title Summary Scores by Groups of Cell Types
+#' @param tib tibble in gessResult object 
 #' @param grp1 character vector, group 1 of cell types, e.g., tumor cell types
 #' @param grp2 character vector, group 2 of cell types, e.g., normal cell types
 #' @param score_column character, column name of similarity scores to be 
@@ -97,37 +101,30 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
   return(tib)
 }
 
-#' This function allows to summarize the ranking scores of selected 
+#' The function allows to summarize the ranking scores of selected
 #' perturbagens for GESS results across cell types along with cell type 
-#' classifications, such as normal and tumor cells. If the GESS result is from 
-#' a comprehensive signature database, e.g., LINCS, in the plot, the 
-#' perturbagens are drugs (along x-axis) and the ranking scores could be
-#' LINCS’ NCS values (y-axis). For each drug the NCS values are plotted for 
-#' each cell type as differently colored dots, while their shape indicates the 
-#' cell type class. The black dot and triangle for each drug indicate the
-#' summarized scores across cell types in normal and tumor cell class, 
-#' respectively. The summary method is according to the 
-#' "Summarization Across Cell Lines" method section from 
-#' Subramanian et al., 2017. Briefly, the scores in each cell class are 
-#' summarized by comparing the 67 and 33 quantiles of the score vector and
-#' retaining whichever is of higher absolute magnitude.
+#' classifications, such as normal and tumor cells. In the resulting plot
+#' the perturbagens are drugs (along x-axis) and the ranking scores are LINCS'
+#' NCS values (y-axis). For each drug the NCS values are plotted for each cell
+#' type as differently colored dots, while their shape indicates the cell type
+#' class.
 #'
 #' @title GESS Result Visualization
 #' @param gess_tb tibble in the 'result' slot of the \code{\link{gessResult}} 
-#' object, can be extracted via \code{\link{result}} accessor function.
-#' @param drugs character vector, a list of selected drugs
+#' object, can be extracted via \code{\link{result}} accessor function
+#' @param drugs character vector of selected drugs
 #' @param col character(1), name of the score column in 'gess_tb', e.g., "NCS"
 #' if the result table is from LINCS method. Can also be set as "rank", 
-#' in this way, it will show the ranks of each drug in different cell types.
+#' this way it will show the ranks of each drug in different cell types.
 #' @param cell_group character(1), one of "all", "normal", or "tumor". 
 #' If "all", it will show scores of each drug in both tumor and normal cell 
 #' types. If "normal" or "tumor", it will only show normal or tumor cell types.  
-#' @return plot for visualization of the GESS result
+#' @return plot visualizing GESS results
 #' @references  
 #' Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., 
-#' Natoli, T. E., Lu, X., … Golub, T. R. (2017). A Next Generation 
+#' Natoli, T. E., Lu, X., Golub, T. R. (2017). A Next Generation 
 #' Connectivity Map: L1000 Platform and the First 1,000,000 Profiles. Cell, 
-#' 171(6), 1437–1452.e17. \url{https://doi.org/10.1016/j.cell.2017.10.049}
+#' 171 (6), 1437-1452.e17. URL: https://doi.org/10.1016/j.cell.2017.10.049
 #' @importFrom readr read_tsv
 #' @importFrom dplyr mutate
 #' @importFrom dplyr rename

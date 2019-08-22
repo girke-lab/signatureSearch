@@ -1,30 +1,31 @@
-##' Summarize GESS results on MOA level
+##' Summarize GESS Results on MOA Level
 ##' 
-##' Summarize GESS results to get a list of MOA categories ranked by their 
-##' connectivity to query signature in cells
-##' @param gess_tb table in \code{\link{gessResult}} object
-##' @param moa_cats if set as "default", it uses MOA annotations from CLUE 
-##' website \url{https://clue.io/}. 
-##' Users can customize it as a `list` with names as MOA categories and 
-##' contents as drug names.
+##' Function summarizes GESS results on Mode of Action (MOA) level.
+##' It returns a tabular representation of MOA 
+##' categories ranked by their average signature search similarity to a query
+##' signature.
+##' @param gess_tb tibble in \code{\link{gessResult}} object
+##' @param moa_cats if set as "default", it uses MOA annotations from the CLUE 
+##' website (https://clue.io). 
+##' Users can customize it by providing a `list` of character vectors containing
+##' drug names and MOA categories as list component names.
 ##' @param cells one of "normal", "cancer" or "all", or a character vector 
-##' containing selected cell types. It represents a group of interested 
-##' cell types. 
+##' containing cell types of interest.
 ##' \itemize{
-##'   \item "all": all the 30 cell types in LINCS database;
+##'   \item "all": all cell types in LINCS database;
 ##'   \item "normal": normal cell types in LINCS database as one group; 
 ##'   \item "tumor": tumor cell types in LINCS database as one group;
 ##' }
 ##' @details 
 ##' Column description of the result table:
 ##' 
-##' moa: Mechanism Of Action
+##' moa: Mechanism of Action (MOA)
 ##' 
-##' cells: a group of interested cell types
+##' cells: cell type information
 ##' 
-##' mean_rank: mean ranks in GESS result of drugs in the MOA category
+##' mean_rank: mean rank of drugs in corresponding GESS result for each MOA category
 ##' 
-##' n_drug: number of drugs in the MOA category
+##' n_drug: number of drugs in each MOA category
 ##' @return data.frame 
 ##' @seealso \code{\link{gessResult}}
 ##' @examples 

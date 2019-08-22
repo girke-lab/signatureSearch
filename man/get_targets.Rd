@@ -2,26 +2,26 @@
 % Please edit documentation in R/get_targets.R
 \name{get_targets}
 \alias{get_targets}
-\title{Get gene/protein targets of query drugs}
+\title{Target Gene/Protein IDs for Query Drugs}
 \usage{
 get_targets(drugs, database = "all")
 }
 \arguments{
 \item{drugs}{character vector of drug names}
 
-\item{database}{drug-target annotation resource. one of 'DrugBank', 'CLUE', 
+\item{database}{drug-target annotation resource; one of 'DrugBank', 'CLUE', 
 'STITCH' or 'all'. If 'all', the targets from DrugBank, CLUE 
 and STITCH databases will be combined.}
 }
 \value{
-data.frame, one column is query drugs, the other column is
+data.frame, one column contains the query drug names and the other 
 target gene symbols.
 }
 \description{
-This function can be used to get gene/protein target annotation of query 
-drugs in specified drug-target annotation resource, such as DrugBank, CLUE 
-and STITCH. A SQLite database storing drug-target links in the above 
-three databases can be found at 
+This function returns for a set of query drug names/ids the corresponding
+target gene/protein ids. The required drug-target annotations are from
+DrugBank, CLUE and STITCH. An SQLite database storing these drug-target
+interactions based on the above three annotation resources is available in the
 \code{\link[signatureSearchData]{signatureSearchData}} package.
 }
 \examples{

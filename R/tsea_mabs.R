@@ -1,58 +1,61 @@
-#' meanAbs Search Method
+#' Target Set Enrichment Analysis (TSEA) with meanAbs
 #' 
-#' The meanAbs (mabs) method supports target set with duplications by 
-#' transforming it to a score ranked target list and calculating mean absolute 
-#' scores of genes sin gene set \emph{S}
+#' The meanAbs (mabs) method is a simple but effective functional enrichment
+#' statistic (Fang et al., 2012). As required for TSEA, it supports query label
+#' sets (here for target proteins/genes) with duplications by transforming them to
+#' score ranked label lists and then calculating mean absolute scores of labels in
+#' label set \eqn{S}.
 #' 
-#' The input for the \emph{mabs} method is \emph{L_tar}, the same as for 
-#' \code{mGSEA}. In this enrichment statistic, \emph{mabs(S)}, of a gene set 
-#' \emph{S} is calculated as mean absolute scores of the genes in \emph{S}. 
-#' In order to adjust for size variations in gene set \emph{S}, 1000 random 
-#' permutations of \emph{L_tar} are performed to determine \emph{mabs(S,pi)}. 
-#' Subsequently, \emph{mabs(S)} is normalized by subtracting the median of the 
-#' \emph{mabs(S,pi)} and then dividing by the standard deviation of 
-#' \emph{mabs(S,pi)} yielding the normalized scores \emph{Nmabs(S)}. Finally, 
-#' the portion of \emph{mabs(S,pi)} that is greater than \emph{mabs(S)} is 
-#' used as nominal p-value (Fang et al., 2012). 
-#' The resulting nominal p-values are adjusted for 
-#' multiple hypothesis testing using the Benjamini-Hochberg method.
+#' The input for the mabs method is \eqn{L_tar}, the same as for mGSEA. In this
+#' enrichment statistic, \eqn{mabs(S)}, of a label (e.g. gene/protein) set
+#' \eqn{S} is calculated as mean absolute scores of the labels in \eqn{S}. In
+#' order to adjust for size variations in label set \eqn{S}, 1000 random
+#' permutations of \eqn{L_tar} are performed to determine \eqn{mabs(S,pi)}.
+#'Subsequently, \eqn{mabs(S)} is normalized by subtracting the median of the
+#' \eqn{mabs(S,pi)} and then dividing by the standard deviation of
+#' \eqn{mabs(S,pi)} yielding the normalized scores \eqn{Nmabs(S)}. Finally, the
+#' portion of \eqn{mabs(S,pi)} that is greater than \eqn{mabs(S)} is used as
+#' nominal p-value (Fang et al., 2012). The resulting nominal p-values are
+#' adjusted for multiple hypothesis testing using the Benjamini-Hochberg method.
 #' @section Column description:
-#' Description of the columns in the result table specific to the MeanAbs 
-#' algorithm:
+#' The TSEA results (including \code{tsea_mabs}) stored in the
+#' \code{feaResult} object can be returned with the \code{result} method in
+#' tabular format, here \code{tibble}. The columns in this \code{tibble}
+#' specific to the \code{mabs} method are described below.
 #' \itemize{
-#'     \item mabs: Given a scored ranked gene list L, mabs(S) represents
-#'     the mean absolute scores of the genes in set S. 
-#'     \item Nmabs: mabs(S) normalized
+#'     \item mabs: given a scored ranked gene list \eqn{L}, \eqn{mabs(S)}
+#'     represents the mean absolute scores of the genes in set \eqn{S}.
+#'     \item Nmabs: \eqn{mabs(S)} normalized
 #' }
-#' Description of the other columns are available at the 'result' slot of the
+#' Additional columns are described under the 'result' slot of the
 #' \code{\link{feaResult}} object.
-#' @param drugs character vector, query drug set used for functional enrichment.
-#' Can be top ranking drugs in the GESS result. 
+#' @param drugs character vector containing drug identifiers used for functional enrichment
+#' testing. This can be the top ranking drugs from a GESS result. Internally, drug
+#' test sets are translated to the corresponding target protein test sets based on the
+#' drug-target annotations provided under the \code{dt_anno} argument.
 #' @param type one of `GO` or `KEGG`
-#' @param ont character(1). If type is `GO`, set ontology as one of `BP`,`MF`,
-#' `CC` or `ALL`. If type is 'KEGG', it is ignored.
-#' @param nPerm integer, permutation numbers used to calculate p-value
+#' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of 
+#' `BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.
+#' @param nPerm integer, permutation number used to calculate p-values
 #' @param pAdjustMethod p-value adjustment method, 
 #' one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'
 #' @param pvalueCutoff double, p-value cutoff
 #' @param minGSSize integer, minimum size of each gene set in annotation system
 #' @param maxGSSize integer, maximum size of each gene set in annotation system
-#' @param dt_anno drug-target annotation resource. one of 'DrugBank', 'CLUE', 
-#' 'STITCH' or 'all'. If 'dt_anno' is 'all', the targets from DrugBank, CLUE 
-#' and STITCH databases will be combined. It is recommended to set the 'dt_anno'
-#' as 'all' since it will get the most complete target set of as many drugs
-#' as possible. Users could also choose individual annotation resource if 
-#' wanted, but should be aware that if the chosen drug-target annotation
-#' resource contains limited drugs (such as CLUE), many query drugs will not
-#' get targets and the target set may not be complete, which could affect
-#' the enrichment result.  
+#' @param dt_anno drug-target annotation source. Currently, one of 'DrugBank',
+#' 'CLUE', 'STITCH' or 'all'. If 'dt_anno' is 'all', the targets from the
+#' DrugBank, CLUE and STITCH databases will be combined. Usually, it is
+#' recommended to set the 'dt_anno' to 'all' since it provides the most
+#' complete drug-target annotations. Choosing a single
+#' annotation source results in sparser drug-target annotations 
+#' (particularly CLUE), and thus less complete enrichment results.
 #' @return \code{\link{feaResult}} object, the result table contains the
 #' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
 #' the corresponding enrichment statistic.
 #' @seealso \code{\link{feaResult}}, \code{\link{fea}}, \code{\link{tsea_mGSEA}}
 #' @references Fang, Z., Tian, W., & Ji, H. (2012). A network-based 
 #' gene-weighting approach for pathway analysis. Cell Research, 22(3), 
-#' 565–580. \url{https://doi.org/10.1038/cr.2011.149}
+#' 565-580. URL: https://doi.org/10.1038/cr.2011.149
 #' @examples 
 #' data(drugs)
 #' ## GO annotation system

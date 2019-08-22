@@ -2,15 +2,15 @@
 % Please edit documentation in R/gseAnalyzer2.R
 \name{gseGO2}
 \alias{gseGO2}
-\title{modified GSEA method for GO enrichment analysis}
+\title{Modified GSEA with GO Terms}
 \usage{
 gseGO2(geneList, ont = "BP", OrgDb, keyType = "SYMBOL", exponent = 1,
   nproc = 1, nPerm = 1000, minGSSize = 2, maxGSSize = 500,
   pvalueCutoff = 0.05, pAdjustMethod = "BH", verbose = TRUE)
 }
 \arguments{
-\item{geneList}{numeric vector with gene SYMBOL as names, the genes are 
-ranked decreasingly by their scores.}
+\item{geneList}{named numeric vector with gene SYMBOLs in the name slot
+decreasingly ranked by scores in the data slot.}
 
 \item{ont}{one of "BP", "MF", "CC" or "ALL"}
 
@@ -20,16 +20,16 @@ ranked decreasingly by their scores.}
 
 \item{exponent}{weight of each step}
 
-\item{nproc}{If not equal to zero, sets BPPARAM to use nproc workers 
+\item{nproc}{if not equal to zero, sets \code{BPPARAM} to use \code{nproc} workers 
 (default = 1)}
 
 \item{nPerm}{permutation numbers}
 
-\item{minGSSize}{minimal size of each gene set for analyzing}
+\item{minGSSize}{integer, minimum size of each gene set in annotation system}
 
-\item{maxGSSize}{maximal size of genes annotated for testing}
+\item{maxGSSize}{integer, maximum size of each gene set in annotation system}
 
-\item{pvalueCutoff}{pvalue Cutoff}
+\item{pvalueCutoff}{pvalue cutoff}
 
 \item{pAdjustMethod}{pvalue adjustment method}
 
@@ -39,14 +39,13 @@ ranked decreasingly by their scores.}
 feaResult object
 }
 \description{
-The modified Gene Set Enrichment Analysis (GSEA) of Gene Ontology supports
-geneList with large portion of zeros and enrich GO terms at the top of the
-geneList
+This modified Gene Set Enrichment Analysis (GSEA) of GO terms supports
+gene test sets with large numbers of zeros.
 }
 \examples{
 data(targetList)
-library(org.Hs.eg.db)
-#gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
-#                pvalueCutoff = 1)
-#head(gsego)
+# library(org.Hs.eg.db)
+# gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
+#                 pvalueCutoff = 1)
+# head(gsego)
 }

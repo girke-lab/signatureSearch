@@ -22,7 +22,8 @@ show(object)
 message
 }
 \description{
-show qSig, gessResult, feaResult objects
+show \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{feaResult}}
+objects
 }
 \examples{
 data(drugs)
@@ -30,7 +31,7 @@ data(drugs)
 #                                 type = "GO", ont="MF")
 # dup_hyperG_res 
 db_path <- system.file("extdata", "sample_db.h5", 
-package = "signatureSearch")
+                       package = "signatureSearch")
 # Load sample_db as `SummarizedExperiment` object
 library(signatureSearchData)
 sample_db <- readHDF5chunk(db_path, colindex=1:100)

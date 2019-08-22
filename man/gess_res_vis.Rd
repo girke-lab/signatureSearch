@@ -8,36 +8,29 @@ gess_res_vis(gess_tb, drugs, col, cell_group = "all")
 }
 \arguments{
 \item{gess_tb}{tibble in the 'result' slot of the \code{\link{gessResult}} 
-object, can be extracted via \code{\link{result}} accessor function.}
+object, can be extracted via \code{\link{result}} accessor function}
 
-\item{drugs}{character vector, a list of selected drugs}
+\item{drugs}{character vector of selected drugs}
 
 \item{col}{character(1), name of the score column in 'gess_tb', e.g., "NCS"
 if the result table is from LINCS method. Can also be set as "rank", 
-in this way, it will show the ranks of each drug in different cell types.}
+this way it will show the ranks of each drug in different cell types.}
 
 \item{cell_group}{character(1), one of "all", "normal", or "tumor". 
 If "all", it will show scores of each drug in both tumor and normal cell 
 types. If "normal" or "tumor", it will only show normal or tumor cell types.}
 }
 \value{
-plot for visualization of the GESS result
+plot visualizing GESS results
 }
 \description{
-This function allows to summarize the ranking scores of selected 
+The function allows to summarize the ranking scores of selected
 perturbagens for GESS results across cell types along with cell type 
-classifications, such as normal and tumor cells. If the GESS result is from 
-a comprehensive signature database, e.g., LINCS, in the plot, the 
-perturbagens are drugs (along x-axis) and the ranking scores could be
-LINCS’ NCS values (y-axis). For each drug the NCS values are plotted for 
-each cell type as differently colored dots, while their shape indicates the 
-cell type class. The black dot and triangle for each drug indicate the
-summarized scores across cell types in normal and tumor cell class, 
-respectively. The summary method is according to the 
-"Summarization Across Cell Lines" method section from 
-Subramanian et al., 2017. Briefly, the scores in each cell class are 
-summarized by comparing the 67 and 33 quantiles of the score vector and
-retaining whichever is of higher absolute magnitude.
+classifications, such as normal and tumor cells. In the resulting plot
+the perturbagens are drugs (along x-axis) and the ranking scores are LINCS'
+NCS values (y-axis). For each drug the NCS values are plotted for each cell
+type as differently colored dots, while their shape indicates the cell type
+class.
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
@@ -57,7 +50,7 @@ gess_res_vis(result(lincs), drugs, col="NCS")
 }
 \references{
 Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., 
-Natoli, T. E., Lu, X., … Golub, T. R. (2017). A Next Generation 
+Natoli, T. E., Lu, X., Golub, T. R. (2017). A Next Generation 
 Connectivity Map: L1000 Platform and the First 1,000,000 Profiles. Cell, 
-171(6), 1437–1452.e17. \url{https://doi.org/10.1016/j.cell.2017.10.049}
+171 (6), 1437-1452.e17. URL: https://doi.org/10.1016/j.cell.2017.10.049
 }

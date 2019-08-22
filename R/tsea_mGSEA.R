@@ -1,51 +1,53 @@
-#' The Modified Gene Set Enrichment Analysis (mGSEA) method supports
-#' target set with duplications by transforming it to a score ranked target 
-#' list and conducting the enrichment analysis with GSEA algorithm with
-#' modification.
+#' The \code{tsea_mGSEA} function performs a Modified Gene Set Enrichment Analysis
+#' (mGSEA) that supports test sets (e.g. genes or protein IDs) with duplications. 
+#' The duplication support is 
+#' achieved by a weighting method for duplicated items, where the weighting is 
+#' proportional to the frequency of the items in the test set.
 #' 
 #' The original GSEA method proposed by Subramanian et at., 2005 uses 
-#' predefined gene sets \emph{S} defined by functional annotation systems 
-#' such as GO and KEGG. The goal is to determine whether the genes in \emph{S}
-#' are randomly distributed throughout a ranked test gene list \emph{L} 
+#' predefined gene sets \eqn{S} defined by functional annotation systems 
+#' such as GO and KEGG. The goal is to determine whether the genes in \eqn{S}
+#' are randomly distributed throughout a ranked test gene list \eqn{L} 
 #' (e.g. all genes ranked by log2 fold changes) or enriched at the top or 
-#' bottom of the test lit. This is expressed by an 
-#' Enrichment Score (\emph{ES}) reflecting the degree to which a set \emph{S} 
-#' is overrepresented at the extremes of \emph{L}. 
+#' bottom of the test list. This is expressed by an 
+#' Enrichment Score (\eqn{ES}) reflecting the degree to which a set \eqn{S} 
+#' is overrepresented at the extremes of \eqn{L}. 
 #' 
-#' For TSEA, the query is a target set where duplicated entries need to be
+#' For TSEA, the query is a target protein set where duplicated entries need to be
 #' maintained. To perform GSEA with duplication support, here referred to as 
 #' mGSEA, the target set is transformed to a score ranked target list 
-#' \emph{L_tar} of all targets provided by the 
+#' \eqn{L_tar} of all targets provided by the 
 #' corresponding annotation system. For each target in the query target set, 
 #' its frequency is divided by the number of targets in the target set, 
 #' which is the weight of that target. 
 #' For targets present in the annotation system but absent in the 
 #' target set, their scores are set to 0. Thus, every target in the annotation 
 #' system will be assigned a score and then sorted decreasingly to obtain
-#' \emph{L_tar}.
+#' \eqn{L_tar}.
 #' 
 #' In case of TSEA, the original GSEA method cannot be used directly since a 
-#' large portion of zeros exists in \emph{L_tar}. If the scores of the genes in 
-#' set \emph{S} are all zeros, \emph{N_R} (sum of scores of genes in set 
-#' \emph{S}) will be zero, which cannot be used as the denominator. 
-#' In this case, \emph{ES} is set to -1. If only some genes in set \emph{S}
-#' have scores of zeros then \emph{N_R} is set to a larger number to decrease 
-#' the weight of the genes in \emph{S} that have non-zero scores.
+#' large portion of zeros exists in \eqn{L_tar}. If the scores of the genes in 
+#' set \eqn{S} are all zeros, \eqn{N_R} (sum of scores of genes in set 
+#' \eqn{S}) will be zero, which cannot be used as the denominator. 
+#' In this case, \eqn{ES} is set to -1. If only some genes in set \eqn{S}
+#' have scores of zeros then \eqn{N_R} is set to a larger number to decrease 
+#' the weight of the genes in \eqn{S} that have non-zero scores.
 #'  
 #' The reason for this modification is that if only one gene in gene set 
-#' \emph{S} has a non-zero score and this gene ranks high in \emph{L_tar}, 
-#' the weight of this gene will be 1 resulting in an \emph{ES(S)} close to 1. 
-#' Thus, the original GSEA method will score the gene set \emph{S} as 
+#' \eqn{S} has a non-zero score and this gene ranks high in \eqn{L_tar}, 
+#' the weight of this gene will be 1 resulting in an \eqn{ES(S)} close to 1. 
+#' Thus, the original GSEA method will score the gene set \eqn{S} as 
 #' significantly enriched. However, this is undesirable because in this 
 #' example only one gene is shared among the target set and the gene set 
-#' \emph{S}. Therefore, giving small weights to genes in \emph{S} that
-#' have zero scores could decrease the weight of the genes in \emph{S} that 
-#' have non-zero scores, thereby decrease the false positive rate. 
-#' To favor truly enriched GO terms and KEGG pathways (gene set \emph{S}) at 
-#' the top of \emph{L_tar}, only gene sets with positive \emph{ES} are selected.
+#' \eqn{S}. Therefore, giving small weights to genes in \eqn{S} that
+#' have zero scores could decrease the weight of the genes in \eqn{S} that 
+#' have non-zero scores, thereby decreasing the false positive rate. 
+#' To favor truly enriched GO terms and KEGG pathways (gene set \eqn{S}) at 
+#' the top of \eqn{L_tar}, only gene sets with positive \eqn{ES} are selected.
 #' @section Column description:
-#' Description of the columns in the result table specific to the GSEA 
-#' algorithm:
+#' The TSEA results (including \code{tsea_mGSEA}) stored in the \code{feaResult} object 
+#' can be returned with the \code{result} method in tabular format, here \code{tibble}.
+#' The columns of this \code{tibble} are described below.
 #' \itemize{
 #'     \item enrichmentScore: ES from the GSEA algorithm 
 #'     (Subramanian et al., 2005). The score is calculated by walking down the 
@@ -69,33 +71,34 @@
 #'     the core of a gene set that accounts for the enrichment signal.
 #'     \item ledge_rank: Ranks of genes in 'leadingEdge' in gene list L.
 #' }
-#' Description of the other columns are available at the 'result' slot of the
+#' Additional columns are described under the 'result' slot of the
 #' \code{\link{feaResult}} object.
 #' 
-#' @title mGSEA Enrichment Method
-#' @param drugs character vector, query drug set used for functional enrichment.
-#' Can be top ranking drugs in the GESS result. 
+#' @title Target Set Enrichment Analysis (TSEA) with mGSEA Algorithm
+#' @param drugs character vector containing drug identifiers used for functional enrichment
+#' testing. This can be the top ranking drugs from a GESS result. Internally, drug
+#' test sets are translated to the corresponding target protein test sets based on the
+#' drug-target annotations provided under the \code{dt_anno} argument.
 #' @param type one of `GO` or `KEGG`
-#' @param ont character(1). If type is `GO`, set ontology as one of `BP`,`MF`,
-#' `CC` or `ALL`. If type is 'KEGG', it is ignored.
-#' @param nPerm integer, permutation numbers used to calculate p-value
-#' @param exponent integer, exponent in GSEA algorithm defines the weight of 
-#' genes in gene set \emph{S}.
+#' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of `BP`,`MF`,
+#' `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.
+#' @param nPerm integer defining the number of permutation iterations for calculating 
+#' p-values
+#' @param exponent integer value used as exponent in GSEA algorithm. It defines
+#' the weight of the items in the item set \eqn{S}.
 #' @param pAdjustMethod p-value adjustment method, 
 #' one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'
 #' @param pvalueCutoff double, p-value cutoff
 #' @param minGSSize integer, minimum size of each gene set in annotation system
 #' @param maxGSSize integer, maximum size of each gene set in annotation system
 #' @param verbose TRUE or FALSE, print message or not
-#' @param dt_anno drug-target annotation resource. one of 'DrugBank', 'CLUE', 
-#' 'STITCH' or 'all'. If 'dt_anno' is 'all', the targets from DrugBank, CLUE 
-#' and STITCH databases will be combined. It is recommended to set the 'dt_anno'
-#' as 'all' since it will get the most complete target set of as many drugs
-#' as possible. Users could also choose individual annotation resource if 
-#' wanted, but should be aware that if the chosen drug-target annotation
-#' resource contains limited drugs (such as CLUE), many query drugs will not
-#' get targets and the target set may not be complete, which could affect
-#' the enrichment result.  
+#' @param dt_anno drug-target annotation source. Currently, one of 'DrugBank',
+#' 'CLUE', 'STITCH' or 'all'. If 'dt_anno' is 'all', the targets from the
+#' DrugBank, CLUE and STITCH databases will be combined. Usually, it is
+#' recommended to set the 'dt_anno' to 'all' since it provides the most
+#' complete drug-target annotations. Choosing a single
+#' annotation source results in sparser drug-target annotations 
+#' (particularly CLUE), and thus less complete enrichment results.
 #' @return \code{\link{feaResult}} object, the result table contains the
 #' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
 #' the corresponding enrichment statistic.
@@ -103,10 +106,10 @@
 #' @references 
 #' GSEA algorithm: 
 #' Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
-#' Gillette, M. A., … Mesirov, J. P. (2005). Gene set enrichment analysis: a 
+#' Gillette, M. A., Mesirov, J. P. (2005). Gene set enrichment analysis: a 
 #' knowledge-based approach for interpreting genome-wide expression profiles. 
 #' Proceedings of the National Academy of Sciences of the United States of
-#' America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
+#' America, 102(43), 15545-15550. URL: https://doi.org/10.1073/pnas.0506580102
 #' @examples 
 #' data(drugs)
 #' ## GO annotation system

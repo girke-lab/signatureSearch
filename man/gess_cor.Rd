@@ -7,13 +7,15 @@
 gess_cor(qSig, method, chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{\code{\link{qSig}} object defining the query signature, the GESS
-method (should be 'Cor') and the path to the reference database.}
+\item{qSig}{\code{\link{qSig}} object defining the query signature including
+the GESS method (should be 'Cor') and the path to the reference database. For
+details see help of \code{qSig} and \code{qSig-class}.}
 
 \item{method}{One of 'spearman' (default), 'kendall', or 'pearson',
-indicating which correlation coefficient to be used.}
+indicating which correlation coefficient to use.}
 
-\item{chunk_size}{size of chunk per processing}
+\item{chunk_size}{number of database entries to process per iteration to limit
+memory usage of search.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 
@@ -21,52 +23,36 @@ search results for each perturbagen in the reference database ranked by
 their signature similarity to the query.
 }
 \description{
-It uses query signature to search against the reference database defined 
-in the \code{\link{qSig}} object by calculating correlation coefficients.
+Correlation-based similarity metrics, such as Spearman or Pearson coefficients,
+can be used as Gene Expression Signature Search (GESS) methods. As non-set-based 
+methods, they require quantitative gene expression values for both the query and
+the database entries, such as normalized intensities or read counts from
+microarrays or RNA-Seq experiments, respectively.
 }
 \details{
-Correlation-based similarity metrics, such as Spearman or Pearson 
-coefficients, can also be used as GESS methods. As non-set-based methods, 
-they require quantitative gene expression values for both the query and the 
-database entries, that usually need to be of the same type to obtain 
-meaningful results, such as normalized intensities or read counts from 
-microarrays or RNA-Seq experiments, respectively. For correlation searches 
-to work, it is important that both the query and reference database contain 
-the same type of gene identifiers. The expected data structure of the query 
-is a matrix with a single numeric column and the gene labels 
-(e.g. Entrez Gene IDs) in the row name slot. For convenience, the 
-correlation-based searches can either be performed with the full set of 
-genes represented in the database or a subset of them. The latter can be 
-useful to focus the computation for the correlation values on certain genes 
-of interest such as a DEG set or the genes in a pathway of interest. 
-
-For comparing the performance of different GESS methods, it can also be 
-advantageous to subset the genes used for a correlation-based search to 
-same set used in a set-based search, such as the up/down DEGs used in a 
-LINCS GESS. This way the search results of correlation- and set-based 
-methods can be more comparable because both are provided with equivalent 
-information content.
-
-To perform a correlation-based search on a subset of genes represented in 
-the database, one can simply provide the chosen gene subset in the query. 
-During the search the database entries will be subsetted to the genes 
-provided in the query signature.
-
-The Spearman correlation coeffient calculation takes about 1 minute on a 
-single CPU core for querying with a single genome-wide signature against 
-10,000 signatures in the reference database. However, It only takes about 10 
-seconds if the query genes are subsetted to DEGs.
+For correlation searches to work, it is important that both the query and
+reference database contain the same type of gene identifiers. The expected data
+structure of the query is a matrix with a single numeric column and the gene
+labels (e.g. Entrez Gene IDs) in the row name slot. For convenience, the
+correlation-based searches can either be performed with the full set of genes
+represented in the database or a subset of them. The latter can be useful to
+focus the computation for the correlation values on certain genes of interest
+such as a DEG set or the genes in a pathway of interest. For comparing the
+performance of different GESS methods, it can also be advantageous to subset
+the genes used for a correlation-based search to same set used in a set-based
+search, such as the up/down DEGs used in a LINCS GESS. This way the search
+results of correlation- and set-based methods can be more comparable because
+both are provided with equivalent information content.
 }
 \section{Column description}{
 
-Description of the score columns in the result table specific for 
-correlation-based methods:
+Descriptions of the columns specific to the corrleation-based GESS method are
+given below. Note, the additional columns, those that are common among the 
+GESS methods, are described in the help file of the \code{gessResult} object.
 \itemize{
     \item cor_score: Correlation coefficient based on the method defined in 
     the \code{gess_cor} function.
 }
-Description of the other columns are available at the 'result' slot of the
-\code{\link{gessResult}} object.
 }
 
 \examples{

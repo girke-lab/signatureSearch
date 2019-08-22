@@ -1,13 +1,12 @@
-##' Given a vector of genes, this function will return the enriched KEGG
-##' pathways after FDR control.
-##' The hypergeometric test is adjusted to support gene set with duplications
+##' Given a vector of gene identifiers, this function returns KEGG pathway enrichment
+##' results based on a hypergeometric test with duplication support in the test set.
 ##' 
-##' @title KEGG pathways enrichment analysis via hypergeometric test
-##' @param gene a vector of entrez gene id.
-##' @param organism supported organism listed in 
-##' \url{http://www.genome.jp/kegg/catalog/org_list.html}
-##' @param keyType one of "kegg", 'ncbi-geneid', 'ncbi-proteinid' and 'uniprot'
-##' @param pvalueCutoff Cutoff value of pvalue.
+##' @title KEGG Pathway Enrichment with Hypergeometric Test
+##' @param gene a vector of entrez gene ids (here the test set)
+##' @param organism supported organism are listed in 
+##' http://www.genome.jp/kegg/catalog/org_list.html
+##' @param keyType one of "kegg", 'ncbi-geneid', 'ncbi-proteinid' or 'uniprot'
+##' @param pvalueCutoff pvalue cutoff
 ##' @param pAdjustMethod one of "holm", "hochberg", "hommel", "bonferroni", 
 ##' "BH", "BY", "fdr", "none"
 ##' @param universe background genes
@@ -20,8 +19,8 @@
 ##' @importMethodsFrom AnnotationDbi mget
 ##' @importClassesFrom methods data.frame
 ##' @examples 
-##' # It supports duplicated elements in "gene", which should be entrez id
-##' gene = c(rep("4312",4), rep("8318",2), "991", "10874")
+##' # Method supports duplicated elements in "gene", which should be entrez ids
+##' gene <- c(rep("4312",4), rep("8318",2), "991", "10874")
 ##' #data(geneList, package="DOSE")
 ##' #kk <- enrichKEGG2(gene = gene, universe=names(geneList))
 ##' #head(kk)

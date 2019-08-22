@@ -3,13 +3,18 @@
 \docType{data}
 \name{drugs}
 \alias{drugs}
-\title{Drugs used in examples}
+\title{Drug names used in examples}
 \format{An object of class \code{character} of length 10.}
 \usage{
 drugs
 }
 \description{
-A character vector containing top 10 drugs in the GESS result 
-from gess_lincs method in the vignette
+A character vector containing the names of the top 10 drugs in the GESS result 
+from the gess_lincs method used in the vignette of signatureSearch.
+}
+\examples{
+# Load drugs object
+data(drugs)
+drugs
 }
 \keyword{datasets}

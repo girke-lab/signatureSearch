@@ -1,4 +1,5 @@
-##' show qSig, gessResult, feaResult objects
+##' show \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{feaResult}}
+##' objects
 ##' 
 ##' @name show
 ##' @docType methods
@@ -10,7 +11,7 @@
 ##' @usage show(object)
 ##' @examples 
 ##' db_path <- system.file("extdata", "sample_db.h5", 
-##' package = "signatureSearch")
+##'                        package = "signatureSearch")
 ##' # Load sample_db as `SummarizedExperiment` object
 ##' library(signatureSearchData)
 ##' sample_db <- readHDF5chunk(db_path, colindex=1:100)
@@ -42,7 +43,6 @@ setMethod("show", signature(object="gessResult"),
             cat("\n@refdb", "\t", object@refdb, "\n")
           })
 
-##' @description get 'result' slot of gessResult object
 ##' @name result
 ##' @docType methods
 ##' @rdname result-methods

@@ -1,34 +1,39 @@
-##' Plot top re-ranking functional categories from different enrichment methods.
+##' Dot plot for comparing the top ranking functional categories from different 
+##' functional enrichment analysis (FEA) results. The functional categories are plotted
+##' in the order defined by their mean rank across the corresponding FEA results.
 ##' 
-##' The `comp_fea_res` function re-ranks the functional categories from 
-##' differentFEA methods by using the mean rank of each functional category
-##' across the 5 FEA methods, the lower of the mean rank, the topper of the 
-##' functional category. Since the functional categories have different number 
-##' of support methods, the mean rank of a functional category is adjusted by 
-##' multiplying the total number of methods and divided by the number of support 
-##' methods. In this way, if a functional category is supported by only one 
-##' method, the mean rank will be increased 5 times for penalty. 
+##' The `comp_fea_res` function computes the mean rank for each functional category
+##' across different FEA result instances and then re-ranks them based on that.
+##' Since the functional categories are not always present in all enrichment
+##' results, the mean rank of a functional category is corrected by an adjustment
+##' factor that is the number of enrichment result methods used divided by the
+##' number of occurences of a functional category. For instance, if a functional
+##' category is only present in the result of one method, its mean rank will be
+##' increased accordingly. Subsequently, the re-ranked functional categories are 
+##' compared in a dot plot where the colors represent the values of the enrichment
+##' statistic chosen under the \code{rank_stat} argument.
 ##'
-##' @title Plot Comparing FEA Results
-##' @param table_list a named list of tables extracted from feaResults from 
-##' different FEA methods. The names of the list is required, which could be 
-##' name of the enrichment methods.  
+##' @title Plot for Comparing Ranking Results of FEA Methods
+##' @param table_list a named list of tibbles extracted from feaResult objects,
+##' e.g. generated with different FEA methods.
 ##' @param rank_stat character(1), column name of the enrichment statisic used 
 ##' for ranking the functional categories, e.g. 'pvalue' or 'p.adjust'. Note,
-##' the column name should exist in each table in the 'table_list'.
-##' @param Nshow integer, number of top re-ranking functional categories shown 
-##' in the plot
+##' the chosen column name needs to be present in each tibble of 'table_list'.
+##' @param Nshow integer defining the number of the top functional categories 
+##' to display in the plot after re-ranking them across FEA methods
 ##' @importFrom ggplot2 aes_
 ##' @importFrom DOSE theme_dose
-##' @return igraph object
+##' @return ggplot2 graphics object
 ##' @examples 
 ##' data(drugs)
-##' # table_list = list("dup_hyperG" = result(dup_hyperG_res), 
-##' #                   "mGSEA" = result(mgsea_res), 
-##' #                   "mabs" = result(mabs_res), 
-##' #                   "hyperG" = result(hyperG_res), 
-##' #                   "GSEA" = result(gsea_res))
-##' # comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
+##' \dontrun{
+##' table_list <- list("dup_hyperG" = result(dup_hyperG_res), 
+##'                   "mGSEA" = result(mgsea_res), 
+##'                   "mabs" = result(mabs_res), 
+##'                   "hyperG" = result(hyperG_res), 
+##'                   "GSEA" = result(gsea_res))
+##' comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
+##' }
 ##' @export
 
 comp_fea_res <- function(table_list, rank_stat="pvalue", Nshow=20){

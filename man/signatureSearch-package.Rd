@@ -90,6 +90,11 @@ functional annotation categories, such as GO or KEGG. To minimize bias in
 TSEA or DSEA, often caused by promiscuous binders, it can be beneficial to 
 remove drugs or targets that bind to large numbers of distinct proteins or 
 drugs, respectively.
+
+Note, in this vignette, the target genes of drugs always refer to
+the target protein-encoding genes. The protein ids (such as UniProt ids) are 
+mapped to their encoding gene ids (such as gene Symbols) via existing id 
+mapping resources, such as `org.Hs.eg.db` R/Bioconductor annotation package.
 }
 \section{Terminology}{
 

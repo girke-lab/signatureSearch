@@ -2,25 +2,24 @@
 % Please edit documentation in R/gess_lincs.R
 \name{randQueryES}
 \alias{randQueryES}
-\title{Generate WTCS null distribution with random queries}
+\title{Generate WTCS Null Distribution with Random Queries}
 \usage{
 randQueryES(h5file, N_queries = 1000, dest)
 }
 \arguments{
-\item{h5file}{character(1), path to the HDF5 file representting the
+\item{h5file}{character(1), path to the HDF5 file representing the
 reference database}
 
 \item{N_queries}{number of random queries}
 
-\item{dest}{file path to the generated "ES_NULL.txt" file}
+\item{dest}{path to the output file (e.g. "ES_NULL.txt")}
 }
 \value{
-write 'ES_NULL.txt' file to the 'dest'
+File with path assigned to \code{dest}
 }
 \description{
-Generate null distribution of WTCS with specified number of random queries 
-against the reference database for computing nominal P-values for WTCS
-in the `gess_lincs` result.
+Function computes null distribution of Weighted Connectivity Scores (WTCS) used
+by the LINCS GESS method for computing nominal P-values.
 }
 \examples{
 db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")
@@ -30,9 +29,9 @@ unlink("ES_NULL.txt")
 }
 \references{
 Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., Natoli, T. E., 
-Lu, X., … Golub, T. R. (2017). A Next Generation Connectivity Map: L1000 
-Platform and the First 1,000,000 Profiles. Cell, 171(6), 1437–1452.e17. 
-\url{https://doi.org/10.1016/j.cell.2017.10.049}
+Lu, X., Golub, T. R. (2017). A Next Generation Connectivity Map: L1000 
+Platform and the First 1,000,000 Profiles. Cell, 171 (6), 1437-1452.e17. 
+URL: https://doi.org/10.1016/j.cell.2017.10.049
 }
 \seealso{
 \code{\link{gess_lincs}}

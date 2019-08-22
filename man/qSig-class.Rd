@@ -5,31 +5,33 @@
 \alias{qSig-class}
 \title{Class "qSig"}
 \description{
-This class stores the query signature, reference database
-and GESS method used to search for similarity
+S4 object named \code{qSig} containing query signature information for Gene
+Expression Signature (GES) searches. It contains slots for query signature,
+GESS method and path to the GES reference database.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{query}}{When 'gess_method' is 'CMAP' or 'LINCS', 
-it should be a list of two elements, which are up and down regulated 
-gene sets of entrez ids.
+\item{\code{query}}{If 'gess_method' is one of 'CMAP' or 'LINCS', 
+this should be a list with two character vectors named \code{upset}
+and \code{downset} for up- and down-regulated gene labels (here Entrez IDs),
+repectively.
 
-When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
-representing gene expression profiles (GEPs) of treatment(s).}
+If 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', a single column matrix with
+gene expression values should be assigned. The corresponding gene labels are
+stored in the row name slot of the matrix. The expected type of gene expression
+values is explained in the help files of the corresponding GESS methods.}
 
 \item{\code{gess_method}}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
 
 \item{\code{refdb}}{character(1), can be "cmap", "cmap_expr", "lincs", or 
-"lincs_expr" if users want to use the existing CMAP/LINCS databases. 
+"lincs_expr" when using existing CMAP/LINCS databases. 
 
-If users want to use the custom signature database, 
-it should be the file path to the HDF5 file generated with 
-\code{\link{build_custom_db}} function or
-generated from the source files of CMAP/LINCS databases according to 
-the vignette in \code{\link[signatureSearchData]{signatureSearchData}}
-package. The HDF5 file contains 
-the reference signatures that the query signature is searched against.}
+If users want to use a custom signature database, it should be the file path
+to the HDF5 file generated with the \code{\link{build_custom_db}} function.
+Alternatively, source files of the CMAP/LINCS databases can be used as
+explained in the vignette of the
+\code{\link[signatureSearchData]{signatureSearchData}} package.}
 }}
 
 \keyword{classes}

@@ -1,27 +1,29 @@
 ##' Class "qSig"
 ##' 
-##' This class stores the query signature, reference database
-##' and GESS method used to search for similarity
+##' S4 object named \code{qSig} containing query signature information for Gene
+##' Expression Signature (GES) searches. It contains slots for query signature,
+##' GESS method and path to the GES reference database.
 ##' @name qSig-class
 ##' @docType class
 ##' @aliases qSig-class
-##' @slot query When 'gess_method' is 'CMAP' or 'LINCS', 
-##' it should be a list of two elements, which are up and down regulated 
-##' gene sets of entrez ids.
+##' @slot query If 'gess_method' is one of 'CMAP' or 'LINCS', 
+##' this should be a list with two character vectors named \code{upset}
+##' and \code{downset} for up- and down-regulated gene labels (here Entrez IDs),
+##' repectively.
 ##' 
-##' When 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', it should be a matrix 
-##' representing gene expression profiles (GEPs) of treatment(s). 
+##' If 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', a single column matrix with
+##' gene expression values should be assigned. The corresponding gene labels are
+##' stored in the row name slot of the matrix. The expected type of gene expression
+##' values is explained in the help files of the corresponding GESS methods.
 ##' @slot gess_method one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'
 ##' @slot refdb character(1), can be "cmap", "cmap_expr", "lincs", or 
-##' "lincs_expr" if users want to use the existing CMAP/LINCS databases. 
+##' "lincs_expr" when using existing CMAP/LINCS databases. 
 ##' 
-##' If users want to use the custom signature database, 
-##' it should be the file path to the HDF5 file generated with 
-##' \code{\link{build_custom_db}} function or
-##' generated from the source files of CMAP/LINCS databases according to 
-##' the vignette in \code{\link[signatureSearchData]{signatureSearchData}}
-##' package. The HDF5 file contains 
-##' the reference signatures that the query signature is searched against. 
+##' If users want to use a custom signature database, it should be the file path
+##' to the HDF5 file generated with the \code{\link{build_custom_db}} function.
+##' Alternatively, source files of the CMAP/LINCS databases can be used as
+##' explained in the vignette of the
+##' \code{\link[signatureSearchData]{signatureSearchData}} package.
 ##' @exportClass qSig
 ##' @keywords classes
 setClass("qSig", slots = c(
@@ -32,34 +34,37 @@ setClass("qSig", slots = c(
 
 ##' gessResult object
 ##' 
-##' The gessResult object stores the search result table, query signature, 
-##' name of the GESS method and path to the reference database from the 
-##' GESS methods.
+##' The \code{gessResult} object organizes Gene Expression Signature Search (GESS)
+##' results. This includes the main tabular result of a GESS, its query signature, the
+##' name of the chosen GESS method and the path to the reference database.
 ##' @name gessResult-class
 ##' @aliases gessResult
 ##' @docType class
-##' @slot result tibble object, this result table contains the search results 
-##' for each perturbagen in the reference database ranked by their signature 
-##' similarity to the query. The result table can be extracted via 
-##' \code{\link{result}} accessor function.
+##' @slot result tibble object containing the search results for each
+##' perturbagen (e.g. drugs) in the reference database ranked by their
+##' signature similarity to the query. The result table can be extracted via
+##' the \code{\link{result}} accessor function.
 ##' 
-##' Description of the common columns from different GESS methods:
+##' Descriptions of the columns common among the tabular results of the individual
+##' GESS methods are given below. Note, the columns specific to each GESS method
+##' are described in their help files.
 ##' \itemize{
 ##'     \item pert: character, name of perturbagen (e.g. drug) in the reference 
 ##'     database
 ##'     \item cell: character, acronym of cell type
-##'     \item type: character, perturbation type. In CMAP and LINCS 
-##'     databases, the perturbation types are all compound treatment(trt_cp). 
-##'     Users can build their custom signature database with other types of 
-##'     perturbation, e.g., gene knockdown or overexpression via 
-##'     \code{\link{build_custom_db}} function
-##'     \item trend: character, up or down when reference signature is 
+##'     \item type: character, perturbation type. In the CMAP/LINCS 
+##'     databases provided by \code{signatureSearchData}, the perturbation types
+##'     are currently treatments with drug-like compounds (trt_cp). If required,
+##'     users can build custom signature database with other types of
+##'     perturbagens (e.g., gene knockdown or over-expression events) with the 
+##'     provided \code{\link{build_custom_db}} function.
+##'     \item trend: character, up or down when the reference signature is 
 ##'     positively or negatively connected with the query signature, 
 ##'     respectively.
 ##'     \item N_upset: integer, number of genes in the query up set
 ##'     \item N_downset: integer, number of genes in the query down set
-##'     \item t_gn_sym: character, gene symbols of the corresponding drug 
-##'     targets
+##'     \item t_gn_sym: character, symbol of the gene encoding the
+##'     corresponding drug target protein
 ##' } 
 ##' @slot query query signature
 ##' @slot gess_method name of the GESS method 
@@ -87,39 +92,41 @@ gessResult <- function(result, query, gess_method, refdb)
 
 ##' feaResult object
 ##' 
-##' The feaResult object stores the enrichment result table, organism 
-##' information of the annotation system, and the ontology type of the GO 
-##' annotation system. If the annotation system is KEGG, the latter will be 
-##' 'KEGG'. It also stores the input drugs used for the enrichment test, 
-##' as well as their target information.
+##' The \code{feaResult} object stores Functional Enrichment Analysis (FEA) results
+##' generated by the corresponding Target and Drug Set Enrichment methods (here TSEA and
+##' DSEA) defined by \code{signatureSearch}. This includes slots for the FEA
+##' results in tabular format, the organism information, and the type of functional
+##' annotation used (e.g. GO or KEGG). It also includes the drug information used
+##' for the FEA, as well as the corresponding target protein information.
 ##' @name feaResult-class
 ##' @aliases feaResult
 ##' @docType class
-##' @slot result tibble object, this result table contains the
+##' @slot result tibble object, this tabular result contains the
 ##' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
 ##' the corresponding enrichment statistic. The result table can be extracted 
-##' via \code{\link{result}} accessor function.
+##' via the \code{\link{result}} accessor function.
 ##' 
-##' Description of the common columns in the result table from different 
-##' enrichment methods:
+##' Description of the columns that are shared among the result tables generated by the
+##' different FEA methods:
 ##' \itemize{
 ##'     \item ont: in case of GO, one of BP, MF, CC, or ALL
 ##'     \item ID: GO or KEGG IDs
 ##'     \item Description: description of functional category
 ##'     \item p.adjust: p-value adjusted for multiple hypothesis testing based 
 ##'     on method specified under pAdjustMethod argument
-##'     \item qvalue: q value calculated with R’s qvalue function to control FDR
+##'     \item qvalue: q value calculated with R's qvalue function to control FDR
 ##'     \item itemID: IDs of items (genes for TSEA, drugs for DSEA) overlapping 
 ##'     among test and annotation sets.
 ##'     \item setSize: size of the functional category
 ##' } 
-##' @slot organism organism information of the annotation system, 
-##' only 'human' supported.
+##' @slot organism organism information of the annotation system. 
+##' Currently, limited to 'human', since drug-target annotations are too sparse
+##' for other organisms.
 ##' @slot ontology ontology type of the GO annotation system. If the annotation 
 ##' system is KEGG, it will be 'KEGG'
-##' @slot drugs input drugs used for the enrichment test
-##' @slot targets target information of the drugs in the defined drug-target 
-##' annotation resource.
+##' @slot drugs input drug names used for the enrichment test
+##' @slot targets target information for the query drugs obtained from the chosen
+##' drug-target annotation source.
 ##' @exportClass feaResult
 ##' @keywords classes
 setClass("feaResult",

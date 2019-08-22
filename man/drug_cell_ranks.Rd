@@ -2,7 +2,7 @@
 % Please edit documentation in R/gess_res_summary.R
 \name{drug_cell_ranks}
 \alias{drug_cell_ranks}
-\title{Summarize ranks of drugs in different cells}
+\title{Summary ranking statistics across cell types}
 \usage{
 drug_cell_ranks(gessResult)
 }
@@ -13,7 +13,11 @@ drug_cell_ranks(gessResult)
 data.frame
 }
 \description{
-For drugs in GESS result, get their ranks in different cell types
+The \code{drug_cell_ranks} function returns from a \code{gessResult} object the
+ranks of the perturbagens (e.g. drugs) for each cell type. The results are
+arranged in separate columns of a \code{data.frame}. Additionally, it includes in
+the last columns summary ranking statistics across all cell types, such as min, mean 
+and max values.
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 

@@ -3,15 +3,20 @@
 \docType{data}
 \name{targetList}
 \alias{targetList}
-\title{Target list used in examples}
+\title{Target Sample Data Set}
 \format{An object of class \code{numeric} of length 1000.}
 \usage{
 targetList
 }
 \description{
-A named numeric vector with GENE SYMBOL as names. It is a subset of the 
-first 1000 elements from 'targets' slot of 'mgsea_res' in the vignette. 
-The scores represent the weights of targets/genes in the target set of the
-selected top 10 drugs.
+A named numeric vector with Gene Symbols as names. It is the first 1000
+elements from the 'targets' slot of the 'mgsea_res' result object introduced in
+the vignette of this package. The scores represent the weights of the target
+genes/proteins in the target set of the selected top 10 drugs.
+}
+\examples{
+# Load object
+data(targetList)
+targetList
 }
 \keyword{datasets}

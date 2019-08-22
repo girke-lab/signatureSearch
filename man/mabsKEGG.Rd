@@ -2,27 +2,28 @@
 % Please edit documentation in R/mabsAnalyser.R
 \name{mabsKEGG}
 \alias{mabsKEGG}
-\title{mabsKEGG}
+\title{MeanAbs Enrichment Analysis for KEGG}
 \usage{
 mabsKEGG(geneList, organism = "hsa", keyType = "kegg", nPerm = 1000,
   minGSSize = 5, maxGSSize = 500, pvalueCutoff = 0.05,
   pAdjustMethod = "BH")
 }
 \arguments{
-\item{geneList}{scored ranked geneList}
+\item{geneList}{named numeric vector with gene/target ids in the name slot 
+decreasingly ranked by scores in the data slot.}
 
 \item{organism}{supported organism listed in 
-\url{http://www.genome.jp/kegg/catalog/org_list.html}}
+URL: http://www.genome.jp/kegg/catalog/org_list.html}
 
-\item{keyType}{one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'}
+\item{keyType}{one of 'kegg', 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'}
 
 \item{nPerm}{permutation numbers}
 
-\item{minGSSize}{minimal size of each geneSet for analyzing}
+\item{minGSSize}{integer, minimum size of each gene set in annotation system}
 
-\item{maxGSSize}{maximal size of genes annotated for testing}
+\item{maxGSSize}{integer, maximum size of each gene set in annotation system}
 
-\item{pvalueCutoff}{pvalue Cutoff}
+\item{pvalueCutoff}{pvalue cutoff}
 
 \item{pAdjustMethod}{pvalue adjustment method}
 }
@@ -30,7 +31,7 @@ mabsKEGG(geneList, organism = "hsa", keyType = "kegg", nPerm = 1000,
 \code{\link{feaResult}} object
 }
 \description{
-meanAbs analysis of KEGG
+MeanAbs enrichment analysis with KEGG pathways.
 }
 \examples{
 # Gene Entrez id should be used for KEGG enrichment

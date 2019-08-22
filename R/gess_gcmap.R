@@ -1,20 +1,24 @@
 #' @title gCMAP Search Method
 #' @description 
-#' It uses query signature to search against the reference database defined in 
-#' the \code{\link{qSig}} object by gCMAP method, which is adapted from the 
-#' gCMAP package (Sandmann et al., 2014)
+#' Adapts the Gene Expression Signature Search (GESS) method from the gCMAP
+#' package (Sandmann et al. 2014) to make it compatible with the database
+#' containers and methods defined by \code{signatureSearch}. The specific GESS
+#' method, called gCMAP, uses as query a rank transformed GES and the reference
+#' database is composed of the labels of up and down regulated DEG sets.
 #' @details 
 #' The Bioconductor gCMAP (Sandmann et al. 2014) package provides access to a 
 #' related but not identical implementation of the original CMAP algorithm 
 #' proposed by Lamb et al. (2006). It uses as query a rank transformed GES and 
 #' the reference database is composed of the labels of up and down regulated 
-#' DEG sets. This is the opposite situation of the CMAP method, where the query 
-#' is composed of the labels of up and down regulated DEGs and the database 
-#' contains rank transformed GESs.
+#' DEG sets. This is the opposite situation of the orignal CMAP method from 
+#' Lamb et al (2006), where the query is composed of the labels of up and down 
+#' regulated DEGs and the database contains rank transformed GESs.
 #' 
 #' @section Column description:
-#' Description of the score columns in the result table specific for gCMAP 
-#' method:
+#' Descriptions of the columns specific to the gCMAP method are given below. Note,
+#' the additional columns, those that are common among the GESS methods, are
+#' described in the help file of the \code{gessResult} object.
+#' 
 #' \itemize{
 #'     \item effect: Scaled bi-directional enrichment score corresponding to 
 #'     the scaled_score under the CMAP result.
@@ -25,26 +29,32 @@
 #'     \item signed: Whether the gene sets in the reference database have signs, 
 #'     e.g. representing up and down regulated genes when computing scores.
 #' }
-#' Description of the other columns are available at the 'result' slot of the
-#' \code{\link{gessResult}} object.
 #' 
-#' @param qSig \code{\link{qSig}} object defining the query signature, the GESS
-#' method (should be 'gCMAP') and the path to the reference database.
-#' @param higher The 'higher' threshold. If not 'NULL', genes with a score 
+#' @param qSig \code{\link{qSig}} object defining the query signature including
+#' the GESS method (should be 'gCMAP') and the path to the reference database.
+#' For details see help of \code{qSig} and \code{qSig-class}.
+#' @param higher The 'upper' threshold. If not 'NULL', genes with a score 
 #' larger than 'higher' will be included in the gene set with sign +1. 
 #' At least one of 'lower' and 'higher' must be specified.
 #' @param lower The lower threshold. If not 'NULL', genes with a score smaller 
 #' than 'lower' will be included in the gene set with sign -1. 
 #' At least one of 'lower' and 'higher' must be specified.
-#' @param chunk_size size of chunk per processing
+#' @param chunk_size number of database entries to process per iteration to limit
+#'     memory usage of search.    
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
 #' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 #' @references 
+#' Lamb, J., Crawford, E. D., Peck, D., Modell, J. W., Blat, I. C., 
+#' Wrobel, M. J., Golub, T. R. (2006). The Connectivity Map: 
+#' using gene-expression signatures to connect small molecules, genes, and 
+#' disease. Science, 313 (5795), 1929-1935. 
+#' URL: https://doi.org/10.1126/science.1132939
+#' 
 #' Sandmann, T., Kummerfeld, S. K., Gentleman, R., & Bourgon, R. 
 #' (2014). gCMAP: user-friendly connectivity mapping with R. Bioinformatics , 
-#' 30(1), 127–128. \url{https://doi.org/10.1093/bioinformatics/btt592}
+#' 30 (1), 127-128. URL: https://doi.org/10.1093/bioinformatics/btt592
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")

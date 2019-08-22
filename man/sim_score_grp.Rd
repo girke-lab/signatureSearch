@@ -2,12 +2,12 @@
 % Please edit documentation in R/gess_res_summary.R
 \name{sim_score_grp}
 \alias{sim_score_grp}
-\title{Get summary scores of drugs in cell groups}
+\title{Summary Scores by Groups of Cell Types}
 \usage{
 sim_score_grp(tib, grp1, grp2, score_column)
 }
 \arguments{
-\item{tib}{tibble in gessResult object.}
+\item{tib}{tibble in gessResult object}
 
 \item{grp1}{character vector, group 1 of cell types, e.g., tumor cell types}
 
@@ -20,8 +20,9 @@ grouped}
 tibble
 }
 \description{
-Append two columns (score_column_grp1, score_column_grp2) to GESS result,
-which represent cell summary scores of drugs in a cell group.
+Function appends two columns (score_column_grp1, score_column_grp2) to GESS result
+tibble. The appended columns contain summary scores for groups of cell types, such 
+as normal and tumor cells.
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 

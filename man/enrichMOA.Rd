@@ -2,15 +2,15 @@
 % Please edit documentation in R/enrichMOA.R
 \name{enrichMOA}
 \alias{enrichMOA}
-\title{MOA enrichment analysis via hypergeometric test}
+\title{MOA Category Enrichment with Hypergeometric Test}
 \usage{
 enrichMOA(gene, pvalueCutoff = 0.05, pAdjustMethod = "BH",
   qvalueCutoff = 0.2)
 }
 \arguments{
-\item{gene}{a vector of gene entrez ids.}
+\item{gene}{a vector of entrez gene ids (here the test set)}
 
-\item{pvalueCutoff}{Cutoff value of pvalue.}
+\item{pvalueCutoff}{pvalue cutoff}
 
 \item{pAdjustMethod}{one of "holm", "hochberg", "hommel", 
 "bonferroni", "BH", "BY", "fdr", "none"}
@@ -21,9 +21,10 @@ enrichMOA(gene, pvalueCutoff = 0.05, pAdjustMethod = "BH",
 A \code{feaResult} instance.
 }
 \description{
-Given a vector of gene entrez ids, this function will return the enriched 
-MOA categories after FDR control. The universe for the hypergeometric test
-are all the genes in the MOA annotation obtained from ChEMBL database.
+Given a vector of gene identifiers, this function returns MOA category enrichment
+results based on a hypergeometric test with duplication support in the test set.
+The universe for the test is set to the unique genes encoding the target proteins 
+present in the MOA annotation system from the ChEMBL database.
 }
 \examples{
 data(geneList, package="DOSE")

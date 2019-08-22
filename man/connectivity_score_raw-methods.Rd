@@ -15,9 +15,21 @@
 
 \title{Broad CMAP gene set enrichment metrics}
 
-\description{ A modified version of the original connectivity_score method in 
-             `gCMAP` package, which stores the raw connectivity scores 
-             before scaling in the result.}
+\description{ A modified version of the original \code{connectivity_score} 
+method in `gCMAP` package, which stores the raw connectivity scores before 
+scaling in the result.}
+\details{
+The reference database for \code{gess_gcmap} method is an hdf5 file storing
+gene expression matrix from a large number of compound treatments. The matrix
+in hdf5 file is read into R by chunks and induced to a 
+\code{\link[gCMAP]{CMAPCollection}} object by 
+\code{\link[gCMAP]{induceCMAPCollection}} method and setting higher and lower
+cutoffs. The query matrix in the 'qSig' argument of the \code{gess_gcmap}
+function and the induced \code{CMAPCollection} object are used as the input
+for 'connectivity_score_raw' function to compute raw connectivity scores. 
+The scaling is applied after all the signatures in the reference database are
+searched.
+}
 
 \usage{
 \S4method{connectivity_score_raw}{eSet,CMAPCollection}(experiment, query, 
@@ -70,13 +82,12 @@ this parameter to 'FALSE' to conserve memory.}
 
   \item{\code{s}}{ A difference of \code{ks} values for \code{V_up}
     vs. \code{V_down}, or 0 if both yield the same sign. }
-
-  \item{\code{S}}{ A vector of signed, rescaled scores. After rescaling,
-    1 corresponds to the maximum positive \code{s} score, and -1, to the
-    minimum negative \code{s} score. \code{S} is typically used to
-    produce the red-grey-green instance heat maps from the reference
-    below. }
   
 }
 
-\seealso{\code{\link[gCMAP]{connectivity_score}}}
+\seealso{
+\code{\link[gCMAP]{connectivity_score}}; 
+\code{\link[gCMAP]{CMAPCollection}}; 
+\code{\link[gCMAP]{induceCMAPCollection}}
+}
+

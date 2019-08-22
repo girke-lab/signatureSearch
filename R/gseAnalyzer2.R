@@ -1,29 +1,28 @@
-##' The modified Gene Set Enrichment Analysis (GSEA) of Gene Ontology supports
-##' geneList with large portion of zeros and enrich GO terms at the top of the
-##' geneList
+##' This modified Gene Set Enrichment Analysis (GSEA) of GO terms supports
+##' gene test sets with large numbers of zeros.
 ##'
-##' @title modified GSEA method for GO enrichment analysis
-##' @param geneList numeric vector with gene SYMBOL as names, the genes are 
-##' ranked decreasingly by their scores.
+##' @title Modified GSEA with GO Terms
+##' @param geneList named numeric vector with gene SYMBOLs in the name slot
+##' decreasingly ranked by scores in the data slot.
 ##' @param ont one of "BP", "MF", "CC" or "ALL"
 ##' @param OrgDb OrgDb, e.g., "org.Hs.eg.db".
 ##' @param keyType keytype of gene
 ##' @param exponent weight of each step
-##' @param nproc If not equal to zero, sets BPPARAM to use nproc workers 
+##' @param nproc if not equal to zero, sets \code{BPPARAM} to use \code{nproc} workers 
 ##' (default = 1)
 ##' @param nPerm permutation numbers
-##' @param minGSSize minimal size of each gene set for analyzing
-##' @param maxGSSize maximal size of genes annotated for testing
-##' @param pvalueCutoff pvalue Cutoff
+##' @param minGSSize integer, minimum size of each gene set in annotation system
+##' @param maxGSSize integer, maximum size of each gene set in annotation system
+##' @param pvalueCutoff pvalue cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @param verbose print message or not
 ##' @return feaResult object
 ##' @examples 
 ##' data(targetList)
-##' library(org.Hs.eg.db)
-##' #gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
-##' #                pvalueCutoff = 1)
-##' #head(gsego)
+##' # library(org.Hs.eg.db)
+##' # gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
+##' #                 pvalueCutoff = 1)
+##' # head(gsego)
 ##' @export
 gseGO2 <- function(geneList,
                   ont           = "BP",
@@ -70,21 +69,22 @@ gseGO2 <- function(geneList,
     return(res)
 }
 
-##' The modified GSEA algorithm supports geneList with large portion of zeros
-##' and enrich KEGG pathways at the top of the geneList
+##' This modified Gene Set Enrichment Analysis (GSEA) of KEGG pathways supports
+##' gene test sets with large numbers of zeros.
 ##'
-##' @title modified GSEA method for KEGG enrichment analysis
-##' @param geneList order ranked geneList
-##' @param organism supported organism listed in '
-##' \url{http://www.genome.jp/kegg/catalog/org_list.html}
+##' @title Modified GSEA with KEGG
+##' @param geneList named numeric vector with gene ids in the name slot 
+##' decreasingly ranked by scores in the data slot.
+##' @param organism supported organism listed in
+##' URL: http://www.genome.jp/kegg/catalog/org_list.html
 ##' @param keyType one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'
 ##' @param exponent weight of each step
-##' @param nproc If not equal to zero, 
-##' sets BPPARAM to use nproc workers (default = 1)
+##' @param nproc if not equal to zero, sets \code{BPPARAM} to use \code{nproc} workers
+##' (default = 1)
 ##' @param nPerm permutation numbers
-##' @param minGSSize minimal size of each geneSet for analyzing
-##' @param maxGSSize maximal size of genes annotated for testing
-##' @param pvalueCutoff pvalue Cutoff
+##' @param minGSSize integer, minimum size of each gene set in annotation system
+##' @param maxGSSize integer, maximum size of each gene set in annotation system
+##' @param pvalueCutoff pvalue cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @param verbose print message or not
 ##' @return feaResult object

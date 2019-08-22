@@ -2,14 +2,15 @@
 % Please edit documentation in R/mabsAnalyser.R
 \name{mabsGO}
 \alias{mabsGO}
-\title{mabsGO}
+\title{MeanAbs Enrichment Analysis for GO}
 \usage{
 mabsGO(geneList, ont = "BP", OrgDb, keyType = "SYMBOL", nPerm = 1000,
   minGSSize = 5, maxGSSize = 500, pvalueCutoff = 0.05,
   pAdjustMethod = "BH")
 }
 \arguments{
-\item{geneList}{scored ranked geneList}
+\item{geneList}{named numeric vector with gene SYMBOLs in the name slot 
+decreasingly ranked by scores in the data slot.}
 
 \item{ont}{one of "BP", "MF", "CC" or "ALL"}
 
@@ -19,11 +20,11 @@ mabsGO(geneList, ont = "BP", OrgDb, keyType = "SYMBOL", nPerm = 1000,
 
 \item{nPerm}{permutation numbers}
 
-\item{minGSSize}{minimal size of each geneSet for analyzing}
+\item{minGSSize}{integer, minimum size of each gene set in annotation system}
 
-\item{maxGSSize}{maximal size of genes annotated for testing}
+\item{maxGSSize}{integer, maximum size of each gene set in annotation system}
 
-\item{pvalueCutoff}{pvalue Cutoff}
+\item{pvalueCutoff}{pvalue cutoff}
 
 \item{pAdjustMethod}{pvalue adjustment method}
 }
@@ -31,7 +32,7 @@ mabsGO(geneList, ont = "BP", OrgDb, keyType = "SYMBOL", nPerm = 1000,
 \code{\link{feaResult}} object
 }
 \description{
-MeanAbs Analysis of Gene Ontology
+MeanAbs enrichment analysis with GO terms.
 }
 \examples{
 data(targetList)

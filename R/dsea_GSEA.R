@@ -1,51 +1,54 @@
-#' This function uses the classical GSEA algorithm to do enrichment analysis 
-#' on a score ranked drug list after mapping drugs to functional categories via 
-#' drug-target links in DrugBank, CLUE and STITCH databases for GO and KEGG 
-#' annotation system. It can also be used to get the enriched MOAs of a 
-#' score ranked drug list if type is set as 'MOA'. 
+#' The \code{dsea_GSEA} function performs Drug Set Enrichment Analysis (DSEA)
+#' with the GSEA algorithm from Subramanian et al. (2005). In case of DSEA, drug 
+#' identifiers combined with their ranking scores of an upstream GESS method are
+#' used, such as the NCS values from the LINCS method. To use drug instead of
+#' gene labels for GSEA, the former are mapped to functional categories, 
+#' including GO or KEGG, based on drug-target interaction
+#' annotations provided by databases such as DrugBank, ChEMBL, CLUE or
+#' STITCH. 
 #' 
-#' Instead of using only the drug labels in the test set, the GSEA method 
-#' requires the labels as well as the scores used for ranking the drug list in 
-#' the GESS result. The scores are usually the similarity metric used to rank 
-#' the results of the corresponding GESS method. The drugs with zero scores 
-#' are excluded. 
-#'
-#' Note, description of the columns in the result table can be found at 
-#' \code{\link{tsea_mGSEA}} function.
+#' The DSEA results stored in the \code{feaResult} object can be returned with the
+#' \code{result} method in tabular format, here \code{tibble}. The columns of this
+#' \code{tibble} are described in the help of the \code{\link{tsea_mGSEA}}
+#' function.
 #' 
-#' @title GSEA Enrichment Method
-#' @param drugList named numeric vector, the names represent drug labels, the
-#' numeric vector represents scores. It could be ranked list of all drugs in 
-#' the GESS result. The similarity scores of the corresponding GESS method 
-#' can be used for ranking the drugs as it is required by the GSEA algorithm. 
-#' The drugs with zero scores are excluded.
+#' @title Drug Set Enrichment Analysis (DSEA) with GSEA Algorithm
+#' @param drugList named numeric vector, where the names represent drug labels and
+#' the numeric component scores. This can be all drugs of a GESS result that
+#' are ranked by GESS scores, such as NCSs of the LINCS method. Note, drugs
+#' with scores of zero are ignored by this method.
+#' 
 #' @param type one of 'GO', 'KEGG' or 'MOA'
-#' @param ont character(1). If type is `GO`, set ontology as one of `BP`,`MF`,
-#' `CC` or `ALL`. If type is 'KEGG', it is ignored.
-#' @param exponent integer, exponent in GSEA algorithm defines the weight of 
-#' genes in gene set \emph{S}.
-#' @param nPerm integer, permutation numbers used to calculate p-value
-#' @param minGSSize integer, minimum size of each drug set in annotation 
-#' system after drug to functional category mappings. If type is 'MOA', it is
-#' recommended to set 'minGSSize' as 2 since some MOA categories only contain 
-#' 2 drugs.
-#' @param maxGSSize integer, maximum size of each drug set in annotation 
-#' system 
-#' @param pvalueCutoff double, p-value cutoff
+#' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of `BP`,`MF`,
+#' `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.
+#' @param exponent integer value used as exponent in GSEA algorithm. It defines
+#' the weight of the items in the item set \emph{S}. Note, in DSEA the items are drug
+#' labels, while it is gene labels in the original GSEA.
+#' @param nPerm integer defining the number of permutation iterations for calculating 
+#' p-values
+#' @param minGSSize integer, annotation categories with less than \code{minGSize}
+#' drugs annotated will be ignored by enrichment test. If type is 'MOA', it
+#' may be beneficial to set 'minGSSize' to lower values (e.g. 2) than for
+#' other functional annotation systems. This is because certain MOA categories
+#' contain only 2 drugs.
+#' @param maxGSSize integer, annotation categories with more drugs annotated than
+#' \code{maxGSize} will be ignored by enrichment test.
+#' @param pvalueCutoff double, p-value cutoff to return only enrichment results
+#' for drugs meeting a user definable confidence threshold
 #' @param pAdjustMethod p-value adjustment method, 
 #' one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'
-#' @return \code{\link{feaResult}} object, the result table contains the
-#' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
-#' the corresponding enrichment statistic.
+#' @return \code{\link{feaResult}} object containing the enrichment results of functional 
+#' categories (e.g. GO terms or KEGG pathways) ranked by the corresponding enrichment 
+#' statistic.
 #' @seealso \code{\link{feaResult}}, \code{\link{fea}},
 #'          \code{\link[signatureSearchData]{GO_DATA_drug}}
 #' @references 
 #' GSEA algorithm: 
 #' Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
-#' Gillette, M. A., … Mesirov, J. P. (2005). Gene set enrichment analysis: a 
+#' Gillette, M. A., Mesirov, J. P. (2005). Gene set enrichment analysis: a 
 #' knowledge-based approach for interpreting genome-wide expression profiles. 
 #' Proceedings of the National Academy of Sciences of the United States of
-#' America, 102(43), 15545–15550. \url{https://doi.org/10.1073/pnas.0506580102}
+#' America, 102(43), 15545-15550. URL: https://doi.org/10.1073/pnas.0506580102
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
@@ -86,6 +89,7 @@ dsea_GSEA <- function(drugList,
   ont %<>% toupper
   ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
   names(drugList) <- tolower(names(drugList))
+  drugList <- drugList[drugList>0]
   # check whether there are duplicated names in drugList
   if(sum(duplicated(names(drugList))) > 0)
     stop("The names of the query drug list for dsea_GSEA need to be unique!")

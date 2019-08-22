@@ -1,50 +1,51 @@
 #' @title Fisher Search Method
 #' @description 
-#' It uses query signature to search against the reference database defined
-#' in the \code{\link{qSig}} object by Fisher's exact test
+#' In its iterative form, Fisher's exact test (Upton, 1992) can be used as Gene 
+#' Expression Signature (GES) Search to scan GES databases for entries that 
+#' are similar to a query GES.
 #' @details 
-#' Fisher’s exact test (Graham J. G. Upton 1992) can also be used to search a 
-#' GES databases for entries that are similar to a query GES. In this case both 
-#' the query and the database are composed of gene label sets, such as DEG sets.
+#' When using the Fisher's exact test (Upton, 1992) as GES Search (GESS) method,
+#' both the query and the database are composed of gene label sets, such as DEG sets.
 #' 
 #' @section Column description:
-#' Description of the score columns in the result table specific for Fisher 
-#' method:
+#' Descriptions of the columns specific to the Fisher method are given below. Note,
+#' the additional columns, those that are common among the GESS methods, are
+#' described in the help file of the \code{gessResult} object.
+#' 
 #' \itemize{
 #'     \item pval: p-value of the Fisher's exact test.
 #'     \item padj: p-value adjusted for multiple hypothesis testing using
 #'     R's p.adjust function with the Benjamini & Hochberg (BH) method. 
 #'     \item effect: z-score based on the standard normal distribution.
 #'     \item LOR: Log Odds Ratio.
-#'     \item nSet: number of genes of the drug signature in the reference 
+#'     \item nSet: number of genes in the GES in the reference
 #'     database (gene sets) after setting the higher and lower cutoff.
-#'     \item nFound: number of genes of the drug signature in the reference 
-#'     database (gene sets) also found in the query signature
-#'     (whole genome profile).
+#'     \item nFound: number of genes in the GESs of the reference
+#'     database (gene sets) that are also present in the query GES.
 #'     \item signed: whether gene sets in the reference database have signs, 
 #'     representing up and down regulated genes when computing scores.  
 #' }
-#' Description of the other columns are available at the 'result' slot of the
-#' \code{\link{gessResult}} object.
 #' 
-#' @param qSig \code{\link{qSig}} object defining the query signature, the GESS
-#' method (should be 'Fisher') and the path to the reference database.
+#' @param qSig \code{\link{qSig}} object defining the query signature including
+#' the GESS method (should be 'Fisher') and the path to the reference
+#' database. For details see help of \code{qSig} and \code{qSig-class}.
 #' @param higher The 'higher' threshold. If not 'NULL', genes with a score 
 #' larger than 'higher' will be included in the gene set with sign +1. 
 #' At least one of 'lower' and 'higher' must be specified.
 #' @param lower The lower threshold. If not 'NULL', genes with a score smaller 
 #' than 'lower' will be included in the gene set with sign -1. 
 #' At least one of 'lower' and 'higher' must be specified.
-#' @param chunk_size size of chunk per processing
+#' @param chunk_size number of database entries to process per iteration to limit
+#' memory usage of search.
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
 #' @importMethodsFrom GSEABase GeneSet
 #' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 #' @references 
-#' Graham J. G. Upton. 1992. “Fisher’s Exact Test.” J. R. Stat. Soc. Ser. A 
-#' Stat. Soc. 155 (3). [Wiley, Royal Statistical Society]: 395–402. 
-#' \url{http://www.jstor.org/stable/2982890}
+#' Graham J. G. Upton. 1992. Fisher's Exact Test. J. R. Stat. Soc. Ser. A 
+#' Stat. Soc. 155 (3). [Wiley, Royal Statistical Society]: 395-402. 
+#' URL: http://www.jstor.org/stable/2982890
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")

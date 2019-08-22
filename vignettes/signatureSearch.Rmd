@@ -10,7 +10,7 @@ output:
         collapsed: true
         smooth_scroll: true
     toc_depth: 4
-    fig_caption: yes
+    fig_caption: yes  
     code_folding: show
     number_sections: true
   pdf_document:
@@ -654,6 +654,11 @@ To conduct TSEA and DSEA efficiently, `signatureSearch` and its helper package
 `signatureSearchData` provide several convenience utilities along with
 drug-target lookup resources for automating the mapping from _drug sets_ to
 _target sets_ to _functional categories_.
+
+Note, in this vignette, the target genes of drugs always refer to
+the target protein-encoding genes. The protein ids (such as UniProt ids) are 
+mapped to their encoding gene ids (such as gene Symbols) via existing id 
+mapping resources, such as `org.Hs.eg.db` R/Bioconductor annotation package. 
 
 ## TSEA
 The following introduces how to perform TSEA on drug-based GESS results using

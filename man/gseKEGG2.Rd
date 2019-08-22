@@ -2,32 +2,33 @@
 % Please edit documentation in R/gseAnalyzer2.R
 \name{gseKEGG2}
 \alias{gseKEGG2}
-\title{modified GSEA method for KEGG enrichment analysis}
+\title{Modified GSEA with KEGG}
 \usage{
 gseKEGG2(geneList, organism = "hsa", keyType = "kegg", exponent = 1,
   nproc = 1, nPerm = 1000, minGSSize = 10, maxGSSize = 500,
   pvalueCutoff = 0.05, pAdjustMethod = "BH", verbose = TRUE)
 }
 \arguments{
-\item{geneList}{order ranked geneList}
+\item{geneList}{named numeric vector with gene ids in the name slot 
+decreasingly ranked by scores in the data slot.}
 
-\item{organism}{supported organism listed in '
-\url{http://www.genome.jp/kegg/catalog/org_list.html}}
+\item{organism}{supported organism listed in
+URL: http://www.genome.jp/kegg/catalog/org_list.html}
 
 \item{keyType}{one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'}
 
 \item{exponent}{weight of each step}
 
-\item{nproc}{If not equal to zero, 
-sets BPPARAM to use nproc workers (default = 1)}
+\item{nproc}{if not equal to zero, sets \code{BPPARAM} to use \code{nproc} workers
+(default = 1)}
 
 \item{nPerm}{permutation numbers}
 
-\item{minGSSize}{minimal size of each geneSet for analyzing}
+\item{minGSSize}{integer, minimum size of each gene set in annotation system}
 
-\item{maxGSSize}{maximal size of genes annotated for testing}
+\item{maxGSSize}{integer, maximum size of each gene set in annotation system}
 
-\item{pvalueCutoff}{pvalue Cutoff}
+\item{pvalueCutoff}{pvalue cutoff}
 
 \item{pAdjustMethod}{pvalue adjustment method}
 
@@ -37,8 +38,8 @@ sets BPPARAM to use nproc workers (default = 1)}
 feaResult object
 }
 \description{
-The modified GSEA algorithm supports geneList with large portion of zeros
-and enrich KEGG pathways at the top of the geneList
+This modified Gene Set Enrichment Analysis (GSEA) of KEGG pathways supports
+gene test sets with large numbers of zeros.
 }
 \examples{
 # Gene Entrez id should be used for KEGG enrichment

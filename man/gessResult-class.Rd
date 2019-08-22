@@ -6,35 +6,38 @@
 \alias{gessResult}
 \title{gessResult object}
 \description{
-The gessResult object stores the search result table, query signature, 
-name of the GESS method and path to the reference database from the 
-GESS methods.
+The \code{gessResult} object organizes Gene Expression Signature Search (GESS)
+results. This includes the main tabular result of a GESS, its query signature, the
+name of the chosen GESS method and the path to the reference database.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{result}}{tibble object, this result table contains the search results 
-for each perturbagen in the reference database ranked by their signature 
-similarity to the query. The result table can be extracted via 
-\code{\link{result}} accessor function.
+\item{\code{result}}{tibble object containing the search results for each
+perturbagen (e.g. drugs) in the reference database ranked by their
+signature similarity to the query. The result table can be extracted via
+the \code{\link{result}} accessor function.
 
-Description of the common columns from different GESS methods:
+Descriptions of the columns common among the tabular results of the individual
+GESS methods are given below. Note, the columns specific to each GESS method
+are described in their help files.
 \itemize{
     \item pert: character, name of perturbagen (e.g. drug) in the reference 
     database
     \item cell: character, acronym of cell type
-    \item type: character, perturbation type. In CMAP and LINCS 
-    databases, the perturbation types are all compound treatment(trt_cp). 
-    Users can build their custom signature database with other types of 
-    perturbation, e.g., gene knockdown or overexpression via 
-    \code{\link{build_custom_db}} function
-    \item trend: character, up or down when reference signature is 
+    \item type: character, perturbation type. In the CMAP/LINCS 
+    databases provided by \code{signatureSearchData}, the perturbation types
+    are currently treatments with drug-like compounds (trt_cp). If required,
+    users can build custom signature database with other types of
+    perturbagens (e.g., gene knockdown or over-expression events) with the 
+    provided \code{\link{build_custom_db}} function.
+    \item trend: character, up or down when the reference signature is 
     positively or negatively connected with the query signature, 
     respectively.
     \item N_upset: integer, number of genes in the query up set
     \item N_downset: integer, number of genes in the query down set
-    \item t_gn_sym: character, gene symbols of the corresponding drug 
-    targets
+    \item t_gn_sym: character, symbol of the gene encoding the
+    corresponding drug target protein
 }}
 
 \item{\code{query}}{query signature}

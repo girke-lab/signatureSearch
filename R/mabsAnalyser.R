@@ -1,14 +1,15 @@
-##' MeanAbs Analysis of Gene Ontology
+##' MeanAbs enrichment analysis with GO terms.
 ##'
-##' @title mabsGO
-##' @param geneList scored ranked geneList
+##' @title MeanAbs Enrichment Analysis for GO
+##' @param geneList named numeric vector with gene SYMBOLs in the name slot 
+##' decreasingly ranked by scores in the data slot.
 ##' @param ont one of "BP", "MF", "CC" or "ALL"
 ##' @param OrgDb OrgDb
 ##' @param keyType keytype of gene
 ##' @param nPerm permutation numbers
-##' @param minGSSize minimal size of each geneSet for analyzing
-##' @param maxGSSize maximal size of genes annotated for testing
-##' @param pvalueCutoff pvalue Cutoff
+##' @param minGSSize integer, minimum size of each gene set in annotation system
+##' @param maxGSSize integer, maximum size of each gene set in annotation system
+##' @param pvalueCutoff pvalue cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @return \code{\link{feaResult}} object
 ##' @author Yuzhu Duan
@@ -64,17 +65,18 @@ mabsGO <- function(geneList,
     return(res)
 }
 
-##' meanAbs analysis of KEGG
+##' MeanAbs enrichment analysis with KEGG pathways.
 ##'
-##' @title mabsKEGG
-##' @param geneList scored ranked geneList
+##' @title MeanAbs Enrichment Analysis for KEGG
+##' @param geneList named numeric vector with gene/target ids in the name slot 
+##' decreasingly ranked by scores in the data slot.
 ##' @param organism supported organism listed in 
-##' \url{http://www.genome.jp/kegg/catalog/org_list.html}
-##' @param keyType one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'
+##' URL: http://www.genome.jp/kegg/catalog/org_list.html
+##' @param keyType one of 'kegg', 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'
 ##' @param nPerm permutation numbers
-##' @param minGSSize minimal size of each geneSet for analyzing
-##' @param maxGSSize maximal size of genes annotated for testing
-##' @param pvalueCutoff pvalue Cutoff
+##' @param minGSSize integer, minimum size of each gene set in annotation system
+##' @param maxGSSize integer, maximum size of each gene set in annotation system
+##' @param pvalueCutoff pvalue cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @return \code{\link{feaResult}} object
 ##' @examples 

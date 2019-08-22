@@ -5,48 +5,46 @@
 ##' @name qSig
 ##' @rdname qSig-methods
 ##' @aliases qSig,list,character,character-method
-##' @param query When 'gess_method' is 'CMAP' or 'LINCS', 
-##' it should be a list of two elements, which are labels of up and down 
-##' regulated genes. The labels should be gene Entrez ids if the reference
-##' database is pre-built CMAP or LINCS database. If custom database is used,
-##' the labels should share identifiers with the reference database.
+##' @param query If 'gess_method' is 'CMAP' or 'LINCS', it should be a list with
+##' two character vectors named \code{upset} and \code{downset} for up- and
+##' down-regulated gene labels, respectively. The labels should be gene Entrez
+##' IDs if the reference database is a pre-built CMAP or LINCS database. If a
+##' custom database is used, the labels need to be of the same type as those in
+##' the reference database.
 ##' 
-##' When 'gess_method' is 'gCMAP', the query is a matrix with a single column
-##' representing gene ranks from a biological state of interest. The 
-##' corresponding gene labels are stored in the row name slot of the matrix. 
-##' Instead of ranks one can provide scores (e.g. z-scores). In such case 
-##' the scores will be internally transformed to ranks. 
+##' If 'gess_method' is 'gCMAP', the query is a matrix with a single column
+##' representing gene ranks from a biological state of interest. The corresponding 
+##' gene labels are stored in the row name slot of the matrix. Instead of ranks
+##' one can provide scores (e.g. z-scores). In such a case, the scores will be 
+##' internally transformed to ranks. 
 ##' 
-##' If 'gess_method' is 'Fisher', the query could be a list of two 
-##' elements (up and down gene labels) as with 'CMAP' or 'LINCS' method. In 
-##' this case, genes in up and down sets are combined into a single gene set
-##' for Fisher's exact test with reference gene sets, which means genes in 
-##' the query set are unsigned. The query could also be a matrix with a single 
-##' numeric column and the gene labels (e.g. Entrez gene ids) in the row name 
-##' slot from a biological state of interest. The scores could be z-scores 
-##' or LFC scores. In this case, the actual gene set query is obtained by 
-##' setting the higher and lower cutoffs. 
+##' If 'gess_method' is 'Fisher', the query is expected to be a list with two
+##' character vectors named \code{upset} and \code{downset} for up- and
+##' down-regulated gene labels, respectively (same as for 'CMAP' or 'LINCS' method).
+##' Internally, the up/down gene labels are combined into a single gene set
+##' when querying the reference database with the Fisher's exact test. This means the
+##' query is performed with an unsigned set. The query can also be a matrix with a
+##' single numeric column and the gene labels (e.g. Entrez gene IDs) in the row name
+##' slot. The values in this matrix can be z-scores or LFCs. In this case, the
+##' actual query gene set is obtained according to upper and lower cutoffs set by
+##' the user.
 ##' 
-##' If 'gess_method' is 'Cor', the query is a matrix with a single 
-##' numeric column and the gene labels in the row name slot.
-##' The scores could be z-scores, LFC scores or gene expression intensity values 
-##' or read counts for correlation-based method.
+##' If 'gess_method' is 'Cor', the query is a matrix with a single numeric column
+##' and the gene labels in the row name slot. The numeric column can contain z-scores,
+##' LFCs, (normalized) gene expression intensity values or read counts.
 ##' @param gess_method one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'
 ##' @param refdb character(1), can be one of "cmap", "cmap_expr", "lincs", or 
-##' "lincs_expr" if users want to use the existing CMAP/LINCS databases. If 
-##' 'refdb' is 'cmap', it is a collection of signatures of LFC scores
-##' after DE analysis. If 'cmap_expr', it is CMAP database 
-##' consists of normalized gene expression values. If 'refdb' is 'lincs', 
-##' it is LINCS database consists of z-scores after DE analysis, 
-##' if 'lincs_expr', it is LINCS database consists of normalized expression 
-##' values.
+##' "lincs_expr" when using the CMAP/LINCS databases from the affiliated
+##' \code{signatureSearchData} package. With 'cmap' the database contains
+##' signatures of LFC scores obtained from DEG analysis routines; with
+##' 'cmap_expr' normalized gene expression values; with 'lincs' z-scores
+##' obtained from the DEG analysis methods of the LINCS project; and with
+##' 'lincs_expr' normalized expression values.
 ##' 
-##' If users want to use the custom signature database, 
-##' it should be the file path to the HDF5 file generated with 
-##' \code{\link{build_custom_db}} function or
-##' generated from the source files of CMAP/LINCS databases according to 
-##' the vignette in \pkg{signatureSearchData} package. The HDF5 file contains 
-##' the reference signatures that the query signature is searched against. 
+##' To use a custom signature database, it should be the file path to the HDF5 file
+##' generated with the \code{\link{build_custom_db}} function.  Alternatively, a
+##' suitable version of the CMAP/LINCS databases can be used. For details on this,
+##' please consult the vignette of the \pkg{signatureSearchData} package.
 ##' @return \code{qSig} object
 ##' @importFrom rhdf5 h5read
 ##' @seealso \code{\link{build_custom_db}}, 

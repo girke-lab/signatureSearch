@@ -4,7 +4,7 @@
 \name{get_drugs}
 \alias{get_drugs}
 \alias{get_drugs,feaResult-method}
-\title{get_drugs method}
+\title{Extract Drug Names from feaResult}
 \usage{
 get_drugs(x)
 
@@ -17,9 +17,8 @@ get_drugs(x)
 character vector
 }
 \description{
-get_drugs generic
-
-get `drugs` slot of feaResult object
+The \code{get_drugs} generic extracts the drug names/ids stored
+in the \code{drugs} slot of an feaResult object.
 }
 \examples{
 data(drugs)

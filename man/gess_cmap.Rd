@@ -7,10 +7,12 @@
 gess_cmap(qSig, chunk_size = 5000)
 }
 \arguments{
-\item{qSig}{\code{\link{qSig}} object defining the query signature, the GESS
-method (should be 'CMAP') and the path to the reference database.}
+\item{qSig}{\code{\link{qSig}} object defining the query signature including
+the GESS method (should be 'CMAP') and the path to the reference database.
+For details see help of \code{qSig} and \code{qSig-class}.}
 
-\item{chunk_size}{size of chunk per processing}
+\item{chunk_size}{number of database entries to process per iteration to limit
+memory usage of search.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 
@@ -18,47 +20,41 @@ search results for each perturbagen in the reference database ranked by
 their signature similarity to the query.
 }
 \description{
-It uses query signature to search against the reference database defined
-in the \code{\link{qSig}} object by CMAP method, which is an implementation 
-of the CMap method from Lamb et al, 2006.
+Implements the original Gene Expression Signature Search (GESS) from Lamb et al
+(2006) known as Connectivity Map (CMap). The method uses as query the two label
+sets of the most up- and down-regulated genes from a genome-wide expression
+experiment, while the reference database is composed of rank transformed
+expression profiles (e.g. ranks of LFC or z-scores).
 }
 \details{
-Lamb et al. (2006) introduced the gene expression-based search method known 
-as Connectivity Map (CMap) where a GES database is searched with a query GES 
-for similar entries (Lamb et al. 2006). Specifically, the GESS method from 
-Lamb et al. (2006), here termed as CMAP, uses as query the two label sets of 
-the most up- and down-regulated genes from a genome-wide expression 
-experiment, while the reference database is composed of rank transformed 
-expression profiles (e.g. ranks of LFC or z-scores). The actual GESS 
-algorithm is based on a vectorized rank difference calculation. The 
-resulting Connectivity Score expresses to what degree the query up/down 
-gene sets are enriched on the top and bottom of the database entries, 
-respectively. The search results are a list of perturbagens such as drugs 
-that induce similar or opposing GESs as the query. Similar GESs suggest 
-similar physiological effects of the corresponding perturbagens. These GES 
-associations can be useful to uncover novel MOAs of drugs or treatments for 
-diseases. Although several variants of the CMAP algorithm are available in 
-other software packages including Bioconductor, the implementation provided 
-by this package follows the original description of the authors as closely 
-as possible. This allows to reproduce in our tests the search results from 
-the corresponding CMAP2 web service of the Broad Institute.
-
-The CMAP algorithm takes about 1 minute on a single CPU core for querying 
-with a single signature against 10,000 signatures in the reference database.
+Lamb et al. (2006) introduced the gene expression-based search method known as
+Connectivity Map (CMap) where a GES database is searched with a query GES for
+similar entries. Specifically, this GESS method uses as query the two label 
+sets of the most up- and down-regulated genes from a genome-wide expression 
+experiment, while the reference database is composed of rank transformed expression profiles (e.g.
+ranks of LFC or z-scores). The actual GESS algorithm is based on a vectorized
+rank difference calculation. The resulting Connectivity Score expresses to what
+degree the query up/down gene sets are enriched on the top and bottom of the
+database entries, respectively. The search results are a list of perturbagens
+such as drugs that induce similar or opposing GESs as the query. Similar GESs
+suggest similar physiological effects of the corresponding perturbagens. 
+Although several variants of the CMAP algorithm are available in
+other software packages including Bioconductor, the implementation provided by
+\code{signatureSearch} follows the original description of the authors as 
+closely as possible.
 }
 \section{Column description}{
 
-Description of the score columns in the result table specific for CMAP 
-method:
+Descriptions of the columns specific to the CMAP method are given below. Note,
+the additional columns, those that are common among the GESS methods, are
+described in the help file of the \code{gessResult} object.
 \itemize{
     \item raw_score: bi-directional enrichment score (Kolmogorov-Smirnov 
     statistic) of up and down set in the query siganture
-    \item scaled_score: raw_score was scaled to valules from 1 to -1 by 
-    dividing the positive scores with the maxmum positive score, and negative
-    scores with the absolute value of minimum negative score.
+    \item scaled_score: raw_score scaled to valules from 1 to -1 by 
+    dividing the positive and negative scores with the maxmum positive score 
+    and the absolute value of the minimum negative score, respectively.
 }
-Description of the other columns are available at the 'result' slot of the
-\code{\link{gessResult}} object.
 }
 
 \examples{
@@ -79,10 +75,10 @@ result(cmap)
 \references{
 For detailed description of the CMap method, please refer to: 
 Lamb, J., Crawford, E. D., Peck, D., Modell, J. W., Blat, I. C., 
-Wrobel, M. J., … Golub, T. R. (2006). The Connectivity Map: 
+Wrobel, M. J., Golub, T. R. (2006). The Connectivity Map: 
 using gene-expression signatures to connect small molecules, genes, and 
-disease. Science, 313(5795), 1929–1935. 
-\url{https://doi.org/10.1126/science.1132939}
+disease. Science, 313 (5795), 1929-1935. 
+URL: https://doi.org/10.1126/science.1132939
 }
 \seealso{
 \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}

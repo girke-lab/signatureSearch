@@ -1,26 +1,25 @@
-##' Given a vector of genes, this function will return the enriched GO
-##' categories after FDR control.
-##' The hypergeometric test is adjusted to support gene set with duplications
+##' Given a vector of gene identifiers, this function returns GO term enrichment
+##' results based on a hypergeometric test with duplication support in the test set.
 ##' 
-##' @title GO enrichment analysis via hypergeometric test
-##' @param gene a vector of gene SYMBOL ids.
+##' @title GO Term Enrichment with Hypergeometric Test
+##' @param gene a vector of gene SYMBOL ids (here the test set)
 ##' @param OrgDb OrgDb
-##' @param keytype keytype of input gene
+##' @param keytype Gene ID type of test set
 ##' @param ont One of "MF", "BP", "CC" or "ALL"
-##' @param pvalueCutoff Cutoff value of pvalue.
+##' @param pvalueCutoff pvalue cutoff
 ##' @param pAdjustMethod one of "holm", "hochberg", "hommel", 
 ##' "bonferroni", "BH", "BY", "fdr", "none"
 ##' @param universe background genes
 ##' @param qvalueCutoff qvalue cutoff
-##' @param minGSSize minimal size of genes annotated by Ontology term 
-##' @param maxGSSize maximal size of genes annotated for testing
-##' @param pool If ont='ALL', whether pool 3 GO sub-ontologies
+##' @param minGSSize minimum size of each gene set in annotation system
+##' @param maxGSSize maximum size of each gene set in annotation system
+##' @param pool If ont='ALL', whether 3 GO ontologies should be combined
 ##' @return A \code{feaResult} instance.
 ##' @seealso \code{\link{feaResult-class}}
 ##' @examples 
 ##' # The method supports duplicated elements in 'gene', 
-##' # which should be SYMBOL id for GO enrichment.
-##' gene = c(rep("HDAC1",4), rep("HDAC3",2), "SOX8", "KLK14")
+##' # which should be gene SYMBOL ids for GO term enrichment.
+##' gene <- c(rep("HDAC1",4), rep("HDAC3",2), "SOX8", "KLK14")
 ##' library(org.Hs.eg.db)
 ##' data(targetList)
 ##' \dontrun{

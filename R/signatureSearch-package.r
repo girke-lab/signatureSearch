@@ -99,6 +99,11 @@
 #' remove drugs or targets that bind to large numbers of distinct proteins or 
 #' drugs, respectively.
 #' 
+#' Note, in this vignette, the target genes of drugs always refer to
+#' the target protein-encoding genes. The protein ids (such as UniProt ids) are 
+#' mapped to their encoding gene ids (such as gene Symbols) via existing id 
+#' mapping resources, such as `org.Hs.eg.db` R/Bioconductor annotation package. 
+#' 
 #' @seealso 
 #' Methods for GESS:
 #'   \itemize{
@@ -146,27 +151,34 @@
 NULL
 
 
-
-#' Drugs used in examples
+#' Drug names used in examples
 #' 
-#' A character vector containing top 10 drugs in the GESS result 
-#' from gess_lincs method in the vignette
+#' A character vector containing the names of the top 10 drugs in the GESS result 
+#' from the gess_lincs method used in the vignette of signatureSearch.
 #'
 #' @name drugs
 #' @aliases drugs
 #' @docType data
+#' @examples
+#' # Load drugs object
+#' data(drugs)
+#' drugs
 #' @keywords datasets
 "drugs"
 
-#' Target list used in examples
+#' Target Sample Data Set
 #' 
-#' A named numeric vector with GENE SYMBOL as names. It is a subset of the 
-#' first 1000 elements from 'targets' slot of 'mgsea_res' in the vignette. 
-#' The scores represent the weights of targets/genes in the target set of the
-#' selected top 10 drugs.
+#' A named numeric vector with Gene Symbols as names. It is the first 1000
+#' elements from the 'targets' slot of the 'mgsea_res' result object introduced in
+#' the vignette of this package. The scores represent the weights of the target
+#' genes/proteins in the target set of the selected top 10 drugs.
 #'
 #' @name targetList
 #' @aliases targetList
 #' @docType data
+#' @examples 
+#' # Load object
+#' data(targetList)
+#' targetList
 #' @keywords datasets
 "targetList"

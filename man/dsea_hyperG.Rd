@@ -2,65 +2,63 @@
 % Please edit documentation in R/dsea_hyperG.R
 \name{dsea_hyperG}
 \alias{dsea_hyperG}
-\title{hyperG Enrichment Method}
+\title{Drug Set Enrichment Analysis (DSEA) with Hypergeometric Test}
 \usage{
 dsea_hyperG(drugs, type = "GO", ont = "BP", pvalueCutoff = 0.05,
   pAdjustMethod = "BH", qvalueCutoff = 0.2, minGSSize = 10,
   maxGSSize = 500)
 }
 \arguments{
-\item{drugs}{character vector, query drug set used for functional 
-enrichment. Can be top ranking drugs in the GESS result.}
+\item{drugs}{character vector, query drug identifier set used for functional 
+enrichment testing. This can be the top ranking drugs from a GESS result.}
 
 \item{type}{one of 'GO', 'KEGG' or 'MOA'}
 
-\item{ont}{character(1). If type is `GO`, set ontology as one of `BP`,`MF`,
-`CC` or `ALL`. If type is 'KEGG', it is ignored.}
+\item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one of `BP`,`MF`,
+`CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.}
 
-\item{pvalueCutoff}{double, p-value cutoff}
+\item{pvalueCutoff}{double, p-value cutoff to return only enrichment results
+for drugs meeting a user definable confidence threshold}
 
 \item{pAdjustMethod}{p-value adjustment method, 
 one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'}
 
-\item{qvalueCutoff}{double, qvalue cutoff}
+\item{qvalueCutoff}{double, qvalue cutoff, similar to \code{pvalueCutoff}}
 
-\item{minGSSize}{integer, minimum size of each drug set in annotation 
-system after drug to functional category mappings. If type is 'MOA', it is
-recommended to set 'minGSSize' as 2 since some MOA categories only contain 
-2 drugs.}
+\item{minGSSize}{integer, annotation categories with less than \code{minGSize}
+drugs annotated will be ignored by enrichment test. If type is 'MOA', it
+may be beneficial to set 'minGSSize' to lower values (e.g. 2) than for
+other functional annotation systems. This is because certain MOA categories
+contain only 2 drugs.}
 
-\item{maxGSSize}{integer, maximum size of each drug set in annotation 
-system}
+\item{maxGSSize}{integer, annotation categories with more drugs annotated than
+\code{maxGSize} will be ignored by enrichment test.}
 }
 \value{
-\code{\link{feaResult}} object, the result table contains the
-enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
-the corresponding enrichment statistic.
+\code{\link{feaResult}} object containing the enrichment results of functional 
+categories (e.g. GO terms or KEGG pathways) ranked by the corresponding enrichment
+statistic.
 }
 \description{
-This function uses hypergeometric test to do enrichment analysis on a 
-drug set after mapping drugs to functional categories via drug-target 
-links in DrugBank, CLUE and STITCH databases for GO and KEGG annotation 
-system. It can also be used to get the enriched MOAs of a drug set if 
-type is set as 'MOA'. The drugs MOA annotation is from CLUE website 
-(\url{https://clue.io/}).
+The \code{dsea_hyperG} function performs Drug Set Enrichment Analysis (DSEA)
+based on the hypergeomtric distribution. In case of DSEA, the identifiers of
+the top ranking drugs from a GESS result table are used. To use drug instead of
+gene labels for this test, the former are mapped to functional categories,
+including GO, KEGG or Mode of Action (MOA) categories, based on drug-target
+interaction annotations provided by databases such as DrugBank, ChEMBL, CLUE or
+STITCH. Currently, the MOA annotation used by this function are from the CLUE website
+(https://clue.io).
 }
 \details{
-The drug set can be directly used to perform enrichment testing 
-by changing the mappings in the annotation system from gene-to-functional
-category mappings to drug-to-functional category mappings. 
-The latter can be generated based on the drug-target information provided 
-by DrugBank or related databases. As a result, one can perform the FEA on 
-ranked drug list directly. This DSEA approach has the advantage that the 
-drugs in the query test sets are usually unique allowing to use them 
-without any changes for functional enrichment methods.
+Compared to the related Target Set Enrichment Analysis (TSEA; see help
+\code{tsea_dup_hyperG} or \code{tsea_mGSEA}), the DSEA approach has the
+advantage that the drugs in the query test sets are usually unique allowing to
+use them without major modifications to the underlying statistical method(s).
 
-Here, the hypergeometric test is directly used on a query drug test set,
-e.g., top ranking drugs in GESS result since the functional
-annotation system also contains drug sets after gene to drug mappings.
-
-Note, description of the columns in the result table can be found at 
-\code{\link{tsea_dup_hyperG}} function.
+The DSEA results stored in the \code{feaResult} object can be returned with the
+\code{result} method in tabular format, here \code{tibble}.  The columns of this
+\code{tibble} are described in the help of the \code{\link{tsea_dup_hyperG}}
+function.
 }
 \examples{
 data(drugs)

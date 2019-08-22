@@ -24,7 +24,6 @@ setMethod("show", signature(object="feaResult"),
           str(object@result)
           })
 
-##' @description get 'result' slot of feaResult object
 ##' @name result
 ##' @docType methods
 ##' @rdname result-methods
@@ -39,7 +38,8 @@ setMethod("show", signature(object="feaResult"),
 setMethod("result", signature(x="feaResult"),
           function(x) x@result)
 
-##' @description get `drugs` slot of feaResult object
+##' @description The \code{get_drugs} generic extracts the drug names/ids stored
+##' in the \code{drugs} slot of an feaResult object.
 ##' @name get_drugs
 ##' @docType methods
 ##' @rdname get_drugs-methods

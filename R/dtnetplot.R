@@ -1,21 +1,20 @@
-##' Functional modules of the GESS and FEA results can be rendered as 
-##' interactive drug-target networks using this function. For this, 
-##' a character vector of drug names along with an identifier of a chosen 
-##' functional category are passed on to the drugs and set arguments, 
-##' respectively. The resulting plot depicts the corresponding drug-target 
-##' interaction network. Its interactive features allow the user to zoom in 
-##' and out of the network, and to select network components in the drop-down 
-##' menu located in the upper left corner of the plot.
+##' Functional modules of GESS and FEA results can be rendered as interactive
+##' drug-target networks using the \code{dtnetplot} function form
+##' \code{signatureSearch}. For this, a character vector of drug names along with
+##' an identifier of a chosen functional category are passed on to the drugs and
+##' set arguments, respectively. The resulting plot depicts the corresponding
+##' drug-target interaction network. Its interactive features allow the user to
+##' zoom in and out of the network, and to select network components in the
+##' drop-down menu located in the upper left corner of the plot.
 ##' @title Drug-Target Network Visualization
 ##' @param drugs A character vector of drug names
-##' @param set character(1) if identifier of a functional category (GO term ID
-##' or KEGG pathway ID) is chosen. It could also be a character vector of 
-##' gene SYMBOL IDs.
-##' @param ont if `set` is a GO term ID, `ont` is the ontology that GO term 
-##' is belong to. One of 'BP', 'MF' or 'CC'
-##' @param desc character(1), description of the functional category or the 
+##' @param set character(1) GO term ID or KEGG pathway ID. Alternatively, a
+##' character vector of gene SYMBOLs can be assigned.
+##' @param ont if `set` is a GO term ID, `ont` is the corresponding ontology that
+##' GO term belongs to. One of 'BP', 'MF' or 'CC'
+##' @param desc character(1), description of the chosen functional category or 
 ##' target set
-##' @param ... additional parameters for \code{\link[visNetwork]{visNetwork}} 
+##' @param ... additional parameters of \code{\link[visNetwork]{visNetwork}} 
 ##' function.
 ##' @return visNetwork plot
 ##' @import visNetwork

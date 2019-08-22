@@ -2,26 +2,28 @@
 % Please edit documentation in R/tsea_dup_hyperG.R
 \name{tsea_dup_hyperG}
 \alias{tsea_dup_hyperG}
-\title{dup_hyperG Enrichment Method}
+\title{Target Set Enrichment Analysis (TSEA) with Hypergeometric Test}
 \usage{
 tsea_dup_hyperG(drugs, universe = "Default", type = "GO", ont = "MF",
   pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.05,
   minGSSize = 5, maxGSSize = 500, dt_anno = "all")
 }
 \arguments{
-\item{drugs}{character vector, query drug set used for functional enrichment.
-Can be top ranking drugs in the GESS result.}
+\item{drugs}{character vector containing drug identifiers used for functional enrichment
+testing. This can be the top ranking drugs from a GESS result. Internally, drug
+test sets are translated to the corresponding target protein test sets based on the
+drug-target annotations provided under the \code{dt_anno} argument.}
 
-\item{universe}{character vector, labels of background genes/proteins. 
-If set as 'Default', it uses all the annotated genes/proteins in
-the corresponding annotation system (e.g. GO or KEGG). 
-If 'type' is 'GO', it should be a vector of gene SYMBOL IDs. 
-If 'type' is 'KEGG', it should be gene Entrez IDs.}
+\item{universe}{character vector defining the universe of genes/proteins. If
+set as 'Default', it uses all genes/proteins present in the corresponding
+annotation system (e.g. GO or KEGG). If 'type' is 'GO', it can be assigned
+a custom vector of gene SYMBOL IDs. If 'type' is 'KEGG', the vector needs
+to contain Entrez gene IDs.}
 
 \item{type}{one of `GO` or `KEGG`}
 
-\item{ont}{character(1). If type is `GO`, set ontology as one of `BP`,`MF`,
-`CC` or `ALL`. If type is 'KEGG', it is ignored.}
+\item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one of
+`BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.}
 
 \item{pAdjustMethod}{p-value adjustment method, 
 one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'}
@@ -34,15 +36,13 @@ one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'}
 
 \item{maxGSSize}{integer, maximum size of each gene set in annotation system}
 
-\item{dt_anno}{drug-target annotation resource. one of 'DrugBank', 'CLUE', 
-'STITCH' or 'all'. If 'dt_anno' is 'all', the targets from DrugBank, CLUE 
-and STITCH databases will be combined. It is recommended to set the 'dt_anno'
-as 'all' since it will get the most complete target set of as many drugs
-as possible. Users could also choose individual annotation resource if 
-wanted, but should be aware that if the chosen drug-target annotation
-resource contains limited drugs (such as CLUE), many query drugs will not
-get targets and the target set may not be complete, which could affect
-the enrichment result.}
+\item{dt_anno}{drug-target annotation source. Currently, one of 'DrugBank',
+'CLUE', 'STITCH' or 'all'. If 'dt_anno' is 'all', the targets from the
+DrugBank, CLUE and STITCH databases will be combined. Usually, it is
+recommended to set the 'dt_anno' to 'all' since it provides the most
+complete drug-target annotations. Choosing a single
+annotation source results in sparser drug-target annotations
+(particularly CLUE), and thus less complete enrichment results.}
 }
 \value{
 \code{\link{feaResult}} object, the result table contains the
@@ -50,23 +50,27 @@ enriched functional categories (e.g. GO terms or KEGG pathways) ranked by
 the corresponding enrichment statistic.
 }
 \description{
-This duplication adjusted hypergeometric test supports target gene/protein 
-set with duplications by adjusting 
-the frequency of the duplicated proteins in the target set instead of 
-taking the unique value.
+The \code{tsea_dup_hyperG} function performs Target Set Enrichment Analysis
+(TSEA) based on a modified hypergeomtric test that supports test sets with
+duplications. This is achieved by maintaining the frequency information of
+duplicated items in form of weighting values.
 }
 \details{
-The classical hypergeometric test assumes uniqueness in its gene/protein 
-test sets. To maintain the duplication information in the test sets used 
-for TSEA, the values of total number of genes in the test set and the number
-of genes in the test set annotated at a functional category are adjusted by 
-maintating the frequency of the target proteins in the test set instead of 
-taking the unique value.
+The classical hypergeometric test assumes uniqueness in its test sets. To
+maintain the duplication information in the test sets used for TSEA, the values
+of the total number of genes/proteins in the test set and the number of
+genes/proteins in the test set annotated at a functional category are adjusted
+by maintating their frequency information in the test set rather than counting
+each entry only once. Removing duplications in TSEA would be inappropriate since
+it would erase one of the most important pieces of information of this
+approach.
 }
 \section{Column description}{
 
-Description of the columns in the result table specific to the 
-hypergeometric test: 
+The TSEA results (including \code{tsea_dup_hyperG}) stored in the
+\code{feaResult} object can be returned with the \code{result} method in
+tabular format, here \code{tibble}. The columns of this \code{tibble} are
+described below.
 \itemize{
     \item GeneRatio: ratio of genes in the test set that are annotated at a 
     specific GO node or KEGG pathway
@@ -74,7 +78,7 @@ hypergeometric test:
     at a specific GO node or KEGG pathway
     \item pvalue: raw p-value of enrichment test
 }
-Description of the other columns are available at the 'result' slot of the
+Additional columns are described under the 'result' slot of the
 \code{\link{feaResult}} object.
 }
 
