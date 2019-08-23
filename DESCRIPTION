@@ -2,8 +2,10 @@ Package: signatureSearch
 Title: Discovering novel modes of action of bioactive compounds
 Version: 0.99.5
 Date: 2019-03-22
-Authors@R: person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
-           role = c("aut", "cre"))
+Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
+           role = c("aut", "cre")),
+           person("Thomas", "Girke", email = "thomas.girke@ucr.edu", 
+           role = "aut"))
 Description: This package can be used to do Gene Expression Signature Search 
             (GESS) and downstream Functional Enrichment Analysis (FEA).
 Depends: R(>= 3.6.0), SummarizedExperiment, Rcpp
