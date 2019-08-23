@@ -22,20 +22,22 @@ ggplot2 graphics object
 }
 \description{
 Dot plot for comparing the top ranking functional categories from different 
-functional enrichment analysis (FEA) results. The functional categories are plotted
-in the order defined by their mean rank across the corresponding FEA results.
+functional enrichment analysis (FEA) results. The functional categories are 
+plotted in the order defined by their mean rank across the corresponding 
+FEA results.
 }
 \details{
-The `comp_fea_res` function computes the mean rank for each functional category
-across different FEA result instances and then re-ranks them based on that.
-Since the functional categories are not always present in all enrichment
-results, the mean rank of a functional category is corrected by an adjustment
-factor that is the number of enrichment result methods used divided by the
-number of occurences of a functional category. For instance, if a functional
-category is only present in the result of one method, its mean rank will be
-increased accordingly. Subsequently, the re-ranked functional categories are 
-compared in a dot plot where the colors represent the values of the enrichment
-statistic chosen under the \code{rank_stat} argument.
+The `comp_fea_res` function computes the mean rank for each functional 
+category across different FEA result instances and then re-ranks them based 
+on that.Since the functional categories are not always present in all 
+enrichment results, the mean rank of a functional category is corrected by 
+an adjustment factor that is the number of enrichment result methods used 
+divided by the number of occurences of a functional category. For instance, 
+if a functional category is only present in the result of one method, its 
+mean rank will be increased accordingly. Subsequently, the re-ranked 
+functional categories are compared in a dot plot where the colors represent 
+the values of the enrichment statistic chosen under the \code{rank_stat} 
+argument.
 }
 \examples{
 data(drugs)

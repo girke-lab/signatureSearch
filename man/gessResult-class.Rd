@@ -6,9 +6,10 @@
 \alias{gessResult}
 \title{gessResult object}
 \description{
-The \code{gessResult} object organizes Gene Expression Signature Search (GESS)
-results. This includes the main tabular result of a GESS, its query signature, the
-name of the chosen GESS method and the path to the reference database.
+The \code{gessResult} object organizes Gene Expression Signature Search 
+(GESS) results. This includes the main tabular result of a GESS, its query 
+signature, the name of the chosen GESS method and the path to the reference
+database.
 }
 \section{Slots}{
 
@@ -18,9 +19,9 @@ perturbagen (e.g. drugs) in the reference database ranked by their
 signature similarity to the query. The result table can be extracted via
 the \code{\link{result}} accessor function.
 
-Descriptions of the columns common among the tabular results of the individual
-GESS methods are given below. Note, the columns specific to each GESS method
-are described in their help files.
+Descriptions of the columns common among the tabular results of the 
+individual GESS methods are given below. Note, the columns specific to each 
+GESS method are described in their help files.
 \itemize{
     \item pert: character, name of perturbagen (e.g. drug) in the reference 
     database

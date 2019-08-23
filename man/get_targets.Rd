@@ -9,7 +9,7 @@ get_targets(drugs, database = "all")
 \arguments{
 \item{drugs}{character vector of drug names}
 
-\item{database}{drug-target annotation resource; one of 'DrugBank', 'CLUE', 
+\item{database}{drug-target annotation resource; one of 'DrugBank', 'CLUE',
 'STITCH' or 'all'. If 'all', the targets from DrugBank, CLUE 
 and STITCH databases will be combined.}
 }
@@ -21,8 +21,8 @@ target gene symbols.
 This function returns for a set of query drug names/ids the corresponding
 target gene/protein ids. The required drug-target annotations are from
 DrugBank, CLUE and STITCH. An SQLite database storing these drug-target
-interactions based on the above three annotation resources is available in the
-\code{\link[signatureSearchData]{signatureSearchData}} package.
+interactions based on the above three annotation resources is available in 
+the \code{\link[signatureSearchData]{signatureSearchData}} package.
 }
 \examples{
 data(drugs)

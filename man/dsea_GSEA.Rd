@@ -9,31 +9,31 @@ dsea_GSEA(drugList, type = "GO", ont = "BP", exponent = 1,
   pvalueCutoff = 0.05, pAdjustMethod = "BH")
 }
 \arguments{
-\item{drugList}{named numeric vector, where the names represent drug labels and
-the numeric component scores. This can be all drugs of a GESS result that
+\item{drugList}{named numeric vector, where the names represent drug labels 
+and the numeric component scores. This can be all drugs of a GESS result that
 are ranked by GESS scores, such as NCSs of the LINCS method. Note, drugs
 with scores of zero are ignored by this method.}
 
 \item{type}{one of 'GO', 'KEGG' or 'MOA'}
 
-\item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one of `BP`,`MF`,
-`CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.}
+\item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one 
+of `BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.}
 
 \item{exponent}{integer value used as exponent in GSEA algorithm. It defines
-the weight of the items in the item set \emph{S}. Note, in DSEA the items are drug
-labels, while it is gene labels in the original GSEA.}
+the weight of the items in the item set \emph{S}. Note, in DSEA the items 
+are drug labels, while it is gene labels in the original GSEA.}
 
-\item{nPerm}{integer defining the number of permutation iterations for calculating 
-p-values}
+\item{nPerm}{integer defining the number of permutation iterations for 
+calculating p-values}
 
-\item{minGSSize}{integer, annotation categories with less than \code{minGSize}
-drugs annotated will be ignored by enrichment test. If type is 'MOA', it
-may be beneficial to set 'minGSSize' to lower values (e.g. 2) than for
-other functional annotation systems. This is because certain MOA categories
-contain only 2 drugs.}
+\item{minGSSize}{integer, annotation categories with less than 
+\code{minGSize} drugs annotated will be ignored by enrichment test. If type 
+is 'MOA', it may be beneficial to set 'minGSSize' to lower values (e.g. 2) 
+than for other functional annotation systems. This is because certain MOA 
+categories contain only 2 drugs.}
 
-\item{maxGSSize}{integer, annotation categories with more drugs annotated than
-\code{maxGSize} will be ignored by enrichment test.}
+\item{maxGSSize}{integer, annotation categories with more drugs annotated 
+than \code{maxGSize} will be ignored by enrichment test.}
 
 \item{pvalueCutoff}{double, p-value cutoff to return only enrichment results
 for drugs meeting a user definable confidence threshold}
@@ -42,13 +42,13 @@ for drugs meeting a user definable confidence threshold}
 one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'}
 }
 \value{
-\code{\link{feaResult}} object containing the enrichment results of functional 
-categories (e.g. GO terms or KEGG pathways) ranked by the corresponding enrichment 
-statistic.
+\code{\link{feaResult}} object containing the enrichment results of 
+functional categories (e.g. GO terms or KEGG pathways) ranked by the 
+corresponding enrichment statistic.
 }
 \description{
 The \code{dsea_GSEA} function performs Drug Set Enrichment Analysis (DSEA)
-with the GSEA algorithm from Subramanian et al. (2005). In case of DSEA, drug 
+with the GSEA algorithm from Subramanian et al. (2005). In case of DSEA, drug
 identifiers combined with their ranking scores of an upstream GESS method are
 used, such as the NCS values from the LINCS method. To use drug instead of
 gene labels for GSEA, the former are mapped to functional categories, 
@@ -57,10 +57,10 @@ annotations provided by databases such as DrugBank, ChEMBL, CLUE or
 STITCH.
 }
 \details{
-The DSEA results stored in the \code{feaResult} object can be returned with the
-\code{result} method in tabular format, here \code{tibble}. The columns of this
-\code{tibble} are described in the help of the \code{\link{tsea_mGSEA}}
-function.
+The DSEA results stored in the \code{feaResult} object can be returned with 
+the \code{result} method in tabular format, here \code{tibble}. The columns 
+of this \code{tibble} are described in the help of the 
+\code{\link{tsea_mGSEA}} function.
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 

@@ -19,8 +19,8 @@ At least one of 'lower' and 'higher' must be specified.}
 than 'lower' will be included in the gene set with sign -1. 
 At least one of 'lower' and 'higher' must be specified.}
 
-\item{chunk_size}{number of database entries to process per iteration to limit
-memory usage of search.}
+\item{chunk_size}{number of database entries to process per iteration to 
+limit memory usage of search.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 
@@ -45,9 +45,9 @@ regulated DEGs and the database contains rank transformed GESs.
 }
 \section{Column description}{
 
-Descriptions of the columns specific to the gCMAP method are given below. Note,
-the additional columns, those that are common among the GESS methods, are
-described in the help file of the \code{gessResult} object.
+Descriptions of the columns specific to the gCMAP method are given below. 
+Note, the additional columns, those that are common among the GESS methods, 
+are described in the help file of the \code{gessResult} object.
 
 \itemize{
     \item effect: Scaled bi-directional enrichment score corresponding to 
@@ -56,7 +56,7 @@ described in the help file of the \code{gessResult} object.
     the higher and lower cutoff.
     \item nFound: Number of genes in the reference gene sets that are 
     present in the query signature.
-    \item signed: Whether the gene sets in the reference database have signs, 
+    \item signed: Whether the gene sets in the reference database have signs,
     e.g. representing up and down regulated genes when computing scores.
 }
 }

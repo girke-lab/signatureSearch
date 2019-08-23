@@ -34,8 +34,9 @@ ontology term for testing.}
 A \code{feaResult} instance.
 }
 \description{
-Given a vector of gene identifiers, this function returns KEGG pathway enrichment
-results based on a hypergeometric test with duplication support in the test set.
+Given a vector of gene identifiers, this function returns KEGG pathway 
+enrichment results based on a hypergeometric test with duplication support 
+in the test set.
 }
 \examples{
 # Method supports duplicated elements in "gene", which should be entrez ids

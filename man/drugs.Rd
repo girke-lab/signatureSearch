@@ -9,8 +9,8 @@
 drugs
 }
 \description{
-A character vector containing the names of the top 10 drugs in the GESS result 
-from the gess_lincs method used in the vignette of signatureSearch.
+A character vector containing the names of the top 10 drugs in the GESS 
+result from the gess_lincs method used in the vignette of signatureSearch.
 }
 \examples{
 # Load drugs object

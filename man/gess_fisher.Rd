@@ -19,8 +19,8 @@ At least one of 'lower' and 'higher' must be specified.}
 than 'lower' will be included in the gene set with sign -1. 
 At least one of 'lower' and 'higher' must be specified.}
 
-\item{chunk_size}{number of database entries to process per iteration to limit
-memory usage of search.}
+\item{chunk_size}{number of database entries to process per iteration to 
+limit memory usage of search.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 
@@ -34,13 +34,14 @@ are similar to a query GES.
 }
 \details{
 When using the Fisher's exact test (Upton, 1992) as GES Search (GESS) method,
-both the query and the database are composed of gene label sets, such as DEG sets.
+both the query and the database are composed of gene label sets, such as 
+DEG sets.
 }
 \section{Column description}{
 
-Descriptions of the columns specific to the Fisher method are given below. Note,
-the additional columns, those that are common among the GESS methods, are
-described in the help file of the \code{gessResult} object.
+Descriptions of the columns specific to the Fisher method are given below. 
+Note, the additional columns, those that are common among the GESS methods, 
+are described in the help file of the \code{gessResult} object.
 
 \itemize{
     \item pval: p-value of the Fisher's exact test.

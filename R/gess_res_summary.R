@@ -1,8 +1,8 @@
-#' The \code{drug_cell_ranks} function returns from a \code{gessResult} object the
-#' ranks of the perturbagens (e.g. drugs) for each cell type. The results are
-#' arranged in separate columns of a \code{data.frame}. Additionally, it includes in
-#' the last columns summary ranking statistics across all cell types, such as min, mean 
-#' and max values.
+#' The \code{drug_cell_ranks} function returns from a \code{gessResult} object 
+#' the ranks of the perturbagens (e.g. drugs) for each cell type. The results 
+#' are arranged in separate columns of a \code{data.frame}. Additionally, it 
+#' includes in the last columns summary ranking statistics across all cell 
+#' types, such as min, mean and max values.
 #' @title Summary ranking statistics across cell types
 #' @param gessResult `gessResult` object
 #' @return data.frame
@@ -46,9 +46,9 @@ drug_cell_ranks <- function(gessResult){
   return(res)
 }
 
-#' Function appends two columns (score_column_grp1, score_column_grp2) to GESS result
-#' tibble. The appended columns contain summary scores for groups of cell types, such 
-#' as normal and tumor cells.
+#' Function appends two columns (score_column_grp1, score_column_grp2) to GESS 
+#' result tibble. The appended columns contain summary scores for groups of 
+#' cell types, such as normal and tumor cells.
 #' @title Summary Scores by Groups of Cell Types
 #' @param tib tibble in gessResult object 
 #' @param grp1 character vector, group 1 of cell types, e.g., tumor cell types
@@ -118,7 +118,7 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
 #' this way it will show the ranks of each drug in different cell types.
 #' @param cell_group character(1), one of "all", "normal", or "tumor". 
 #' If "all", it will show scores of each drug in both tumor and normal cell 
-#' types. If "normal" or "tumor", it will only show normal or tumor cell types.  
+#' types. If "normal" or "tumor", it will only show normal or tumor cell types.
 #' @return plot visualizing GESS results
 #' @references  
 #' Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., 
@@ -182,7 +182,7 @@ gess_res_vis <- function(gess_tb, drugs, col, cell_group="all"){
   }
   p = ggplot(data1) + 
     geom_point(data=data1, 
-               aes_string(x="pert", y=col, fill="cell_type", shape="cell_class", 
+               aes_string(x="pert", y=col, fill="cell_type", shape="cell_class",
                           colour = "cell_type"), size=2.5) +
     geom_point(data=na.omit(data2), 
                aes_string("pert", paste0(col, "_grp"), shape = "cell_class"), 

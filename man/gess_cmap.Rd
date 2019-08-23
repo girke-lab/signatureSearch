@@ -11,8 +11,8 @@ gess_cmap(qSig, chunk_size = 5000)
 the GESS method (should be 'CMAP') and the path to the reference database.
 For details see help of \code{qSig} and \code{qSig-class}.}
 
-\item{chunk_size}{number of database entries to process per iteration to limit
-memory usage of search.}
+\item{chunk_size}{number of database entries to process per iteration to 
+limit memory usage of search.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 
@@ -20,34 +20,35 @@ search results for each perturbagen in the reference database ranked by
 their signature similarity to the query.
 }
 \description{
-Implements the original Gene Expression Signature Search (GESS) from Lamb et al
-(2006) known as Connectivity Map (CMap). The method uses as query the two label
-sets of the most up- and down-regulated genes from a genome-wide expression
-experiment, while the reference database is composed of rank transformed
-expression profiles (e.g. ranks of LFC or z-scores).
+Implements the original Gene Expression Signature Search (GESS) from 
+Lamb et al (2006) known as Connectivity Map (CMap). The method uses as query 
+the two label sets of the most up- and down-regulated genes from a 
+genome-wide expression experiment, while the reference database is composed 
+of rank transformed expression profiles (e.g. ranks of LFC or z-scores).
 }
 \details{
-Lamb et al. (2006) introduced the gene expression-based search method known as
-Connectivity Map (CMap) where a GES database is searched with a query GES for
-similar entries. Specifically, this GESS method uses as query the two label 
-sets of the most up- and down-regulated genes from a genome-wide expression 
-experiment, while the reference database is composed of rank transformed expression profiles (e.g.
-ranks of LFC or z-scores). The actual GESS algorithm is based on a vectorized
-rank difference calculation. The resulting Connectivity Score expresses to what
-degree the query up/down gene sets are enriched on the top and bottom of the
-database entries, respectively. The search results are a list of perturbagens
-such as drugs that induce similar or opposing GESs as the query. Similar GESs
-suggest similar physiological effects of the corresponding perturbagens. 
-Although several variants of the CMAP algorithm are available in
-other software packages including Bioconductor, the implementation provided by
+Lamb et al. (2006) introduced the gene expression-based search method known 
+as Connectivity Map (CMap) where a GES database is searched with a query GES 
+for similar entries. Specifically, this GESS method uses as query the two 
+label sets of the most up- and down-regulated genes from a genome-wide 
+expression experiment, while the reference database is composed of rank 
+transformed expression profiles (e.g.ranks of LFC or z-scores). The actual 
+GESS algorithm is based on a vectorized rank difference calculation. The 
+resulting Connectivity Score expresses to what degree the query up/down gene 
+sets are enriched on the top and bottom of the database entries, 
+respectively. The search results are a list of perturbagens such as drugs 
+that induce similar or opposing GESs as the query. Similar GESs suggest 
+similar physiological effects of the corresponding perturbagens. 
+Although several variants of the CMAP algorithm are available in other 
+software packages including Bioconductor, the implementation provided by
 \code{signatureSearch} follows the original description of the authors as 
 closely as possible.
 }
 \section{Column description}{
 
-Descriptions of the columns specific to the CMAP method are given below. Note,
-the additional columns, those that are common among the GESS methods, are
-described in the help file of the \code{gessResult} object.
+Descriptions of the columns specific to the CMAP method are given below. 
+Note, the additional columns, those that are common among the GESS methods, 
+are described in the help file of the \code{gessResult} object.
 \itemize{
     \item raw_score: bi-directional enrichment score (Kolmogorov-Smirnov 
     statistic) of up and down set in the query siganture

@@ -1,7 +1,8 @@
-##' Given a vector of gene identifiers, this function returns MOA category enrichment
-##' results based on a hypergeometric test with duplication support in the test set.
-##' The universe for the test is set to the unique genes encoding the target proteins 
-##' present in the MOA annotation system from the ChEMBL database. 
+##' Given a vector of gene identifiers, this function returns MOA category 
+##' enrichment results based on a hypergeometric test with duplication support 
+##' in the test set. The universe for the test is set to the unique genes 
+##' encoding the target proteins present in the MOA annotation system from the 
+##' ChEMBL database. 
 ##' 
 ##' @title MOA Category Enrichment with Hypergeometric Test
 ##' @param gene a vector of entrez gene ids (here the test set)

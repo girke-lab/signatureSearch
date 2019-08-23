@@ -10,9 +10,9 @@ targetList
 }
 \description{
 A named numeric vector with Gene Symbols as names. It is the first 1000
-elements from the 'targets' slot of the 'mgsea_res' result object introduced in
-the vignette of this package. The scores represent the weights of the target
-genes/proteins in the target set of the selected top 10 drugs.
+elements from the 'targets' slot of the 'mgsea_res' result object introduced 
+in the vignette of this package. The scores represent the weights of the 
+target genes/proteins in the target set of the selected top 10 drugs.
 }
 \examples{
 # Load object

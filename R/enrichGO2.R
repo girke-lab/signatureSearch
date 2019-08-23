@@ -1,5 +1,6 @@
 ##' Given a vector of gene identifiers, this function returns GO term enrichment
-##' results based on a hypergeometric test with duplication support in the test set.
+##' results based on a hypergeometric test with duplication support in the test 
+##' set.
 ##' 
 ##' @title GO Term Enrichment with Hypergeometric Test
 ##' @param gene a vector of gene SYMBOL ids (here the test set)

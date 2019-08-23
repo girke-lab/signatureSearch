@@ -1,10 +1,11 @@
 #' @title LINCS Search Method
 #' @description 
-#' Implements the Gene Expression Signature Search (GESS) from Subramanian et al,
-#' 2017, here referred to as LINCS. The method uses as query the two label sets of
-#' the most up- and down-regulated genes from a genome-wide expression experiment,
-#' while the reference database is composed of differential gene expression values
-#' (e.g. LFC or z-scores). Note, the related CMAP method uses here ranks instead.
+#' Implements the Gene Expression Signature Search (GESS) from 
+#' Subramanian et al, 2017, here referred to as LINCS. The method uses as 
+#' query the two label sets of the most up- and down-regulated genes from a 
+#' genome-wide expression experiment, while the reference database is composed 
+#' of differential gene expression values (e.g. LFC or z-scores). Note, the 
+#' related CMAP method uses here ranks instead.
 #' @details 
 #' Subramanian et al. (2017) introduced a more complex GESS algorithm, 
 #' here referred to as LINCS. While related to CMAP, there are several important
@@ -15,9 +16,9 @@
 #' Another relevant difference is that the LINCS algorithm uses a bi-directional
 #' weighted Kolmogorov-Smirnov enrichment statistic (ES) as similarity metric.
 #' @section Column description:
-#' Descriptions of the columns specific to the LINCS method are given below. Note,
-#' the additional columns, those that are common among the GESS methods, are
-#' described in the help file of the \code{gessResult} object.
+#' Descriptions of the columns specific to the LINCS method are given below. 
+#' Note, the additional columns, those that are common among the GESS methods, 
+#' are described in the help file of the \code{gessResult} object.
 #' \itemize{
 #'   \item WTCS: Weighted Connectivity Score, a bi-directional Enrichment 
 #'   Score for an up/down query set. If the ES values of an up set and a down 
@@ -35,10 +36,11 @@
 #'   values w resulting from a query, the values are normalized within each 
 #'   cell line c and perturbagen type t to obtain NCS by dividing the WTCS 
 #'   value with the signed mean of the WTCS values within 
-#'   the subset of the signatures in the reference database corresponding to c and t.
+#'   the subset of the signatures in the reference database corresponding to c 
+#'   and t.
 #'   \item Tau: Enrichment score standardized for a given database. 
-#'   The Tau score compares an observed NCS to a large set of NCS values that have 
-#'   been pre-computed for a specific reference database. The query results 
+#'   The Tau score compares an observed NCS to a large set of NCS values that 
+#'   have been pre-computed for a specific reference database. The query results
 #'   are scored with Tau as a standardized measure ranging from 100 to -100. 
 #'   A Tau of 90 indicates that only 10% of reference perturbations exhibit 
 #'   stronger connectivity to the query. This way one can make more meaningful 
@@ -54,14 +56,14 @@
 #' @param qSig \code{\link{qSig}} object defining the query signature including
 #' the GESS method (should be 'LINCS') and the path to the reference database.
 #' For details see help of \code{qSig} and \code{qSig-class}.
-#' @param tau TRUE or FALSE, whether to compute the tau score. Note, TRUE is only
-#' meaningful when the full LINCS database is searched, since accurate Tau score
-#' calculation depends on the usage of the exact same database their background
-#' values are based on.
-#' @param sortby sort the GESS result table based on one of the following statistics:
-#' `WTCS`, `NCS`, `Tau`, `NCSct` or `NA` 
-#' @param chunk_size number of database entries to process per iteration to limit
-#' memory usage of search.
+#' @param tau TRUE or FALSE, whether to compute the tau score. Note, TRUE is 
+#' only meaningful when the full LINCS database is searched, since accurate Tau 
+#' score calculation depends on the usage of the exact same database their 
+#' background values are based on.
+#' @param sortby sort the GESS result table based on one of the following 
+#' statistics: `WTCS`, `NCS`, `Tau`, `NCSct` or `NA` 
+#' @param chunk_size number of database entries to process per iteration to 
+#' limit memory usage of search.
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
@@ -302,8 +304,8 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
   return(ES)
 }
 
-#' Function computes null distribution of Weighted Connectivity Scores (WTCS) used
-#' by the LINCS GESS method for computing nominal P-values.
+#' Function computes null distribution of Weighted Connectivity Scores (WTCS) 
+#' used by the LINCS GESS method for computing nominal P-values.
 #' 
 #' @title Generate WTCS Null Distribution with Random Queries
 #' @param h5file character(1), path to the HDF5 file representing the

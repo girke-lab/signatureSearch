@@ -23,7 +23,8 @@
 ##' 
 ##' cells: cell type information
 ##' 
-##' mean_rank: mean rank of drugs in corresponding GESS result for each MOA category
+##' mean_rank: mean rank of drugs in corresponding GESS result for each MOA 
+##' category
 ##' 
 ##' n_drug: number of drugs in each MOA category
 ##' @return data.frame 

@@ -9,10 +9,11 @@ tsea_dup_hyperG(drugs, universe = "Default", type = "GO", ont = "MF",
   minGSSize = 5, maxGSSize = 500, dt_anno = "all")
 }
 \arguments{
-\item{drugs}{character vector containing drug identifiers used for functional enrichment
-testing. This can be the top ranking drugs from a GESS result. Internally, drug
-test sets are translated to the corresponding target protein test sets based on the
-drug-target annotations provided under the \code{dt_anno} argument.}
+\item{drugs}{character vector containing drug identifiers used for functional
+enrichment testing. This can be the top ranking drugs from a GESS result. 
+Internally, drug test sets are translated to the corresponding target protein
+test sets based on the drug-target annotations provided under the 
+\code{dt_anno} argument.}
 
 \item{universe}{character vector defining the universe of genes/proteins. If
 set as 'Default', it uses all genes/proteins present in the corresponding
@@ -57,13 +58,13 @@ duplicated items in form of weighting values.
 }
 \details{
 The classical hypergeometric test assumes uniqueness in its test sets. To
-maintain the duplication information in the test sets used for TSEA, the values
-of the total number of genes/proteins in the test set and the number of
-genes/proteins in the test set annotated at a functional category are adjusted
-by maintating their frequency information in the test set rather than counting
-each entry only once. Removing duplications in TSEA would be inappropriate since
-it would erase one of the most important pieces of information of this
-approach.
+maintain the duplication information in the test sets used for TSEA, the 
+values of the total number of genes/proteins in the test set and the number 
+of genes/proteins in the test set annotated at a functional category are
+adjusted by maintating their frequency information in the test set rather 
+than counting each entry only once. Removing duplications in TSEA would be 
+inappropriate since it would erase one of the most important pieces of 
+information of this approach.
 }
 \section{Column description}{
 

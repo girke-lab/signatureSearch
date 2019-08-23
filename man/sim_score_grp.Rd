@@ -20,9 +20,9 @@ grouped}
 tibble
 }
 \description{
-Function appends two columns (score_column_grp1, score_column_grp2) to GESS result
-tibble. The appended columns contain summary scores for groups of cell types, such 
-as normal and tumor cells.
+Function appends two columns (score_column_grp1, score_column_grp2) to GESS 
+result tibble. The appended columns contain summary scores for groups of 
+cell types, such as normal and tumor cells.
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 

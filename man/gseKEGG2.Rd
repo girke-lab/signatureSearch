@@ -19,8 +19,8 @@ URL: http://www.genome.jp/kegg/catalog/org_list.html}
 
 \item{exponent}{weight of each step}
 
-\item{nproc}{if not equal to zero, sets \code{BPPARAM} to use \code{nproc} workers
-(default = 1)}
+\item{nproc}{if not equal to zero, sets \code{BPPARAM} to use \code{nproc} 
+workers (default = 1)}
 
 \item{nPerm}{permutation numbers}
 

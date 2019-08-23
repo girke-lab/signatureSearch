@@ -22,25 +22,26 @@ custom database is used, the labels need to be of the same type as those in
 the reference database.
 
 If 'gess_method' is 'gCMAP', the query is a matrix with a single column
-representing gene ranks from a biological state of interest. The corresponding 
-gene labels are stored in the row name slot of the matrix. Instead of ranks
-one can provide scores (e.g. z-scores). In such a case, the scores will be 
-internally transformed to ranks. 
+representing gene ranks from a biological state of interest. The 
+corresponding gene labels are stored in the row name slot of the matrix. 
+Instead of ranks one can provide scores (e.g. z-scores). In such a case, 
+the scores will be internally transformed to ranks. 
 
 If 'gess_method' is 'Fisher', the query is expected to be a list with two
 character vectors named \code{upset} and \code{downset} for up- and
-down-regulated gene labels, respectively (same as for 'CMAP' or 'LINCS' method).
-Internally, the up/down gene labels are combined into a single gene set
-when querying the reference database with the Fisher's exact test. This means the
-query is performed with an unsigned set. The query can also be a matrix with a
-single numeric column and the gene labels (e.g. Entrez gene IDs) in the row name
-slot. The values in this matrix can be z-scores or LFCs. In this case, the
-actual query gene set is obtained according to upper and lower cutoffs set by
-the user.
+down-regulated gene labels, respectively (same as for 'CMAP' or 'LINCS' 
+method). Internally, the up/down gene labels are combined into a single 
+gene set when querying the reference database with the Fisher's exact test. 
+This means the query is performed with an unsigned set. The query can also 
+be a matrix with a single numeric column and the gene labels (e.g. Entrez 
+gene IDs) in the row name slot. The values in this matrix can be z-scores 
+or LFCs. In this case, the actual query gene set is obtained according to 
+upper and lower cutoffs set by the user.
 
-If 'gess_method' is 'Cor', the query is a matrix with a single numeric column
-and the gene labels in the row name slot. The numeric column can contain z-scores,
-LFCs, (normalized) gene expression intensity values or read counts.}
+If 'gess_method' is 'Cor', the query is a matrix with a single numeric 
+column and the gene labels in the row name slot. The numeric column can 
+contain z-scores, LFCs, (normalized) gene expression intensity values or 
+read counts.}
 
 \item{gess_method}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
 
@@ -52,10 +53,11 @@ signatures of LFC scores obtained from DEG analysis routines; with
 obtained from the DEG analysis methods of the LINCS project; and with
 'lincs_expr' normalized expression values.
 
-To use a custom signature database, it should be the file path to the HDF5 file
-generated with the \code{\link{build_custom_db}} function.  Alternatively, a
-suitable version of the CMAP/LINCS databases can be used. For details on this,
-please consult the vignette of the \pkg{signatureSearchData} package.}
+To use a custom signature database, it should be the file path to the HDF5 
+file generated with the \code{\link{build_custom_db}} function. 
+Alternatively, a suitable version of the CMAP/LINCS databases can be used. 
+For details on this, please consult the vignette of the 
+\pkg{signatureSearchData} package.}
 }
 \value{
 \code{qSig} object

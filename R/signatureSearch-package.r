@@ -99,10 +99,17 @@
 #' remove drugs or targets that bind to large numbers of distinct proteins or 
 #' drugs, respectively.
 #' 
-#' Note, in this vignette, the target genes of drugs always refer to
-#' the target protein-encoding genes. The protein ids (such as UniProt ids) are 
-#' mapped to their encoding gene ids (such as gene Symbols) via existing id 
-#' mapping resources, such as `org.Hs.eg.db` R/Bioconductor annotation package. 
+#' Note, most FEA tests involving proteins in their test sets are performed on 
+#' the gene level in \code{signatureSearch}. This way one can avoid additional 
+#' duplications due to many-to-one relationships among proteins and their 
+#' encoding gents. For this, the corresponding functions in signatureSearch 
+#' will usually translate target protein sets into their encoding gene sets 
+#' using identifier mapping resources from R/Bioconductor such as the 
+#' \code{org.Hs.eg.db} annotation package. Because of this as well as 
+#' simplicity, the text in the vignette and help files of this package will 
+#' refer to the targets of drugs almost interchangeably to proteins or genes, 
+#' even though the former are the direct targets and the latter only the 
+#' indirect targets of drugs.  
 #' 
 #' @seealso 
 #' Methods for GESS:
@@ -153,8 +160,8 @@ NULL
 
 #' Drug names used in examples
 #' 
-#' A character vector containing the names of the top 10 drugs in the GESS result 
-#' from the gess_lincs method used in the vignette of signatureSearch.
+#' A character vector containing the names of the top 10 drugs in the GESS 
+#' result from the gess_lincs method used in the vignette of signatureSearch.
 #'
 #' @name drugs
 #' @aliases drugs
@@ -169,9 +176,9 @@ NULL
 #' Target Sample Data Set
 #' 
 #' A named numeric vector with Gene Symbols as names. It is the first 1000
-#' elements from the 'targets' slot of the 'mgsea_res' result object introduced in
-#' the vignette of this package. The scores represent the weights of the target
-#' genes/proteins in the target set of the selected top 10 drugs.
+#' elements from the 'targets' slot of the 'mgsea_res' result object introduced 
+#' in the vignette of this package. The scores represent the weights of the 
+#' target genes/proteins in the target set of the selected top 10 drugs.
 #'
 #' @name targetList
 #' @aliases targetList

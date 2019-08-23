@@ -37,7 +37,8 @@ A \code{feaResult} instance.
 }
 \description{
 Given a vector of gene identifiers, this function returns GO term enrichment
-results based on a hypergeometric test with duplication support in the test set.
+results based on a hypergeometric test with duplication support in the test 
+set.
 }
 \examples{
 # The method supports duplicated elements in 'gene', 

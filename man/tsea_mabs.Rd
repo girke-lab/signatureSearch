@@ -9,14 +9,15 @@ tsea_mabs(drugs, type = "GO", ont = "MF", nPerm = 1000,
   maxGSSize = 500, dt_anno = "all")
 }
 \arguments{
-\item{drugs}{character vector containing drug identifiers used for functional enrichment
-testing. This can be the top ranking drugs from a GESS result. Internally, drug
-test sets are translated to the corresponding target protein test sets based on the
-drug-target annotations provided under the \code{dt_anno} argument.}
+\item{drugs}{character vector containing drug identifiers used for functional
+enrichment testing. This can be the top ranking drugs from a GESS result. 
+Internally, drug test sets are translated to the corresponding target protein
+test sets based on the drug-target annotations provided under the 
+\code{dt_anno} argument.}
 
 \item{type}{one of `GO` or `KEGG`}
 
-\item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one of 
+\item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one of
 `BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.}
 
 \item{nPerm}{integer, permutation number used to calculate p-values}
@@ -46,9 +47,9 @@ the corresponding enrichment statistic.
 \description{
 The meanAbs (mabs) method is a simple but effective functional enrichment
 statistic (Fang et al., 2012). As required for TSEA, it supports query label
-sets (here for target proteins/genes) with duplications by transforming them to
-score ranked label lists and then calculating mean absolute scores of labels in
-label set \eqn{S}.
+sets (here for target proteins/genes) with duplications by transforming them 
+to score ranked label lists and then calculating mean absolute scores of 
+labels in label set \eqn{S}.
 }
 \details{
 The input for the mabs method is \eqn{L_tar}, the same as for mGSEA. In this

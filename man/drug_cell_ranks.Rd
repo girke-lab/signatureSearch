@@ -13,11 +13,11 @@ drug_cell_ranks(gessResult)
 data.frame
 }
 \description{
-The \code{drug_cell_ranks} function returns from a \code{gessResult} object the
-ranks of the perturbagens (e.g. drugs) for each cell type. The results are
-arranged in separate columns of a \code{data.frame}. Additionally, it includes in
-the last columns summary ranking statistics across all cell types, such as min, mean 
-and max values.
+The \code{drug_cell_ranks} function returns from a \code{gessResult} object 
+the ranks of the perturbagens (e.g. drugs) for each cell type. The results 
+are arranged in separate columns of a \code{data.frame}. Additionally, it 
+includes in the last columns summary ranking statistics across all cell 
+types, such as min, mean and max values.
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 

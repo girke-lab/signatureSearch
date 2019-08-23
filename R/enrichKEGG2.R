@@ -1,5 +1,6 @@
-##' Given a vector of gene identifiers, this function returns KEGG pathway enrichment
-##' results based on a hypergeometric test with duplication support in the test set.
+##' Given a vector of gene identifiers, this function returns KEGG pathway 
+##' enrichment results based on a hypergeometric test with duplication support 
+##' in the test set.
 ##' 
 ##' @title KEGG Pathway Enrichment with Hypergeometric Test
 ##' @param gene a vector of entrez gene ids (here the test set)

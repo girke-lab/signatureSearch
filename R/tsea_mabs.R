@@ -2,9 +2,9 @@
 #' 
 #' The meanAbs (mabs) method is a simple but effective functional enrichment
 #' statistic (Fang et al., 2012). As required for TSEA, it supports query label
-#' sets (here for target proteins/genes) with duplications by transforming them to
-#' score ranked label lists and then calculating mean absolute scores of labels in
-#' label set \eqn{S}.
+#' sets (here for target proteins/genes) with duplications by transforming them 
+#' to score ranked label lists and then calculating mean absolute scores of 
+#' labels in label set \eqn{S}.
 #' 
 #' The input for the mabs method is \eqn{L_tar}, the same as for mGSEA. In this
 #' enrichment statistic, \eqn{mabs(S)}, of a label (e.g. gene/protein) set
@@ -29,12 +29,13 @@
 #' }
 #' Additional columns are described under the 'result' slot of the
 #' \code{\link{feaResult}} object.
-#' @param drugs character vector containing drug identifiers used for functional enrichment
-#' testing. This can be the top ranking drugs from a GESS result. Internally, drug
-#' test sets are translated to the corresponding target protein test sets based on the
-#' drug-target annotations provided under the \code{dt_anno} argument.
+#' @param drugs character vector containing drug identifiers used for functional
+#' enrichment testing. This can be the top ranking drugs from a GESS result. 
+#' Internally, drug test sets are translated to the corresponding target protein
+#' test sets based on the drug-target annotations provided under the 
+#' \code{dt_anno} argument.
 #' @param type one of `GO` or `KEGG`
-#' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of 
+#' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of
 #' `BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.
 #' @param nPerm integer, permutation number used to calculate p-values
 #' @param pAdjustMethod p-value adjustment method, 

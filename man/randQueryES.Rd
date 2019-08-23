@@ -18,8 +18,8 @@ reference database}
 File with path assigned to \code{dest}
 }
 \description{
-Function computes null distribution of Weighted Connectivity Scores (WTCS) used
-by the LINCS GESS method for computing nominal P-values.
+Function computes null distribution of Weighted Connectivity Scores (WTCS) 
+used by the LINCS GESS method for computing nominal P-values.
 }
 \examples{
 db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")

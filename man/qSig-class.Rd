@@ -18,9 +18,10 @@ and \code{downset} for up- and down-regulated gene labels (here Entrez IDs),
 repectively.
 
 If 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', a single column matrix with
-gene expression values should be assigned. The corresponding gene labels are
-stored in the row name slot of the matrix. The expected type of gene expression
-values is explained in the help files of the corresponding GESS methods.}
+gene expression values should be assigned. The corresponding gene labels 
+are stored in the row name slot of the matrix. The expected type of gene 
+expression values is explained in the help files of the corresponding GESS 
+methods.}
 
 \item{\code{gess_method}}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
 

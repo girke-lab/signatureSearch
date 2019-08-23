@@ -8,8 +8,8 @@
 ##' @param OrgDb OrgDb, e.g., "org.Hs.eg.db".
 ##' @param keyType keytype of gene
 ##' @param exponent weight of each step
-##' @param nproc if not equal to zero, sets \code{BPPARAM} to use \code{nproc} workers 
-##' (default = 1)
+##' @param nproc if not equal to zero, sets \code{BPPARAM} to use \code{nproc} 
+##' workers (default = 1)
 ##' @param nPerm permutation numbers
 ##' @param minGSSize integer, minimum size of each gene set in annotation system
 ##' @param maxGSSize integer, maximum size of each gene set in annotation system
@@ -79,8 +79,8 @@ gseGO2 <- function(geneList,
 ##' URL: http://www.genome.jp/kegg/catalog/org_list.html
 ##' @param keyType one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'
 ##' @param exponent weight of each step
-##' @param nproc if not equal to zero, sets \code{BPPARAM} to use \code{nproc} workers
-##' (default = 1)
+##' @param nproc if not equal to zero, sets \code{BPPARAM} to use \code{nproc} 
+##' workers (default = 1)
 ##' @param nPerm permutation numbers
 ##' @param minGSSize integer, minimum size of each gene set in annotation system
 ##' @param maxGSSize integer, maximum size of each gene set in annotation system

@@ -11,16 +11,16 @@ build_custom_db(df, h5file)
 genome-wide GESs of perturbation experiments.
 
 The row name slots are expected to contain gene or transcript IDs 
-(e.g. Entrez ids), while the column names are expected to have this structure:
-`(drug)__(cell)__(factor)`, e.g. `sirolimus__MCF7__trt_cp`. This format is 
-flexible enough to encode most perturbation types of biological samples. For 
-example, gene knockdown or over expression treatments can be specified by 
-assigning the ID of the affected gene to `drug`, and `ko` or `ov` to `factor`, 
-respectively. An example for a knockdown treatment would look like this: 
-`P53__MCF7__ko`.}
+(e.g. Entrez ids), while the column names are expected to have this 
+structure: `(drug)__(cell)__(factor)`, e.g. `sirolimus__MCF7__trt_cp`. 
+This format is flexible enough to encode most perturbation types of 
+biological samples. For example, gene knockdown or over expression 
+treatments can be specified by assigning the ID of the affected gene to 
+`drug`, and `ko` or `ov` to `factor`, respectively. An example for a 
+knockdown treatment would look like this: `P53__MCF7__ko`.}
 
-\item{h5file}{character vector of length 1 containing the path to the destination 
-hdf5 file}
+\item{h5file}{character vector of length 1 containing the path to the 
+destination hdf5 file}
 }
 \value{
 HDF5 file
@@ -33,9 +33,9 @@ The perturbation-based gene expression data, here provided as data.frame or
 matrix, will be stored in an HDF5 file. The latter can be used as reference 
 database by compatible GESS methods of signatureSearch. Various types of 
 pre-processed gene expression data can be used here, such as normalized 
-gene expression intensities (or counts for RNA-Seq); log2 fold changes (LFC), 
-Z-scores or p-values obtained from analysis routines of differentially expressed
-genes (DEGs).
+gene expression intensities (or counts for RNA-Seq); log2 fold changes (LFC),
+Z-scores or p-values obtained from analysis routines of differentially 
+expressed genes (DEGs).
 }
 \examples{
 # Generate a data.frame 

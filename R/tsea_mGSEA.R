@@ -1,6 +1,6 @@
-#' The \code{tsea_mGSEA} function performs a Modified Gene Set Enrichment Analysis
-#' (mGSEA) that supports test sets (e.g. genes or protein IDs) with duplications. 
-#' The duplication support is 
+#' The \code{tsea_mGSEA} function performs a Modified Gene Set Enrichment 
+#' Analysis (mGSEA) that supports test sets (e.g. genes or protein IDs) with 
+#' duplications. The duplication support is 
 #' achieved by a weighting method for duplicated items, where the weighting is 
 #' proportional to the frequency of the items in the test set.
 #' 
@@ -13,8 +13,8 @@
 #' Enrichment Score (\eqn{ES}) reflecting the degree to which a set \eqn{S} 
 #' is overrepresented at the extremes of \eqn{L}. 
 #' 
-#' For TSEA, the query is a target protein set where duplicated entries need to be
-#' maintained. To perform GSEA with duplication support, here referred to as 
+#' For TSEA, the query is a target protein set where duplicated entries need to 
+#' be maintained. To perform GSEA with duplication support, here referred to as 
 #' mGSEA, the target set is transformed to a score ranked target list 
 #' \eqn{L_tar} of all targets provided by the 
 #' corresponding annotation system. For each target in the query target set, 
@@ -45,9 +45,9 @@
 #' To favor truly enriched GO terms and KEGG pathways (gene set \eqn{S}) at 
 #' the top of \eqn{L_tar}, only gene sets with positive \eqn{ES} are selected.
 #' @section Column description:
-#' The TSEA results (including \code{tsea_mGSEA}) stored in the \code{feaResult} object 
-#' can be returned with the \code{result} method in tabular format, here \code{tibble}.
-#' The columns of this \code{tibble} are described below.
+#' The TSEA results (including \code{tsea_mGSEA}) stored in the \code{feaResult}
+#' object can be returned with the \code{result} method in tabular format, 
+#' here \code{tibble}. The columns of this \code{tibble} are described below.
 #' \itemize{
 #'     \item enrichmentScore: ES from the GSEA algorithm 
 #'     (Subramanian et al., 2005). The score is calculated by walking down the 
@@ -75,15 +75,16 @@
 #' \code{\link{feaResult}} object.
 #' 
 #' @title Target Set Enrichment Analysis (TSEA) with mGSEA Algorithm
-#' @param drugs character vector containing drug identifiers used for functional enrichment
-#' testing. This can be the top ranking drugs from a GESS result. Internally, drug
-#' test sets are translated to the corresponding target protein test sets based on the
-#' drug-target annotations provided under the \code{dt_anno} argument.
+#' @param drugs character vector containing drug identifiers used for functional
+#' enrichment testing. This can be the top ranking drugs from a GESS result. 
+#' Internally, drug test sets are translated to the corresponding target protein
+#' test sets based on the drug-target annotations provided under the 
+#' \code{dt_anno} argument.
 #' @param type one of `GO` or `KEGG`
-#' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of `BP`,`MF`,
-#' `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.
-#' @param nPerm integer defining the number of permutation iterations for calculating 
-#' p-values
+#' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of
+#' `BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.
+#' @param nPerm integer defining the number of permutation iterations for 
+#' calculating p-values
 #' @param exponent integer value used as exponent in GSEA algorithm. It defines
 #' the weight of the items in the item set \eqn{S}.
 #' @param pAdjustMethod p-value adjustment method, 

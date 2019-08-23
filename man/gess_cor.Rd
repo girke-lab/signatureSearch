@@ -14,8 +14,8 @@ details see help of \code{qSig} and \code{qSig-class}.}
 \item{method}{One of 'spearman' (default), 'kendall', or 'pearson',
 indicating which correlation coefficient to use.}
 
-\item{chunk_size}{number of database entries to process per iteration to limit
-memory usage of search.}
+\item{chunk_size}{number of database entries to process per iteration to 
+limit memory usage of search.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 
@@ -23,17 +23,17 @@ search results for each perturbagen in the reference database ranked by
 their signature similarity to the query.
 }
 \description{
-Correlation-based similarity metrics, such as Spearman or Pearson coefficients,
-can be used as Gene Expression Signature Search (GESS) methods. As non-set-based 
-methods, they require quantitative gene expression values for both the query and
-the database entries, such as normalized intensities or read counts from
-microarrays or RNA-Seq experiments, respectively.
+Correlation-based similarity metrics, such as Spearman or Pearson 
+coefficients, can be used as Gene Expression Signature Search (GESS) methods.
+As non-set-based methods, they require quantitative gene expression values 
+for both the query and the database entries, such as normalized intensities 
+or read counts from microarrays or RNA-Seq experiments, respectively.
 }
 \details{
 For correlation searches to work, it is important that both the query and
-reference database contain the same type of gene identifiers. The expected data
-structure of the query is a matrix with a single numeric column and the gene
-labels (e.g. Entrez Gene IDs) in the row name slot. For convenience, the
+reference database contain the same type of gene identifiers. The expected 
+data structure of the query is a matrix with a single numeric column and the 
+gene labels (e.g. Entrez Gene IDs) in the row name slot. For convenience, the
 correlation-based searches can either be performed with the full set of genes
 represented in the database or a subset of them. The latter can be useful to
 focus the computation for the correlation values on certain genes of interest
