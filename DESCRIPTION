@@ -1,6 +1,6 @@
 Package: signatureSearch
 Title: Discovering novel modes of action of bioactive compounds
-Version: 0.99.5
+Version: 0.99.6
 Date: 2019-03-22
 Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
            role = c("aut", "cre")),

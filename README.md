@@ -37,7 +37,7 @@ research application.
 ```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install("signatureSearch", version = "3.9")
+BiocManager::install("signatureSearch")
 ```
 To obtain the most recent updates immediately, one can install it directly from GitHub as follows.
 ```r
