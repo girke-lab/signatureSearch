@@ -35,7 +35,7 @@ vignettes/*.pdf
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
 
-.o
-.sl
-.so
+src/*.o
+src/*.sl
+src/*.so
 .dylib

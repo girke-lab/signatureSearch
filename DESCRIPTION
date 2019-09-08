@@ -1,9 +1,9 @@
 Package: signatureSearch
 Title: Discovering novel modes of action of bioactive compounds
-Version: 0.99.7
+Version: 0.99.8
 Date: 2019-03-22
 Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
-           role = c("aut", "cre")),
+           role = c("cre", "aut")),
            person("Thomas", "Girke", email = "thomas.girke@ucr.edu", 
            role = "aut"))
 Description: This package can be used to do Gene Expression Signature Search 
@@ -25,6 +25,5 @@ NeedsCompilation: no
 Packaged: 2018-08-24 18:22:55 UTC; yduan004
 biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment, 
            Sequencing, Coverage, DifferentialExpression
-Maintainer: Yuzhu Duan <yduan004@ucr.edu>
 URL: https://github.com/yduan004/signatureSearch/
 BugReports: https://github.com/yduan004/signatureSearch/issues
