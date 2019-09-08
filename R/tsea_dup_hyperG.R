@@ -60,14 +60,12 @@
 #' @seealso \code{\link{feaResult}}, \code{\link{fea}}
 #' @examples 
 #' data(drugs)
-#' \dontrun{
 #' ## GO annotation system
-#' dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-#'                                   type = "GO", ont="MF", pvalueCutoff=0.05,
-#'                                   pAdjustMethod="BH", qvalueCutoff = 0.1, 
-#'                                   minGSSize = 10, maxGSSize = 500)
-#' result(dup_hyperG_res)
-#' }
+#' #dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+#' #                                 type = "GO", ont="MF", pvalueCutoff=0.05,
+#' #                                 pAdjustMethod="BH", qvalueCutoff = 0.1, 
+#' #                                 minGSSize = 10, maxGSSize = 500)
+#' #result(dup_hyperG_res)
 #' ## KEGG annotation system
 #' dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
 #'                                     type = "KEGG", pvalueCutoff=0.1, 

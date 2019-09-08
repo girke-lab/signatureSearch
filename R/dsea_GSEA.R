@@ -67,11 +67,11 @@
 #' dl <- dl[dl>0]
 #' dl <- dl[!duplicated(names(dl))]
 #' ## GO annotation system
-#' gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
-#'                       nPerm=1000, pvalueCutoff=0.2, minGSSize=5)
-#'                       result(gsea_res)
+#' #gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
+#' #                     nPerm=1000, pvalueCutoff=0.2, minGSSize=5)
+#' #                     result(gsea_res)
 #' ## KEGG annotation system
-#' gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
+#' gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=100, 
 #'                         pvalueCutoff=0.5, minGSSize=5)
 #' result(gsea_k_res)
 #' }

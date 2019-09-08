@@ -21,7 +21,7 @@
 ##' # The method supports duplicated elements in 'gene', 
 ##' # which should be gene SYMBOL ids for GO term enrichment.
 ##' gene <- c(rep("HDAC1",4), rep("HDAC3",2), "SOX8", "KLK14")
-##' library(org.Hs.eg.db)
+##' # library(org.Hs.eg.db)
 ##' data(targetList)
 ##' \dontrun{
 ##' ego <- enrichGO2(gene = gene, OrgDb=org.Hs.eg.db, ont="MF",

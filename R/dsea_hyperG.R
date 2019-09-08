@@ -53,7 +53,7 @@
 ##' ## KEGG annotation system
 ##' hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
 ##'                             pvalueCutoff = 1, qvalueCutoff = 1, 
-##'                             minGSSize = 10, maxGSSize = 2000)
+##'                             minGSSize = 10, maxGSSize = 500)
 ##' result(hyperG_k_res) 
 ##' @export
 dsea_hyperG <- function(drugs,

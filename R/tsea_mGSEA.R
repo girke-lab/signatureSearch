@@ -119,7 +119,7 @@
 #' #result(mgsea_res)
 #  ## KEGG annotation system
 #' mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
-#'                           nPerm=1000, pvalueCutoff=1, minGSSize=2)
+#'                           nPerm=100, pvalueCutoff=1, minGSSize=5)
 #' result(mgsea_k_res)
 #' @export
 tsea_mGSEA <- function(drugs, 

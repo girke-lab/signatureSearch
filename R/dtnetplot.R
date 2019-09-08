@@ -24,12 +24,12 @@
 ##' @importFrom scales seq_gradient_pal
 ##' @examples 
 ##' data(drugs)
-##' dtnetplot(drugs=drugs, set="GO:0032041", ont = "MF", 
+##' dtnetplot(drugs=drugs, set=c("HDAC1", "HDAC2", "HDAC3", "HDAC11", "FOX2"), 
 ##'     desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 ##' @export dtnetplot
 ##' 
 dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, ...) {
-  if(grepl("GO:\\d{7}",set)){
+  if(grepl("GO:\\d{7}",set)[1]){
     ont %<>% toupper
     if(is.null(ont) | !any(ont %in% c("BP","MF","CC"))) 
       stop("The 'set' is a GO term ID, please set 'ont' as one of 
@@ -38,8 +38,7 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, ...) {
     goAnno <- suppressMessages(ah[["AH69084"]])
     go_gene <- unique(goAnno$SYMBOL[goAnno$ONTOLOGYALL == ont & 
                                       goAnno$GOALL == set])
-  }
-  if(grepl("hsa\\d{5}",set)){
+  } else if(grepl("hsa\\d{5}",set)[1]){
     KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
     p2e <- get("PATHID2EXTID", envir=KEGG_DATA)
     go_gene_entrez = p2e[[set]]
@@ -48,6 +47,8 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, ...) {
     go_gene_map <- suppressMessages(
       select(db, keys = go_gene_entrez, keytype = "ENTREZID", columns="SYMBOL"))
     go_gene <- unique(go_gene_map$SYMBOL)
+  } else {
+      go_gene <- set
   }
   
   # get drug targets in DrugBank, STITCH, LINCS and calculate targets weight
