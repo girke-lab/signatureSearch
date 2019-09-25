@@ -44,13 +44,10 @@ category
 n_drug: number of drugs in each MOA category
 }
 \examples{
-db_path <- system.file("extdata", "sample_db.h5", package="signatureSearch")
-sample_db <- readHDF5chunk(db_path, colindex=seq_len(100))
-## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
-fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
-res_moa <- moa_conn(result(fisher))
+res_moa <- moa_conn(dplyr::tibble(
+                    pert=c("vorinostat", "trichostatin-a", "HC-toxin"), 
+                    cell=rep("SKB",3), 
+                    pval=c(0.001,0.02,0.05)))
 }
 \seealso{
 \code{\link{gessResult}}

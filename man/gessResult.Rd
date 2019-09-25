@@ -24,9 +24,8 @@ detail description, please consult the help file of the
 \code{\link{gessResult-class}}.
 }
 \examples{
-library(dplyr)
-gr <- gessResult(result=tibble(pert=letters[seq_len(10)], 
-                               val=seq_len(10)), 
+gr <- gessResult(result=dplyr::tibble(pert=letters[seq_len(10)], 
+                                      val=seq_len(10)), 
                  query=list(up=c("g1","g2"), down=c("g3","g4")),
                  gess_method="LINCS", refdb="path/to/lincs/db")
 }

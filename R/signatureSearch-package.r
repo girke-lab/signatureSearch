@@ -199,6 +199,7 @@ NULL
 #' @name cell_info
 #' @aliases cell_info
 #' @docType data
+#' @format A \code{tibble} object with 30 rows and 4 columns.
 #' @examples 
 #' # Load object
 #' data(cell_info)

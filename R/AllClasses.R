@@ -94,9 +94,8 @@ setClass("gessResult",
 #' @param refdb character(1), path to the reference database
 #' @return \code{gessResult} object
 #' @examples 
-#' library(dplyr)
-#' gr <- gessResult(result=tibble(pert=letters[seq_len(10)], 
-#'                                val=seq_len(10)), 
+#' gr <- gessResult(result=dplyr::tibble(pert=letters[seq_len(10)], 
+#'                                       val=seq_len(10)), 
 #'                  query=list(up=c("g1","g2"), down=c("g3","g4")),
 #'                  gess_method="LINCS", refdb="path/to/lincs/db")
 #' @export 
@@ -173,9 +172,8 @@ setClass("feaResult",
 #' for the drugs 
 #' @return \code{feaResult} object
 #' @examples
-#' library(dplyr)
-#' fr <- feaResult(result=tibble(id=letters[seq_len(10)], 
-#'                               val=seq_len(10)),
+#' fr <- feaResult(result=dplyr::tibble(id=letters[seq_len(10)], 
+#'                                      val=seq_len(10)),
 #'                 organism="human", ontology="MF", drugs=c("d1", "d2"), 
 #'                 targets=c("t1","t2"))
 #' @export 

@@ -61,13 +61,9 @@ are described in the help file of the \code{gessResult} object.
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")
-sample_db <- readHDF5chunk(db_path, colindex=1:100)
-## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-query = as.numeric(query_mat); names(query) = rownames(query_mat)
-upset <- head(names(query[order(-query)]), 150)
-downset <- tail(names(query[order(-query)]), 150)
-qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
+qsig_cmap <- qSig(query = list(
+                    upset=c("230", "5357", "2015", "2542", "1759"), 
+                    downset=c("22864", "9338", "54793", "10384", "27000")), 
                   gess_method = "CMAP", refdb = db_path)
 cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 result(cmap)

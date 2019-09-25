@@ -15,7 +15,7 @@
 ##' @author Yuzhu Duan
 ##' @examples 
 ##' data(targetList)
-##' library(org.Hs.eg.db)
+##' #library(org.Hs.eg.db)
 ##' #mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
 ##' #             pvalueCutoff = 1)
 ##' #head(mg)
@@ -79,7 +79,7 @@ mabsGO <- function(geneList,
 ##' @examples 
 ##' # Gene Entrez id should be used for KEGG enrichment
 ##' data(geneList, package="DOSE")
-##' geneList[100:length(geneList)]=0
+##' #geneList[100:length(geneList)]=0
 ##' #mk <- mabsKEGG(geneList=geneList, pvalueCutoff = 1)
 ##' #head(mk)
 ##' @export

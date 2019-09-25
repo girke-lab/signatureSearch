@@ -29,9 +29,8 @@ detail description, please consult the help file of the
 \code{\link{feaResult-class}}.
 }
 \examples{
-library(dplyr)
-fr <- feaResult(result=tibble(id=letters[seq_len(10)], 
-                              val=seq_len(10)),
+fr <- feaResult(result=dplyr::tibble(id=letters[seq_len(10)], 
+                                     val=seq_len(10)),
                 organism="human", ontology="MF", drugs=c("d1", "d2"), 
                 targets=c("t1","t2"))
 }

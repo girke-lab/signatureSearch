@@ -9,8 +9,8 @@
 #' @slot cid a character vector of column ids
 #' @slot rdesc a \code{data.frame} of row descriptors
 #' @slot rdesc a \code{data.frame} of column descriptors
-#' @slot src a character indicating the source (usually file path) of the data
-#' 
+#' @slot src a character indicating the source (usually file path) 
+#' of the data
 #' @description The GCT class serves to represent annotated
 #'   matrices. The \code{mat} slot contains the numeric matrix data and the
 #'   \code{rdesc} and \code{cdesc} slots contain data frames with

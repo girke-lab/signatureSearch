@@ -33,7 +33,7 @@
 ##'                       "pvalue"=c(0.0001, 0.002, 0.004, 0.01, 0.05))
 ##' method2 <- data.frame("ID"=paste0("GO:", c(1,3,5,4,6)), 
 ##'                       "Description"=paste0("desc", c(1,3,5,4,6)),
-##'                       "pvalue"=c(0.0003, 0.0007, 0.003, 0.006, 0.04))                      
+##'                       "pvalue"=c(0.0003, 0.0007, 0.003, 0.006, 0.04))
 ##' table_list <- list("method1" = method1, "method2"=method2) 
 ##' comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ##' @export

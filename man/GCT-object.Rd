@@ -22,7 +22,8 @@ The GCT class serves to represent annotated
 
 \item{\code{rdesc}}{a \code{data.frame} of column descriptors}
 
-\item{\code{src}}{a character indicating the source (usually file path) of the data}
+\item{\code{src}}{a character indicating the source (usually file path) 
+of the data}
 }}
 
 \seealso{

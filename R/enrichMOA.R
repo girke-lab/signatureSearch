@@ -14,8 +14,8 @@
 ##' @seealso \code{\link{feaResult-class}}
 ##' @examples 
 ##' data(geneList, package="DOSE")
-##' emoa <- enrichMOA(gene = names(geneList)[seq(3)])
-##' head(emoa)
+##' #emoa <- enrichMOA(gene = names(geneList)[seq(3)])
+##' #head(emoa)
 ##' @export
 enrichMOA <- function(gene,
                       pvalueCutoff=0.05,

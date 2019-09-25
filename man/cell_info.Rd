@@ -4,7 +4,7 @@
 \name{cell_info}
 \alias{cell_info}
 \title{Cell Type Information}
-\format{An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 30 rows and 4 columns.}
+\format{A \code{tibble} object with 30 rows and 4 columns.}
 \usage{
 cell_info
 }

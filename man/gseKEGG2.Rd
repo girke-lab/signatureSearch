@@ -44,7 +44,7 @@ gene test sets with large numbers of zeros.
 \examples{
 # Gene Entrez id should be used for KEGG enrichment
 data(geneList, package="DOSE")
-geneList[100:length(geneList)]=0
+#geneList[100:length(geneList)]=0
 #gsekk <- gseKEGG2(geneList=geneList, pvalueCutoff = 1)
 #head(gsekk)
 }
