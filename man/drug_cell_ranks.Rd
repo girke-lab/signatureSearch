@@ -20,17 +20,11 @@ includes in the last columns summary ranking statistics across all cell
 types, such as min, mean and max values.
 }
 \examples{
-db_path <- system.file("extdata", "sample_db.h5", 
-                       package = "signatureSearch")
-library(signatureSearchData)
-sample_db <- readHDF5chunk(db_path, colindex=1:100)
-## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-query = as.numeric(query_mat); names(query) = rownames(query_mat)
-upset <- head(names(query[order(-query)]), 150)
-downset <- tail(names(query[order(-query)]), 150)
-qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
-                  gess_method = "CMAP", refdb = db_path)
-cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
-df <- drug_cell_ranks(cmap)
+gr <- gessResult(result=dplyr::tibble(pert=c("p1", "p1", "p2", "p3"),
+                                      cell=c("MCF7", "SKB", "MCF7", "SKB"),
+                                      type=rep("trt_cp", 4),
+                                      NCS=c(1.2, 1, 0.9, 0.6)),
+                 query=list(up="a", down="b"), 
+                 gess_method="LINCS", refdb="path/to/refdb")
+df <- drug_cell_ranks(gr)
 }

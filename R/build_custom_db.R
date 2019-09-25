@@ -27,7 +27,6 @@
 #' @return HDF5 file
 #' @importFrom readr read_tsv
 #' @importFrom stats rnorm
-#' @importFrom signatureSearchData matrix2h5
 #' @examples 
 #' # Generate a data.frame 
 #' df <- data.frame(sirolimus__MCF7__trt_cp=rnorm(1000),
@@ -36,7 +35,6 @@
 #' rownames(df) = names(targetList)
 #' h5file = tempfile(fileext=".h5")
 #' build_custom_db(df, h5file)
-#' library(signatureSearchData)
 #' tmp <- readHDF5chunk(h5file, colindex=1:2)
 #' @export
 

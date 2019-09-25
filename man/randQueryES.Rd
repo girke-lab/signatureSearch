@@ -23,7 +23,6 @@ used by the LINCS GESS method for computing nominal P-values.
 }
 \examples{
 db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")
-library(signatureSearchData)
 randQueryES(h5file=db_path, N_queries=5, dest="ES_NULL.txt")
 unlink("ES_NULL.txt")
 }

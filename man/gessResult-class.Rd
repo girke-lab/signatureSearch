@@ -3,7 +3,6 @@
 \docType{class}
 \name{gessResult-class}
 \alias{gessResult-class}
-\alias{gessResult}
 \title{gessResult object}
 \description{
 The \code{gessResult} object organizes Gene Expression Signature Search 

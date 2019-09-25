@@ -6,7 +6,7 @@
 \usage{
 tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000,
   exponent = 1, pAdjustMethod = "BH", pvalueCutoff = 0.05,
-  minGSSize = 2, maxGSSize = 500, verbose = FALSE, dt_anno = "all")
+  minGSSize = 5, maxGSSize = 500, verbose = FALSE, dt_anno = "all")
 }
 \arguments{
 \item{drugs}{character vector containing drug identifiers used for functional
@@ -132,13 +132,13 @@ Additional columns are described under the 'result' slot of the
 }
 
 \examples{
-data(drugs)
+data(drugs10)
 ## GO annotation system
-#mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
+#mgsea_res <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
 #                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
 #result(mgsea_res)
-mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
-                          nPerm=1000, pvalueCutoff=1, minGSSize=2)
+mgsea_k_res <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
+                          nPerm=100, pvalueCutoff=1, minGSSize=5)
 result(mgsea_k_res)
 }
 \references{

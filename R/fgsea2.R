@@ -66,6 +66,7 @@ calcGseaStat2 <- function(stats, selectedStats, gseaParam=1,
 #' @importFrom data.table data.table
 #' @importFrom data.table rbindlist
 #' @importFrom data.table :=
+#' @importFrom utils globalVariables
  
 # Runs preranked gene set enrichment analysis.
 fgsea2 <- function(pathways, stats, nperm,
@@ -73,7 +74,7 @@ fgsea2 <- function(pathways, stats, nperm,
                   nproc=1,
                   gseaParam=1,
                   BPPARAM=NULL) {
-#     message("Using fgsea2 function to run GSEA, which is adapted to accepting
+# message("Using fgsea2 function to run GSEA, which is adapted to accepting
 # 'stats' with large portion of zeros.")
     if (is.null(BPPARAM)) {
         if (nproc != 0) {
@@ -182,14 +183,6 @@ fgsea2 <- function(pathways, stats, nperm,
 
     counts <- rbindlist(counts)
 
-    # Getting rid of check NOTEs
-    leEs=leZero=geEs=geZero=leZeroSum=geZeroSum=NULL
-    pathway=padj=pval=ES=NES=geZeroMean=leZeroMean=NULL
-    nMoreExtreme=nGeEs=nLeEs=size=NULL
-    leadingEdge=NULL
-    .="damn notes"
-
-
     pvals <- counts[,
       list(pval= sum(geEs) / (sum(geZero) + sum(leZero)),
          # edited by YD. set percent of permutations greater than original 
@@ -229,3 +222,10 @@ fgsea2 <- function(pathways, stats, nperm,
     pvals <- pvals[order(pval),]
     pvals
 }
+
+# Get rid of check NOTEs
+globalVariables(c(".", "leEs", "leZero", "geEs", "geZero", "leZeroSum", 
+                  "geZeroSum", "pathway", "padj", "pval", "ES", "NES",
+                  "geZeroMean", "leZeroMean", "nMoreExtreme", "nGeEs",
+                  "nLeEs", "size", "leadingEdge"), 
+                package="signatureSearch")

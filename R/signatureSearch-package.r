@@ -158,20 +158,21 @@
 NULL
 
 
-#' Drug names used in examples
+#' Drug Names Used in Examples
 #' 
 #' A character vector containing the names of the top 10 drugs in the GESS 
-#' result from the gess_lincs method used in the vignette of signatureSearch.
+#' result from the \code{\link{gess_lincs}} method used in the vignette of 
+#' signatureSearch.
 #'
-#' @name drugs
-#' @aliases drugs
+#' @name drugs10
+#' @aliases drugs10
 #' @docType data
 #' @examples
 #' # Load drugs object
-#' data(drugs)
-#' drugs
+#' data(drugs10)
+#' drugs10
 #' @keywords datasets
-"drugs"
+"drugs10"
 
 #' Target Sample Data Set
 #' 
@@ -189,3 +190,18 @@ NULL
 #' targetList
 #' @keywords datasets
 "targetList"
+
+#' Cell Type Information
+#' 
+#' It contains cell type (tumor or normal), primary site and subtype 
+#' annotations of cells in LINCS database. 
+#'
+#' @name cell_info
+#' @aliases cell_info
+#' @docType data
+#' @examples 
+#' # Load object
+#' data(cell_info)
+#' head(cell_info)
+#' @keywords datasets
+"cell_info"

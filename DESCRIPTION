@@ -1,20 +1,22 @@
 Package: signatureSearch
-Title: Discovering novel modes of action of bioactive compounds
-Version: 0.99.10
-Date: 2019-03-22
+Title: Environment for Gene Expression Searching Combined with Functional 
+       Enrichment Analysis
+Version: 0.99.11
 Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
            role = c("cre", "aut")),
            person("Thomas", "Girke", email = "thomas.girke@ucr.edu", 
            role = "aut"))
-Description: This package can be used to do Gene Expression Signature Search 
-            (GESS) and downstream Functional Enrichment Analysis (FEA).
-Depends: R(>= 3.6.0), SummarizedExperiment, Rcpp
-Imports: AnnotationDbi, ggplot2, GO.db, GOSemSim (>= 2.0.0), data.table, 
+Description: This package implements algorithms and data structures for 
+             performing gene expression signature (GES) searches, and 
+             subsequently interpreting the results functionally with 
+             specialized enrichment methods.
+Depends: R(>= 3.6.0), Rcpp, SummarizedExperiment
+Imports: AnnotationDbi, ggplot2, GOSemSim (>= 2.0.0), data.table, 
          magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats, 
          utils, org.Hs.eg.db, reshape2, visNetwork, BiocParallel, fastmatch, 
-         Biobase, clusterProfiler, readr, gCMAP, DOSE, rhdf5, GSEABase,
-         signatureSearchData, AnnotationHub
-Suggests: KEGG.db, knitr, testthat, rmarkdown, BiocStyle
+         Biobase, clusterProfiler, readr, gCMAP, DOSE, rhdf5, GSEABase, 
+         AnnotationHub 
+Suggests: knitr, testthat, rmarkdown, BiocStyle
 License: Artistic-2.0
 SystemRequirements: C++11
 LinkingTo: Rcpp
@@ -22,7 +24,6 @@ Encoding: UTF-8
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2018-08-24 18:22:55 UTC; yduan004
 biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment, 
            Sequencing, Coverage, DifferentialExpression
 URL: https://github.com/yduan004/signatureSearch/

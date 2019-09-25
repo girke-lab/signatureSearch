@@ -287,7 +287,7 @@ database.
 ```{r db_sig, eval=TRUE}
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 # Load sample_db as `SummarizedExperiment` object
-sample_db <- signatureSearchData::readHDF5chunk(db_path, colindex=1:100)
+sample_db <- readHDF5chunk(db_path, colindex=1:100)
 # get "vorinostat__SKB__trt_cp" signature drawn from toy database
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
@@ -1064,7 +1064,7 @@ cellular networks and pathways they affect.
 
 Network for *NAD-dependent histone deacetylase activity* (GO:0032041)
 ```{r dtnet_go_0032041, eval=TRUE}
-dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF", 
+dtnetplot(drugs = drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF", 
           desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 ```
 
@@ -1079,7 +1079,7 @@ connections to other nodes. </font>
 
 Network for *NF-kappaB binding* (GO:0051059)
 ```{r dtnet_go_0051059, eval=TRUE}
-dtnetplot(drugs = get_drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF", 
+dtnetplot(drugs = drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF", 
           desc="NF-kappaB binding")
 ```
 
@@ -1092,7 +1092,7 @@ The same drug-target network plots can be rendered for KEGG pathways as follows.
 
 Network for KEGG pathway: *Alcoholism* (hsa05034)
 ```{r dtnet_kegg_05034, eval=TRUE}
-dtnetplot(drugs = get_drugs(dup_hyperG_k_res), set = "hsa05034", 
+dtnetplot(drugs = drugs(dup_hyperG_k_res), set = "hsa05034", 
           desc="Alcoholism")
 ```
 
@@ -1124,7 +1124,7 @@ Additional details on this topic are provided in the vignette of the
 `signatureSearchData` package. 
 
 ```{r gen_toy_db, eval=FALSE}
-library(signatureSearchData); library(rhdf5)
+library(rhdf5)
 ah <- AnnotationHub::AnnotationHub()
 lincs <- ah[["AH69092"]]
 hdacs <- c("vorinostat","trichostatin-a","pyroxamide","HC-toxin","rhamnetin")

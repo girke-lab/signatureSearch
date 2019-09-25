@@ -58,7 +58,6 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' library(signatureSearchData)
 #' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
@@ -70,23 +69,26 @@
 gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
-  if(qSig@gess_method != "gCMAP"){
+  if(gm(qSig) != "gCMAP"){
     stop(paste("The 'gess_method' slot of 'qSig' should be 'gCMAP'",
                "if using 'gess_gcmap' function"))
   }
-  query <- qSig@query
-  db_path <- determine_refdb(qSig@refdb)
+  if(!is.null(lower) && !is.null(higher) && higher==lower) {
+    stop("Please specify two different cutoffs as 'higher' and 'lower'.")
+  }
+  query <- qr(qSig)
+  db_path <- determine_refdb(refdb(qSig))
   mat_dim <- getH5dim(db_path)
   mat_ncol <- mat_dim[2]
   ceil <- ceiling(mat_ncol/chunk_size)
-  resultDF <- data.frame()
-  for(i in seq_len(ceil)){
+  cs_raw <- function(i){
     mat <- readHDF5mat(db_path,
                     colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
     cmap <- gCMAP::induceCMAPCollection(mat, higher=higher, lower=lower)
     c <- connectivity_score_raw(experiment=as.matrix(query), query=cmap)
-    resultDF <- rbind(resultDF, data.frame(c))
+    return(data.frame(c))
   }
+  resultDF <- do.call(rbind, lapply(seq_len(ceil), cs_raw))
   ## Apply scaling of scores to full data set
   resultDF[,"effect"] <-.connnectivity_scale(resultDF$effect)
   resultDF <- resultDF[order(abs(resultDF$effect), decreasing=TRUE), ]
@@ -97,9 +99,9 @@ gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
   res <- left_join(resultDF, target, by=c("pert"="drug_name"))
   
   x <- gessResult(result = as_tibble(res),
-                  query = qSig@query,
-                  gess_method = qSig@gess_method,
-                  refdb = qSig@refdb)
+                  query = qr(qSig),
+                  gess_method = gm(qSig),
+                  refdb = refdb(qSig))
   return(x)
 }
 

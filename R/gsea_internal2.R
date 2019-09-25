@@ -80,12 +80,9 @@ GSEA_fgsea2 <- function(geneList,
   if (verbose)
     message("done...")
   
-  new("feaResult",
+  feaResult(
       result    = as_tibble(res),
-      #refSets   = geneSets,
-      targets   = geneList
-      #universe  = names(geneList)
-  )
+      targets   = geneList)
 }
 
 ## Generic function for gene set enrichment analysis.
@@ -114,6 +111,5 @@ GSEA_internal2 <- function(geneList,
                      USER_DATA         = USER_DATA)
   if(is.null(res))
     return(NULL)
-  res@organism <- "UNKNOWN"
   return(res)
 }

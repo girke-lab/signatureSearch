@@ -23,35 +23,36 @@
 ##' the chosen column name needs to be present in each tibble of 'table_list'.
 ##' @param Nshow integer defining the number of the top functional categories 
 ##' to display in the plot after re-ranking them across FEA methods
+##' @param ... Other arguments passed on to \code{\link[ggplot2]{geom_point}}
 ##' @importFrom ggplot2 aes_
 ##' @importFrom DOSE theme_dose
 ##' @return ggplot2 graphics object
 ##' @examples 
-##' data(drugs)
-##' \dontrun{
-##' table_list <- list("dup_hyperG" = result(dup_hyperG_res), 
-##'                   "mGSEA" = result(mgsea_res), 
-##'                   "mabs" = result(mabs_res), 
-##'                   "hyperG" = result(hyperG_res), 
-##'                   "GSEA" = result(gsea_res))
+##' method1 <- data.frame("ID"=paste0("GO:", 1:5), 
+##'                       "Description"=paste0("desc", 1:5),
+##'                       "pvalue"=c(0.0001, 0.002, 0.004, 0.01, 0.05))
+##' method2 <- data.frame("ID"=paste0("GO:", c(1,3,5,4,6)), 
+##'                       "Description"=paste0("desc", c(1,3,5,4,6)),
+##'                       "pvalue"=c(0.0003, 0.0007, 0.003, 0.006, 0.04))                      
+##' table_list <- list("method1" = method1, "method2"=method2) 
 ##' comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
-##' }
 ##' @export
 
-comp_fea_res <- function(table_list, rank_stat="pvalue", Nshow=20){
+comp_fea_res <- function(table_list, rank_stat="pvalue", Nshow=20, ...){
     if(is.null(names(table_list))){
         stop(paste('The "table_list" should be a list with names,', 
              'which could be names of the enrichment methods'))
     }
-    df <- NULL
-    for(i in seq_along(table_list)){
+    newtb <- function(i){
         tb <- table_list[[i]]
         tb_order <- tb[order(tb[[rank_stat]]),]
         tb2 <- data.frame(tb_order[, c("Description", rank_stat)], 
-                             method=names(table_list)[i], 
-                             rank=seq_len(nrow(tb_order)))
-        df <- rbind(df, tb2)
+                          method=names(table_list)[i], 
+                          rank=seq_len(nrow(tb_order)))
+        return(tb2)
     }
+    df <- do.call(rbind, lapply(seq_along(table_list), newtb))
+    
     # re-ranking according to mean ranks and adjusted for number of support
     # methods (*5/number of support methods)
     cat_ranks_list <- split(df$rank, df$Description) 
@@ -64,7 +65,7 @@ comp_fea_res <- function(table_list, rank_stat="pvalue", Nshow=20){
     df2$Description <- factor(df2$Description, levels = rev(cat_top), 
                             ordered = TRUE)
     p <- ggplot(df2, aes_(x = ~method, y = ~Description)) +
-    geom_point(size=4) + aes_string(color=rank_stat) + 
+    geom_point(size=4, ...) + aes_string(color=rank_stat) + 
     scale_colour_gradient(low="red", high="blue") +
     theme_dose(font.size=12) +
     ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1))

@@ -77,7 +77,6 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' library(signatureSearchData)
 #' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
@@ -92,13 +91,13 @@
 gess_lincs <- function(qSig, tau=FALSE, sortby="NCS", chunk_size=5000){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
-  if(qSig@gess_method != "LINCS"){
+  if(gm(qSig) != "LINCS"){
     stop(paste("The 'gess_method' slot of 'qSig' should be 'LINCS'",
                "if using 'gess_lincs' function"))
   }
-  upset <- qSig@query[[1]]
-  downset <- qSig@query[[2]]
-  db_path <- determine_refdb(qSig@refdb)
+  upset <- qr(qSig)[[1]]
+  downset <- qr(qSig)[[2]]
+  db_path <- determine_refdb(refdb(qSig))
   res <- lincsEnrich(db_path, upset=upset, downset=downset, 
                      tau=tau, sortby=sortby, chunk_size=chunk_size)
   # add target column
@@ -106,9 +105,9 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS", chunk_size=5000){
   res <- left_join(res, target, by=c("pert"="drug_name"))
   
   x <- gessResult(result = as_tibble(res),
-                  query = qSig@query,
-                  gess_method = qSig@gess_method,
-                  refdb = qSig@refdb)
+                  query = qr(qSig),
+                  gess_method = gm(qSig),
+                  refdb = refdb(qSig))
   return(x)
 }
 
@@ -316,7 +315,6 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 #' @importFrom utils write.table
 #' @examples 
 #' db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")
-#' library(signatureSearchData)
 #' randQueryES(h5file=db_path, N_queries=5, dest="ES_NULL.txt")
 #' unlink("ES_NULL.txt")
 #' @seealso \code{\link{gess_lincs}}

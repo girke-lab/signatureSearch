@@ -1,10 +1,6 @@
-##'
 ##' It builds a `qSig` object to store the query signature, reference database
 ##' and GESS method used for GESS methods
-##' @docType methods
-##' @name qSig
-##' @rdname qSig-methods
-##' @aliases qSig,list,character,character-method
+##' @title Helper Function to Construct a \code{\link{qSig}} Object
 ##' @param query If 'gess_method' is 'CMAP' or 'LINCS', it should be a list with
 ##' two character vectors named \code{upset} and \code{downset} for up- and
 ##' down-regulated gene labels, respectively. The labels should be gene Entrez
@@ -48,14 +44,12 @@
 ##' For details on this, please consult the vignette of the 
 ##' \pkg{signatureSearchData} package.
 ##' @return \code{qSig} object
-##' @importFrom rhdf5 h5read
 ##' @seealso \code{\link{build_custom_db}}, 
 ##' \code{\link[signatureSearchData]{signatureSearchData}}
 ##' @examples 
 ##' db_path <- system.file("extdata", "sample_db.h5", 
-##' package = "signatureSearch")
+##'                        package = "signatureSearch")
 ##' # Load sample_db as `SummarizedExperiment` object
-##' library(signatureSearchData)
 ##' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ##' # get "vorinostat__SKB__trt_cp" signature drawn from sample database
 ##' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
@@ -65,117 +59,111 @@
 ##' qsig_lincs <- qSig(query=list(upset=upset, downset=downset), 
 ##'                    gess_method="LINCS", refdb=db_path)
 ##' qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
-##' @exportMethod qSig
-setMethod("qSig",
-  signature(query="list", gess_method="character", 
-            refdb="character"),
-  function(query, gess_method, refdb){
+##' @export
+qSig <- function(query, gess_method, refdb){
     ## Validity check of refdb
     if(!any(refdb %in% c("cmap","cmap_expr","lincs","lincs_expr"))){
         ref_val <- h5read(refdb, "assay", c(1,1))
         if(!is.numeric(ref_val)) 
             stop("The value stored in 'refdb' should be numeric!")
     }
-    if(any(gess_method %in% c("CMAP", "LINCS", "Fisher"))){
-      upset = query[[1]]
-      downset = query[[2]]
-      refdb = determine_refdb(refdb)
-      gid_db <- h5read(refdb, "rownames", drop=TRUE)
-      ## Validity checks of upset and downset
-      if(all(c(!is.character(upset), !is.null(upset)))) 
-        stop("upset of 'qsig' slot needs to be ID character vector or NULL")
-      if(all(c(!is.character(downset), !is.null(downset)))) 
-        stop("downset of 'qsig' slot needs to be ID character vector or NULL")
-      if(is.null(upset) & is.null(downset)) 
-        stop("both or one of the upset and downset in 'qsig' slot need to be 
+    if(is(query, "list")){
+      if(any(gess_method %in% c("CMAP", "LINCS", "Fisher"))){
+        upset = query[[1]]
+        downset = query[[2]]
+        refdb = determine_refdb(refdb)
+        gid_db <- h5read(refdb, "rownames", drop=TRUE)
+        ## Validity checks of upset and downset
+        if(all(c(!is.character(upset), !is.null(upset)))) 
+          stop("upset of 'qsig' slot needs to be ID character vector or NULL")
+        if(all(c(!is.character(downset), !is.null(downset)))) 
+          stop("downset of 'qsig' slot needs to be ID character vector or NULL")
+        if(is.null(upset) & is.null(downset)) 
+          stop("both or one of the upset and downset in 'qsig' slot need to be 
              assigned query entrez IDs as character vector")
-      
-      ## Remove entries in up/down set not present in reference database
-      if(!is.null(upset)){
-        message(paste(sum(upset %in% gid_db), "/", length(upset), 
+        ## Remove entries in up/down set not present in reference database
+        if(!is.null(upset)){
+          message(paste(sum(upset %in% gid_db), "/", length(upset), 
                   "genes in up set share identifiers with reference database"))
-        upset <- upset[upset %in% gid_db]
-        if(length(upset)==0) 
-          stop("upset shares zero idenifiers with reference database, 
+          upset <- upset[upset %in% gid_db]
+          if(length(upset)==0) 
+            stop("upset shares zero idenifiers with reference database, 
                please set upset of 'qsig' slot as NULL")
-      }
-      if(!is.null(downset)){
-        message(paste(sum(downset %in% gid_db),"/",length(downset), 
+        }
+        if(!is.null(downset)){
+          message(paste(sum(downset %in% gid_db),"/",length(downset), 
                 "genes in down set share identifiers with reference database"))
-        downset <- downset[downset %in% gid_db]
-        if(length(downset)==0) 
-          stop("downset shares zero idenifiers with reference database, 
+          downset <- downset[downset %in% gid_db]
+          if(length(downset)==0) 
+            stop("downset shares zero idenifiers with reference database, 
                please set downset of 'qsig' slot as NULL")
-      }
-      query[[1]] = upset
-      query[[2]] = downset
-    } else
-      stop("'gess_method' slot must be one of 'CMAP', 'LINCS', or 'Fisher' if 
-'qsig' is a list of two elements representing up and down regulated gene sets!")
-    new("qSig", query=query, gess_method=gess_method, refdb=refdb)
-  }
-)
-
-##' qSig method
-##'
-##' @docType methods
-##' @name qSig
-##' @rdname qSig-methods
-##' @aliases qSig,matrix,character,character-method
-##' @exportMethod qSig
-setMethod("qSig",
-  signature(query="matrix", gess_method="character", refdb="character"),
-  function(query, gess_method, refdb){
-    ## Validity check of refdb
-    if(!any(refdb %in% c("cmap","cmap_expr","lincs","lincs_expr"))){
-      ref_val <- h5read(refdb, "assay", c(1,1))
-      if(!is.numeric(ref_val)) 
-        stop("The value stored in 'refdb' should be numeric!")
-    }
-    if(any(gess_method %in% c("gCMAP", "Fisher", "Cor"))){
-      experiment = query
-      refdb = determine_refdb(refdb)
-      gid_db <- h5read(refdb, "rownames", drop=TRUE)
-      if(! is.numeric(experiment[1,1])) 
-        stop("The 'qsig' should be a numeric matrix 
-             representing genome-wide signature from a treatment")
-      if(is.null(rownames(experiment))) 
-        stop("The gene labels should be stored in the row name slot of the 
+        }
+        query[[1]] = upset
+        query[[2]] = downset
+      } else {stop("'gess_method' slot must be one of 'CMAP', 'LINCS', or 
+      'Fisher' if 'qsig' is a list of up and down gene labels!")}
+      new("qSig", query=query, gess_method=gess_method, refdb=refdb)
+    } else if (is(query, "matrix")){
+      if(any(gess_method %in% c("gCMAP", "Fisher", "Cor"))){
+        refdb = determine_refdb(refdb)
+        gid_db <- h5read(refdb, "rownames", drop=TRUE)
+        if(! is.numeric(query[1,1]) | ncol(query) != 1) 
+          stop("The 'query' should be a numeric matrix with one column!")
+        if(is.null(rownames(query))) 
+          stop("The gene labels should be stored in the row name slot of the 
              matrix!")
-      if(sum(rownames(experiment) %in% gid_db)==0) 
-        stop("The gene labels in the query matrix share 0 identifiers with 
+        if(sum(rownames(query) %in% gid_db)==0) 
+          stop("The gene labels in the query matrix share 0 identifiers with 
              reference database!")
-    } else
-      stop("'gess_method' slot must be one of 'gCMAP', 'Fisher' or 'Cor' 
+        query <- query[rownames(query) %in% gid_db, 1, drop=FALSE]
+      } else
+        stop("'gess_method' slot must be one of 'gCMAP', 'Fisher' or 'Cor' 
   if 'qsig' is a numeric matrix with gene labels in the row name slot!")
-    new("qSig", query=query, gess_method=gess_method, refdb=refdb)
-  }
-)
+      new("qSig", query=query, gess_method=gess_method, refdb=refdb)
+    } else {
+   stop("'query' needs to be either a list or a matrix with one column") 
+    }
+}
 
 ##' @name show
 ##' @docType methods
 ##' @rdname show-methods
 ##' @aliases show,qSig-method
 ##' @exportMethod show
-setMethod("show", signature(object="qSig"),
+setMethod("show", c(object="qSig"),
     function (object) {
-      cat("#\n# qSig object used for GESS analysis \n#\n")
-      if(is(object@query, "list")){
-        cat("@query", "\t", "up gene set", 
-            paste0("(", length(object@query[[1]]), "):"), 
-            "\t", object@query[[1]][seq_len(10)], "... \n")
-        cat("     ", "\t", "down gene set", 
-            paste0("(", length(object@query[[2]]), "):"), 
-            "\t", object@query[[2]][seq_len(10)], "... \n")
-      }
-      if(is(object@query, "matrix")){
-        cat("@query\n")
-        mat=object@query
-        print(head(mat,10))
-        cat("# ... with", nrow(mat)-10, "more rows\n")
-      }
-      cat("\n@gess_method", "\t", object@gess_method, "\n")
-      cat("\n@refdb", "\t")
-      cat(object@refdb, "\n")
+        cat("#\n# qSig object used for GESS analysis \n#\n")
+        q <- qr(object)
+        if(is(q, "list")){
+            if(length(q[[1]])>10){
+                cat("@query", "\t", "up gene set", 
+                    paste0("(", length(q[[1]]), "):"), 
+                    "\t", q[[1]][seq_len(10)], "... \n")
+            } else {
+                cat("@query", "\t", "up gene set", 
+                    paste0("(", length(q[[1]]), "):"), 
+                    "\t", q[[1]], "\n")
+            }
+            if(length(q[[2]])>10){
+                cat("     ", "\t", "down gene set", 
+                    paste0("(", length(q[[2]]), "):"), 
+                    "\t", q[[2]][seq_len(10)], "... \n")
+            } else {
+                cat("     ", "\t", "down gene set", 
+                    paste0("(", length(q[[2]]), "):"), 
+                    "\t", q[[2]], "\n")
+            }
+        }
+        if(is(q, "matrix")){
+            cat("@query\n")
+            if(nrow(q)>10){
+                print(head(q,10))
+                cat("# ... with", nrow(q)-10, "more rows\n")
+            } else {
+                print(q)
+            }
+        }
+        cat("\n@gess_method", "\t", gm(object), "\n")
+        cat("\n@refdb", "\t", refdb(object), "\n")
     })
 

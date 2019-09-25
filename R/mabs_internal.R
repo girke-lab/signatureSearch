@@ -66,11 +66,10 @@ mabs_internal <- function(geneList,
     )
 
     res <- res[!is.na(res$pvalue),]
-    res <- res[ res$pvalue <= pvalueCutoff, ]
-    res <- res[ res$p.adjust <= pvalueCutoff, ]
+    res <- res[res$pvalue <= pvalueCutoff, ]
+    res <- res[res$p.adjust <= pvalueCutoff, ]
     # order by mabs
-    idx <- order(-res$mabs)
-    res <- res[idx, ]
+    res <- res[order(-res$mabs), ]
     row.names(res) <- res$ID
     if (nrow(res) == 0) {
         message("no term enriched under specific pvalueCutoff...")
@@ -78,14 +77,10 @@ mabs_internal <- function(geneList,
     }
     #message("done...")
 
-    res = new("feaResult",
-        result     = as_tibble(res),
-        #refSets   = geneSets,
-        targets   = geneList
-        #universe = names(geneList)
-        )
-    res@organism <- "UNKNOWN"
-    return(res)
+    feaResult(
+        result   = as_tibble(res),
+        targets  = geneList,
+        organism = "UNKNOWN")
 }
 
 mabs_score <- function(geneList, geneSet) {

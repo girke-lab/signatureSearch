@@ -40,7 +40,7 @@ enrichMOA <- function(gene,
     
     if (is.null(res))
         return(res)
-    res@organism <- "Homo sapiens"
-    res@ontology <- "MOA"
+    og(res) <- "Homo sapiens"
+    ont(res) <- "MOA"
     return(res)
 }

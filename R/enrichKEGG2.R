@@ -48,7 +48,7 @@ enrichKEGG2 <- function(gene,
                            USER_DATA = KEGG_DATA)
   if (is.null(res))
     return(res)
-  res@ontology <- "KEGG"
-  res@organism <- species
+  ont(res) <- "KEGG"
+  og(res) <- species
   return(res)
 }

@@ -1,15 +1,16 @@
-##' @name show
-##' @docType methods
-##' @rdname show-methods
-##' @aliases show,feaResult-method
-##' @importFrom utils str
-##' @examples
-##' data(drugs)
-##' # dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-##' #                                 type = "GO", ont="MF")
-##' # dup_hyperG_res 
+#' @name show
+#' @docType methods
+#' @rdname show-methods
+#' @aliases show,feaResult-method
+#' @importFrom utils str
+#' @examples
+#' fr <- feaResult(result=dplyr::tibble(id=letters[seq_len(10)], 
+#'                                      val=seq_len(10)),
+#'                 organism="human", ontology="MF", drugs=c("d1", "d2"), 
+#'                 targets=c("t1","t2"))
+#' fr 
 
-setMethod("show", signature(object="feaResult"),
+setMethod("show", c(object="feaResult"),
       function (object){
           cat("#\n# Functional Enrichment Analysis \n#\n")
           cat("#...@organism", "\t", object@organism, "\n")
@@ -24,38 +25,51 @@ setMethod("show", signature(object="feaResult"),
           str(object@result)
           })
 
-##' @name result
-##' @docType methods
-##' @rdname result-methods
-##' @method result feaResult
-##' @aliases result,feaResult-method
-##' @examples
-##' data(drugs)
-##' #dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-##' #                                 type = "GO", ont="MF")
-##' #result(dup_hyperG_res) 
+#' @name result
+#' @docType methods
+#' @rdname result-methods
+#' @method result feaResult
+#' @aliases result,feaResult-method
+#' @examples
+#' fr <- feaResult(result=dplyr::tibble(id=letters[seq_len(10)], 
+#'                                      val=seq_len(10)),
+#'                 organism="human", ontology="MF", drugs=c("d1", "d2"), 
+#'                 targets=c("t1","t2"))
+#' result(fr)
 
-setMethod("result", signature(x="feaResult"),
+setMethod("result", c(x="feaResult"),
           function(x) x@result)
 
-##' @description The \code{get_drugs} generic extracts the drug names/ids stored
-##' in the \code{drugs} slot of an feaResult object.
-##' @name get_drugs
-##' @docType methods
-##' @rdname get_drugs-methods
-##' @method get_drugs feaResult
-##' @aliases get_drugs,feaResult-method
-##' @aliases get_drugs-method
-##' @param x feaResult object
-##' @return character vector
-##' @examples 
-##' data(drugs)
-##' # dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-##' #                                   type = "GO", ont="MF")
-##' # get_drugs(dup_hyperG_res)
+#' @description The \code{drugs} generic extracts or assign the drug names/ids 
+#' stored in the \code{drugs} slot of an feaResult object.
+#' @name drugs
+#' @docType methods
+#' @rdname drugs-methods
+#' @method drugs feaResult
+#' @aliases drugs,feaResult-method
+#' @param x feaResult object
+#' @return character vector
+#' @examples 
+#' fr <- feaResult(result=dplyr::tibble(id=letters[seq_len(10)], 
+#'                                      val=seq_len(10)),
+#'                 organism="human", ontology="MF", drugs=c("d1", "d2"), 
+#'                 targets=c("t1","t2"))
+#' drugs(fr)
 
-setMethod("get_drugs", signature(x="feaResult"),
+setMethod("drugs", c(x="feaResult"),
           function(x) x@drugs)
+
+#' @rdname drugs-methods
+#' @method drugs feaResult
+#' @aliases drugs,feaResult,ANY-method
+#' @param value A character vector of drug names
+#' @return An feaResult object with new assigned drugs slot
+#' @examples 
+#' drugs(fr) <- c("d3", "d4")
+setMethod("drugs<-", "feaResult", function(x, value) {
+    x@drugs <- value
+    x
+})
 
 # ##' dotplot for feaResult
 # ##'
@@ -77,25 +91,4 @@ setMethod("get_drugs", signature(x="feaResult"),
 #               dotplot_internal(object, x, colorBy, showCategory, 
 #                                split, font.size, title)
 #            })
-# 
-# ##' cnetplot for feaResult
-# ##' 
-# ##' @rdname cnetplot-methods
-# ##' @aliases cnetplot,feaResult,ANY-method
-# ##' @param x feaResult object
-# ##' @param showCategory number of enriched terms to display
-# ##' @param categorySize one of 'pvalue', 'p.adjust' and 'qvalue'
-# ##' @param foldChange fold change
-# ##' @param fixed TRUE or FALSE
-# ##' @importFrom enrichplot cnetplot
-# ##' @export
-# setMethod("cnetplot", signature(x="feaResult"),
-#           function(x, showCategory=5, categorySize="pvalue", 
-#                    foldChange=NULL, fixed=TRUE, ...) {
-#               cnetplot.feaResult(x,
-#                                     showCategory=showCategory,
-#                                     categorySize=categorySize,
-#                                     foldChange=foldChange,
-#                                     fixed=fixed, ...)
-# })
 

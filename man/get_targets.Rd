@@ -4,7 +4,7 @@
 \alias{get_targets}
 \title{Target Gene/Protein IDs for Query Drugs}
 \usage{
-get_targets(drugs, database = "all")
+get_targets(drugs, database = "all", verbose = FALSE)
 }
 \arguments{
 \item{drugs}{character vector of drug names}
@@ -12,6 +12,8 @@ get_targets(drugs, database = "all")
 \item{database}{drug-target annotation resource; one of 'DrugBank', 'CLUE',
 'STITCH' or 'all'. If 'all', the targets from DrugBank, CLUE 
 and STITCH databases will be combined.}
+
+\item{verbose}{TRUE or FALSE, whether to print messages}
 }
 \value{
 data.frame, one column contains the query drug names and the other 
@@ -25,8 +27,8 @@ interactions based on the above three annotation resources is available in
 the \code{\link[signatureSearchData]{signatureSearchData}} package.
 }
 \examples{
-data(drugs)
-dt <- get_targets(drugs)
+data(drugs10)
+dt <- get_targets(drugs10)
 }
 \seealso{
 \code{\link[signatureSearchData]{dtlink_db_clue_sti}}

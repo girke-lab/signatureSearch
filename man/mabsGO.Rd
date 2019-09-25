@@ -37,11 +37,9 @@ MeanAbs enrichment analysis with GO terms.
 \examples{
 data(targetList)
 library(org.Hs.eg.db)
-\dontrun{
-mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
-             pvalueCutoff = 1)
-head(mg)
-}
+#mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
+#             pvalueCutoff = 1)
+#head(mg)
 }
 \author{
 Yuzhu Duan

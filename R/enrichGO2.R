@@ -23,11 +23,8 @@
 ##' gene <- c(rep("HDAC1",4), rep("HDAC3",2), "SOX8", "KLK14")
 ##' # library(org.Hs.eg.db)
 ##' data(targetList)
-##' \dontrun{
-##' ego <- enrichGO2(gene = gene, OrgDb=org.Hs.eg.db, ont="MF",
-##'                  universe=names(targetList))
-##' head(ego)
-##' }
+##' #ego <- enrichGO2(gene = gene, OrgDb=org.Hs.eg.db, ont="MF",
+##' #                 universe=names(targetList))
 ##' @export
 enrichGO2 <- function(gene,
                      OrgDb,
@@ -65,10 +62,10 @@ enrichGO2 <- function(gene,
   res <- add_GO_Ontology(res, GO_DATA)
   tmp_df <- res@result
   colnames(tmp_df)[1] = "ont"
-  res@result <- tmp_df
+  rst(res) <- tmp_df
   if(ont != "ALL")
     res@result <- as_tibble(res[res$ont == ont, ])
-  res@organism <- get_organism(OrgDb)
-  res@ontology <- ont
+  og(res) <- get_organism(OrgDb)
+  ont(res) <- ont
   return(res)
 }

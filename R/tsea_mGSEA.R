@@ -112,13 +112,13 @@
 #' Proceedings of the National Academy of Sciences of the United States of
 #' America, 102(43), 15545-15550. URL: https://doi.org/10.1073/pnas.0506580102
 #' @examples 
-#' data(drugs)
+#' data(drugs10)
 #' ## GO annotation system
-#' #mgsea_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
+#' #mgsea_res <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
 #' #                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
 #' #result(mgsea_res)
 #  ## KEGG annotation system
-#' mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
+#' mgsea_k_res <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
 #'                           nPerm=100, pvalueCutoff=1, minGSSize=5)
 #' result(mgsea_k_res)
 #' @export
@@ -126,7 +126,7 @@ tsea_mGSEA <- function(drugs,
                       type="GO", ont="MF", 
                       nPerm=1000, exponent=1, 
                       pAdjustMethod="BH", pvalueCutoff=0.05,
-                      minGSSize=2, maxGSSize=500, verbose=FALSE,
+                      minGSSize=5, maxGSSize=500, verbose=FALSE,
                       dt_anno="all"){
   drugs <- unique(tolower(drugs))
   targets <- get_targets(drugs, database = dt_anno)
@@ -153,7 +153,7 @@ tsea_mGSEA <- function(drugs,
                     pvalueCutoff = pvalueCutoff, pAdjustMethod=pAdjustMethod)
     if(is.null(gsego))
         return(NULL)
-    gsego@drugs = drugs
+    drugs(gsego) = drugs
     return(gsego)
   }
   
@@ -184,7 +184,7 @@ tsea_mGSEA <- function(drugs,
                       pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod)
     if(is.null(gsekk))
         return(NULL)
-    gsekk@drugs = drugs
+    drugs(gsekk) = drugs
     return(gsekk)
   }
 }

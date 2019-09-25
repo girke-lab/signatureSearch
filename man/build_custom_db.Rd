@@ -45,6 +45,5 @@ data(targetList)
 rownames(df) = names(targetList)
 h5file = tempfile(fileext=".h5")
 build_custom_db(df, h5file)
-library(signatureSearchData)
 tmp <- readHDF5chunk(h5file, colindex=1:2)
 }

@@ -3,7 +3,6 @@
 \docType{class}
 \name{feaResult-class}
 \alias{feaResult-class}
-\alias{feaResult}
 \title{feaResult object}
 \description{
 The \code{feaResult} object stores Functional Enrichment Analysis (FEA) 

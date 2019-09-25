@@ -46,12 +46,12 @@
 ##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
 ##'          \code{\link[signatureSearchData]{GO_DATA_drug}}
 ##' @examples 
-##' data(drugs)
+##' data(drugs10)
 ##' ## GO annotation system
-##' # hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
+##' # hyperG_res <- dsea_hyperG(drugs = drugs10, type = "GO", ont="MF")
 ##' # result(hyperG_res)
 ##' ## KEGG annotation system
-##' hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
+##' hyperG_k_res <- dsea_hyperG(drugs = drugs10, type = "KEGG", 
 ##'                             pvalueCutoff = 1, qvalueCutoff = 1, 
 ##'                             minGSSize = 10, maxGSSize = 500)
 ##' result(hyperG_k_res) 
@@ -91,9 +91,9 @@ dsea_hyperG <- function(drugs,
     if (is.null(res))
       return(res)
     
-    res@organism <- get_organism(OrgDb="org.Hs.eg.db")
-    res@ontology <- ont
-    res@targets <- NULL
+    og(res) <- get_organism(OrgDb="org.Hs.eg.db")
+    ont(res) <- ont
+    tg(res) <- NULL
     if (ont == "ALL") {
       res <- add_GO_Ontology(res, GO_DATA_drug)
     }
@@ -115,9 +115,9 @@ dsea_hyperG <- function(drugs,
                              USER_DATA = KEGG_DATA_drug)
     if (is.null(res))
       return(res)
-    res@targets <- NULL
-    res@ontology <- "KEGG"
-    res@organism <- species
+    tg(res) <- NULL
+    ont(res) <- "KEGG"
+    og(res) <- species
     return(res)
   }
   if(type == "MOA"){
@@ -140,9 +140,9 @@ dsea_hyperG <- function(drugs,
       if (is.null(res))
           return(res)
       
-      res@organism <- "Homo sapiens"
-      res@ontology <- "MOA"
-      res@targets <- NULL
+      og(res) <- "Homo sapiens"
+      ont(res) <- "MOA"
+      tg(res) <- NULL
       return(res)
   }
 }

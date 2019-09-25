@@ -4,7 +4,7 @@
 \alias{dtnetplot}
 \title{Drug-Target Network Visualization}
 \usage{
-dtnetplot(drugs, set, ont = NULL, desc = NULL, ...)
+dtnetplot(drugs, set, ont = NULL, desc = NULL, verbose = FALSE, ...)
 }
 \arguments{
 \item{drugs}{A character vector of drug names}
@@ -17,6 +17,8 @@ that GO term belongs to. One of 'BP', 'MF' or 'CC'}
 
 \item{desc}{character(1), description of the chosen functional category or 
 target set}
+
+\item{verbose}{TRUE or FALSE, whether to print messages}
 
 \item{...}{additional parameters of \code{\link[visNetwork]{visNetwork}} 
 function.}
@@ -36,7 +38,8 @@ components in the drop-down menu located in the upper left corner of the
 plot.
 }
 \examples{
-data(drugs)
-dtnetplot(drugs=drugs, set="GO:0032041", ont = "MF", 
+data(drugs10)
+dtnetplot(drugs=drugs10, 
+    set=c("HDAC1", "HDAC2", "HDAC3", "HDAC11", "FOX2"),
     desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 }

@@ -80,13 +80,13 @@ Additional columns are described under the 'result' slot of the
 }
 
 \examples{
-data(drugs)
+data(drugs10)
 ## GO annotation system
-#mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
+#mabs_res <- tsea_mabs(drugs=drugs10, type="GO", ont="MF", nPerm=1000, 
 #                      pvalueCutoff=0.05, minGSSize=5)
 #result(mabs_res)
 ## KEGG annotation system
-#mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
+#mabs_k_res <- tsea_mabs(drugs=drugs10, type="KEGG", nPerm=1000, 
 #                        pvalueCutoff=0.05, minGSSize=5)
 #result(mabs_k_res)
 }

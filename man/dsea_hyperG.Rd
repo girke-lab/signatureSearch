@@ -62,14 +62,14 @@ of this \code{tibble} are described in the help of the
 \code{\link{tsea_dup_hyperG}} function.
 }
 \examples{
-data(drugs)
+data(drugs10)
 ## GO annotation system
-# hyperG_res <- dsea_hyperG(drugs = drugs, type = "GO", ont="MF")
+# hyperG_res <- dsea_hyperG(drugs = drugs10, type = "GO", ont="MF")
 # result(hyperG_res)
 ## KEGG annotation system
-hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
+hyperG_k_res <- dsea_hyperG(drugs = drugs10, type = "KEGG", 
                             pvalueCutoff = 1, qvalueCutoff = 1, 
-                            minGSSize = 10, maxGSSize = 2000)
+                            minGSSize = 10, maxGSSize = 500)
 result(hyperG_k_res) 
 }
 \seealso{

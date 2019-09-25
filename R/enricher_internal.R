@@ -144,12 +144,9 @@ enricher_internal <- function(gene,
   Over$Description <- Description
   nc <- ncol(Over)
   Over <- Over[, c(1,nc, 2:(nc-1))]
-
-
   Over <- Over[order(pvalues),]
-
-  Over <- Over[ Over$pvalue <= pvalueCutoff, ]
-  Over <- Over[ Over$p.adjust <= pvalueCutoff, ]
+  Over <- Over[Over$pvalue <= pvalueCutoff, ]
+  Over <- Over[Over$p.adjust <= pvalueCutoff, ]
   if (! any(is.na(Over$qvalue))) {
       Over <- Over[ Over$qvalue <= qvalueCutoff, ]
   }
@@ -159,12 +156,11 @@ enricher_internal <- function(gene,
 
   row.names(Over) <- as.character(Over$ID)
   Over <- as_tibble(Over)
-  x <- new("feaResult",
-           result         = Over,
-           drugs          = as.character(gene),
-           targets        = as.character(gene),
-           organism       = "UNKNOWN",
-           ontology       = "UNKNOWN"
-           )
-  return (x)
+  x <- feaResult(
+      result         = Over,
+      drugs          = as.character(gene),
+      targets        = as.character(gene),
+      organism       = "UNKNOWN",
+      ontology       = "UNKNOWN")
+  return(x)
 }

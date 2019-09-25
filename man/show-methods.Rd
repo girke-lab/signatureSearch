@@ -26,18 +26,14 @@ show \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{feaResult}}
 objects
 }
 \examples{
-data(drugs)
-# dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-#                                 type = "GO", ont="MF")
-# dup_hyperG_res 
-db_path <- system.file("extdata", "sample_db.h5", 
-                       package = "signatureSearch")
-# Load sample_db as `SummarizedExperiment` object
-library(signatureSearchData)
-sample_db <- readHDF5chunk(db_path, colindex=1:100)
-# get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
-fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
-fisher
+fr <- feaResult(result=dplyr::tibble(id=letters[seq_len(10)], 
+                                     val=seq_len(10)),
+                organism="human", ontology="MF", drugs=c("d1", "d2"), 
+                targets=c("t1","t2"))
+fr 
+gr <- gessResult(result=dplyr::tibble(pert=letters[seq_len(10)], 
+                               val=seq_len(10)), 
+                 query=list(up=c("g1","g2"), down=c("g3","g4")),
+                 gess_method="LINCS", refdb="path/to/lincs/db")
+gr
 }

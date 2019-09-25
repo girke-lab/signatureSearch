@@ -4,7 +4,7 @@
 \alias{comp_fea_res}
 \title{Plot for Comparing Ranking Results of FEA Methods}
 \usage{
-comp_fea_res(table_list, rank_stat = "pvalue", Nshow = 20)
+comp_fea_res(table_list, rank_stat = "pvalue", Nshow = 20, ...)
 }
 \arguments{
 \item{table_list}{a named list of tibbles extracted from feaResult objects,
@@ -16,6 +16,8 @@ the chosen column name needs to be present in each tibble of 'table_list'.}
 
 \item{Nshow}{integer defining the number of the top functional categories 
 to display in the plot after re-ranking them across FEA methods}
+
+\item{...}{Other arguments passed on to \code{\link[ggplot2]{geom_point}}}
 }
 \value{
 ggplot2 graphics object
@@ -40,13 +42,12 @@ the values of the enrichment statistic chosen under the \code{rank_stat}
 argument.
 }
 \examples{
-data(drugs)
-\dontrun{
-table_list <- list("dup_hyperG" = result(dup_hyperG_res), 
-                  "mGSEA" = result(mgsea_res), 
-                  "mabs" = result(mabs_res), 
-                  "hyperG" = result(hyperG_res), 
-                  "GSEA" = result(gsea_res))
+method1 <- data.frame("ID"=paste0("GO:", 1:5), 
+                      "Description"=paste0("desc", 1:5),
+                      "pvalue"=c(0.0001, 0.002, 0.004, 0.01, 0.05))
+method2 <- data.frame("ID"=paste0("GO:", c(1,3,5,4,6)), 
+                      "Description"=paste0("desc", c(1,3,5,4,6)),
+                      "pvalue"=c(0.0003, 0.0007, 0.003, 0.006, 0.04))                      
+table_list <- list("method1" = method1, "method2"=method2) 
 comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
-}
 }

@@ -59,13 +59,13 @@ gseGO2 <- function(geneList,
         return(res)
     # Add and select ontology in res
     res <- add_GO_Ontology(res, GO_DATA)
-    tmp_df <- res@result
+    tmp_df <- result(res)
     colnames(tmp_df)[1] = "ont"
-    res@result <- tmp_df
+    rst(res) <- tmp_df
     if(ont != "ALL")
-      res@result <- as_tibble(res[res$ont == ont, ])
-    
-    res@organism <- get_organism(OrgDb)
+      rst(res) <- as_tibble(res[res$ont == ont, ])
+    ont(res) <- ont
+    og(res) <- get_organism(OrgDb)
     return(res)
 }
 
@@ -122,11 +122,8 @@ gseKEGG2 <- function(geneList,
     if (is.null(res))
         return(res)
 
-    res@organism <- species
-    res@ontology <- "KEGG"
+    og(res) <- species
+    ont(res) <- "KEGG"
 
     return(res)
 }
-
-
-

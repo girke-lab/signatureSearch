@@ -8,19 +8,13 @@
 #' @return data.frame
 #' @importFrom dplyr bind_cols
 #' @examples 
-#' db_path <- system.file("extdata", "sample_db.h5", 
-#'                        package = "signatureSearch")
-#' library(signatureSearchData)
-#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
-#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' query = as.numeric(query_mat); names(query) = rownames(query_mat)
-#' upset <- head(names(query[order(-query)]), 150)
-#' downset <- tail(names(query[order(-query)]), 150)
-#' qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
-#'                   gess_method = "CMAP", refdb = db_path)
-#' cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
-#' df <- drug_cell_ranks(cmap)
+#' gr <- gessResult(result=dplyr::tibble(pert=c("p1", "p1", "p2", "p3"),
+#'                                       cell=c("MCF7", "SKB", "MCF7", "SKB"),
+#'                                       type=rep("trt_cp", 4),
+#'                                       NCS=c(1.2, 1, 0.9, 0.6)),
+#'                  query=list(up="a", down="b"), 
+#'                  gess_method="LINCS", refdb="path/to/refdb")
+#' df <- drug_cell_ranks(gr)
 #' @export
 drug_cell_ranks <- function(gessResult){
   if(!is(gessResult, "gessResult")) 
@@ -57,19 +51,13 @@ drug_cell_ranks <- function(gessResult){
 #' grouped 
 #' @return tibble
 #' @examples 
-#' db_path <- system.file("extdata", "sample_db.h5", 
-#'                        package = "signatureSearch")
-#' library(signatureSearchData)
-#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
-#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' query = as.numeric(query_mat); names(query) = rownames(query_mat)
-#' upset <- head(names(query[order(-query)]), 150)
-#' downset <- tail(names(query[order(-query)]), 150)
-#' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
-#'                    gess_method = "LINCS", refdb = db_path)
-#' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
-#' df <- sim_score_grp(result(lincs), grp1="SKB", grp2="MCF7", "NCS")
+#' gr <- gessResult(result=dplyr::tibble(pert=c("p1", "p1", "p2", "p3"),
+#'                                       cell=c("MCF7", "SKB", "MCF7", "SKB"),
+#'                                       type=rep("trt_cp", 4),
+#'                                       NCS=c(1.2, 1, 0.9, 0.6)),
+#'                  query=list(up="a", down="b"), 
+#'                  gess_method="LINCS", refdb="path/to/refdb")
+#' df <- sim_score_grp(result(gr), grp1="SKB", grp2="MCF7", "NCS")
 #' @export
 
 sim_score_grp <- function(tib, grp1, grp2, score_column){
@@ -131,27 +119,25 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 scale_colour_gradient
+#' @importFrom utils data
 #' @examples 
-#' db_path <- system.file("extdata", "sample_db.h5", 
-#'                        package = "signatureSearch")
-#' library(signatureSearchData)
-#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
-#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' query = as.numeric(query_mat); names(query) = rownames(query_mat)
-#' upset <- head(names(query[order(-query)]), 150)
-#' downset <- tail(names(query[order(-query)]), 150)
-#' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
-#'                    gess_method = "LINCS", refdb = db_path)
-#' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
-#' data(drugs)
-#' gess_res_vis(result(lincs), drugs, col="NCS")
+#' gr <- gessResult(result=dplyr::tibble(pert=c("p1", "p1", "p2", "p3"),
+#'                                       cell=c("MCF7", "SKB", "MCF7", "SKB"),
+#'                                       type=rep("trt_cp", 4),
+#'                                       NCS=c(1.2, 1, 0.9, 0.6)),
+#'                  query=list(up="a", down="b"), 
+#'                  gess_method="LINCS", refdb="path/to/refdb")
+#' gess_res_vis(result(gr), drugs=c("p1","p2"), col="NCS")
 #' @export
-
 gess_res_vis <- function(gess_tb, drugs, col, cell_group="all"){
-  ext_path  <- system.file("extdata", package="signatureSearch")
-  cell_path <- paste0(ext_path,"/cell_info.tsv")
-  cell_info <- suppressMessages(read_tsv(cell_path))
+  # ext_path  <- system.file("extdata", package="signatureSearch")
+  # cell_path <- paste0(ext_path,"/cell_info.tsv")
+  # cell_info <- suppressMessages(read_tsv(cell_path))
+  data("cell_info", envir=environment())
   cells = unique(gess_tb$cell)
   if(col=="rank"){
       gess_tb <- data.frame(gess_tb, rank=seq_len(dim(gess_tb)[1]))
@@ -193,4 +179,4 @@ gess_res_vis <- function(gess_tb, drugs, col, cell_group="all"){
   p
 }
 
-cell_type = cell_id = pert = NULL
+globalVariables(c("cell_type", "cell_id", "pert", "cell_info")) 

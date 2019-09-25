@@ -1,3 +1,6 @@
+setClassUnion("listOrMat", c("list", "matrix"))
+setClassUnion("charOrNum", c("character", "numeric", "NULL"))
+
 ##' Class "qSig"
 ##' 
 ##' S4 object named \code{qSig} containing query signature information for Gene
@@ -28,7 +31,7 @@
 ##' @exportClass qSig
 ##' @keywords classes
 setClass("qSig", slots = c(
-  query = "ANY",
+  query="listOrMat",
   gess_method = "character",
   refdb = "character"
 ))
@@ -40,7 +43,7 @@ setClass("qSig", slots = c(
 ##' signature, the name of the chosen GESS method and the path to the reference
 ##' database.
 ##' @name gessResult-class
-##' @aliases gessResult
+##' @aliases gessResult-class
 ##' @docType class
 ##' @slot result tibble object containing the search results for each
 ##' perturbagen (e.g. drugs) in the reference database ranked by their
@@ -76,12 +79,27 @@ setClass("qSig", slots = c(
 setClass("gessResult",
          slots = c(
            result = "data.frame",
-           query = "ANY",
+           query = "listOrMat",
            gess_method = "character",
            refdb = "character"
          ))
 
-## Constructor for "gessResult"
+#' This is a helper function to construct a \code{gessResult} object. For 
+#' detail description, please consult the help file of the 
+#' \code{\link{gessResult-class}}.
+#' @title Constructor for \code{\link{gessResult-class}}
+#' @param result tibble object containing the GESS results
+#' @param query list or a matrix, query signature
+#' @param gess_method character(1), name of the GESS method
+#' @param refdb character(1), path to the reference database
+#' @return \code{gessResult} object
+#' @examples 
+#' library(dplyr)
+#' gr <- gessResult(result=tibble(pert=letters[seq_len(10)], 
+#'                                val=seq_len(10)), 
+#'                  query=list(up=c("g1","g2"), down=c("g3","g4")),
+#'                  gess_method="LINCS", refdb="path/to/lincs/db")
+#' @export 
 gessResult <- function(result, query, gess_method, refdb)
   new("gessResult", result=result, query=query, 
       gess_method=gess_method, refdb=refdb)
@@ -102,7 +120,7 @@ gessResult <- function(result, query, gess_method, refdb)
 ##' It also includes the drug information used for the FEA, as well as the 
 ##' corresponding target protein information.
 ##' @name feaResult-class
-##' @aliases feaResult
+##' @aliases feaResult-class
 ##' @docType class
 ##' @slot result tibble object, this tabular result contains the
 ##' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
@@ -133,15 +151,35 @@ gessResult <- function(result, query, gess_method, refdb)
 ##' @exportClass feaResult
 ##' @keywords classes
 setClass("feaResult",
-         representation=representation(
+         slots = c(
            result         = "data.frame",
            organism       = "character",
            ontology       = "character",
            drugs          = "character",
-           targets        = "ANY"
+           targets        = "charOrNum"
          )
 )
-## @slot universe background genes or drugs. For TSEA, it is all the genes 
-## in the corresponding annotation system (GO/KEGG). For DSEA, it is all the 
-## drugs in the correspoinding annotation system (GO/KEGG) after 
-## drug-to-functional category mapping
+
+#' This is a helper function to construct a \code{feaResult} object. For 
+#' detail description, please consult the help file of the 
+#' \code{\link{feaResult-class}}.
+#' @title Constructor for \code{\link{feaResult-class}}
+#' @param result tibble object containing the FEA results
+#' @param organism character(1), organism information of the annotation system
+#' @param ontology character(1), ontology type of the GO annotation system. 
+#' If the annotation system is KEGG, it will be 'KEGG'
+#' @param drugs character vector, input drug names used for the enrichment test
+#' @param targets character vector, gene labels of the gene/protein targets 
+#' for the drugs 
+#' @return \code{feaResult} object
+#' @examples
+#' library(dplyr)
+#' fr <- feaResult(result=tibble(id=letters[seq_len(10)], 
+#'                               val=seq_len(10)),
+#'                 organism="human", ontology="MF", drugs=c("d1", "d2"), 
+#'                 targets=c("t1","t2"))
+#' @export 
+feaResult <- function(result, organism="UNKNOWN", ontology="UNKNOWN", 
+                      drugs="UNKNOWN", targets="UNKNOWN")
+  new("feaResult", result=result, organism=organism, ontology=ontology,
+      drugs=drugs, targets=targets)

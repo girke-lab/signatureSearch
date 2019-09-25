@@ -59,7 +59,7 @@
 #' the corresponding enrichment statistic.
 #' @seealso \code{\link{feaResult}}, \code{\link{fea}}
 #' @examples 
-#' data(drugs)
+#' data(drugs10)
 #' ## GO annotation system
 #' #dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
 #' #                                 type = "GO", ont="MF", pvalueCutoff=0.05,
@@ -67,7 +67,7 @@
 #' #                                 minGSSize = 10, maxGSSize = 500)
 #' #result(dup_hyperG_res)
 #' ## KEGG annotation system
-#' dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
+#' dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs10, universe = "Default", 
 #'                                     type = "KEGG", pvalueCutoff=0.1, 
 #'                                     pAdjustMethod="BH", qvalueCutoff = 0.2, 
 #'                                     minGSSize = 10, maxGSSize = 500)
@@ -98,7 +98,7 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
                     pAdjustMethod = pAdjustMethod, pvalueCutoff = pvalueCutoff, 
                     qvalueCutoff = qvalueCutoff, 
                     minGSSize = minGSSize, maxGSSize = maxGSSize)
-    ego@drugs=drugs
+    drugs(ego) <- drugs
     return(ego)
   }
   if(type=="KEGG"){
@@ -116,7 +116,7 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
                      pAdjustMethod = pAdjustMethod, 
                      universe=universe, minGSSize = minGSSize, 
                      maxGSSize = maxGSSize, qvalueCutoff = qvalueCutoff)
-    kk@drugs <- drugs
+    drugs(kk) <- drugs
     return(kk)
   }
 }

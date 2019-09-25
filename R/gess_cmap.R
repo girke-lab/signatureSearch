@@ -55,7 +55,6 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' library(signatureSearchData)
 #' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
@@ -70,13 +69,13 @@
 gess_cmap <- function(qSig, chunk_size=5000){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
     # stopifnot(validObject(qSig))
-    if(qSig@gess_method != "CMAP"){
+    if(gm(qSig) != "CMAP"){
         stop(paste("The 'gess_method' slot of 'qSig' should be 'CMAP'",
                    "if using 'gess_cmap' function!"))
     }
-    db_path <- determine_refdb(qSig@refdb)
-    qsig_up <- qSig@query[[1]]
-    qsig_dn <- qSig@query[[2]]
+    db_path <- determine_refdb(refdb(qSig))
+    qsig_up <- qr(qSig)[[1]]
+    qsig_dn <- qr(qSig)[[2]]
     res <- cmapEnrich(db_path, upset=qsig_up, downset=qsig_dn, 
                       chunk_size=chunk_size)
     res <- sep_pcf(res)
@@ -85,9 +84,9 @@ gess_cmap <- function(qSig, chunk_size=5000){
     res <- left_join(res, target, by=c("pert"="drug_name"))
     
     x <- gessResult(result = as_tibble(res),
-                    query = qSig@query,
-                    gess_method = qSig@gess_method,
-                    refdb = qSig@refdb)
+                    query = qr(qSig),
+                    gess_method = gm(qSig),
+                    refdb = refdb(qSig))
     return(x)
 }
 
@@ -102,7 +101,6 @@ rankMatrix <- function(x, decreasing=TRUE) {
   return(rankma)
 }
 
-#' @importFrom rhdf5 h5ls
 cmapEnrich <- function(db_path, upset, downset, chunk_size=5000) {
   ## Read in matrix in h5 file by chunks
   mat_dim <- getH5dim(db_path)

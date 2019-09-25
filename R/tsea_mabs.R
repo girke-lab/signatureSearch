@@ -58,13 +58,13 @@
 #' gene-weighting approach for pathway analysis. Cell Research, 22(3), 
 #' 565-580. URL: https://doi.org/10.1038/cr.2011.149
 #' @examples 
-#' data(drugs)
+#' data(drugs10)
 #' ## GO annotation system
-#' #mabs_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", nPerm=1000, 
+#' #mabs_res <- tsea_mabs(drugs=drugs10, type="GO", ont="MF", nPerm=1000, 
 #' #                      pvalueCutoff=0.05, minGSSize=5)
 #' #result(mabs_res)
 #' ## KEGG annotation system
-#' #mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
+#' #mabs_k_res <- tsea_mabs(drugs=drugs10, type="KEGG", nPerm=1000, 
 #' #                        pvalueCutoff=0.05, minGSSize=5)
 #' #result(mabs_k_res)
 #' @export
@@ -97,7 +97,9 @@ tsea_mabs <- function(drugs,
                      ont = ont, keyType = "SYMBOL", nPerm = nPerm, 
                      minGSSize = minGSSize, maxGSSize = maxGSSize, 
                      pvalueCutoff = pvalueCutoff, pAdjustMethod=pAdjustMethod)
-    mabsgo@drugs = drugs
+    if(is.null(mabsgo))
+        return(NULL)
+    drugs(mabsgo) = drugs
     return(mabsgo)
   }
   
@@ -126,7 +128,7 @@ tsea_mabs <- function(drugs,
                        pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod)
     if(is.null(mabskk))
       return(NULL)
-    mabskk@drugs = drugs
+    drugs(mabskk) = drugs
     return(mabskk)
   }
 }

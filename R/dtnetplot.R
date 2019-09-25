@@ -15,6 +15,7 @@
 ##' that GO term belongs to. One of 'BP', 'MF' or 'CC'
 ##' @param desc character(1), description of the chosen functional category or 
 ##' target set
+##' @param verbose TRUE or FALSE, whether to print messages
 ##' @param ... additional parameters of \code{\link[visNetwork]{visNetwork}} 
 ##' function.
 ##' @return visNetwork plot
@@ -23,12 +24,13 @@
 ##' @importFrom scales cscale
 ##' @importFrom scales seq_gradient_pal
 ##' @examples 
-##' data(drugs)
-##' dtnetplot(drugs=drugs, set=c("HDAC1", "HDAC2", "HDAC3", "HDAC11", "FOX2"), 
+##' data(drugs10)
+##' dtnetplot(drugs=drugs10, 
+##'     set=c("HDAC1", "HDAC2", "HDAC3", "HDAC11", "FOX2"),
 ##'     desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 ##' @export dtnetplot
 ##' 
-dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, ...) {
+dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, verbose=FALSE, ...) {
   if(grepl("GO:\\d{7}",set)[1]){
     ont %<>% toupper
     if(is.null(ont) | !any(ont %in% c("BP","MF","CC"))) 
@@ -57,29 +59,32 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, ...) {
   dtlink_go <- dtlink[dtlink$t_gn_sym %in% go_gene,]
   go_gene_nottar <- setdiff(go_gene, unique(dtlink$t_gn_sym))
   go_gene_tar <- intersect(go_gene, unique(dtlink$t_gn_sym))
-  
-  message(length(go_gene_tar), "/", length(go_gene), " (", 
-          round(length(go_gene_tar)/length(go_gene)*100,2),
-          "%) genes in the gene set are targeted by query drugs, which are ", 
-          paste0(go_gene_tar, collapse = " / "), "\n")
-  if(length(go_gene_nottar>0)){
-    message(length(go_gene_nottar), "/", length(go_gene), " (", 
-        round(length(go_gene_nottar)/length(go_gene)*100,2),
-        "%) genes in the gene set are not targeted by query drugs, which are ", 
-        paste0(go_gene_nottar, collapse = " / "), "\n")
+  if(verbose){
+    message(length(go_gene_tar), "/", length(go_gene), " (", 
+            round(length(go_gene_tar)/length(go_gene)*100,2),
+            "%) genes in the gene set are targeted by query drugs, which are ", 
+            paste0(go_gene_tar, collapse = " / "), "\n")
+    if(length(go_gene_nottar>0)){
+      message(length(go_gene_nottar), "/", length(go_gene), " (", 
+              round(length(go_gene_nottar)/length(go_gene)*100,2),
+              "%) genes in the gene set are not targeted by query drugs, ",
+              "which are ", paste0(go_gene_nottar, collapse = " / "), "\n")
+      }
   }
   
   drugs_tar <- unique(dtlink_go$drug_name)
   drugs_no <- setdiff(drugs, drugs_tar)
-  message(length(drugs_tar), "/", length(drugs), " (", 
-          round(length(drugs_tar)/length(drugs)*100,2),
-          "%) drugs target genes/proteins in the gene set. They are ", 
-          paste0(drugs_tar, collapse = " / "), "\n")
-  if(length(drugs_no>0)){
-    message(length(drugs_no), "/", length(drugs), " (", 
-            round(length(drugs_no)/length(drugs)*100,2),
-            "%) drugs don't target genes/proteins in the gene set. They are ", 
-            paste0(drugs_no, collapse = " / "), "\n")
+  if(verbose){
+    message(length(drugs_tar), "/", length(drugs), " (", 
+            round(length(drugs_tar)/length(drugs)*100,2),
+            "%) drugs target genes/proteins in the gene set. They are ", 
+            paste0(drugs_tar, collapse = " / "), "\n")
+    if(length(drugs_no>0)){
+      message(length(drugs_no), "/", length(drugs), " (", 
+              round(length(drugs_no)/length(drugs)*100,2),
+              "%) drugs don't target genes/proteins in the gene set. They are ",
+              paste0(drugs_no, collapse = " / "), "\n")
+    }
   }
   
   ## scale node colors based on targetWeight and drugWeight(dw)

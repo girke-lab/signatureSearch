@@ -50,7 +50,6 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' library(signatureSearchData)
 #' sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
@@ -62,28 +61,28 @@
 gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
-  if(qSig@gess_method != "Fisher"){
+  if(gm(qSig) != "Fisher"){
     stop("The 'gess_method' slot of 'qSig' should be 'Fisher' 
          if using 'gess_fisher' function")
   }
-  if(is.list(qSig@query)){
-    query <- GeneSet(unique(unlist(qSig@query)))
+  if(is.list(qr(qSig))){
+    query <- GeneSet(unique(unlist(qr(qSig))))
   } else {
-    query <- induceCMAPCollection(qSig@query, higher=higher, lower=lower)
+    query <- induceCMAPCollection(qr(qSig), higher=higher, lower=lower)
   }
-  db_path <- determine_refdb(qSig@refdb)
+  db_path <- determine_refdb(refdb(qSig))
   mat_dim <- getH5dim(db_path)
   mat_ncol <- mat_dim[2]
   ceil <- ceiling(mat_ncol/chunk_size)
-  resultDF <- data.frame()
-  for(i in seq_len(ceil)){
-    mat <- readHDF5mat(db_path,
-                    colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-    cmap <- induceCMAPCollection(mat, higher=higher, lower=lower)
-    universe <- featureNames(cmap)
-    c <- fisher_score(query=query, sets=cmap, universe = universe)
-    resultDF <- rbind(resultDF, cmapTable(c))
+  fs <- function(i){
+      mat <- readHDF5mat(db_path,
+                 colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
+      cmap <- induceCMAPCollection(mat, higher=higher, lower=lower)
+      universe <- featureNames(cmap)
+      c <- fisher_score(query=query, sets=cmap, universe = universe)
+      cmapTable(c)
   }
+  resultDF <- do.call(rbind, lapply(seq_len(ceil), fs))
   resultDF <- resultDF[order(resultDF$padj), ]
   row.names(resultDF) <- NULL
   resultDF <- sep_pcf(resultDF)
@@ -92,8 +91,8 @@ gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
   res <- left_join(resultDF, target, by=c("pert"="drug_name"))
   
   x <- gessResult(result = as_tibble(res),
-                  query = qSig@query,
-                  gess_method = qSig@gess_method,
-                  refdb = qSig@refdb)
+                  query = qr(qSig),
+                  gess_method = gm(qSig),
+                  refdb = refdb(qSig))
   return(x)
 }

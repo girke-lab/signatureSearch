@@ -25,17 +25,11 @@ result tibble. The appended columns contain summary scores for groups of
 cell types, such as normal and tumor cells.
 }
 \examples{
-db_path <- system.file("extdata", "sample_db.h5", 
-                       package = "signatureSearch")
-library(signatureSearchData)
-sample_db <- readHDF5chunk(db_path, colindex=1:100)
-## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-query = as.numeric(query_mat); names(query) = rownames(query_mat)
-upset <- head(names(query[order(-query)]), 150)
-downset <- tail(names(query[order(-query)]), 150)
-qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
-                   gess_method = "LINCS", refdb = db_path)
-lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
-df <- sim_score_grp(result(lincs), grp1="SKB", grp2="MCF7", "NCS")
+gr <- gessResult(result=dplyr::tibble(pert=c("p1", "p1", "p2", "p3"),
+                                      cell=c("MCF7", "SKB", "MCF7", "SKB"),
+                                      type=rep("trt_cp", 4),
+                                      NCS=c(1.2, 1, 0.9, 0.6)),
+                 query=list(up="a", down="b"), 
+                 gess_method="LINCS", refdb="path/to/refdb")
+df <- sim_score_grp(result(gr), grp1="SKB", grp2="MCF7", "NCS")
 }

@@ -9,20 +9,20 @@
 ##' @param database drug-target annotation resource; one of 'DrugBank', 'CLUE',
 ##' 'STITCH' or 'all'. If 'all', the targets from DrugBank, CLUE 
 ##' and STITCH databases will be combined.  
+##' @param verbose TRUE or FALSE, whether to print messages
 ##' @return data.frame, one column contains the query drug names and the other 
 ##' target gene symbols.
 ##' @importFrom RSQLite dbConnect
 ##' @importFrom RSQLite dbGetQuery
 ##' @importFrom RSQLite SQLite
 ##' @importFrom RSQLite dbDisconnect
-##' @importFrom signatureSearchData load_sqlite
 ##' @seealso \code{\link[signatureSearchData]{dtlink_db_clue_sti}}
 ##' @examples 
-##' data(drugs)
-##' dt <- get_targets(drugs)
+##' data(drugs10)
+##' dt <- get_targets(drugs10)
 ##' @export 
 
-get_targets <- function(drugs, database="all"){
+get_targets <- function(drugs, database="all", verbose=FALSE){
   drugs_orig <- unique(drugs)
   drugs <- unique(tolower(drugs))
   # load dtlink_db_clue_sti.db stored in AnnotationHub
@@ -41,11 +41,14 @@ get_targets <- function(drugs, database="all"){
   idx_db <- match(res_db$drug_name, drugs)
   res_db$drug_name = drugs_orig[idx_db]
   if(database=="DrugBank"){
-    if(length(drugs_notar_db) > 0)
-      message("No targets found in DrugBank database for ", 
-              length(drugs_notar_db),
-              " drugs: \n",
-              paste(drugs_notar_db, collapse = " / "))
+    if(length(drugs_notar_db) > 0){
+      if(verbose){
+        message("No targets found in DrugBank database for ", 
+                length(drugs_notar_db),
+                " drugs: \n",
+                paste(drugs_notar_db, collapse = " / "))
+      }
+    }
     return(res_db)
   }
   
@@ -57,11 +60,14 @@ get_targets <- function(drugs, database="all"){
   idx_lincs <- match(res_lincs$drug_name, drugs)
   res_lincs$drug_name = drugs_orig[idx_lincs]
   if(database=="CLUE"){
-    if(length(drugs_notar_lincs) > 0)
-      message("No targets found in LINCS database for ", 
-              length(drugs_notar_lincs), 
-              " drugs: \n",
-              paste(drugs_notar_lincs, collapse = " / "))
+    if(length(drugs_notar_lincs) > 0){
+      if(verbose){
+        message("No targets found in LINCS database for ", 
+                length(drugs_notar_lincs), 
+                " drugs: \n",
+                paste(drugs_notar_lincs, collapse = " / "))
+      }
+    }
     return(res_lincs)
   }
   
@@ -73,11 +79,14 @@ get_targets <- function(drugs, database="all"){
   idx_sti <- match(res_sti$drug_name, drugs)
   res_sti$drug_name = drugs_orig[idx_sti]
   if(database=="STITCH"){
-    if(length(drugs_notar_sti) > 0)
-      message("No targets found in STITCH database for ", 
-              length(drugs_notar_sti), 
-              " drugs: \n",
-              paste(drugs_notar_sti, collapse = " / "))
+    if(length(drugs_notar_sti) > 0){
+      if(verbose){
+        message("No targets found in STITCH database for ", 
+                length(drugs_notar_sti), 
+                " drugs: \n",
+                paste(drugs_notar_sti, collapse = " / "))
+      }
+    }
     return(res_sti)
   }
   
@@ -89,11 +98,14 @@ get_targets <- function(drugs, database="all"){
   idx <- match(res$drug_name, drugs)
   res$drug_name = drugs_orig[idx]
   if(database=="all"){
-    if(length(drugs_notar) > 0)
-      message("No targets found in DrugBank/CLUE/STITCH database for ", 
-              length(drugs_notar), 
-              " drugs: \n",
-              paste(drugs_notar, collapse = " / "), "\n")
+    if(length(drugs_notar) > 0){
+      if(verbose){
+        message("No targets found in DrugBank/CLUE/STITCH database for ", 
+                length(drugs_notar), 
+                " drugs: \n",
+                paste(drugs_notar, collapse = " / "), "\n")
+      }
+    }
     return(res)
   }
 }

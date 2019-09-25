@@ -50,31 +50,13 @@
 #' Proceedings of the National Academy of Sciences of the United States of
 #' America, 102(43), 15545-15550. URL: https://doi.org/10.1073/pnas.0506580102
 #' @examples 
-#' db_path <- system.file("extdata", "sample_db.h5", 
-#'                        package = "signatureSearch")
-#' \dontrun{
-#' library(signatureSearchData)
-#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
-#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' query = as.numeric(query_mat); names(query) = rownames(query_mat)
-#' upset <- head(names(query[order(-query)]), 150)
-#' downset <- tail(names(query[order(-query)]), 150)
-#' qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
-#'                    gess_method = "LINCS", refdb = db_path)
-#' lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
-#' dl <- abs(result(lincs)$NCS); names(dl) <- result(lincs)$pert
-#' dl <- dl[dl>0]
-#' dl <- dl[!duplicated(names(dl))]
-#' ## GO annotation system
-#' #gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
-#' #                     nPerm=1000, pvalueCutoff=0.2, minGSSize=5)
-#' #                     result(gsea_res)
+#' data(drugs10)
+#' dl <- c(rev(seq(0.1, 0.5, by=0.05)), 0)
+#' names(dl)=drugs10
 #' ## KEGG annotation system
-#' gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=100, 
-#'                         pvalueCutoff=0.5, minGSSize=5)
-#' result(gsea_k_res)
-#' }
+#' #gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=100, 
+#' #                        pvalueCutoff=0.5, minGSSize=2)
+#' #result(gsea_k_res)
 #' @export
 dsea_GSEA <- function(drugList, 
                       type = "GO", 
@@ -112,10 +94,10 @@ dsea_GSEA <- function(drugList,
     
     if (is.null(res))
       return(res)
-    res@drugs <- names(drugList)
-    res@targets <- NULL
-    res@organism <- get_organism(OrgDb = "org.Hs.eg.db")
-    res@ontology <- ont
+    drugs(res) <- names(drugList)
+    tg(res) <- NULL
+    og(res) <- get_organism(OrgDb = "org.Hs.eg.db")
+    ont(res) <- ont
     
     if (ont == "ALL") {
       res <- add_GO_Ontology(res, GO_DATA_drug)
@@ -139,10 +121,10 @@ dsea_GSEA <- function(drugList,
     
     if (is.null(res))
       return(res)
-    res@drugs <- names(drugList)
-    res@targets <- NULL
-    res@organism <- species
-    res@ontology <- "KEGG"
+    drugs(res) <- names(drugList)
+    tg(res) <- NULL
+    og(res) <- species
+    ont(res) <- "KEGG"
     return(res)
   }
   if(type == "MOA"){
@@ -161,13 +143,10 @@ dsea_GSEA <- function(drugList,
       
       if (is.null(res))
           return(res)
-      res@drugs <- names(drugList)
-      res@targets <- NULL
-      res@organism <- "Homo sapiens"
-      res@ontology <- "MOA"
+      drugs(res) <- names(drugList)
+      tg(res) <- NULL
+      og(res) <- "Homo sapiens"
+      ont(res) <- "MOA"
       return(res)
   }
 }
-
-
-
