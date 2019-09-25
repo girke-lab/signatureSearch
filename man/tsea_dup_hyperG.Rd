@@ -92,11 +92,11 @@ data(drugs10)
 #                                 minGSSize = 10, maxGSSize = 500)
 #result(dup_hyperG_res)
 ## KEGG annotation system
-dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs10, universe = "Default", 
-                                    type = "KEGG", pvalueCutoff=0.1, 
-                                    pAdjustMethod="BH", qvalueCutoff = 0.2, 
-                                    minGSSize = 10, maxGSSize = 500)
-result(dup_hyperG_k_res)
+#dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs10, universe = "Default", 
+#                                    type = "KEGG", pvalueCutoff=0.1, 
+#                                    pAdjustMethod="BH", qvalueCutoff = 0.2, 
+#                                    minGSSize = 10, maxGSSize = 500)
+#result(dup_hyperG_k_res)
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}}

@@ -137,9 +137,9 @@ data(drugs10)
 #mgsea_res <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
 #                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
 #result(mgsea_res)
-mgsea_k_res <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
-                          nPerm=100, pvalueCutoff=1, minGSSize=5)
-result(mgsea_k_res)
+#mgsea_k_res <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
+#                          nPerm=100, pvalueCutoff=1, minGSSize=5)
+#result(mgsea_k_res)
 }
 \references{
 GSEA algorithm: 
