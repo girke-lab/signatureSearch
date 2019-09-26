@@ -29,8 +29,8 @@ ChEMBL database.
 }
 \examples{
 data(geneList, package="DOSE")
-#emoa <- enrichMOA(gene = names(geneList)[seq(3)])
-#head(emoa)
+emoa <- enrichMOA(gene = names(geneList)[seq(3)])
+head(emoa)
 }
 \seealso{
 \code{\link{feaResult-class}}

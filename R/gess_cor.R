@@ -43,12 +43,12 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
+#' #sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
-#' sp <- gess_cor(qSig=qsig_sp, method="spearman")
-#' result(sp)
+#' #query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' #qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
+#' #sp <- gess_cor(qSig=qsig_sp, method="spearman")
+#' #result(sp)
 #' @export
 gess_cor <- function(qSig, method, chunk_size=5000){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")

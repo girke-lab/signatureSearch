@@ -14,16 +14,14 @@
 ##' @seealso \code{\link{feaResult-class}}
 ##' @examples 
 ##' data(geneList, package="DOSE")
-##' #emoa <- enrichMOA(gene = names(geneList)[seq(3)])
-##' #head(emoa)
+##' emoa <- enrichMOA(gene = names(geneList)[seq(3)])
+##' head(emoa)
 ##' @export
 enrichMOA <- function(gene,
                       pvalueCutoff=0.05,
                       pAdjustMethod="BH",
                       qvalueCutoff = 0.2) {
-    chembl_moa_list <- readRDS(system.file("extdata", 
-                                           "ChEMBL_moa2entrezid_list.rds", 
-                                    package="signatureSearch"))
+    data("chembl_moa_list", envir = environment())
     MOA_DATA_chembl <- get_MOA_data(chembl_moa_list, keytype="entrez")
     # get all the gene entrez ids in the MOA annotation system as universe
     ext2path <- get("EXTID2PATHID", envir = MOA_DATA_chembl)

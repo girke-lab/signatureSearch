@@ -64,12 +64,12 @@ are described in the help file of the \code{gessResult} object.
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")
-sample_db <- readHDF5chunk(db_path, colindex=1:100)
+#sample_db <- readHDF5chunk(db_path, colindex=1:100)
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
-gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
-result(gcmap)
+#query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
+#gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
+#result(gcmap)
 }
 \references{
 Lamb, J., Crawford, E. D., Peck, D., Modell, J. W., Blat, I. C., 

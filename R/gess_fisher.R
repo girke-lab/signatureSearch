@@ -50,12 +50,12 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' sample_db <- readHDF5chunk(db_path, colindex=1:100)
+#' #sample_db <- readHDF5chunk(db_path, colindex=1:100)
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
-#' fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
-#' result(fisher)
+#' #query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' #qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
+#' #fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
+#' #result(fisher)
 #' @export
 #' 
 gess_fisher <- function(qSig, higher, lower, chunk_size=5000){

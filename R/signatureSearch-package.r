@@ -187,7 +187,8 @@ NULL
 #' @examples 
 #' # Load object
 #' data(targetList)
-#' targetList
+#' head(targetList)
+#' tail(targetList)
 #' @keywords datasets
 "targetList"
 
@@ -206,3 +207,33 @@ NULL
 #' head(cell_info)
 #' @keywords datasets
 "cell_info"
+
+#' MOA to Gene Mappings
+#' 
+#' It is a list containing MOA terms to gene Entrez id mappings from ChEMBL 
+#' database 
+#'
+#' @name chembl_moa_list
+#' @aliases chembl_moa_list
+#' @docType data
+#' @examples 
+#' # Load object
+#' data(chembl_moa_list)
+#' head(chembl_moa_list)
+#' @keywords datasets
+"chembl_moa_list"
+
+#' MOA to Drug Name Mappings
+#' 
+#' It is a list containing MOA terms to drug name mappings obtained from 
+#' Touchstone database at CLUE website (https://clue.io/) 
+#'
+#' @name clue_moa_list
+#' @aliases clue_moa_list
+#' @docType data
+#' @examples 
+#' # Load object
+#' data(clue_moa_list)
+#' head(clue_moa_list)
+#' @keywords datasets
+"clue_moa_list"

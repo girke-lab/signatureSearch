@@ -447,21 +447,6 @@ parse_gctx <- function(fname, rid=NULL, cid=NULL, set_annot_rownames=FALSE,
     return(ds)
 }
 
-# Append matrix dimensions to filename
-append.dim <- function(ofile, mat, extension="gct") {
-  nc <- ncol(mat)
-  nr <- nrow(mat)
-  filename <- basename(ofile)
-  if (grepl("n[0-9]+x[0-9]+\\.gct", filename)) {
-    # already has a dimensions token, ignore
-    filename <- sub("_n[0-9]+x[0-9]+\\.gct.*", "", filename)
-  } 
-  filename <- file.path(dirname(ofile),
-                    sprintf('%s_n%dx%d.%s',filename,
-                            nc, nr, extension))
-  return(filename)
-}
-
 # Do a robust \code{\link{data.frame}} subset to a set of ids
 subset_to_ids <- function(df, ids) {
   # helper function to do a robust df subset

@@ -88,12 +88,12 @@ are described in the help file of the \code{gessResult} object.
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")
-qsig_lincs <- qSig(query = list(
-                    upset=c("230", "5357", "2015", "2542", "1759"), 
-                    downset=c("22864", "9338", "54793", "10384", "27000")), 
-                  gess_method = "LINCS", refdb = db_path)
-lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
-result(lincs)
+#qsig_lincs <- qSig(query = list(
+#                   upset=c("230", "5357", "2015", "2542", "1759"), 
+#                   downset=c("22864", "9338", "54793", "10384", "27000")), 
+#                   gess_method = "LINCS", refdb = db_path)
+#lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
+#result(lincs)
 }
 \references{
 For detailed description of the LINCS method and scores, 

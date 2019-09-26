@@ -61,12 +61,12 @@ are described in the help file of the \code{gessResult} object.
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")
-qsig_cmap <- qSig(query = list(
-                    upset=c("230", "5357", "2015", "2542", "1759"), 
-                    downset=c("22864", "9338", "54793", "10384", "27000")), 
-                  gess_method = "CMAP", refdb = db_path)
-cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
-result(cmap)
+#qsig_cmap <- qSig(query = list(
+#                    upset=c("230", "5357", "2015", "2542", "1759"), 
+#                    downset=c("22864", "9338", "54793", "10384", "27000")), 
+#                  gess_method = "CMAP", refdb = db_path)
+#cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
+#result(cmap)
 }
 \references{
 For detailed description of the CMap method, please refer to: 

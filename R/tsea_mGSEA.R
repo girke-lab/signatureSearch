@@ -139,9 +139,7 @@ tsea_mGSEA <- function(drugs,
   
   if(type=="GO"){
     # Get universe genes in GO annotation system
-    ext_path <- system.file("extdata", package="signatureSearch")
-    univ_tar_path <- paste0(ext_path,"/univ_genes_in_GO.txt")
-    universe <- readLines(univ_tar_path)
+    universe <- univ_go
     tar_diff <- setdiff(universe, gnset)
     tar_diff_weight <- rep(0, length(tar_diff))
     names(tar_diff_weight)=tar_diff
@@ -159,9 +157,9 @@ tsea_mGSEA <- function(drugs,
   
   if(type=="KEGG"){
     # Get universe genes in KEGG annotation system
-    ext_path <- system.file("extdata", package="signatureSearch")
-    univ_tar_path <- paste0(ext_path,"/univ_genes_in_KEGG.txt")
-    universe <- readLines(univ_tar_path)
+    KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
+    keggterms <- get("PATHID2EXTID", KEGG_DATA)
+    universe <- unique(unlist(keggterms))
     
     # convert gnset symbol to entrez
     gnset_entrez <- suppressMessages(

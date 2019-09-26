@@ -128,8 +128,8 @@ dsea_GSEA <- function(drugList,
     return(res)
   }
   if(type == "MOA"){
-      moa_list <- readRDS(system.file("extdata", "clue_moa_list.rds", 
-                                      package="signatureSearch"))
+      data("clue_moa_list", envir = environment())
+      moa_list <- clue_moa_list
       MOA_DATA <- get_MOA_data(moa_list, keytype="drug_name")
       res <- GSEA_internal(geneList = drugList,
                            exponent = exponent,

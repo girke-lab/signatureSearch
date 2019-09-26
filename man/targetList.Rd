@@ -17,6 +17,7 @@ target genes/proteins in the target set of the selected top 10 drugs.
 \examples{
 # Load object
 data(targetList)
-targetList
+head(targetList)
+tail(targetList)
 }
 \keyword{datasets}

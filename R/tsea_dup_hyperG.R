@@ -89,9 +89,7 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
   if(type=="GO"){
     if(universe=="Default"){
       # Get universe genes in GO annotation system
-      ext_path <- system.file("extdata", package="signatureSearch")
-      univ_tar_path <- paste0(ext_path,"/univ_genes_in_GO.txt")
-      universe <- readLines(univ_tar_path)
+      universe <- univ_go
     }
     ego <- enrichGO2(gene = gnset, universe = universe, OrgDb = org.Hs.eg.db, 
                     keytype = 'SYMBOL', ont = ont, 
@@ -103,10 +101,9 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
   }
   if(type=="KEGG"){
     if(universe=="Default"){
-      # Get universe genes in KEGG annotation system (entrez ids)
-      ext_path <- system.file("extdata", package="signatureSearch")
-      univ_tar_path <- paste0(ext_path,"/univ_genes_in_KEGG.txt")
-      universe <- readLines(univ_tar_path)
+      KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
+      keggterms <- get("PATHID2EXTID", KEGG_DATA)
+      universe <- unique(unlist(keggterms))
     }
     gnset_entrez <- suppressMessages(
       AnnotationDbi::select(org.Hs.eg.db, keys = gnset, keytype = "SYMBOL", 

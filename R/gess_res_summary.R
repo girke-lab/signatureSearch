@@ -179,4 +179,5 @@ gess_res_vis <- function(gess_tb, drugs, col, cell_group="all"){
   p
 }
 
-globalVariables(c("cell_type", "cell_id", "pert", "cell_info")) 
+globalVariables(c("cell_type", "cell_id", "pert", "cell_info", 
+                  "chembl_moa_list", "clue_moa_list")) 

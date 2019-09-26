@@ -37,9 +37,8 @@
 ##' @export
 moa_conn <- function(gess_tb, moa_cats="default", cells="normal"){
   if(moa_cats=="default"){
-    dir <- system.file("extdata", package = "signatureSearch")
-    moa_path <- file.path(dir, "clue_moa_list.rds") 
-    moa_list <- readRDS(moa_path)
+    data("clue_moa_list", envir = environment())
+    moa_list <- clue_moa_list
   }
   if(is(moa_cats, "list")){
     moa_list <- moa_cats

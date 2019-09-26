@@ -121,8 +121,8 @@ dsea_hyperG <- function(drugs,
     return(res)
   }
   if(type == "MOA"){
-      moa_list <- readRDS(system.file("extdata", "clue_moa_list.rds", 
-                                      package="signatureSearch"))
+      data("clue_moa_list", envir = environment())
+      moa_list <- clue_moa_list
       MOA_DATA <- get_MOA_data(moa_list, keytype="drug_name")
       # get all the drugs in the corresponding annotation system as universe
       ext2path <- get("EXTID2PATHID", envir = MOA_DATA)
