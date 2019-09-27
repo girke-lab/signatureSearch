@@ -13,7 +13,6 @@
 ##' @importFrom RSQLite dbDisconnect
 ##' @importFrom utils download.file
 ##' @importFrom stats na.omit
-##' @importFrom GOSemSim load_OrgDb
 # get_GO_data_drug <- function(OrgDb, ont, keytype) {
 #     GO_Env <- get_GO_Env()
 #     use_cached <- FALSE

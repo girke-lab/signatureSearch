@@ -45,9 +45,9 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, verbose=FALSE, ...) {
     p2e <- get("PATHID2EXTID", envir=KEGG_DATA)
     go_gene_entrez = p2e[[set]]
     # convert Entrez ids in KEGG pathways to gene SYMBOL
-    db <- load_OrgDb("org.Hs.eg.db")
     go_gene_map <- suppressMessages(
-      select(db, keys = go_gene_entrez, keytype = "ENTREZID", columns="SYMBOL"))
+      select(org.Hs.eg.db, keys = go_gene_entrez, keytype = "ENTREZID", 
+             columns="SYMBOL"))
     go_gene <- unique(go_gene_map$SYMBOL)
   } else {
       go_gene <- set
