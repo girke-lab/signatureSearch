@@ -111,7 +111,7 @@ get_MOA_data <- function(moa_list, keytype="drug_name") {
                      moa_id=rep(names(moa_list2), lengths(moa_list2)),
                      description=rep(names(moa_list), lengths(moa_list)), 
                      stringsAsFactors=FALSE, row.names=NULL)
-    colnames(df)[1] = keytype
+    colnames(df)[1] <- keytype
     moaAnno <- df[,c("moa_id",keytype)]
     MOA_DATA <- build_Anno(moaAnno, df[,c("moa_id", "description")])
     return(MOA_DATA)

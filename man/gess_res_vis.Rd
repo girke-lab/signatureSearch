@@ -4,7 +4,7 @@
 \alias{gess_res_vis}
 \title{GESS Result Visualization}
 \usage{
-gess_res_vis(gess_tb, drugs, col, cell_group = "all")
+gess_res_vis(gess_tb, drugs, col, cell_group = "all", ...)
 }
 \arguments{
 \item{gess_tb}{tibble in the 'result' slot of the \code{\link{gessResult}} 
@@ -19,6 +19,8 @@ this way it will show the ranks of each drug in different cell types.}
 \item{cell_group}{character(1), one of "all", "normal", or "tumor". 
 If "all", it will show scores of each drug in both tumor and normal cell 
 types. If "normal" or "tumor", it will only show normal or tumor cell types.}
+
+\item{...}{Other arguments passed on to \code{\link[ggplot2]{geom_point}}}
 }
 \value{
 plot visualizing GESS results

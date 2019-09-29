@@ -25,7 +25,7 @@ enrichMOA <- function(gene,
     MOA_DATA_chembl <- get_MOA_data(chembl_moa_list, keytype="entrez")
     # get all the gene entrez ids in the MOA annotation system as universe
     ext2path <- get("EXTID2PATHID", envir = MOA_DATA_chembl)
-    universe = names(ext2path)
+    universe <- names(ext2path)
     
     res <- enricher_internal(gene,
                            pvalueCutoff=pvalueCutoff,

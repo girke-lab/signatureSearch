@@ -29,7 +29,7 @@ append will be column-wise.
 mat <- matrix(1:12, nrow=3)
 rownames(mat) <- paste0("r", 1:3); colnames(mat) <- paste0("c", 1:4)
 tmp_file <- tempfile(fileext=".h5")
-createEmptyH5(tmp_file)
+create_empty_h5(tmp_file)
 append2H5(mat, tmp_file)
 rhdf5::h5ls(tmp_file)
 }

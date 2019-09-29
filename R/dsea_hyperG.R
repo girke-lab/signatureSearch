@@ -77,7 +77,7 @@ dsea_hyperG <- function(drugs,
     
     # get all the drugs in the corresponding annotation system as universe
     ext2path <- get("EXTID2PATHID", envir = GO_DATA_drug)
-    universe = names(ext2path)
+    universe <- names(ext2path)
     
     res <- enricher_internal(gene=drugs,
                              pvalueCutoff=pvalueCutoff,
@@ -104,7 +104,7 @@ dsea_hyperG <- function(drugs,
     KEGG_DATA_drug <- prepare_KEGG_drug(species, "KEGG", keyType="kegg")
     # get all the drugs in the corresponding annotation system as universe
     ext2path <- get("EXTID2PATHID", envir = KEGG_DATA_drug)
-    universe = names(ext2path)
+    universe <- names(ext2path)
     res <- enricher_internal(drugs,
                              pvalueCutoff  = pvalueCutoff,
                              pAdjustMethod = pAdjustMethod,
@@ -126,7 +126,7 @@ dsea_hyperG <- function(drugs,
       MOA_DATA <- get_MOA_data(moa_list, keytype="drug_name")
       # get all the drugs in the corresponding annotation system as universe
       ext2path <- get("EXTID2PATHID", envir = MOA_DATA)
-      universe = names(ext2path)
+      universe <- names(ext2path)
       
       res <- enricher_internal(gene=drugs,
                                pvalueCutoff=pvalueCutoff,

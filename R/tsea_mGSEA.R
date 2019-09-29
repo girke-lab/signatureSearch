@@ -142,8 +142,8 @@ tsea_mGSEA <- function(drugs,
     universe <- univ_go
     tar_diff <- setdiff(universe, gnset)
     tar_diff_weight <- rep(0, length(tar_diff))
-    names(tar_diff_weight)=tar_diff
-    tar_total_weight = c(tar_weight, tar_diff_weight)
+    names(tar_diff_weight) <- tar_diff
+    tar_total_weight <- c(tar_weight, tar_diff_weight)
     gsego <- gseGO2(geneList = tar_total_weight, OrgDb = org.Hs.eg.db, 
                     ont = ont, keyType = "SYMBOL", nPerm = nPerm, 
                     minGSSize = minGSSize, maxGSSize = maxGSSize, 
@@ -151,7 +151,7 @@ tsea_mGSEA <- function(drugs,
                     pvalueCutoff = pvalueCutoff, pAdjustMethod=pAdjustMethod)
     if(is.null(gsego))
         return(NULL)
-    drugs(gsego) = drugs
+    drugs(gsego) <- drugs
     return(gsego)
   }
   
@@ -173,8 +173,8 @@ tsea_mGSEA <- function(drugs,
     
     tar_diff <- setdiff(universe, gnset_entrez2)
     tar_diff_weight <- rep(0, length(tar_diff))
-    names(tar_diff_weight)=tar_diff
-    tar_total_weight = c(tar_weight, tar_diff_weight)
+    names(tar_diff_weight) <- tar_diff
+    tar_total_weight <- c(tar_weight, tar_diff_weight)
     
     gsekk <- gseKEGG2(geneList=tar_total_weight, organism='hsa', 
                       keyType='kegg', nPerm = nPerm, verbose = verbose, 
@@ -182,7 +182,7 @@ tsea_mGSEA <- function(drugs,
                       pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod)
     if(is.null(gsekk))
         return(NULL)
-    drugs(gsekk) = drugs
+    drugs(gsekk) <- drugs
     return(gsekk)
   }
 }

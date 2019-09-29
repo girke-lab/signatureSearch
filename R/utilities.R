@@ -2,7 +2,7 @@ sep_pcf <- function(res){
     new <- as.data.frame(t(vapply(seq_len(nrow(res)), function(i)
         unlist(strsplit(as.character(res$set[i]), "__")), 
         FUN.VALUE=character(3))), stringsAsFactors=FALSE)
-    colnames(new) = c("pert", "cell", "type")
+    colnames(new) <- c("pert", "cell", "type")
     res <- cbind(new, res[,-1])
     return(res)
 }
@@ -42,11 +42,11 @@ getH5dim <- function(h5file){
 #' @export
 matrix2h5 <- function(matrix, h5file, overwrite=TRUE){
     if(file.exists(h5file)){
-        if(isTRUE(overwrite)){
-            createEmptyH5(h5file, delete_existing=TRUE)
+        if(overwrite){
+            create_empty_h5(h5file, delete_existing=TRUE)
         }
     } else {
-        createEmptyH5(h5file, delete_existing=FALSE)
+        create_empty_h5(h5file, delete_existing=FALSE)
     }
     append2H5(matrix, h5file)
 }
@@ -67,10 +67,10 @@ matrix2h5 <- function(matrix, h5file, overwrite=TRUE){
 #' @return empty HDF5 file
 #' @examples
 #' tmp_file <- tempfile(fileext=".h5")
-#' createEmptyH5(tmp_file, level=6)
+#' create_empty_h5(tmp_file, level=6)
 #' @export
-createEmptyH5 <- function(h5file, delete_existing=FALSE, level=6) {
-    if(delete_existing==TRUE) unlink(h5file)
+create_empty_h5 <- function(h5file, delete_existing=FALSE, level=6) {
+    if(delete_existing) unlink(h5file)
     h5createFile(file=h5file)
     h5createDataset(h5file, "assay", c(0,0), c(H5Sunlimited(), H5Sunlimited()), 
                     chunk=c(12328,1), level=level)
@@ -97,7 +97,7 @@ createEmptyH5 <- function(h5file, delete_existing=FALSE, level=6) {
 #' mat <- matrix(1:12, nrow=3)
 #' rownames(mat) <- paste0("r", 1:3); colnames(mat) <- paste0("c", 1:4)
 #' tmp_file <- tempfile(fileext=".h5")
-#' createEmptyH5(tmp_file)
+#' create_empty_h5(tmp_file)
 #' append2H5(mat, tmp_file)
 #' rhdf5::h5ls(tmp_file)
 #' @export
@@ -119,7 +119,7 @@ append2H5 <- function(x, h5file, printstatus=TRUE) {
     h5write(rownames(x), h5file, "rownames", index=list(seq_len(nrows), 1))
     if(any(duplicated(h5read(h5file, "rownames")[,1]))) 
         warning("Row names contain duplicates!")
-    if(printstatus==TRUE) h5ls(h5file, all=TRUE)[c("dim", "maxdim")]
+    if(printstatus) h5ls(h5file, all=TRUE)[c("dim", "maxdim")]
     h5closeAll()
 }
 
@@ -156,11 +156,11 @@ gctx2h5 <- function(gctx, cid, new_cid=cid, h5file, chunksize=5000,
         split(new_cid, rep(seq_len(ceiling(length(new_cid)/chunksize)), 
                            each=chunksize)))
     if(file.exists(h5file)){
-        if(isTRUE(overwrite)){
-            createEmptyH5(h5file, delete_existing=TRUE)
+        if(overwrite){
+            create_empty_h5(h5file, delete_existing=TRUE)
         }
     } else {
-        createEmptyH5(h5file, delete_existing=FALSE)
+        create_empty_h5(h5file, delete_existing=FALSE)
     }
     lapply(seq_along(cid_list), function(i){
         mat <- parse_gctx(gctx, cid=cid_list[[i]], matrix_only=TRUE)
@@ -212,7 +212,7 @@ readHDF5chunk <- function(h5file, colindex=seq_len(10), colnames=NULL) {
     rownames(m) <- as.character(myrow[,1])
     colnames(m) <- as.character(mycol[,1])
     if(! is.null(colnames)){
-        m = m[,colnames, drop=FALSE]
+        m <- m[,colnames, drop=FALSE]
     }
     se <- SummarizedExperiment(assays=list(score=m))
     h5closeAll()

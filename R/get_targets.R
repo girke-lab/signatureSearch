@@ -39,7 +39,7 @@ get_targets <- function(drugs, database="all", verbose=FALSE){
   dtlist_db_drugs <- dtlist_db[intersect(names(dtlist_db), drugs)]
   res_db <- list2slash(dtlist_db_drugs)
   idx_db <- match(res_db$drug_name, drugs)
-  res_db$drug_name = drugs_orig[idx_db]
+  res_db$drug_name <- drugs_orig[idx_db]
   if(database=="DrugBank"){
     if(length(drugs_notar_db) > 0){
       if(verbose){
@@ -58,7 +58,8 @@ get_targets <- function(drugs, database="all", verbose=FALSE){
   dtlist_lincs_drugs <- dtlist_lincs[intersect(names(dtlist_lincs), drugs)]
   res_lincs <- list2slash(dtlist_lincs_drugs)
   idx_lincs <- match(res_lincs$drug_name, drugs)
-  res_lincs$drug_name = drugs_orig[idx_lincs]
+  res_lincs$drug_name <- drugs_orig[idx_lincs]
+  
   if(database=="CLUE"){
     if(length(drugs_notar_lincs) > 0){
       if(verbose){
@@ -77,7 +78,8 @@ get_targets <- function(drugs, database="all", verbose=FALSE){
   dtlist_sti_drugs <- dtlist_sti[intersect(names(dtlist_sti), drugs)]
   res_sti <- list2slash(dtlist_sti_drugs)
   idx_sti <- match(res_sti$drug_name, drugs)
-  res_sti$drug_name = drugs_orig[idx_sti]
+  res_sti$drug_name <- drugs_orig[idx_sti]
+  
   if(database=="STITCH"){
     if(length(drugs_notar_sti) > 0){
       if(verbose){
@@ -96,7 +98,7 @@ get_targets <- function(drugs, database="all", verbose=FALSE){
   dtlist_drugs <- dtlist[intersect(names(dtlist), drugs)]
   res <- list2slash(dtlist_drugs)
   idx <- match(res$drug_name, drugs)
-  res$drug_name = drugs_orig[idx]
+  res$drug_name <- drugs_orig[idx]
   if(database=="all"){
     if(length(drugs_notar) > 0){
       if(verbose){

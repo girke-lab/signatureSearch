@@ -60,11 +60,11 @@ enrichGO2 <- function(gene,
     return(res)
   # Add and select ontology in res
   res <- add_GO_Ontology(res, GO_DATA)
-  tmp_df <- res@result
+  tmp_df <- result(res)
   colnames(tmp_df)[1] = "ont"
   rst(res) <- tmp_df
   if(ont != "ALL")
-    res@result <- as_tibble(res[res$ont == ont, ])
+    rst(res) <- as_tibble(res[res$ont == ont, ])
   og(res) <- get_organism(OrgDb)
   ont(res) <- ont
   return(res)

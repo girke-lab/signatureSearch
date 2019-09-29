@@ -89,15 +89,15 @@ tsea_mabs <- function(drugs,
     universe <- univ_go
     tar_diff <- setdiff(universe, gnset)
     tar_diff_weight <- rep(0, length(tar_diff))
-    names(tar_diff_weight)=tar_diff
-    tar_total_weight = c(tar_weight, tar_diff_weight)
+    names(tar_diff_weight) <- tar_diff
+    tar_total_weight <- c(tar_weight, tar_diff_weight)
     mabsgo <- mabsGO(geneList = tar_total_weight, OrgDb = org.Hs.eg.db, 
                      ont = ont, keyType = "SYMBOL", nPerm = nPerm, 
                      minGSSize = minGSSize, maxGSSize = maxGSSize, 
                      pvalueCutoff = pvalueCutoff, pAdjustMethod=pAdjustMethod)
     if(is.null(mabsgo))
         return(NULL)
-    drugs(mabsgo) = drugs
+    drugs(mabsgo) <- drugs
     return(mabsgo)
   }
   
@@ -117,8 +117,9 @@ tsea_mabs <- function(drugs,
     tar_weight <- sort(tar_dup/sum(tar_dup), decreasing = TRUE)
     
     tar_diff <- setdiff(universe, gnset_entrez2)
-    tar_diff_weight <- rep(0, length(tar_diff)); names(tar_diff_weight)=tar_diff
-    tar_total_weight = c(tar_weight, tar_diff_weight)
+    tar_diff_weight <- rep(0, length(tar_diff))
+    names(tar_diff_weight) <- tar_diff
+    tar_total_weight <- c(tar_weight, tar_diff_weight)
 
     mabskk <- mabsKEGG(geneList=tar_total_weight, organism='hsa', 
                        keyType='kegg', nPerm = nPerm, 
@@ -126,7 +127,7 @@ tsea_mabs <- function(drugs,
                        pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod)
     if(is.null(mabskk))
       return(NULL)
-    drugs(mabskk) = drugs
+    drugs(mabskk) <- drugs
     return(mabskk)
   }
 }

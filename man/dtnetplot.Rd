@@ -20,8 +20,8 @@ target set}
 
 \item{verbose}{TRUE or FALSE, whether to print messages}
 
-\item{...}{additional parameters of \code{\link[visNetwork]{visNetwork}} 
-function.}
+\item{...}{Other arguments passed on to 
+\code{\link[visNetwork]{visNetwork}} function.}
 }
 \value{
 visNetwork plot

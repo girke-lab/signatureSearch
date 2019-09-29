@@ -118,7 +118,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
     mat_nrow <- mat_dim[1]
     mat_ncol <- mat_dim[2]
     ceil <- ceiling(mat_ncol/chunk_size)
-    ESout=NULL
+    ESout <- NULL
     for(i in seq_len(ceil)){
         mat <- readHDF5mat(db_path,
                   colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
@@ -201,7 +201,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
   # without abs() sign of neg values would switch to pos
   ## Tau calculation requires reference NCS lookup DB
   ## performs: sign(ncs_query) * 100/N sum(abs(ncs_ref) < abs(ncs_query))
-  if(isTRUE(tau)){
+  if(tau){
     # download taurefList.rds
     taurefList9264 <- suppressMessages(ah[["AH69088"]])
     ncs_query <- ncs; names(ncs_query) <- names(esout)
@@ -248,9 +248,9 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
   new <- as.data.frame(t(vapply(seq_along(esout), function(i)
     unlist(strsplit(as.character(names(esout)[i]), "__")),
     FUN.VALUE = character(3))), stringsAsFactors=FALSE)
-  colnames(new) = c("pert", "cell", "type")
+  colnames(new) <- c("pert", "cell", "type")
   
-  if(isTRUE(tau)){
+  if(tau){
     resultDF <- data.frame(
       new, 
       trend = as.character(ifelse(esout > 0, "up", "down")),
@@ -311,7 +311,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 #' @importFrom utils write.table
 #' @examples 
 #' db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")
-#' randQueryES(h5file=db_path, N_queries=5, dest="ES_NULL.txt")
+#' rand_query_ES(h5file=db_path, N_queries=5, dest="ES_NULL.txt")
 #' unlink("ES_NULL.txt")
 #' @seealso \code{\link{gess_lincs}}
 #' @references 
@@ -321,7 +321,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 #' URL: https://doi.org/10.1016/j.cell.2017.10.049
 #' @export
 
-randQueryES <- function(h5file, N_queries=1000, dest) {
+rand_query_ES <- function(h5file, N_queries=1000, dest) {
   ## Create list of random queries
   idnames <- drop(h5read(h5file, "rownames"))
   query_list <- randQuerySets(id_names=idnames, N_queries=N_queries, 
@@ -334,7 +334,7 @@ randQueryES <- function(h5file, N_queries=1000, dest) {
       names(esout) <- drop(h5read(h5file, "colnames"))
       # message("Random query ", sprintf("%04d", x), 
       #         " has been searched against reference database")
-      wtcs = esout
+      wtcs <- esout
   }
   myMA <- vapply(seq(along=query_list), f, query_list, h5file, 
                  FUN.VALUE=double(length(drop(h5read(h5file, "colnames")))))

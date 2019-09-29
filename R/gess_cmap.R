@@ -91,7 +91,7 @@ rankMatrix <- function(x, decreasing=TRUE) {
   if(!is(x, "matrix") | !is.numeric(x)) stop("x needs to be numeric matrix!")
   if(is.null(rownames(x)) | is.null(colnames(x))) 
     stop("matrix x lacks colnames and/or rownames!")
-  if(decreasing==TRUE) { mysign <- -1 } else { mysign <- 1 }
+  if(decreasing) { mysign <- -1 } else { mysign <- 1 }
   rankma <- vapply(seq(ncol(x)), function(z) data.table::frank(mysign * x[,z]))
   rownames(rankma) <- rownames(x); colnames(rankma) <- colnames(x)
   return(rankma)
@@ -104,8 +104,8 @@ cmapEnrich <- function(db_path, upset, downset, chunk_size=5000) {
   mat_ncol <- mat_dim[2]
   ceil <- ceiling(mat_ncol/chunk_size)
   ## get ranks of up and down genes in DB
-  rankLup=NULL
-  rankLdown=NULL
+  rankLup <- NULL
+  rankLdown <- NULL
   for(i in seq_len(ceil)){
     mat <- readHDF5mat(db_path,
                     colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))

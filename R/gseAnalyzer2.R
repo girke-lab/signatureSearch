@@ -44,7 +44,7 @@ gseGO2 <- function(geneList,
     # builing GO_DATA from scratch
     GO_DATA <- suppressMessages(ah[["AH69086"]])
     
-    res <-  GSEA_internal2(geneList = geneList,
+    res <- GSEA_internal2(geneList = geneList,
                           exponent = exponent,
                           nPerm = nPerm,
                           minGSSize = minGSSize,

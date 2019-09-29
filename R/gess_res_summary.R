@@ -107,6 +107,7 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
 #' @param cell_group character(1), one of "all", "normal", or "tumor". 
 #' If "all", it will show scores of each drug in both tumor and normal cell 
 #' types. If "normal" or "tumor", it will only show normal or tumor cell types.
+#' @param ... Other arguments passed on to \code{\link[ggplot2]{geom_point}}
 #' @return plot visualizing GESS results
 #' @references  
 #' Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., 
@@ -133,32 +134,32 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
 #'                  gess_method="LINCS", refdb="path/to/refdb")
 #' gess_res_vis(result(gr), drugs=c("p1","p2"), col="NCS")
 #' @export
-gess_res_vis <- function(gess_tb, drugs, col, cell_group="all"){
+gess_res_vis <- function(gess_tb, drugs, col, cell_group="all", ...){
   # ext_path  <- system.file("extdata", package="signatureSearch")
   # cell_path <- paste0(ext_path,"/cell_info.tsv")
   # cell_info <- suppressMessages(read_tsv(cell_path))
   data("cell_info", envir=environment())
-  cells = unique(gess_tb$cell)
+  cells <- unique(gess_tb$cell)
   if(col=="rank"){
       gess_tb <- data.frame(gess_tb, rank=seq_len(dim(gess_tb)[1]))
   }
   # Summarize NCS across groups
   tumor <- cell_info %>% filter(cell_type=="tumor")
-  tumor = intersect(as.character(tumor$cell_id), cells)
+  tumor <- intersect(as.character(tumor$cell_id), cells)
   normal <- cell_info %>% filter(cell_type=="normal")
-  normal = intersect(as.character(normal$cell_id), cells)
+  normal <- intersect(as.character(normal$cell_id), cells)
   tb_grp <- sim_score_grp(gess_tb, tumor, normal, score_column=col)
 
-  data1 = gess_tb %>% 
+  data1 <- gess_tb %>% 
     filter(pert %in% drugs) %>% mutate(pert = factor(pert, levels=drugs)) %>% 
     left_join(cell_info[,c("cell_id","cell_type")], by=c("cell"="cell_id")) %>%
     rename("cell_class"= cell_type) %>%
     rename("cell_type"=cell)
   
-  data2 = tb_grp %>% filter(pert %in% drugs) %>% 
+  data2 <- tb_grp %>% filter(pert %in% drugs) %>% 
     mutate(pert = factor(pert, levels=drugs))
-  data2 = data2[,c("pert", paste0(col, "_grp1"), paste0(col,"_grp2"))]
-  colnames(data2) = c("pert", "tumor", "normal")
+  data2 <- data2[,c("pert", paste0(col, "_grp1"), paste0(col,"_grp2"))]
+  colnames(data2) <- c("pert", "tumor", "normal")
   data2 %<>% distinct() %>%
     reshape2::melt(id.vars=c("pert"), variable.name = "cell_class", 
                    value.name=paste0(col, "_grp"))
@@ -166,13 +167,13 @@ gess_res_vis <- function(gess_tb, drugs, col, cell_group="all"){
       data1 %<>% filter(cell_type == cell_group)
       data2 %<>% filter(cell_type == cell_group) 
   }
-  p = ggplot(data1) + 
+  p <- ggplot(data1) + 
     geom_point(data=data1, 
                aes_string(x="pert", y=col, fill="cell_type", shape="cell_class",
-                          colour = "cell_type"), size=2.5) +
+                          colour = "cell_type"), size=2.5, ...) +
     geom_point(data=na.omit(data2), 
                aes_string("pert", paste0(col, "_grp"), shape = "cell_class"), 
-               size=2.5) +
+               size=2.5, ...) +
     ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           panel.grid.major.y = element_blank(), 
           panel.grid.minor.y = element_blank())

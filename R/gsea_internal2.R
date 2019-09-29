@@ -20,13 +20,13 @@ GSEA_fgsea2 <- function(geneList,
   logic <- vapply(geneSets, function(x) 
     ifelse(length(intersect(x, names(geneList)[geneList!=0]))==0, FALSE, TRUE),
     FUN.VALUE = logical(1))
-  geneSets = geneSets[logic]
+  geneSets <- geneSets[logic]
   geneSets <- lapply(geneSets, function(x) intersect(x, names(geneList)))
   if(verbose)
     message("Excluding gene sets that beyond size limitation")
   logic <- vapply(geneSets, function(x) 
     length(x)<=maxGSSize & length(x)>=minGSSize, FUN.VALUE = logical(1))
-  geneSets = geneSets[logic]
+  geneSets <- geneSets[logic]
   
   if(verbose)
     message("GSEA analysis...")

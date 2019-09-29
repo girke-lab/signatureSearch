@@ -16,8 +16,8 @@
 ##' @param desc character(1), description of the chosen functional category or 
 ##' target set
 ##' @param verbose TRUE or FALSE, whether to print messages
-##' @param ... additional parameters of \code{\link[visNetwork]{visNetwork}} 
-##' function.
+##' @param ... Other arguments passed on to 
+##' \code{\link[visNetwork]{visNetwork}} function.
 ##' @return visNetwork plot
 ##' @import visNetwork
 ##' @importFrom AnnotationDbi select
