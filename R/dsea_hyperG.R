@@ -39,7 +39,6 @@
 ##' @return \code{\link{feaResult}} object containing the enrichment results of 
 ##' functional categories (e.g. GO terms or KEGG pathways) ranked by the 
 ##' corresponding enrichment statistic.
-##' @import org.Hs.eg.db
 ##' @importFrom magrittr %<>%
 ##' @importMethodsFrom AnnotationDbi mappedkeys
 ##' @importMethodsFrom AnnotationDbi mget

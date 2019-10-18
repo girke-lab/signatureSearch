@@ -1,7 +1,7 @@
 Package: signatureSearch
 Title: Environment for Gene Expression Searching Combined with Functional 
        Enrichment Analysis
-Version: 0.99.17
+Version: 0.99.18
 Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
            role = c("cre", "aut")),
            person("Thomas", "Girke", email = "thomas.girke@ucr.edu", 
@@ -13,9 +13,9 @@ Description: This package implements algorithms and data structures for
 Depends: R(>= 3.6.0), Rcpp, SummarizedExperiment
 Imports: AnnotationDbi, ggplot2, data.table, AnnotationHub,
          magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats, 
-         utils, org.Hs.eg.db, reshape2, visNetwork, BiocParallel, fastmatch, 
+         utils, reshape2, visNetwork, BiocParallel, fastmatch, 
          Biobase, clusterProfiler, readr, gCMAP, DOSE, rhdf5, GSEABase
-Suggests: knitr, testthat, rmarkdown, BiocStyle
+Suggests: knitr, testthat, rmarkdown, BiocStyle, org.Hs.eg.db
 License: Artistic-2.0
 SystemRequirements: C++11
 LinkingTo: Rcpp

@@ -180,5 +180,7 @@ gess_res_vis <- function(gess_tb, drugs, col, cell_group="all", ...){
   p
 }
 
+## get rid of "Undefined global functions or variables" note
 globalVariables(c("cell_type", "cell_id", "pert", "cell_info", 
-                  "chembl_moa_list", "clue_moa_list")) 
+                  "chembl_moa_list", "clue_moa_list", "org.Hs.eg.db",
+                  "cell", "drug_name", "from")) 

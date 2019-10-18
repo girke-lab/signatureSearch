@@ -91,7 +91,7 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
       # Get universe genes in GO annotation system
       universe <- univ_go
     }
-    ego <- enrichGO2(gene = gnset, universe = universe, OrgDb = org.Hs.eg.db, 
+    ego <- enrichGO2(gene = gnset, universe = universe, OrgDb = "org.Hs.eg.db", 
                     keytype = 'SYMBOL', ont = ont, 
                     pAdjustMethod = pAdjustMethod, pvalueCutoff = pvalueCutoff, 
                     qvalueCutoff = qvalueCutoff, 
@@ -100,19 +100,21 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
     return(ego)
   }
   if(type=="KEGG"){
-    if(universe=="Default"){
-      KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
-      keggterms <- get("PATHID2EXTID", KEGG_DATA)
-      universe <- unique(unlist(keggterms))
-    }
-    gnset_entrez <- suppressMessages(
-      AnnotationDbi::select(org.Hs.eg.db, keys = gnset, keytype = "SYMBOL", 
-                            columns = "ENTREZID")$ENTREZID)
-    kk <- enrichKEGG2(gene=gnset_entrez, organism = "hsa", keyType = "kegg", 
-                     pvalueCutoff = pvalueCutoff, 
-                     pAdjustMethod = pAdjustMethod, 
-                     universe=universe, minGSSize = minGSSize, 
-                     maxGSSize = maxGSSize, qvalueCutoff = qvalueCutoff)
+      if(universe=="Default"){
+          KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
+          keggterms <- get("PATHID2EXTID", KEGG_DATA)
+          universe <- unique(unlist(keggterms))
+      }
+      if (!requireNamespace("org.Hs.eg.db"))
+          stop("Please install 'org.Hs.eg.db' to use this function")
+      gnset_entrez <- suppressMessages(
+          AnnotationDbi::select(org.Hs.eg.db, keys = gnset, keytype = "SYMBOL", 
+                                columns = "ENTREZID")$ENTREZID)
+      kk <- enrichKEGG2(gene=gnset_entrez, organism = "hsa", keyType = "kegg", 
+                        pvalueCutoff = pvalueCutoff, 
+                        pAdjustMethod = pAdjustMethod, 
+                        universe=universe, minGSSize = minGSSize, 
+                        maxGSSize = maxGSSize, qvalueCutoff = qvalueCutoff)
     drugs(kk) <- drugs
     return(kk)
   }

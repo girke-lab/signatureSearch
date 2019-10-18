@@ -19,9 +19,8 @@
 ##' @return feaResult object
 ##' @examples 
 ##' data(targetList)
-##' # library(org.Hs.eg.db)
-##' # gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
-##' #                 pvalueCutoff = 1)
+##' # gsego <- gseGO2(geneList=targetList, ont="MF", OrgDb="org.Hs.eg.db",
+##' #                 pvalueCutoff=1)
 ##' # head(gsego)
 ##' @export
 gseGO2 <- function(geneList,

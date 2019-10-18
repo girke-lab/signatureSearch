@@ -45,6 +45,8 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, verbose=FALSE, ...) {
     p2e <- get("PATHID2EXTID", envir=KEGG_DATA)
     go_gene_entrez = p2e[[set]]
     # convert Entrez ids in KEGG pathways to gene SYMBOL
+    if (!requireNamespace("org.Hs.eg.db"))
+        stop("Please install 'org.Hs.eg.db' to use this function")
     go_gene_map <- suppressMessages(
       select(org.Hs.eg.db, keys = go_gene_entrez, keytype = "ENTREZID", 
              columns="SYMBOL"))

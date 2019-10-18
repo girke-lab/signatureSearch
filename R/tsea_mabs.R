@@ -107,6 +107,8 @@ tsea_mabs <- function(drugs,
     keggterms <- get("PATHID2EXTID", KEGG_DATA)
     universe <- unique(unlist(keggterms))
     # convert gnset symbol to entrez
+    if (!requireNamespace("org.Hs.eg.db"))
+        stop("Please install 'org.Hs.eg.db' to use this function")
     gnset_entrez <- suppressMessages(
       AnnotationDbi::select(org.Hs.eg.db, keys = gnset, 
                             keytype = "SYMBOL", columns = "ENTREZID"))

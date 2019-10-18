@@ -15,9 +15,8 @@
 ##' @author Yuzhu Duan
 ##' @examples 
 ##' data(targetList)
-##' #library(org.Hs.eg.db)
-##' #mg <- mabsGO(geneList=targetList, ont="MF", OrgDb=org.Hs.eg.db,
-##' #             pvalueCutoff = 1)
+##' #mg <- mabsGO(geneList=targetList, ont="MF", OrgDb="org.Hs.eg.db",
+##' #             pvalueCutoff=1)
 ##' #head(mg)
 ##' @export
 mabsGO <- function(geneList,

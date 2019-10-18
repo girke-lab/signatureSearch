@@ -116,7 +116,3 @@ get_MOA_data <- function(moa_list, keytype="drug_name") {
     MOA_DATA <- build_Anno(moaAnno, df[,c("moa_id", "description")])
     return(MOA_DATA)
 }
-
-## get rid of "Undefined global functions or variables" note
-## cell = drug_name = from = . = NULL
-globalVariables(c("cell", "drug_name", "from")) 
