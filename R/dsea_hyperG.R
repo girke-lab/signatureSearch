@@ -72,6 +72,7 @@ dsea_hyperG <- function(drugs,
     #                                  ont, keytype="SYMBOL")
     # download GO_DATA_drug.rds from AnnotationHub to save time by avoiding 
     # builing it from scratch
+    ah <- suppressMessages(AnnotationHub())
     GO_DATA_drug <- suppressMessages(ah[["AH69087"]])
     
     # get all the drugs in the corresponding annotation system as universe

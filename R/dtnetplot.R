@@ -37,6 +37,7 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, verbose=FALSE, ...) {
       stop("The 'set' is a GO term ID, please set 'ont' as one of 
            BP, MF or CC")
     # download goAnno.rds and save it to cache
+    ah <- suppressMessages(AnnotationHub())
     goAnno <- suppressMessages(ah[["AH69084"]])
     go_gene <- unique(goAnno$SYMBOL[goAnno$ONTOLOGYALL == ont & 
                                       goAnno$GOALL == set])

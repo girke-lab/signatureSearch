@@ -220,12 +220,14 @@ readHDF5chunk <- function(h5file, colindex=seq_len(10), colnames=NULL) {
 }
 
 #' @importFrom AnnotationHub AnnotationHub
-ah <- NULL
-.onLoad <- function(...) {
-    ah <<- suppressMessages(AnnotationHub())
-}
+
+# ah <- NULL
+# .onLoad <- function(...) {
+#     ah <<- suppressMessages(AnnotationHub())
+# }
 
 determine_refdb <- function(refdb){
+    ah <- suppressMessages(AnnotationHub())
     if(refdb=="cmap"){
         return(ah[["AH69090"]])
     }
@@ -243,6 +245,7 @@ determine_refdb <- function(refdb){
 }
 
 load_sqlite <- function(ah_id){
+    ah <- suppressMessages(AnnotationHub())
     path <- suppressMessages(ah[[ah_id]])
     conn <- dbConnect(SQLite(), path)
     return(conn)

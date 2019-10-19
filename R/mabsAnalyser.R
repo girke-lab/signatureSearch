@@ -35,6 +35,7 @@ mabsGO <- function(geneList,
     #GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
     # download GO_DATA.rds from AnnotationHub to save time by avoiding 
     # builing GO_DATA from scratch
+    ah <- suppressMessages(AnnotationHub())
     GO_DATA <- suppressMessages(ah[["AH69086"]])
     
     res <-  mabs_internal(geneList = geneList,

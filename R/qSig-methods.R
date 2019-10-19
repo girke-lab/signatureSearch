@@ -65,7 +65,7 @@ qSig <- function(query, gess_method, refdb){
     if(!any(refdb %in% c("cmap","cmap_expr","lincs","lincs_expr"))){
         ref_val <- h5read(refdb, "assay", c(1,1))
         if(!is.numeric(ref_val)) 
-            stop("The value stored in 'refdb' should be numeric!")
+            stop("The matrix value stored in refdb should be numeric!")
     }
     if(is(query, "list")){
       if(any(gess_method %in% c("CMAP", "LINCS", "Fisher"))){
