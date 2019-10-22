@@ -34,11 +34,6 @@ pre code, pre, code {
 }
 </style>
 
-```{r setup0, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-options(width=200)
-```
-
 ```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
 suppressPackageStartupMessages({
   library(signatureSearch)
