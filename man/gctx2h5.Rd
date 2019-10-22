@@ -4,7 +4,7 @@
 \alias{gctx2h5}
 \title{Convert GCTX to HDF5 File}
 \usage{
-gctx2h5(gctx, cid, new_cid = cid, h5file, chunksize = 5000,
+gctx2h5(gctx, cid, new_cid = cid, h5file, by_ncol = 5000,
   overwrite = TRUE)
 }
 \arguments{
@@ -18,7 +18,7 @@ column names to matrix}
 
 \item{h5file}{character(1), path of the hdf5 destination file}
 
-\item{chunksize}{number of columns to import in each iteration to limit 
+\item{by_ncol}{number of columns to import in each iteration to limit 
 memory usage}
 
 \item{overwrite}{TRUE or FALSE, whether to overwrite or to append to 
@@ -37,5 +37,5 @@ gctx <- system.file("extdata", "test_sample_n2x12328.gctx",
 h5file <- tempfile(fileext=".h5")
 gctx2h5(gctx, cid=1:2, 
         new_cid=c('sirolimus__MCF7__trt_cp', 'vorinostat__SKB__trt_cp'), 
-        h5file=h5file, chunksize=5000, overwrite=TRUE)
+        h5file=h5file, overwrite=TRUE)
 }

@@ -42,8 +42,8 @@ enrichGO2 <- function(gene,
   # GO_DATA <- clusterProfiler:::get_GO_data(OrgDb, ont, keytype)
   # download GO_DATA.rds from AnnotationHub to save time by avoiding 
   # builing GO_DATA from scratch
-  ah <- suppressMessages(AnnotationHub())
-  GO_DATA <- suppressMessages(ah[["AH69086"]])
+  eh <- suppressMessages(ExperimentHub())
+  GO_DATA <- suppressMessages(eh[["EH3231"]])
   if (missing(universe))
     universe <- NULL
   

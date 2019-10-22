@@ -1,24 +1,8 @@
-Changes in version 0.99.5 (2019-05-01)
-+ Major change: Use HDF5 file to read and write the matrix by chunks
-+ reference signature database is path to the cmap/lincs/custom hdf5 file
-+ Major change: load the intermediate datasets from AnnotationHub
+Changes in version 1.1.0 (2019-10-23):
++ Initial version 
 
-Changes in version 0.99.4 (2019-04-05)
-+ Using BiocCache to cache the intermediate datasets as a temporary solution
-  before signatureSearchData package is released.
-+ The cmap/lincs databases are stored in AnnotationHub from data package
-  o The LINCS databases were created by reading the large matrix into memory
-    from gctx file, and saving it as HDF5 backed SE object. 
-    It requires large number of memory (50Gb), needs to be addressed to be 
-    memory efficient.
- + Almost finish the documentation
-
-Changes in version 0.99.3 (2019-03-15)
-+ Store intermediate datasets (like DO_DATA.rds) at inst/extdata to avoid
-  downloading from biocluster to system.file(package="signatureSearch")
-+ Temporary solution for testing
-
-Changes in version 0.99.2 (2019-03-15)
-+ Download intermediate datasets (like DO_DATA.rds) from biocluster to 
-  system.file(package="signatureSearch"), which makes errors when user do not
-  have right to write the system.file
+Changes in version 0.99.20 (2019-10-22)
++ Submitted to Bioconductor
++ Major changes: 
+  o used HDF5 file to read and write the matrix by chunks
+  o data stored in ExperimentHub

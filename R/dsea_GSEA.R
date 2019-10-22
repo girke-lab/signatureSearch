@@ -80,8 +80,8 @@ dsea_GSEA <- function(drugList,
     # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
     #                                  ont, keytype="SYMBOL")
     # download GO_DATA_drug.rds 
-    ah <- suppressMessages(AnnotationHub())
-    GO_DATA_drug <- suppressMessages(ah[["AH69087"]])
+    eh <- suppressMessages(ExperimentHub())
+    GO_DATA_drug <- suppressMessages(eh[["EH3232"]])
     
     res <-  GSEA_internal(geneList = drugList,
                           exponent = exponent,

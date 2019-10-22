@@ -31,7 +31,7 @@ gctx <- system.file("extdata", "test_sample_n2x12328.gctx",
 h5file <- tempfile(fileext=".h5")
 gctx2h5(gctx, cid=1:2, 
         new_cid=c('sirolimus__MCF7__trt_cp', 'vorinostat__SKB__trt_cp'), 
-        h5file=h5file, chunksize=5000, overwrite=TRUE)
+        h5file=h5file, overwrite=TRUE)
 se <- readHDF5chunk(h5file, colindex=1:2)
 }
 \seealso{

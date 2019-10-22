@@ -26,7 +26,7 @@ get_targets <- function(drugs, database="all", verbose=FALSE){
   drugs_orig <- unique(drugs)
   drugs <- unique(tolower(drugs))
   # load dtlink_db_clue_sti.db stored in AnnotationHub
-  conn <- load_sqlite("AH69083")
+  conn <- load_sqlite("EH3228")
   dtlink_db <- dbGetQuery(conn, 'SELECT * FROM dtlink_db')
   dtlink_clue <- dbGetQuery(conn, 'SELECT * FROM dtlink_clue')
   dtlink_sti <- dbGetQuery(conn, 'SELECT * FROM dtlink_sti')

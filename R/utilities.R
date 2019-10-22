@@ -132,7 +132,7 @@ append2H5 <- function(x, h5file, printstatus=TRUE) {
 #' @param new_cid character vector of the same length as cid, assigning new
 #' column names to matrix
 #' @param h5file character(1), path of the hdf5 destination file
-#' @param chunksize number of columns to import in each iteration to limit 
+#' @param by_ncol number of columns to import in each iteration to limit 
 #' memory usage
 #' @param overwrite TRUE or FALSE, whether to overwrite or to append to 
 #' existing 'h5file'
@@ -144,17 +144,17 @@ append2H5 <- function(x, h5file, printstatus=TRUE) {
 #' h5file <- tempfile(fileext=".h5")
 #' gctx2h5(gctx, cid=1:2, 
 #'         new_cid=c('sirolimus__MCF7__trt_cp', 'vorinostat__SKB__trt_cp'), 
-#'         h5file=h5file, chunksize=5000, overwrite=TRUE)
+#'         h5file=h5file, overwrite=TRUE)
 #' @export
 #' 
-gctx2h5 <- function(gctx, cid, new_cid=cid, h5file, chunksize=5000, 
+gctx2h5 <- function(gctx, cid, new_cid=cid, h5file, by_ncol=5000, 
                     overwrite=TRUE){
     cid_list <- suppressWarnings(
-        split(cid, rep(seq_len(ceiling(length(cid)/chunksize)), 
-                       each=chunksize)))
+        split(cid, rep(seq_len(ceiling(length(cid)/by_ncol)), 
+                       each=by_ncol)))
     new_cid_list <- suppressWarnings(
-        split(new_cid, rep(seq_len(ceiling(length(new_cid)/chunksize)), 
-                           each=chunksize)))
+        split(new_cid, rep(seq_len(ceiling(length(new_cid)/by_ncol)), 
+                           each=by_ncol)))
     if(file.exists(h5file)){
         if(overwrite){
             create_empty_h5(h5file, delete_existing=TRUE)
@@ -194,7 +194,7 @@ gctx2h5 <- function(gctx, cid, new_cid=cid, h5file, chunksize=5000,
 #' h5file <- tempfile(fileext=".h5")
 #' gctx2h5(gctx, cid=1:2, 
 #'         new_cid=c('sirolimus__MCF7__trt_cp', 'vorinostat__SKB__trt_cp'), 
-#'         h5file=h5file, chunksize=5000, overwrite=TRUE)
+#'         h5file=h5file, overwrite=TRUE)
 #' se <- readHDF5chunk(h5file, colindex=1:2)
 #' @export
 #' 
@@ -219,34 +219,29 @@ readHDF5chunk <- function(h5file, colindex=seq_len(10), colnames=NULL) {
     return(se)
 }
 
-#' @importFrom AnnotationHub AnnotationHub
-
-# ah <- NULL
-# .onLoad <- function(...) {
-#     ah <<- suppressMessages(AnnotationHub())
-# }
+#' @importFrom ExperimentHub ExperimentHub
 
 determine_refdb <- function(refdb){
-    ah <- suppressMessages(AnnotationHub())
+    eh <- suppressMessages(ExperimentHub())
     if(refdb=="cmap"){
-        return(ah[["AH69090"]])
+        return(eh[["EH3223"]])
     }
     if(refdb=="cmap_expr"){
-        return(ah[["AH69091"]])
+        return(eh[["EH3224"]])
     }
     if(refdb=="lincs"){
-        return(ah[["AH69092"]])
+        return(eh[["EH3226"]])
     }
     if(refdb=="lincs_expr"){
-        return(ah[["AH69093"]])
+        return(eh[["EH3227"]])
     } else {
         return(refdb)
     }
 }
 
-load_sqlite <- function(ah_id){
-    ah <- suppressMessages(AnnotationHub())
-    path <- suppressMessages(ah[[ah_id]])
+load_sqlite <- function(eh_id){
+    eh <- suppressMessages(ExperimentHub())
+    path <- suppressMessages(eh[[eh_id]])
     conn <- dbConnect(SQLite(), path)
     return(conn)
 }

@@ -54,7 +54,7 @@
 #     }
 #     
 #     # download goAnno_drug.rds 
-#     goAnno_drug <- suppressMessages(ah[["AH69085"]])
+#     goAnno_drug <- suppressMessages(eh[["EH3230"]])
 #     ## "drug_name" in goAnno_drug are all lowercase
 #     
 #     if (ont == "ALL") {
@@ -87,7 +87,7 @@
 prepare_KEGG_drug <- function(species, KEGG_Type="KEGG", keyType="kegg") {
     kegg <- clusterProfiler::download_KEGG(species, KEGG_Type, keyType)
     # get dtlink_entrez
-    conn <- load_sqlite("AH69083")
+    conn <- load_sqlite("EH3228")
     dtlink_entrez <- dbGetQuery(conn, 'SELECT * FROM dtlink_entrez')
     dbDisconnect(conn)
     

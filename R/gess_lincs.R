@@ -173,8 +173,8 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
   ## p-value = sum(ESrand > ES_obs)/Nrand
 
   # download ES_NULL.txt from AnnotationHub
-  ah <- suppressMessages(AnnotationHub())
-  WTCSnull <- suppressMessages(ah[["AH69089"]])
+  eh <- suppressMessages(ExperimentHub())
+  WTCSnull <- suppressMessages(eh[["EH3234"]])
   WTCSnull[WTCSnull[, "Freq"]==0, "Freq"] <- 1 
   # Add pseudo count of 1 where Freq is zero 
   myrounding <- max(nchar(as.character(WTCSnull[,"WTCS"]))) - 3 
@@ -204,8 +204,8 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
   ## performs: sign(ncs_query) * 100/N sum(abs(ncs_ref) < abs(ncs_query))
   if(tau){
     # download taurefList.rds
-    ah <- suppressMessages(AnnotationHub())
-    taurefList9264 <- suppressMessages(ah[["AH69088"]])
+    eh <- suppressMessages(ExperimentHub())
+    taurefList9264 <- suppressMessages(eh[["EH3233"]])
     ncs_query <- ncs; names(ncs_query) <- names(esout)
     queryDB_refDB_match <- 
       unique(unlist(lapply(taurefList9264, rownames))) %in% names(ncs_query)

@@ -203,13 +203,13 @@ library(signatureSearch)
 
 The helper package _signatureSearchData_ provides access to pre-built GES
 databases, including CMAP2 and LINCS, that are stored on Bioconductor's
-`AnnotationHub` as HDF5 files. Users can download these databases as follows.
+`ExperimentHub` as HDF5 files. Users can download these databases as follows.
 
 ```{r download_db, eval=FALSE}
-library(AnnotationHub); library(rhdf5)
-ah <- AnnotationHub()
-cmap <- ah[["AH69090"]]; cmap_expr <- ah[["AH69091"]]
-lincs <- ah[["AH69092"]]; lincs_expr <- ah[["AH69093"]]
+library(ExperimentHub); library(rhdf5)
+eh <- ExperimentHub()
+cmap <- eh[["EH3223"]]; cmap_expr <- eh[["EH3224"]]
+lincs <- eh[["EH3226"]]; lincs_expr <- eh[["EH3227"]]
 h5ls(lincs)
 ```
 
@@ -1113,7 +1113,7 @@ pathway*. The details of the plot are given in the legend of Figure 6.</font>
 ## Construction of Toy Database 
 
 Access to the LINCS database is provided via the associated 
-_signatureSearchData_ package hosted on Bioconductor's `AnnotationHub`. 
+_signatureSearchData_ package hosted on Bioconductor's `ExperimentHub`. 
 The following provides the code for constructing the toy database used by the 
 sample code of this vignette. To save time building this vignette, the evaluated
 components of its sample code use a pre-generated instance of the toy database 
@@ -1125,8 +1125,8 @@ Additional details on this topic are provided in the vignette of the
 
 ```{r gen_toy_db, eval=FALSE}
 library(rhdf5)
-ah <- AnnotationHub::AnnotationHub()
-lincs <- ah[["AH69092"]]
+eh <- ExperimentHub::ExperimentHub()
+lincs <- eh[["EH3226"]]
 hdacs <- c("vorinostat","trichostatin-a","pyroxamide","HC-toxin","rhamnetin")
 hdacs_trts <- paste(hdacs, "SKB", "trt_cp", sep="__")
 all_trts <- drop(h5read(lincs, "colnames"))
