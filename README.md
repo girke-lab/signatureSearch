@@ -29,6 +29,9 @@ step, several alternative methods have been implemented in _signatureSearch_ to
 allow users to choose the best possible workflow configuration for their
 research application. 
 
+# Vignette
+The vignette of this package is available at [here](https://www.bioconductor.org/packages/release/bioc/vignettes/signatureSearch/inst/doc/signatureSearch.html)
+
 # Installation and Loading
 
 `signatureSearch` is a R/Bioconductor package and can be installed using 
@@ -39,7 +42,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("signatureSearch")
 ```
-To obtain the most recent updates immediately, one can install it directly from GitHub as follows.
+To obtain the most recent updates immediately, one can install it directly from 
+GitHub as follows.
 ```r
 devtools::install_github("yduan004/signatureSearch")
 ```
