@@ -55,12 +55,12 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' #qsig_cmap <- qSig(query = list(
-#' #                    upset=c("230", "5357", "2015", "2542", "1759"), 
-#' #                    downset=c("22864", "9338", "54793", "10384", "27000")), 
-#' #                  gess_method = "CMAP", refdb = db_path)
-#' #cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
-#' #result(cmap)
+#' # qsig_cmap <- qSig(query = list(
+#' #                   upset=c("230", "5357", "2015", "2542", "1759"), 
+#' #                   downset=c("22864", "9338", "54793", "10384", "27000")), 
+#' #                   gess_method = "CMAP", refdb = db_path)
+#' # cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
+#' # result(cmap)
 #' @export
 gess_cmap <- function(qSig, chunk_size=5000){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
@@ -97,33 +97,57 @@ rankMatrix <- function(x, decreasing=TRUE) {
   return(rankma)
 }
 
+#' @importFrom DelayedArray colGrid
+#' @importFrom DelayedArray read_block
 cmapEnrich <- function(db_path, upset, downset, chunk_size=5000) {
-  ## Read in matrix in h5 file by chunks
-  mat_dim <- getH5dim(db_path)
-  mat_nrow <- mat_dim[1]
-  mat_ncol <- mat_dim[2]
-  ceil <- ceiling(mat_ncol/chunk_size)
-  ## get ranks of up and down genes in DB
-  rankLup <- NULL
-  rankLdown <- NULL
-  for(i in seq_len(ceil)){
-    mat <- readHDF5mat(db_path,
-                    colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-    rankLup1 <- lapply(colnames(mat), function(x) sort(rank(-1*mat[,x])[upset]))
-    rankLdown1 <- lapply(colnames(mat), 
-                         function(x) sort(rank(-1*mat[,x])[downset]))
-    rankLup <- c(rankLup, rankLup1)
-    rankLdown <- c(rankLdown, rankLdown1)
-  }
+  ## calculate raw.score of query to blocks (e.g., 5000 columns) of full refdb
+  full_mat <- HDF5Array(db_path, "assay")
+  rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
+  colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+  full_dim <- dim(full_mat)
+  full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+  ### The blocks in 'full_grid' are made of full columns 
+  nblock <- length(full_grid) 
   
-  ## Compute raw and scaled connectivity scores
-  raw.score <- vapply(seq_along(rankLup), function(x) 
-                               .s(rankLup[[x]], rankLdown[[x]], n=mat_nrow),
-                      FUN.VALUE=numeric(1))
+  raw.score <- unlist(lapply(seq_len(nblock), function(b){
+    ref_block <- read_block(full_mat, full_grid[[b]])
+    mat <- ref_block
+    rankLup <- lapply(colnames(mat), function(x) sort(rank(-1*mat[,x])[upset]))
+    rankLdown <- lapply(colnames(mat), 
+                         function(x) sort(rank(-1*mat[,x])[downset]))
+    ## Compute raw and scaled connectivity scores
+    raw.score <- vapply(seq_along(rankLup), function(x) 
+        .s(rankLup[[x]], rankLdown[[x]], n=nrow(mat)),
+        FUN.VALUE=numeric(1))
+    }))
+  
+  # ## Read in matrix in h5 file by chunks
+  # mat_dim <- getH5dim(db_path)
+  # mat_nrow <- mat_dim[1]
+  # mat_ncol <- mat_dim[2]
+  # ceil <- ceiling(mat_ncol/chunk_size)
+  # ## get ranks of up and down genes in DB
+  # rankLup <- NULL
+  # rankLdown <- NULL
+  # for(i in seq_len(ceil)){
+  #   mat <- readHDF5mat(db_path,
+  #                   colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
+  #   rankLup1 <- lapply(colnames(mat), function(x) sort(rank(-1*mat[,x])[upset]))
+  #   rankLdown1 <- lapply(colnames(mat), 
+  #                        function(x) sort(rank(-1*mat[,x])[downset]))
+  #   rankLup <- c(rankLup, rankLup1)
+  #   rankLdown <- c(rankLdown, rankLdown1)
+  # }
+  # 
+  # ## Compute raw and scaled connectivity scores
+  # raw.score <- vapply(seq_along(rankLup), function(x) 
+  #                              .s(rankLup[[x]], rankLdown[[x]], n=mat_nrow),
+  #                     FUN.VALUE=numeric(1))
+  
   score <- .S(raw.score)
   
   ## Assemble results
-  resultDF <- data.frame(set = h5read(db_path, "colnames", drop=TRUE), 
+  resultDF <- data.frame(set = colnames(full_mat), 
                          trend = ifelse(score >=0, "up", "down"),
                          raw_score = raw.score,
                          scaled_score = score,
@@ -135,12 +159,25 @@ cmapEnrich <- function(db_path, upset, downset, chunk_size=5000) {
 }
 
 ## Fct to compute a and b
-.ks <- function(V, n) {
-  t <- length(V)
-  a <- max(seq_len(t) / t - V / n)
-  b <- max(V / n - (seq_len(t)-1)/t)
-  ifelse(a > b, a, -b)
+.ks <- function( V, n ) {
+    t <- length( V )
+    if( t == 0 )  {
+        return( 0 )
+    } else {
+        if (is.unsorted(V)) V <- sort(V)
+        d <- seq_len(t) / t - V / n
+        a <- max( d )
+        b <- -min( d ) + 1 / t
+        ifelse( a > b, a, -b )
+    }
 }
+
+# .ks <- function(V, n) {
+#   t <- length(V)
+#   a <- max(seq_len(t) / t - V / n)
+#   b <- max(V / n - (seq_len(t)-1)/t)
+#   ifelse(a > b, a, -b)
+# }
 
 ## Fct to compute ks_up and ks_down
 .s <- function(V_up, V_down, n) {

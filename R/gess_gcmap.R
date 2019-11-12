@@ -44,6 +44,7 @@
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
+#' @importFrom HDF5Array HDF5Array
 #' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 #' @references 
 #' Lamb, J., Crawford, E. D., Peck, D., Modell, J. W., Blat, I. C., 
@@ -58,12 +59,15 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' #sample_db <- readHDF5chunk(db_path, colindex=1:100)
+#' # library(SummarizedExperiment); library(HDF5Array)
+#' # sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+#' # rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+#' # colnames(sample_db) <- HDF5Array(db_path, name="colnames")
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' #query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' #qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
-#' #gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
-#' #result(gcmap)
+#' # query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' # qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
+#' # gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
+#' # result(gcmap)
 #' @export
 #' 
 gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
@@ -78,17 +82,34 @@ gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
   }
   query <- qr(qSig)
   db_path <- determine_refdb(refdb(qSig))
-  mat_dim <- getH5dim(db_path)
-  mat_ncol <- mat_dim[2]
-  ceil <- ceiling(mat_ncol/chunk_size)
-  cs_raw <- function(i){
-    mat <- readHDF5mat(db_path,
-                    colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-    cmap <- gCMAP::induceCMAPCollection(mat, higher=higher, lower=lower)
-    c <- connectivity_score_raw(experiment=as.matrix(query), query=cmap)
-    return(data.frame(c))
-  }
-  resultDF <- do.call(rbind, lapply(seq_len(ceil), cs_raw))
+  
+  ## calculate cs_raw of query to blocks (e.g., 5000 columns) of full refdb
+  full_mat <- HDF5Array(db_path, "assay")
+  rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
+  colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+  full_dim <- dim(full_mat)
+  full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+  ### The blocks in 'full_grid' are made of full columns 
+  nblock <- length(full_grid) 
+  resultDF <- lapply(seq_len(nblock), function(b){
+      ref_block <- read_block(full_mat, full_grid[[b]])
+      cmap <- induceSMat(ref_block, higher=higher, lower=lower)
+      c <- connectivity_score_raw(experiment=as.matrix(query), query=cmap)
+      return(data.frame(c))})
+  resultDF <- do.call(rbind, resultDF)
+  
+  # mat_dim <- getH5dim(db_path)
+  # mat_ncol <- mat_dim[2]
+  # ceil <- ceiling(mat_ncol/chunk_size)
+  # cs_raw <- function(i){
+  #   mat <- readHDF5mat(db_path,
+  #                   colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
+  #   cmap <- gCMAP::induceCMAPCollection(mat, higher=higher, lower=lower)
+  #   c <- connectivity_score_raw_gcmap(experiment=as.matrix(query), query=cmap)
+  #   return(data.frame(c))
+  # }
+  # resultDF <- do.call(rbind, lapply(seq_len(ceil), cs_raw))
+  
   ## Apply scaling of scores to full data set
   resultDF[,"effect"] <-.connnectivity_scale(resultDF$effect)
   resultDF <- resultDF[order(abs(resultDF$effect), decreasing=TRUE), ]
@@ -109,4 +130,77 @@ gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
   p <- max(scores)
   q <- min(scores)
   ifelse(scores == 0, 0, ifelse( scores > 0, scores / p, -scores / q ))
+}
+
+#' @importFrom Matrix sparseMatrix
+#' @importFrom Matrix t
+induceSMat <- function(mat, lower=NULL, higher=NULL){
+  if( ! is.null(lower) && ! is.null(higher) && higher == lower) {
+    stop("Please specify two different cutoffs")
+  }
+  gss <- lapply( 1:ncol( mat ),
+                 function( n ) {
+                   if (! is.null( lower )) {
+                     down <- as.vector(which( mat[,n] < lower ))
+                   } else {
+                     down <- NULL
+                   }                            
+                   if (! is.null( higher )) {
+                     up <- as.vector(which( mat[,n] > higher ))
+                   } else {
+                     up <- NULL
+                   }                            
+                   list( j = c(down, up),
+                         x = c(rep(-1, length(down)), rep(1, length(up)))
+                   )})
+  i <- unlist(
+    sapply( seq( length( gss ) ), function( m ) {
+      rep( m, length( gss[[ m ]]$j ) )
+    }))
+  j <- unlist(sapply(gss ,function( m ) {m$j }))
+  x <- unlist(sapply(gss ,function( m ) {m$x }))            
+  cmap <- Matrix::t(sparseMatrix(i=as.integer(i),
+                          j=as.integer(j),
+                          x=as.integer(x),
+                          dims=list(ncol(mat), nrow(mat)),
+                          dimnames = list(colnames(mat), rownames(mat))))
+  cmap
+}
+
+connectivity_score_raw <- function(experiment, query) {
+  data.matrix <- experiment
+  ## subset objects to shared genes
+  matched.features <- fmatch(rownames(experiment), rownames(query))
+  matched.sets <- query[na.omit(matched.features),]
+  
+  ## extract scores for each gene set
+  sets.up <- lapply(seq(ncol(matched.sets)),
+                    function(x) which(matched.sets[ ,x ] == 1))
+  
+  sets.down <- lapply(seq(ncol(matched.sets)),
+                      function(x) which(matched.sets[ ,x] == -1))
+  
+  ## transform experiment to (reverse) ranks
+  rank.matrix <- apply(data.matrix, 2, function(x) {length(x)-rank(x)+1})
+  
+  ## calculate connectivity score
+  raw.score <- apply(rank.matrix, 2, function(r) {
+    vapply(seq_along(sets.up), function(n) {
+      .s(r[sets.up[[n]]], r[sets.down[[n]]], length(r))
+    }, FUN.VALUE = numeric(1))
+  })
+  raw.score <- matrix(raw.score, ncol=ncol(experiment))
+  
+  ## scale score across all tested query sets
+  ## ThG: modification on next two lines:
+  ## score <- apply(raw.score, 2, .S)
+  score <- raw.score
+  score <- matrix(score, ncol=ncol(experiment))
+  ## store results
+  results <- data.frame(set = colnames(query), 
+                        trend = ifelse(score[,1] >=0, "up", "down"),
+                        effect = score[,1],
+                        nSet = colSums(as.matrix(abs(query))),
+                        nFound = colSums(as.matrix(abs(matched.sets))),
+                        signed=TRUE)
 }

@@ -282,7 +282,10 @@ database.
 ```{r db_sig, eval=TRUE}
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 # Load sample_db as `SummarizedExperiment` object
-sample_db <- readHDF5chunk(db_path, colindex=1:100)
+library(SummarizedExperiment); library(HDF5Array)
+sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+colnames(sample_db) <- HDF5Array(db_path, name="colnames")
 # get "vorinostat__SKB__trt_cp" signature drawn from toy database
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
@@ -786,11 +789,9 @@ decrease the weight of the genes in $S$ that have non-zero scores.
    N_R=\sum_{g_j\in S}|r_j|^p+min(r_j | r_j > 0)*\sum_{g_j\in S}I_{r_j=0}
 \end{equation}
 
-\begin{center}
-     $r_j$: score of gene $j$ in $L_{tar}$; $p=1$ 
-\end{center}
-
-\vspace{0.3cm}
+<center>
+<font size="-2"> $r_j$: score of gene $j$ in $L_{tar}$; $p=1$ </font>
+</center>
 
 The reason for this modification is that if only one gene in gene set $S$ has 
 a non-zero score and this gene ranks high in $L_{tar}$, the weight of this gene 
@@ -1130,7 +1131,11 @@ all_trts2 <- all_trts[!grepl("BRD-", all_trts) & grepl("__SKB__", all_trts)]
 set.seed(11)
 rand_trts <- sample(setdiff(all_trts2, hdacs_trts), 95)
 toy_trts <- c(hdacs_trts, rand_trts)
-toy_db <- round(assay(readHDF5chunk(lincs, colnames=toy_trts)),2)
+library(SummarizedExperiment); library(HDF5Array)
+toy_db <- SummarizedExperiment(HDF5Array(lincs, name="assay"))
+rownames(toy_db) <- HDF5Array(db_path, name="rownames")
+colnames(toy_db) <- HDF5Array(db_path, name="colnames")
+toy_db <- round(as.matrix(assay(toy_db)[,toy_trts]),2)
 set.seed(11)
 gene_idx <- sample.int(nrow(toy_db),5000)
 toy_db2 <- toy_db[gene_idx,]

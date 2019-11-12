@@ -35,7 +35,10 @@
 #' rownames(df) = names(targetList)
 #' h5file = tempfile(fileext=".h5")
 #' build_custom_db(df, h5file)
-#' tmp <- readHDF5chunk(h5file, colindex=1:2)
+#' library(SummarizedExperiment)
+#' tmp <- SummarizedExperiment(HDF5Array::HDF5Array(h5file, name="assay"))
+#' rownames(tmp) <- HDF5Array::HDF5Array(h5file, name="rownames")
+#' colnames(tmp) <- HDF5Array::HDF5Array(h5file, name="colnames")
 #' @export
 
 build_custom_db <- function(df, h5file){

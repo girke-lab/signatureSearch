@@ -61,12 +61,15 @@ are described in the help file of the \code{gessResult} object.
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")
-#sample_db <- readHDF5chunk(db_path, colindex=1:100)
+# library(SummarizedExperiment); library(HDF5Array)
+# sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+# rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+# colnames(sample_db) <- HDF5Array(db_path, name="colnames")
 ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
-#fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
-#result(fisher)
+# query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+# qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
+# fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
+# result(fisher)
 }
 \references{
 Graham J. G. Upton. 1992. Fisher's Exact Test. J. R. Stat. Soc. Ser. A 

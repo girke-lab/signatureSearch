@@ -42,6 +42,10 @@
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
 #' @importMethodsFrom GSEABase GeneSet
+#' @importMethodsFrom GSEABase GeneSetCollection
+#' @importMethodsFrom GSEABase incidence
+#' @importFrom stats dhyper
+#' @importFrom stats qnorm
 #' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
 #' @references 
 #' Graham J. G. Upton. 1992. Fisher's Exact Test. J. R. Stat. Soc. Ser. A 
@@ -50,12 +54,15 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' #sample_db <- readHDF5chunk(db_path, colindex=1:100)
+#' # library(SummarizedExperiment); library(HDF5Array)
+#' # sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+#' # rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+#' # colnames(sample_db) <- HDF5Array(db_path, name="colnames")
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' #query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' #qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
-#' #fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
-#' #result(fisher)
+#' # query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' # qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
+#' # fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
+#' # result(fisher)
 #' @export
 #' 
 gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
@@ -67,22 +74,41 @@ gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
   }
   if(is.list(qr(qSig))){
     query <- GeneSet(unique(unlist(qr(qSig))))
+    query <- t(incidence(GeneSetCollection(query)))
   } else {
-    query <- induceCMAPCollection(qr(qSig), higher=higher, lower=lower)
+    query <- induceSMat(qr(qSig), higher=higher, lower=lower)
   }
   db_path <- determine_refdb(refdb(qSig))
-  mat_dim <- getH5dim(db_path)
-  mat_ncol <- mat_dim[2]
-  ceil <- ceiling(mat_ncol/chunk_size)
-  fs <- function(i){
-      mat <- readHDF5mat(db_path,
-                 colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-      cmap <- induceCMAPCollection(mat, higher=higher, lower=lower)
-      universe <- featureNames(cmap)
-      c <- fisher_score(query=query, sets=cmap, universe = universe)
-      cmapTable(c)
-  }
-  resultDF <- do.call(rbind, lapply(seq_len(ceil), fs))
+  
+  ## calculate fisher score of query to blocks (5000 columns) of full refdb
+  full_mat <- HDF5Array(db_path, "assay")
+  rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
+  colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+  full_dim <- dim(full_mat)
+  full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+  ### The blocks in 'full_grid' are made of full columns 
+  nblock <- length(full_grid) 
+  resultDF <- lapply(seq_len(nblock), function(b){
+    ref_block <- read_block(full_mat, full_grid[[b]])
+    cmap <- induceSMat(ref_block, higher=higher, lower=lower)
+    universe <- rownames(cmap)
+    c <- fs(query=query, sets=cmap, universe = universe)
+    return(data.frame(c))})
+  resultDF <- do.call(rbind, resultDF)
+  
+  # mat_dim <- getH5dim(db_path)
+  # mat_ncol <- mat_dim[2]
+  # ceil <- ceiling(mat_ncol/chunk_size)
+  # fs <- function(i){
+  #     mat <- readHDF5mat(db_path,
+  #                colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
+  #     cmap <- induceCMAPCollection(mat, higher=higher, lower=lower)
+  #     universe <- featureNames(cmap)
+  #     c <- fisher_score(query=query, sets=cmap, universe = universe)
+  #     cmapTable(c)
+  # }
+  # resultDF <- do.call(rbind, lapply(seq_len(ceil), fs))
+  
   resultDF <- resultDF[order(resultDF$padj), ]
   row.names(resultDF) <- NULL
   resultDF <- sep_pcf(resultDF)
@@ -95,4 +121,123 @@ gess_fisher <- function(qSig, higher, lower, chunk_size=5000){
                   gess_method = gm(qSig),
                   refdb = refdb(qSig))
   return(x)
+}
+
+#' @importFrom Matrix crossprod
+#' @importFrom Matrix colSums
+fs <- function(query, sets, universe) {
+    query <- query[intersect(rownames(query), universe), , drop=FALSE]
+    sets <- sets[intersect(rownames(sets), universe), ]
+    common.genes <- intersect(rownames(query), rownames(sets))
+    
+    if( length( common.genes) == 0 ) {
+      stop( "None of the query gene identifiers could be found in the 
+            reference dataset.",
+            call. = FALSE)
+    }
+    
+    query.common <- abs(matrix(query[common.genes,], nrow=length(common.genes)))
+    sets.common <- abs(matrix(sets[common.genes,], nrow=length(common.genes)))
+    coincidence <- Matrix::crossprod(query.common, sets.common) 
+    
+    ## 2x2 table
+    ##              query  1         query  0
+    ##   sets 1  query.and.sets  sets.not.query    || sets.all
+    ##   sets 0  query.not.sets      neither 
+    ##   ========================================
+    ##            query.all        query.colsum
+    
+    query.and.sets <- t(matrix(coincidence, ncol=ncol(sets), 
+                        dimnames=list(colnames(query), colnames(sets))))
+    
+    query.all <- matrix(rep(colSums(abs(query)), ncol(sets)),
+                         nrow=ncol(sets), ncol=ncol(query), byrow=TRUE, 
+                         dimnames=dimnames(query.and.sets))
+    
+    sets.all <- matrix(rep(colSums(abs(sets)), ncol(query)),
+                       nrow=ncol(sets), ncol=ncol(query), byrow=FALSE, 
+                       dimnames=dimnames(query.and.sets))
+    
+    neither <- length(universe) - sets.all - query.all + query.and.sets
+    
+    sets.not.query <- length(universe) - query.all - neither
+    
+    query.not.sets <- query.all - query.and.sets
+    
+    query.colsum <- sets.not.query + neither
+    
+    ## p-value calculation
+    p.values <- matrix(
+      unlist(
+        lapply( row.names( query.and.sets ), function( k ) {
+          .fisher_p(query.and.sets[k,], sets.not.query[k,], query.all[k,], 
+                    query.colsum[k,]) 
+        })), ncol=ncol(query), byrow=TRUE,
+      dimnames=list(colnames(sets), colnames(query))
+    )
+    
+    lor <- log((query.and.sets * neither) / (query.not.sets * sets.not.query))
+    lor[query.not.sets == 0] <- Inf
+    lor[sets.not.query == 0] <- Inf
+    lor[query.and.sets == 0] <- 0
+    
+    ## store results
+    results <- lapply( seq( ncol( query) ), function( g ) {
+      res <- data.frame(
+          set = colnames(sets),
+          trend = ifelse(lor[,g] <= 0, "under", "over"),
+          pval = p.values[,g ],
+          padj = p.adjust( p.values[,g ], method="BH"),
+          effect = round(.zScores( p.values[,g], direction=lor[,g]), 2),
+          LOR = lor[,g],
+          nSet = Matrix::colSums(abs(sets)),
+          nFound = query.and.sets[,g ],
+          signed = FALSE)
+    })
+    ## create separate result object for each query column
+    if( length( results ) == 1 ){
+      return( results[[ 1 ]])
+    } else {
+      return( results )
+    }
+}
+
+.fisher_p <- function( x, y, m, n, relErr = 1 + 1e-7 ) {
+  ## 'x' and 'y' are entries in the top two cells; 
+  ## 'm' and 'n' are column totals.
+  ## Code is excerpted from fisher.test, for efficiency. Note that 'support'
+  ## varies in length with the input variables, so vectorization is only 
+  ## possible via an mapply.
+  mapply(
+    function( x, y, m, n ) {
+      k <- x + y
+      lo <- max( 0, k - n )
+      hi <- min( k, m )
+      support <- lo:hi
+      d <- dhyper( support, m, n, k, log = TRUE )
+      d <- exp( d - max( d ) )
+      d <- d / sum( d )
+      sum( d[ d <= d[ x - lo + 1 ] * relErr ] )
+    },
+    x, y, m, n
+  )
+}
+
+.zScores <- function(pval, direction=NULL, tails=2,
+                     limit=.Machine$double.xmin) {
+  if( !is.null( limit ) ){
+    pval[which(pval < limit )] <- limit 
+    ## set lower limit to avoid Inf/-Inf zscores
+  }
+  if( tails == 2){
+    z <- qnorm( pval/2, lower.tail=FALSE )
+  } else if( tails == 1){
+    z <- qnorm(pval, lower.tail = FALSE)
+  } else {
+    stop( "Parameter 'tails' must be set to either 1 or 2.")
+  }
+  if ( !is.null( direction) ) {
+    z <-  z * sign( direction )
+  }
+  z
 }

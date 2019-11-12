@@ -62,9 +62,12 @@ and GESS method used for GESS methods
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")
-# Load sample_db as `SummarizedExperiment` object
-sample_db <- readHDF5chunk(db_path, colindex=1:100)
-# get "vorinostat__SKB__trt_cp" signature drawn from sample database
+## Load sample_db as `SummarizedExperiment` object
+library(SummarizedExperiment); library(HDF5Array)
+sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+colnames(sample_db) <- HDF5Array(db_path, name="colnames")
+## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)

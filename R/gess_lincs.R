@@ -113,41 +113,79 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
     mycolnames <- c("WTCS", "NCS", "Tau", "NCSct", "N_upset", "N_downset", NA)
     if(!any(mycolnames %in% sortby)) 
         stop("Unsupported value assinged to sortby.")
-    ## Read in matrix in h5 file by chunks
-    mat_dim <- getH5dim(db_path)
-    mat_nrow <- mat_dim[1]
-    mat_ncol <- mat_dim[2]
-    ceil <- ceiling(mat_ncol/chunk_size)
-    ESout <- NULL
-    for(i in seq_len(ceil)){
-        mat <- readHDF5mat(db_path,
-                  colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-        ## Run .enrichScore on upset and downset
-        ## When both upset and downset are provided 
-        if(length(upset)>0 & length(downset)>0) {
-            ESup <- apply(mat, 2, function(x) 
-                .enrichScore(sigvec=sort(x, decreasing = TRUE), 
-                             Q=upset, type=type))
-            ESdown <- apply(mat, 2, function(x) 
-                .enrichScore(sigvec=sort(x, decreasing = TRUE),
-                             Q=downset, type=type)) 
-            ESout1 <- ifelse(sign(ESup) != sign(ESdown), (ESup - ESdown)/2, 0)
-            ## When only upset is provided
-        } else if(length(upset)>0 & length(downset)==0) {
-            ESup <- apply(mat, 2, function(x) 
-                .enrichScore(sigvec=sort(x, decreasing = TRUE), 
-                             Q=upset, type=type))
-            ESout1 <- ESup
-            ## When only downset is provided
-        } else if(length(upset)==0 & length(downset)>0) {
-            ESdown <- apply(mat, 2, function(x) 
-                .enrichScore(sigvec=sort(x, decreasing = TRUE), 
-                             Q=downset, type=type))
-            ESout1 <- -ESdown
-            ## When none are provided (excluded by input validity check already)
-        }
-        ESout <- c(ESout, ESout1)
-    }
+    
+    ## calculate ESout of query to blocks (e.g., 5000 columns) of full refdb
+    full_mat <- HDF5Array(db_path, "assay")
+    rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
+    colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+    full_dim <- dim(full_mat)
+    full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+    ### The blocks in 'full_grid' are made of full columns 
+    nblock <- length(full_grid) 
+    
+    ESout <- unlist(lapply(seq_len(nblock), function(b){
+      ref_block <- read_block(full_mat, full_grid[[b]])
+      mat <- ref_block
+      ## Run .enrichScore on upset and downset
+      ## When both upset and downset are provided 
+      if(length(upset)>0 & length(downset)>0) {
+        ESup <- apply(mat, 2, function(x) 
+          .enrichScore(sigvec=sort(x, decreasing = TRUE), 
+                       Q=upset, type=type))
+        ESdown <- apply(mat, 2, function(x) 
+          .enrichScore(sigvec=sort(x, decreasing = TRUE),
+                       Q=downset, type=type)) 
+        ESout1 <- ifelse(sign(ESup) != sign(ESdown), (ESup - ESdown)/2, 0)
+        ## When only upset is provided
+      } else if(length(upset)>0 & length(downset)==0) {
+        ESup <- apply(mat, 2, function(x) 
+          .enrichScore(sigvec=sort(x, decreasing = TRUE), 
+                       Q=upset, type=type))
+        ESout1 <- ESup
+        ## When only downset is provided
+      } else if(length(upset)==0 & length(downset)>0) {
+        ESdown <- apply(mat, 2, function(x) 
+          .enrichScore(sigvec=sort(x, decreasing = TRUE), 
+                       Q=downset, type=type))
+        ESout1 <- -ESdown
+        ## When none are provided (excluded by input validity check already)
+      }}))
+    
+    # ## Read in matrix in h5 file by chunks
+    # mat_dim <- getH5dim(db_path)
+    # mat_nrow <- mat_dim[1]
+    # mat_ncol <- mat_dim[2]
+    # ceil <- ceiling(mat_ncol/chunk_size)
+    # ESout <- NULL
+    # for(i in seq_len(ceil)){
+    #     mat <- readHDF5mat(db_path,
+    #               colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
+    #     ## Run .enrichScore on upset and downset
+    #     ## When both upset and downset are provided 
+    #     if(length(upset)>0 & length(downset)>0) {
+    #         ESup <- apply(mat, 2, function(x) 
+    #             .enrichScore(sigvec=sort(x, decreasing = TRUE), 
+    #                          Q=upset, type=type))
+    #         ESdown <- apply(mat, 2, function(x) 
+    #             .enrichScore(sigvec=sort(x, decreasing = TRUE),
+    #                          Q=downset, type=type)) 
+    #         ESout1 <- ifelse(sign(ESup) != sign(ESdown), (ESup - ESdown)/2, 0)
+    #         ## When only upset is provided
+    #     } else if(length(upset)>0 & length(downset)==0) {
+    #         ESup <- apply(mat, 2, function(x) 
+    #             .enrichScore(sigvec=sort(x, decreasing = TRUE), 
+    #                          Q=upset, type=type))
+    #         ESout1 <- ESup
+    #         ## When only downset is provided
+    #     } else if(length(upset)==0 & length(downset)>0) {
+    #         ESdown <- apply(mat, 2, function(x) 
+    #             .enrichScore(sigvec=sort(x, decreasing = TRUE), 
+    #                          Q=downset, type=type))
+    #         ESout1 <- -ESdown
+    #         ## When none are provided (excluded by input validity check already)
+    #     }
+    #     ESout <- c(ESout, ESout1)
+    # }
     
     ## Assmble output 
     if(output=="esonly") {

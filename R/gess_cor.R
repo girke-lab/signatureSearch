@@ -43,12 +43,15 @@
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' #sample_db <- readHDF5chunk(db_path, colindex=1:100)
+#' # library(SummarizedExperiment); library(HDF5Array)
+#' # sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+#' # rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+#' # colnames(sample_db) <- HDF5Array(db_path, name="colnames")
 #' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' #query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-#' #qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
-#' #sp <- gess_cor(qSig=qsig_sp, method="spearman")
-#' #result(sp)
+#' # query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' # qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
+#' # sp <- gess_cor(qSig=qsig_sp, method="spearman")
+#' # result(sp)
 #' @export
 gess_cor <- function(qSig, method, chunk_size=5000){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
@@ -59,16 +62,32 @@ gess_cor <- function(qSig, method, chunk_size=5000){
   }
   query <- qr(qSig)
   db_path <- determine_refdb(refdb(qSig))
-  mat_dim <- getH5dim(db_path)
-  mat_ncol <- mat_dim[2]
-  ceil <- ceiling(mat_ncol/chunk_size)
-  resultDF <- data.frame()
-  for(i in seq_len(ceil)){
-    mat <- readHDF5mat(db_path,
-                    colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-    cor_res <- cor_sig_search(query=query, refdb=mat, method=method)
-    resultDF <- rbind(resultDF, data.frame(cor_res))
-  }
+  
+  ## calculate cs_raw of query to blocks (e.g., 5000 columns) of full refdb
+  full_mat <- HDF5Array(db_path, "assay")
+  rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
+  colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+  full_dim <- dim(full_mat)
+  full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+  ### The blocks in 'full_grid' are made of full columns 
+  nblock <- length(full_grid) 
+  resultDF <- lapply(seq_len(nblock), function(b){
+    ref_block <- read_block(full_mat, full_grid[[b]])
+    cor_res <- cor_sig_search(query=query, refdb=ref_block, method=method)
+    return(data.frame(cor_res))})
+  resultDF <- do.call(rbind, resultDF)
+  
+  # mat_dim <- getH5dim(db_path)
+  # mat_ncol <- mat_dim[2]
+  # ceil <- ceiling(mat_ncol/chunk_size)
+  # resultDF <- data.frame()
+  # for(i in seq_len(ceil)){
+  #   mat <- readHDF5mat(db_path,
+  #                   colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
+  #   cor_res <- cor_sig_search(query=query, refdb=mat, method=method)
+  #   resultDF <- rbind(resultDF, data.frame(cor_res))
+  # }
+  
   resultDF <- sep_pcf(resultDF)
   resultDF <- resultDF[order(abs(resultDF$cor_score), decreasing = TRUE), ]
   row.names(resultDF) <- NULL

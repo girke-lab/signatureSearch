@@ -7,23 +7,22 @@ sep_pcf <- function(res){
     return(res)
 }
 
-#' @import rhdf5
-readHDF5mat <- function(h5file, colindex=seq_len(10)) {
-    m <- h5read(h5file, "assay", index=list(NULL, colindex))
-    mycol <- h5read(h5file, "colnames", index=list(colindex, 1))
-    myrow <- h5read(h5file, "rownames")
-    h5closeAll()
-    rownames(m) <- as.character(myrow[,1])
-    colnames(m) <- as.character(mycol[,1])
-    return(m)
-}
+# readHDF5mat <- function(h5file, colindex=seq_len(10)) {
+#     m <- h5read(h5file, "assay", index=list(NULL, colindex))
+#     mycol <- h5read(h5file, "colnames", index=list(colindex, 1))
+#     myrow <- h5read(h5file, "rownames")
+#     h5closeAll()
+#     rownames(m) <- as.character(myrow[,1])
+#     colnames(m) <- as.character(mycol[,1])
+#     return(m)
+# }
 
-getH5dim <- function(h5file){
-    mat_dim <- h5ls(h5file)$dim[1]
-    mat_ncol <- as.numeric(gsub(".* x ","", mat_dim))
-    mat_nrow <- as.numeric(gsub(" x .*","", mat_dim))
-    return(c(mat_nrow, mat_ncol))
-}
+# getH5dim <- function(h5file){
+#     mat_dim <- h5ls(h5file)$dim[1]
+#     mat_ncol <- as.numeric(gsub(".* x ","", mat_dim))
+#     mat_nrow <- as.numeric(gsub(" x .*","", mat_dim))
+#     return(c(mat_nrow, mat_ncol))
+# }
 
 #' Write Matrix to HDF5 file
 #' 
@@ -171,53 +170,26 @@ gctx2h5 <- function(gctx, cid, new_cid=cid, h5file, by_ncol=5000,
     h5ls(h5file)
 }
 
-#' Import HDF5 Data into SummarizedExperiment Object
-#' 
-#' Imports user-definable subsets of matrix data from an HDF5 file into a 
-#' \code{SummarizedExperiment} object. The
-#' corresponding HDF5 file is expected to have three data components named
-#' 'assay', 'colnames' and 'rownames' containing the numeric values, column
-#' names and row names of a matrix, respectively.
-#' 
-#' @param h5file character(1), path to HDF5 file
-#' @param colindex integer vector, position index of the matrix columns to be 
-#' imported
-#' @param colnames character vector, names of the columns of the matrix to be 
-#' imported. If 'colnames' is set, 'colindex' will be ignored.
-#' @return \code{SummarizedExperiment} object
-#' @importFrom SummarizedExperiment SummarizedExperiment
-#' @seealso 
-#' \code{SummarizedExperiment}
-#' @examples
-#' gctx <- system.file("extdata", "test_sample_n2x12328.gctx", 
-#'                     package="signatureSearch")
-#' h5file <- tempfile(fileext=".h5")
-#' gctx2h5(gctx, cid=1:2, 
-#'         new_cid=c('sirolimus__MCF7__trt_cp', 'vorinostat__SKB__trt_cp'), 
-#'         h5file=h5file, overwrite=TRUE)
-#' se <- readHDF5chunk(h5file, colindex=1:2)
-#' @export
-#' 
-readHDF5chunk <- function(h5file, colindex=seq_len(10), colnames=NULL) {
-    if(! is.null(colnames)){
-        all_trts <- h5read(h5file, "colnames", drop=TRUE)
-        colindex2 <- which(all_trts %in% colnames)
-        m <- h5read(h5file, "assay", index=list(NULL, colindex2))
-        colindex <- colindex2
-    } else {
-        m <- h5read(h5file, "assay", index=list(NULL, colindex))
-    }
-    mycol <- h5read(h5file, "colnames", index=list(colindex, 1))
-    myrow <- h5read(h5file, "rownames")
-    rownames(m) <- as.character(myrow[,1])
-    colnames(m) <- as.character(mycol[,1])
-    if(! is.null(colnames)){
-        m <- m[,colnames, drop=FALSE]
-    }
-    se <- SummarizedExperiment(assays=list(score=m))
-    h5closeAll()
-    return(se)
-}
+# readHDF5chunk <- function(h5file, colindex=seq_len(10), colnames=NULL) {
+#     if(! is.null(colnames)){
+#         all_trts <- h5read(h5file, "colnames", drop=TRUE)
+#         colindex2 <- which(all_trts %in% colnames)
+#         m <- h5read(h5file, "assay", index=list(NULL, colindex2))
+#         colindex <- colindex2
+#     } else {
+#         m <- h5read(h5file, "assay", index=list(NULL, colindex))
+#     }
+#     mycol <- h5read(h5file, "colnames", index=list(colindex, 1))
+#     myrow <- h5read(h5file, "rownames")
+#     rownames(m) <- as.character(myrow[,1])
+#     colnames(m) <- as.character(mycol[,1])
+#     if(! is.null(colnames)){
+#         m <- m[,colnames, drop=FALSE]
+#     }
+#     se <- SummarizedExperiment(assays=list(score=m))
+#     h5closeAll()
+#     return(se)
+# }
 
 #' @importFrom ExperimentHub ExperimentHub
 
