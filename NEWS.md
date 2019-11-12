@@ -1,3 +1,7 @@
+## Changes in version 1.1.1 (2019-11-10)
++ Support windows by not depending `gCMAP` package
++ Deal with HDF5 files with functions in `HDF5Array` package
+
 ## Changes in version 1.1.0 (2019-10-23)
 + Initial version 
 
