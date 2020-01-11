@@ -57,13 +57,7 @@ gseGO2 <- function(geneList,
 
     if (is.null(res))
         return(res)
-    # Add and select ontology in res
-    res <- add_GO_Ontology(res, GO_DATA)
-    tmp_df <- result(res)
-    colnames(tmp_df)[1] = "ont"
-    rst(res) <- tmp_df
-    if(ont != "ALL")
-      rst(res) <- as_tibble(res[res$ont == ont, ])
+    res <- select_ont(res, ont, GO_DATA)
     ont(res) <- ont
     og(res) <- get_organism(OrgDb)
     return(res)

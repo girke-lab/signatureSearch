@@ -95,14 +95,11 @@ dsea_GSEA <- function(drugList,
     
     if (is.null(res))
       return(res)
+    res <- select_ont(res, ont, GO_DATA_drug)
     drugs(res) <- names(drugList)
     tg(res) <- NULL
     og(res) <- get_organism(OrgDb = "org.Hs.eg.db")
     ont(res) <- ont
-    
-    if (ont == "ALL") {
-      res <- add_GO_Ontology(res, GO_DATA_drug)
-    } 
     return(res)
   }
   

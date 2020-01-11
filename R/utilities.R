@@ -217,3 +217,14 @@ load_sqlite <- function(eh_id){
     conn <- dbConnect(SQLite(), path)
     return(conn)
 }
+
+select_ont <- function(res, ont, GO_DATA){
+    # Add and select ontology in res
+    res <- add_GO_Ontology(res, GO_DATA)
+    tmp_df <- result(res)
+    colnames(tmp_df)[1] = "ont"
+    rst(res) <- tmp_df
+    if(ont != "ALL")
+        rst(res) <- as_tibble(res[res$ont == ont, ])
+    return(res)
+}
