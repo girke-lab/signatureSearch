@@ -4,9 +4,17 @@
 \alias{enrichKEGG2}
 \title{KEGG Pathway Enrichment with Hypergeometric Test}
 \usage{
-enrichKEGG2(gene, organism = "hsa", keyType = "kegg",
-  pvalueCutoff = 0.05, pAdjustMethod = "BH", universe, minGSSize = 5,
-  maxGSSize = 500, qvalueCutoff = 0.2)
+enrichKEGG2(
+  gene,
+  organism = "hsa",
+  keyType = "kegg",
+  pvalueCutoff = 0.05,
+  pAdjustMethod = "BH",
+  universe,
+  minGSSize = 5,
+  maxGSSize = 500,
+  qvalueCutoff = 0.2
+)
 }
 \arguments{
 \item{gene}{a vector of entrez gene ids (here the test set)}

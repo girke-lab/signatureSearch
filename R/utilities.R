@@ -223,8 +223,78 @@ select_ont <- function(res, ont, GO_DATA){
     res <- add_GO_Ontology(res, GO_DATA)
     tmp_df <- result(res)
     colnames(tmp_df)[1] = "ont"
+    tmp_df$ont = as.character(tmp_df$ont)
     rst(res) <- tmp_df
     if(ont != "ALL")
         rst(res) <- as_tibble(res[res$ont == ont, ])
+    return(res)
+}
+
+#' Drawn from reference database (e.g. LINCS, CMAP) a GES of a compound 
+#' treatment in a cell type
+#' @title Drawn GES 
+#' @param cmp character(1), compound name available in refdb
+#' @param cell character(1), cell type that the compound treated in
+#' @param refdb character(1), one of "cmap", "cmap_expr", "lincs", or 
+#' "lincs_expr"
+#' @return matrix with one column representing GES of the query compound in cell
+#' @examples 
+#' vor_sig <- getSig("vorinostat", "SKB", refdb="notrun")
+#' @export
+#' 
+getSig <- function(cmp, cell, refdb){
+    cmp <- tolower(cmp)
+    refdb <- tolower(refdb)
+    if(refdb %in% c("lincs", "lincs_expr", "cmap", "cmap_expr")){
+        refdb <- determine_refdb(refdb)
+        refse <- SummarizedExperiment(HDF5Array(refdb, name="assay"))
+        rownames(refse) <- HDF5Array(refdb, name="rownames")
+        colnames(refse) <- HDF5Array(refdb, name="colnames")
+        trt <- paste(cmp, cell, "trt_cp", sep="__")
+        if(! trt %in% colnames(refse)){
+            stop(paste(cmp, cell, "teatment is not contained in refdb!"))
+        }
+        cmp_mat <- as.matrix(assay(refse[ ,trt]))
+        # sort decreasingly
+        cmp_mat2 <- apply(cmp_mat, 2, sort, decreasing=TRUE)
+        return(cmp_mat2)
+    } else {
+        message(paste("Please set refdb as one of",  
+                "'lincs', 'lincs_expr', 'cmap' or 'cmap_expr'!"))
+    }
+}
+
+trts_check <- function(ref_trts, full_trts){
+    trts_valid <- intersect(ref_trts, full_trts)
+    inval <- setdiff(ref_trts, full_trts)
+    if(length(inval)>0){
+        message(length(inval), 
+        " treatments in ref_trts are not available in refdb, they are ignored!")
+    }
+    if(length(trts_valid)==0){
+        stop("No ref_trts are available in refdb, ", 
+             "the refdb is subsetted to empty!")
+    }
+    return(trts_valid)
+}
+
+#' Reduce number of characters for each element of a character vector by 
+#' replacting the part that beyond Nchar (e.g. 50) character to '...'.  
+#' @title Reduce Number of Character 
+#' @param vec character vector to be reduced
+#' @param Nchar integer, for each element in the vec, number of characters to 
+#' remain
+#' @return character vector after reducing
+#' @examples 
+#' vec <- c(strrep('a', 60), strrep('b', 30))
+#' vec2 <- vec_char_redu(vec, Nchar=50)
+#' @export
+vec_char_redu <- function(vec, Nchar=50){
+    res <- vapply(vec, function(s){
+        if(nchar(s) > Nchar){
+            s2 <- substr(s, 1, 50)
+            paste0(s2, "...")
+        } else s
+    }, FUN.VALUE=character(1))
     return(res)
 }

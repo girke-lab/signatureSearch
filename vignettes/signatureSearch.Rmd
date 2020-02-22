@@ -993,7 +993,7 @@ the 5 FEA methods. Here the functional categories are re-ranked by their mean
 rank values in increasing order. Since the functional categories are not always 
 present in all enrichment results, the mean rank of a functional category is 
 corrected by an adjustment factor that is the number of enrichment result 
-methods used divided by the number of occurences of a functional category. 
+methods used divided by the number of occurrences of a functional category. 
 For instance, if a functional category is only present in the result of one 
 method, its mean rank will be increased accordingly. 
 The following plots use the `pvalue` column in the result tables for this 

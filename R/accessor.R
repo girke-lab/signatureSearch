@@ -125,6 +125,23 @@ setMethod("dim", "feaResult",
     x@result[, name]
 }
 
+setAs("feaResult", "enrichResult", function(from, to){
+    res <- as.data.frame(result(from))
+    res <- res[colnames(res) != 'ont']
+    colnames(res) <- gsub("itemID", "geneID", colnames(res))
+    rownames(res) <- res$ID
+    if("leadingEdge" %in% colnames(res)){
+        colnames(res) <- gsub("leadingEdge", "geneID", colnames(res))
+    }
+    if(is.numeric(tg(from))){
+        tg(from) <- names(tg(from))
+    }
+    if(is.null(tg(from))){
+        tg(from) <- "UNKNOWN"
+    }
+    new(to, result=res, organism=og(from),
+        ontology=ont(from), keytype="UNKNOWN", gene=tg(from))})
+
 qr <- function(x) x@query
 gm <- function(x) x@gess_method
 refdb <- function(x) x@refdb

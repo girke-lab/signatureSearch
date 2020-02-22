@@ -4,9 +4,16 @@
 \alias{dsea_hyperG}
 \title{Drug Set Enrichment Analysis (DSEA) with Hypergeometric Test}
 \usage{
-dsea_hyperG(drugs, type = "GO", ont = "BP", pvalueCutoff = 0.05,
-  pAdjustMethod = "BH", qvalueCutoff = 0.2, minGSSize = 10,
-  maxGSSize = 500)
+dsea_hyperG(
+  drugs,
+  type = "GO",
+  ont = "BP",
+  pvalueCutoff = 0.05,
+  pAdjustMethod = "BH",
+  qvalueCutoff = 0.2,
+  minGSSize = 10,
+  maxGSSize = 500
+)
 }
 \arguments{
 \item{drugs}{character vector, query drug identifier set used for functional

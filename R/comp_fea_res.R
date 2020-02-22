@@ -5,7 +5,7 @@
 ##' 
 ##' The `comp_fea_res` function computes the mean rank for each functional 
 ##' category across different FEA result instances and then re-ranks them based 
-##' on that.Since the functional categories are not always present in all 
+##' on that. Since the functional categories are not always present in all 
 ##' enrichment results, the mean rank of a functional category is corrected by 
 ##' an adjustment factor that is the number of enrichment result methods used 
 ##' divided by the number of occurences of a functional category. For instance, 
@@ -23,6 +23,10 @@
 ##' the chosen column name needs to be present in each tibble of 'table_list'.
 ##' @param Nshow integer defining the number of the top functional categories 
 ##' to display in the plot after re-ranking them across FEA methods
+##' @param Nchar integer defining number of characters displayed (exceeded 
+##' characters were replaced by '...') in the description of each item
+##' @param scien TRUE or FALSE, indicating whether the rank_stat is rounded to
+##' the scientific format with 3 digits
 ##' @param ... Other arguments passed on to \code{\link[ggplot2]{geom_point}}
 ##' @importFrom ggplot2 aes_
 ##' @importFrom DOSE theme_dose
@@ -38,7 +42,8 @@
 ##' comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ##' @export
 
-comp_fea_res <- function(table_list, rank_stat="pvalue", Nshow=20, ...){
+comp_fea_res <- function(table_list, rank_stat="pvalue", Nshow=20, 
+                         Nchar=50, scien=FALSE, ...){
     if(is.null(names(table_list))){
         stop(paste('The "table_list" should be a list with names,', 
              'which could be names of the enrichment methods'))
@@ -47,24 +52,27 @@ comp_fea_res <- function(table_list, rank_stat="pvalue", Nshow=20, ...){
         tb <- table_list[[i]]
         tb_order <- tb[order(tb[[rank_stat]]),]
         tb2 <- data.frame(tb_order[, c("Description", rank_stat)], 
-                          method=names(table_list)[i], 
+                          Method=names(table_list)[i], 
                           rank=seq_len(nrow(tb_order)))
         return(tb2)
     }
     df <- do.call(rbind, lapply(seq_along(table_list), newtb))
-    
+    df$Description <- vec_char_redu(df$Description, Nchar=Nchar)
+    if(scien){
+        df[[rank_stat]] <- signif(df[[rank_stat]], 3)
+    }
     # re-ranking according to mean ranks and adjusted for number of support
-    # methods (*5/number of support methods)
+    # methods (*length(table_list)/number of support methods)
     cat_ranks_list <- split(df$rank, df$Description) 
     cat_mrk_adj <- vapply(cat_ranks_list, function(i){
-        m <- mean(i)*5/length(i)
+        m <- mean(i)*length(table_list)/length(i)
     }, FUN.VALUE = numeric(1))
     cat_rerk <- cat_mrk_adj[order(cat_mrk_adj)]
     cat_top <- names(cat_rerk)[seq_len(Nshow)]
     df2 <- df[df$Description %in% cat_top,]
     df2$Description <- factor(df2$Description, levels = rev(cat_top), 
                             ordered = TRUE)
-    p <- ggplot(df2, aes_(x = ~method, y = ~Description)) +
+    p <- ggplot(df2, aes_(x = ~Method, y = ~Description)) +
     geom_point(size=4, ...) + aes_string(color=rank_stat) + 
     scale_colour_gradient(low="red", high="blue") +
     theme_dose(font.size=12) +

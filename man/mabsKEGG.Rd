@@ -4,9 +4,16 @@
 \alias{mabsKEGG}
 \title{MeanAbs Enrichment Analysis for KEGG}
 \usage{
-mabsKEGG(geneList, organism = "hsa", keyType = "kegg", nPerm = 1000,
-  minGSSize = 5, maxGSSize = 500, pvalueCutoff = 0.05,
-  pAdjustMethod = "BH")
+mabsKEGG(
+  geneList,
+  organism = "hsa",
+  keyType = "kegg",
+  nPerm = 1000,
+  minGSSize = 5,
+  maxGSSize = 500,
+  pvalueCutoff = 0.05,
+  pAdjustMethod = "BH"
+)
 }
 \arguments{
 \item{geneList}{named numeric vector with gene/target ids in the name slot 
