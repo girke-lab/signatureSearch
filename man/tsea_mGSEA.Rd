@@ -4,9 +4,19 @@
 \alias{tsea_mGSEA}
 \title{Target Set Enrichment Analysis (TSEA) with mGSEA Algorithm}
 \usage{
-tsea_mGSEA(drugs, type = "GO", ont = "MF", nPerm = 1000,
-  exponent = 1, pAdjustMethod = "BH", pvalueCutoff = 0.05,
-  minGSSize = 5, maxGSSize = 500, verbose = FALSE, dt_anno = "all")
+tsea_mGSEA(
+  drugs,
+  type = "GO",
+  ont = "MF",
+  nPerm = 1000,
+  exponent = 1,
+  pAdjustMethod = "BH",
+  pvalueCutoff = 0.05,
+  minGSSize = 5,
+  maxGSSize = 500,
+  verbose = FALSE,
+  dt_anno = "all"
+)
 }
 \arguments{
 \item{drugs}{character vector containing drug identifiers used for functional
@@ -65,7 +75,7 @@ are randomly distributed throughout a ranked test gene list \eqn{L}
 (e.g. all genes ranked by log2 fold changes) or enriched at the top or 
 bottom of the test list. This is expressed by an 
 Enrichment Score (\eqn{ES}) reflecting the degree to which a set \eqn{S} 
-is overrepresented at the extremes of \eqn{L}.
+is overrepresented at the extremes of \eqn{L}. 
 
 For TSEA, the query is a target protein set where duplicated entries need to 
 be maintained. To perform GSEA with duplication support, here referred to as 

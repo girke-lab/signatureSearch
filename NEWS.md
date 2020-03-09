@@ -1,8 +1,25 @@
-## Changes in version 1.1.1 (2019-11-10)
+## Changes in version 1.0.3 (2020-02-07)
++ Supported converting `feaResult` object to `enrichResult` object in the
+`clusterProfiler` package so that the plotting functionalities in the latter 
+package such as dotplots and gene-concept networks could be applied to the
+FEA enrichment results
++ Supported searching against subset of refdb (subsetted specific columns 
+(treatments) in the refdb (e.g. lincs)) for GESS methods
++ Updated comp_fea_res function to reduce number of characters in description
++ Added functions to draw different types of GESs from refdb
++ Added deprof2subexpr function to get a subset of gene expression values from 
+a differential expression profile
+
+## Changes in version 1.0.2 (2020-01-21)
++ Fix bug: the enrichment results from DSEA methods and some of TSEA methods
+were added an aditional 'ont' column where the GO itmes were subsetted to the 
+selected ontology
+
+## Changes in version 1.0.1 (2019-11-10)
 + Support windows by not depending `gCMAP` package
 + Deal with HDF5 files with functions in `HDF5Array` package
 
-## Changes in version 1.1.0 (2019-10-23)
+## Changes in version 1.0.0 (2019-10-23)
 + Initial version 
 
 ## Changes in version 0.99.20 (2019-10-22)

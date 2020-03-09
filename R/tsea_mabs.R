@@ -91,7 +91,7 @@ tsea_mabs <- function(drugs,
     tar_diff_weight <- rep(0, length(tar_diff))
     names(tar_diff_weight) <- tar_diff
     tar_total_weight <- c(tar_weight, tar_diff_weight)
-    mabsgo <- mabsGO(geneList = tar_total_weight, OrgDb = org.Hs.eg.db, 
+    mabsgo <- mabsGO(geneList = tar_total_weight, OrgDb = "org.Hs.eg.db", 
                      ont = ont, keyType = "SYMBOL", nPerm = nPerm, 
                      minGSSize = minGSSize, maxGSSize = maxGSSize, 
                      pvalueCutoff = pvalueCutoff, pAdjustMethod=pAdjustMethod)

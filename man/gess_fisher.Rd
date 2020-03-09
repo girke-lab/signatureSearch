@@ -4,7 +4,7 @@
 \alias{gess_fisher}
 \title{Fisher Search Method}
 \usage{
-gess_fisher(qSig, higher, lower, chunk_size = 5000)
+gess_fisher(qSig, higher, lower, chunk_size = 5000, ref_trts = NULL)
 }
 \arguments{
 \item{qSig}{\code{\link{qSig}} object defining the query signature including
@@ -21,6 +21,10 @@ At least one of 'lower' and 'higher' must be specified.}
 
 \item{chunk_size}{number of database entries to process per iteration to 
 limit memory usage of search.}
+
+\item{ref_trts}{character vector. If users want to search against a subset 
+of the reference database, they could set ref_trts as a character vector 
+representing column names (treatments) of the subsetted refdb.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 

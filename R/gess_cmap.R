@@ -41,6 +41,9 @@
 #' For details see help of \code{qSig} and \code{qSig-class}.
 #' @param chunk_size number of database entries to process per iteration to 
 #' limit memory usage of search.
+#' @param ref_trts character vector. If users want to search against a subset 
+#' of the reference database, they could set ref_trts as a character vector 
+#' representing column names (treatments) of the subsetted refdb. 
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
@@ -62,7 +65,7 @@
 #' # cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 #' # result(cmap)
 #' @export
-gess_cmap <- function(qSig, chunk_size=5000){
+gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
     # stopifnot(validObject(qSig))
     if(gm(qSig) != "CMAP"){
@@ -73,7 +76,7 @@ gess_cmap <- function(qSig, chunk_size=5000){
     qsig_up <- qr(qSig)[[1]]
     qsig_dn <- qr(qSig)[[2]]
     res <- cmapEnrich(db_path, upset=qsig_up, downset=qsig_dn, 
-                      chunk_size=chunk_size)
+                      chunk_size=chunk_size, ref_trts=ref_trts)
     res <- sep_pcf(res)
     # add target column
     target <- suppressMessages(get_targets(res$pert))
@@ -99,11 +102,18 @@ rankMatrix <- function(x, decreasing=TRUE) {
 
 #' @importFrom DelayedArray colGrid
 #' @importFrom DelayedArray read_block
-cmapEnrich <- function(db_path, upset, downset, chunk_size=5000) {
+cmapEnrich <- function(db_path, upset, downset, 
+                       chunk_size=5000, ref_trts=NULL) {
   ## calculate raw.score of query to blocks (e.g., 5000 columns) of full refdb
   full_mat <- HDF5Array(db_path, "assay")
   rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
   colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+  
+  if(! is.null(ref_trts)){
+      trts_valid <- trts_check(ref_trts, colnames(full_mat))
+      full_mat <- full_mat[, trts_valid]
+  }
+  
   full_dim <- dim(full_mat)
   full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
   ### The blocks in 'full_grid' are made of full columns 

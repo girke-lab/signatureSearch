@@ -4,8 +4,13 @@
 \alias{feaResult}
 \title{Constructor for \code{\link{feaResult-class}}}
 \usage{
-feaResult(result, organism = "UNKNOWN", ontology = "UNKNOWN",
-  drugs = "UNKNOWN", targets = "UNKNOWN")
+feaResult(
+  result,
+  organism = "UNKNOWN",
+  ontology = "UNKNOWN",
+  drugs = "UNKNOWN",
+  targets = "UNKNOWN"
+)
 }
 \arguments{
 \item{result}{tibble object containing the FEA results}

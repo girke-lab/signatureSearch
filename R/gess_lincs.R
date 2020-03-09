@@ -64,6 +64,9 @@
 #' statistics: `WTCS`, `NCS`, `Tau`, `NCSct` or `NA` 
 #' @param chunk_size number of database entries to process per iteration to 
 #' limit memory usage of search.
+#' @param ref_trts character vector. If users want to search against a subset 
+#' of the reference database, they could set ref_trts as a character vector 
+#' representing column names (treatments) of the subsetted refdb. 
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
@@ -84,7 +87,8 @@
 #' #lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
 #' #result(lincs)
 #' @export
-gess_lincs <- function(qSig, tau=FALSE, sortby="NCS", chunk_size=5000){
+gess_lincs <- function(qSig, tau=FALSE, sortby="NCS", 
+                       chunk_size=5000, ref_trts=NULL){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(gm(qSig) != "LINCS"){
@@ -95,7 +99,8 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS", chunk_size=5000){
   downset <- qr(qSig)[[2]]
   db_path <- determine_refdb(refdb(qSig))
   res <- lincsEnrich(db_path, upset=upset, downset=downset, 
-                     tau=tau, sortby=sortby, chunk_size=chunk_size)
+                     tau=tau, sortby=sortby, 
+                     chunk_size=chunk_size, ref_trts=ref_trts)
   # add target column
   target <- suppressMessages(get_targets(res$pert))
   res <- left_join(res, target, by=c("pert"="drug_name"))
@@ -108,8 +113,8 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS", chunk_size=5000){
 }
 
 lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1, 
-                        output="all", tau=FALSE,
-                        minTauRefSize=500, chunk_size=5000) {
+                        output="all", tau=FALSE, minTauRefSize=500, 
+                        chunk_size=5000, ref_trts=NULL) {
     mycolnames <- c("WTCS", "NCS", "Tau", "NCSct", "N_upset", "N_downset", NA)
     if(!any(mycolnames %in% sortby)) 
         stop("Unsupported value assinged to sortby.")
@@ -118,6 +123,12 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
     full_mat <- HDF5Array(db_path, "assay")
     rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
     colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+    
+    if(! is.null(ref_trts)){
+        trts_valid <- trts_check(ref_trts, colnames(full_mat))
+        full_mat <- full_mat[, trts_valid]
+    }
+    
     full_dim <- dim(full_mat)
     full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
     ### The blocks in 'full_grid' are made of full columns 

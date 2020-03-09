@@ -4,7 +4,14 @@
 \alias{comp_fea_res}
 \title{Plot for Comparing Ranking Results of FEA Methods}
 \usage{
-comp_fea_res(table_list, rank_stat = "pvalue", Nshow = 20, ...)
+comp_fea_res(
+  table_list,
+  rank_stat = "pvalue",
+  Nshow = 20,
+  Nchar = 50,
+  scien = FALSE,
+  ...
+)
 }
 \arguments{
 \item{table_list}{a named list of tibbles extracted from feaResult objects,
@@ -16,6 +23,12 @@ the chosen column name needs to be present in each tibble of 'table_list'.}
 
 \item{Nshow}{integer defining the number of the top functional categories 
 to display in the plot after re-ranking them across FEA methods}
+
+\item{Nchar}{integer defining number of characters displayed (exceeded 
+characters were replaced by '...') in the description of each item}
+
+\item{scien}{TRUE or FALSE, indicating whether the rank_stat is rounded to
+the scientific format with 3 digits}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2]{geom_point}}}
 }
@@ -31,7 +44,7 @@ FEA results.
 \details{
 The `comp_fea_res` function computes the mean rank for each functional 
 category across different FEA result instances and then re-ranks them based 
-on that.Since the functional categories are not always present in all 
+on that. Since the functional categories are not always present in all 
 enrichment results, the mean rank of a functional category is corrected by 
 an adjustment factor that is the number of enrichment result methods used 
 divided by the number of occurences of a functional category. For instance, 
