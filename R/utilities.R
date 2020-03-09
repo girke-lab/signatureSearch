@@ -230,40 +230,96 @@ select_ont <- function(res, ont, GO_DATA){
     return(res)
 }
 
-#' Drawn from reference database (e.g. LINCS, CMAP) a GES of a compound 
-#' treatment in a cell type
-#' @title Drawn GES 
-#' @param cmp character(1), compound name available in refdb
-#' @param cell character(1), cell type that the compound treated in
-#' @param refdb character(1), one of "cmap", "cmap_expr", "lincs", or 
-#' "lincs_expr"
-#' @return matrix with one column representing GES of the query compound in cell
+#' Functionalities used to draw from reference database 
+#' (e.g. lincs, lincs_expr) GESs of compound treatment(s) in cell types.
+#' 
+#' The GES could be genome-wide differential expression profiles (e.g. log2 
+#' fold changes or z-scores) or normalized gene expression intensity values 
+#' depending on the data type of \code{refdb} or n top up/down regulated DEGs
+#' @title Drawn Query GES from Reference Database 
+#' @rdname getSig
+#' @param cmp character vector representing a list of compound name available 
+#' in \code{refdb} for \code{getSig} function, or character(1) indicating a
+#' compound name (e.g. vorinostat) for other functions
+#' @param cell character(1) or character vector of the same length as cmp 
+#' argument. It indicates cell type that the compound treated in
+#' @param refdb character(1), one of "lincs", "lincs_expr", "cmap", or 
+#' "cmap_expr"
+#' @return matrix representing genome-wide GES of the query compound(s) in cell
 #' @examples 
-#' vor_sig <- getSig("vorinostat", "SKB", refdb="notrun")
+#' refdb <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
+#' vor_sig <- getSig("vorinostat", "SKB", refdb=refdb)
 #' @export
 #' 
 getSig <- function(cmp, cell, refdb){
-    cmp <- tolower(cmp)
-    refdb <- tolower(refdb)
-    if(refdb %in% c("lincs", "lincs_expr", "cmap", "cmap_expr")){
+    if(is.character(refdb)){
         refdb <- determine_refdb(refdb)
         refse <- SummarizedExperiment(HDF5Array(refdb, name="assay"))
         rownames(refse) <- HDF5Array(refdb, name="rownames")
         colnames(refse) <- HDF5Array(refdb, name="colnames")
         trt <- paste(cmp, cell, "trt_cp", sep="__")
-        if(! trt %in% colnames(refse)){
-            stop(paste(cmp, cell, "teatment is not contained in refdb!"))
+        trt2 <- intersect(trt, colnames(refse))
+        notin <- setdiff(trt, colnames(refse))
+        if(length(notin) > 0){
+            warning(length(notin), "/", length(trt), 
+                    " teatments are not contained in refdb, ", 
+                    "they are ignored!")
         }
-        cmp_mat <- as.matrix(assay(refse[ ,trt]))
+        cmp_mat <- as.matrix(assay(refse[,trt2]))
         # sort decreasingly
-        cmp_mat2 <- apply(cmp_mat, 2, sort, decreasing=TRUE)
-        return(cmp_mat2)
+        #cmp_mat2 <- apply(cmp_mat, 2, sort, decreasing=TRUE)
+        return(cmp_mat)
     } else {
         message(paste("Please set refdb as one of",  
-                "'lincs', 'lincs_expr', 'cmap' or 'cmap_expr'!"))
+                "'lincs', 'lincs_expr', 'cmap' or 'cmap_expr', "),
+                "or path to an HDF5 file representing reference database!")
     }
 }
 
+#' @rdname getSig
+#' @param Nup integer(1). Number of most up-regulated genes to be subsetted
+#' @param Ndown integer(1). Number of most down-regulated genes to be subsetted 
+#' @return a list of up- and down-regulated gene label sets 
+#' @examples 
+#' vor_degsig <- getDEGSig("vorinostat", "SKB", refdb=refdb)
+#' @export
+getDEGSig <- function(cmp, cell, Nup=150, Ndown=150, refdb="lincs"){
+    deprof <- suppressMessages(getSig(cmp, cell, refdb))
+    deprof_sort <- apply(deprof, 2, sort, decreasing=TRUE)
+    upset <- head(rownames(deprof_sort), Nup)
+    downset <- tail(rownames(deprof_sort), Ndown)
+    return(list(upset=upset, downset=downset))
+}
+
+#' @rdname getSig
+#' @return a numeric matrix with one column representing gene expression values
+#' drawn from \code{lincs_expr} db of the most up- and down-regulated genes. 
+#' The genes were subsetted according to z-scores drawn from \code{lincs} db. 
+#' @examples 
+#' all_expr <- as.matrix(runif(1000, 0, 10), ncol=1)
+#' rownames(all_expr) <- paste0('g', sprintf("%04d", 1:1000))
+#' colnames(all_expr) <- "drug__cell__trt_cp"
+#' de_prof <- as.matrix(rnorm(1000, 0, 3), ncol=1)
+#' rownames(de_prof) <- paste0('g', sprintf("%04d", 1:1000))
+#' colnames(de_prof) <- "drug__cell__trt_cp"
+#' ## getSPsubSig internally uses deprof2subexpr function
+#' ## sub_expr <- deprof2subexpr(all_expr, de_prof, Nup=150, Ndown=150)
+#' @export
+getSPsubSig <- function(cmp, cell, Nup=150, Ndown=150){
+    query_expr <- suppressMessages(getSig(cmp, cell, refdb="lincs_expr"))
+    query_prof <- suppressMessages(getSig(cmp, cell, refdb="lincs"))
+    sub_expr <- deprof2subexpr(query_expr, query_prof, Nup=Nup, Ndown=Ndown)
+    return(sub_expr)
+}
+
+deprof2subexpr <- function(all_expr, de_prof, Nup=150, Ndown=150){
+    de_prof_sort <- apply(de_prof, 2, sort, decreasing=TRUE)
+    upset <- head(rownames(de_prof_sort), Nup)
+    downset <- tail(rownames(de_prof_sort), Ndown)
+    sub_expr <- all_expr[c(upset, downset), , drop=FALSE]
+    return(sub_expr)
+}
+    
 trts_check <- function(ref_trts, full_trts){
     trts_valid <- intersect(ref_trts, full_trts)
     inval <- setdiff(ref_trts, full_trts)
@@ -290,6 +346,7 @@ trts_check <- function(ref_trts, full_trts){
 #' vec2 <- vec_char_redu(vec, Nchar=50)
 #' @export
 vec_char_redu <- function(vec, Nchar=50){
+    vec <- as.character(vec)
     res <- vapply(vec, function(s){
         if(nchar(s) > Nchar){
             s2 <- substr(s, 1, 50)

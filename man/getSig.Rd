@@ -2,25 +2,59 @@
 % Please edit documentation in R/utilities.R
 \name{getSig}
 \alias{getSig}
-\title{Drawn GES}
+\alias{getDEGSig}
+\alias{getSPsubSig}
+\title{Drawn Query GES from Reference Database}
 \usage{
 getSig(cmp, cell, refdb)
+
+getDEGSig(cmp, cell, Nup = 150, Ndown = 150, refdb = "lincs")
+
+getSPsubSig(cmp, cell, Nup = 150, Ndown = 150)
 }
 \arguments{
-\item{cmp}{character(1), compound name available in refdb}
+\item{cmp}{character vector representing a list of compound name available 
+in \code{refdb} for \code{getSig} function, or character(1) indicating a
+compound name (e.g. vorinostat) for other functions}
 
-\item{cell}{character(1), cell type that the compound treated in}
+\item{cell}{character(1) or character vector of the same length as cmp 
+argument. It indicates cell type that the compound treated in}
 
-\item{refdb}{character(1), one of "cmap", "cmap_expr", "lincs", or 
-"lincs_expr"}
+\item{refdb}{character(1), one of "lincs", "lincs_expr", "cmap", or 
+"cmap_expr"}
+
+\item{Nup}{integer(1). Number of most up-regulated genes to be subsetted}
+
+\item{Ndown}{integer(1). Number of most down-regulated genes to be subsetted}
 }
 \value{
-matrix with one column representing GES of the query compound in cell
+matrix representing genome-wide GES of the query compound(s) in cell
+
+a list of up- and down-regulated gene label sets
+
+a numeric matrix with one column representing gene expression values
+drawn from \code{lincs_expr} db of the most up- and down-regulated genes. 
+The genes were subsetted according to z-scores drawn from \code{lincs} db.
 }
 \description{
-Drawn from reference database (e.g. LINCS, CMAP) a GES of a compound 
-treatment in a cell type
+Functionalities used to draw from reference database 
+(e.g. lincs, lincs_expr) GESs of compound treatment(s) in cell types.
+}
+\details{
+The GES could be genome-wide differential expression profiles (e.g. log2 
+fold changes or z-scores) or normalized gene expression intensity values 
+depending on the data type of \code{refdb} or n top up/down regulated DEGs
 }
 \examples{
-vor_sig <- getSig("vorinostat", "SKB", refdb="notrun")
+refdb <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
+vor_sig <- getSig("vorinostat", "SKB", refdb=refdb)
+vor_degsig <- getDEGSig("vorinostat", "SKB", refdb=refdb)
+all_expr <- as.matrix(runif(1000, 0, 10), ncol=1)
+rownames(all_expr) <- paste0('g', sprintf("\%04d", 1:1000))
+colnames(all_expr) <- "drug__cell__trt_cp"
+de_prof <- as.matrix(rnorm(1000, 0, 3), ncol=1)
+rownames(de_prof) <- paste0('g', sprintf("\%04d", 1:1000))
+colnames(de_prof) <- "drug__cell__trt_cp"
+## getSPsubSig internally uses deprof2subexpr function
+## sub_expr <- deprof2subexpr(all_expr, de_prof, Nup=150, Ndown=150)
 }

@@ -3,9 +3,12 @@
 `clusterProfiler` package so that the plotting functionalities in the latter 
 package such as dotplots and gene-concept networks could be applied to the
 FEA enrichment results
-+ Supported subsetting specific columns (treatments) in the refdb (e.g. lincs) 
-for GESS methods
++ Supported searching against subset of refdb (subsetted specific columns 
+(treatments) in the refdb (e.g. lincs)) for GESS methods
 + Updated comp_fea_res function to reduce number of characters in description
++ Added functions to draw different types of GESs from refdb
++ Added deprof2subexpr function to get a subset of gene expression values from 
+a differential expression profile
 
 ## Changes in version 1.0.2 (2020-01-21)
 + Fix bug: the enrichment results from DSEA methods and some of TSEA methods

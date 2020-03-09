@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{calcGseaStatBatchCpp}
 \alias{calcGseaStatBatchCpp}
-\title{Calculates GSEA statistic values for all gene sets in `selectedStats` list.}
+\title{Calculates GSEA statistic valus for all gene sets in `selectedStats` list.}
 \usage{
 calcGseaStatBatchCpp(stats, selectedGenes, geneRanks)
 }

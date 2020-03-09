@@ -27,3 +27,4 @@ biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment,
            Sequencing, Coverage, DifferentialExpression
 URL: https://github.com/yduan004/signatureSearch/
 BugReports: https://github.com/yduan004/signatureSearch/issues
+LazyData: true

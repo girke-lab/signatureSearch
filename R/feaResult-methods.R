@@ -21,8 +21,8 @@ setMethod("show", c(object="feaResult"),
           str(object@targets)
           # cat("#...@universe", "\t")
           # str(object@universe)
-          cat(paste0("#...", nrow(object@result)), "enriched terms found\n")
-          str(object@result)
+          cat(paste0("#...", nrow(result(object))), "enriched terms found\n")
+          print(result(object))
           })
 
 #' @name result
@@ -70,25 +70,4 @@ setMethod("drugs<-", "feaResult", function(x, value) {
     x@drugs <- value
     x
 })
-
-# ##' dotplot for feaResult
-# ##'
-# ##' @rdname dotplot-methods
-# ##' @aliases dotplot,feaResult,ANY-method
-# ##' @param object an instance of feaResult
-# ##' @param x variable for x axis
-# ##' @param colorBy one of 'pvalue', 'p.adjust' and 'qvalue'
-# ##' @param showCategory number of category
-# ##' @param split separate result by 'category' variable
-# ##' @param font.size font size
-# ##' @param title plot title
-# ##' @return plot
-# ##' @importFrom enrichplot dotplot
-# ##' @exportMethod dotplot
-# setMethod("dotplot", signature(object="feaResult"),
-#           function(object, x="geneRatio", colorBy="p.adjust", 
-#           showCategory=10, split=NULL, font.size=12, title="") {
-#               dotplot_internal(object, x, colorBy, showCategory, 
-#                                split, font.size, title)
-#            })
 
