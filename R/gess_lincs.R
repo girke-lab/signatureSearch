@@ -141,11 +141,11 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
       ## When both upset and downset are provided 
       if(length(upset)>0 & length(downset)>0) {
         ESup <- apply(mat, 2, function(x) 
-          .enrichScore(sigvec=sort(x, decreasing = TRUE), 
-                       Q=upset, type=type))
+            .enrichScore(sigvec=sort(x, decreasing = TRUE), 
+                         Q=upset, type=type))
         ESdown <- apply(mat, 2, function(x) 
-          .enrichScore(sigvec=sort(x, decreasing = TRUE),
-                       Q=downset, type=type)) 
+            .enrichScore(sigvec=sort(x, decreasing = TRUE),
+                         Q=downset, type=type))
         ESout1 <- ifelse(sign(ESup) != sign(ESdown), (ESup - ESdown)/2, 0)
         ## When only upset is provided
       } else if(length(upset)>0 & length(downset)==0) {
@@ -218,136 +218,137 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 #' @importFrom utils read.delim
 #' @importFrom stats quantile
 .lincsScores <- function(esout, upset, downset, minTauRefSize, tau=FALSE) {
-  ## P-value and FDR for WTCS based on ESnull from random queries where 
-  ## p-value = sum(ESrand > ES_obs)/Nrand
-
-  # download ES_NULL.txt from AnnotationHub
-  eh <- suppressMessages(ExperimentHub())
-  WTCSnull <- suppressMessages(eh[["EH3234"]])
-  WTCSnull[WTCSnull[, "Freq"]==0, "Freq"] <- 1 
-  # Add pseudo count of 1 where Freq is zero 
-  myrounding <- max(nchar(as.character(WTCSnull[,"WTCS"]))) - 3 
-  # Three because of dot and minus sign
-  es_round <- round(as.numeric(esout), myrounding) 
-  # Assures same rounding used for WTCSnull computation
-  WTCS_pval <- vapply(es_round, function(x) {
-    sum(WTCSnull[abs(WTCSnull[,"WTCS"]) > abs(x),"Freq"])/sum(WTCSnull[,"Freq"])
-    }, FUN.VALUE = numeric(1))
-  WTCS_fdr <- p.adjust(WTCS_pval, "fdr")
-  ## Normalized connectivity score (NCS)
-  grouping <- paste(gsub("^.*?__", "", names(esout)), 
-                    as.character(ifelse(esout > 0, "up", "down")), sep="__")
-  es_na <- as.numeric(esout)
-  es_na[es_na == 0] <- NA 
-  # eliminates zeros from mean calculation; zeros have high impact on NCS 
-  # values due to their high frequency
-  groupmean <- tapply(es_na, grouping, mean, na.rm=TRUE)
-  groupmean[is.na(groupmean)] <- 0 
-  # In case groups contain only zeros, NA/NaN values are introduced in mean 
-  # calculation which are reset to zeros here
-  groupmean[groupmean==0] <- 10^-12 
-  # Set zeros (can be from non NAs) to small value to avoid devision by zero 
-  ncs <- as.numeric(esout) / abs(groupmean[grouping]) 
-  # without abs() sign of neg values would switch to pos
-  ## Tau calculation requires reference NCS lookup DB
-  ## performs: sign(ncs_query) * 100/N sum(abs(ncs_ref) < abs(ncs_query))
-  if(tau){
-    # download taurefList.rds
-    eh <- suppressMessages(ExperimentHub())
-    taurefList9264 <- suppressMessages(eh[["EH3233"]])
-    ncs_query <- ncs; names(ncs_query) <- names(esout)
-    queryDB_refDB_match <- 
-      unique(unlist(lapply(taurefList9264, rownames))) %in% names(ncs_query)
-    if(!all(queryDB_refDB_match)) warning(
-      paste0("QueryDB and tauRefDB differ by ", 
-      round(100 * sum(!queryDB_refDB_match)/length(queryDB_refDB_match),1), 
-      "% of their entries.",
-      " Accurate tau computation requires close to 0% divergence."))
-    ncs_query_list <- split(ncs_query, 
-                            factor(gsub("^.*?__", "", names(ncs_query))))
-    tau_score <- lapply(names(ncs_query_list), function(x) {
-      tmpDF <- taurefList9264[[x]]
-      ncs_query_match <- names(ncs_query_list[[x]])[names(ncs_query_list[[x]]) 
-                                                    %in% rownames(tmpDF)]
-      if(length(ncs_query_match)>0) {
-        tmpDF <- tmpDF[ncs_query_match, , drop=FALSE]
-        # sign(ncs_query_list[[x]]) * 100/ncol(tmpDF) * 
-        # rowSums(abs(tmpDF)  < abs(ncs_query_list[[x]]))
-        sign(ncs_query_list[[x]]) * 100/ncol(tmpDF) * 
-          rowSums(abs(tmpDF) < abs(round(ncs_query_list[[x]], 2))) 
-        # rounded as in ref db
-      } else {
-        NULL
-      }
-    })
-    tau_score <- unlist(tau_score)
-    tau_score <- tau_score[names(ncs_query)]
-    tauRefSize <- vapply(taurefList9264, ncol, 
-                FUN.VALUE = integer(1))[gsub("^.*?__", "", names(tau_score))]
-    tau_score[tauRefSize < minTauRefSize] <- NA
-    ## Add by YD 
-    rm(taurefList9264); gc()
-  }
-  ## Summary across cell lines (NCSct)
-  ctgrouping <- gsub("__.*__", "__", names(esout))
-  qmax <- tapply(ncs, ctgrouping, function(x) { 
-    q <- quantile(x, probs=c(0.33, 0.67))
-    ifelse(abs(q[2]) >= abs(q[1]), q[2], q[1])
-  })
-  qmax <- qmax[ctgrouping]
-  ## Organize result in data.frame
-  new <- as.data.frame(t(vapply(seq_along(esout), function(i)
-    unlist(strsplit(as.character(names(esout)[i]), "__")),
-    FUN.VALUE = character(3))), stringsAsFactors=FALSE)
-  colnames(new) <- c("pert", "cell", "type")
+    ## P-value and FDR for WTCS based on ESnull from random queries where 
+    ## p-value = sum(ESrand > ES_obs)/Nrand
   
-  if(tau){
-    resultDF <- data.frame(
-      new, 
-      trend = as.character(ifelse(esout > 0, "up", "down")),
-      WTCS = as.numeric(esout), 
-      WTCS_Pval = WTCS_pval,
-      WTCS_FDR = WTCS_fdr, 
-      NCS = ncs, 
-      Tau = tau_score,
-      TauRefSize=tauRefSize, 
-      NCSct = qmax, 
-      N_upset = length(upset),
-      N_downset = length(downset), stringsAsFactors = FALSE)
-  } else {
-    resultDF <- data.frame(
-      new, 
-      trend = as.character(ifelse(esout > 0, "up", "down")),
-      WTCS = as.numeric(esout), 
-      WTCS_Pval = WTCS_pval,
-      WTCS_FDR = WTCS_fdr, 
-      NCS = ncs, 
-      NCSct = qmax, 
-      N_upset = length(upset),
-      N_downset = length(downset), stringsAsFactors = FALSE)
-  }
-  row.names(resultDF) <- NULL
-  return(resultDF)
+    # download ES_NULL.txt from AnnotationHub
+    eh <- suppressMessages(ExperimentHub())
+    WTCSnull <- suppressMessages(eh[["EH3234"]])
+    WTCSnull[WTCSnull[, "Freq"]==0, "Freq"] <- 1 
+    # Add pseudo count of 1 where Freq is zero 
+    myrounding <- max(nchar(as.character(WTCSnull[,"WTCS"]))) - 3 
+    # Three because of dot and minus sign
+    es_round <- round(as.numeric(esout), myrounding) 
+    # Assures same rounding used for WTCSnull computation
+    WTCS_pval <- vapply(es_round, function(x) {
+      sum(WTCSnull[abs(WTCSnull[,"WTCS"]) > abs(x),"Freq"])/sum(WTCSnull[,"Freq"])
+      }, FUN.VALUE = numeric(1))
+    WTCS_fdr <- p.adjust(WTCS_pval, "fdr")
+    ## Normalized connectivity score (NCS)
+    grouping <- paste(gsub("^.*?__", "", names(esout)), 
+                      as.character(ifelse(esout > 0, "up", "down")), sep="__")
+    es_na <- as.numeric(esout)
+    es_na[es_na == 0] <- NA 
+    # eliminates zeros from mean calculation; zeros have high impact on NCS 
+    # values due to their high frequency
+    groupmean <- tapply(es_na, grouping, mean, na.rm=TRUE)
+    groupmean[is.na(groupmean)] <- 0 
+    # In case groups contain only zeros, NA/NaN values are introduced in mean 
+    # calculation which are reset to zeros here
+    groupmean[groupmean==0] <- 10^-12 
+    # Set zeros (can be from non NAs) to small value to avoid devision by zero 
+    ncs <- as.numeric(esout) / abs(groupmean[grouping]) 
+    # without abs() sign of neg values would switch to pos
+    ## Tau calculation requires reference NCS lookup DB
+    ## performs: sign(ncs_query) * 100/N sum(abs(ncs_ref) < abs(ncs_query))
+    if(tau){
+      # download taurefList.rds
+      eh <- suppressMessages(ExperimentHub())
+      taurefList9264 <- suppressMessages(eh[["EH3233"]])
+      ncs_query <- ncs; names(ncs_query) <- names(esout)
+      queryDB_refDB_match <- 
+          unique(unlist(lapply(taurefList9264, rownames))) %in% names(ncs_query)
+      if(!all(queryDB_refDB_match)) warning(
+          paste0("QueryDB and tauRefDB differ by ", 
+          round(100 * sum(!queryDB_refDB_match)/length(queryDB_refDB_match),1), 
+          "% of their entries.",
+          " Accurate tau computation requires close to 0% divergence. \n"))
+      ncs_query_list <- split(ncs_query, 
+                              factor(gsub("^.*?__", "", names(ncs_query))))
+      tau_score <- lapply(names(ncs_query_list), function(x) {
+        tmpDF <- taurefList9264[[x]]
+        ncs_query_match <- names(ncs_query_list[[x]])[names(ncs_query_list[[x]]) 
+                                                      %in% rownames(tmpDF)]
+        if(length(ncs_query_match)>0) {
+          tmpDF <- tmpDF[ncs_query_match, , drop=FALSE]
+          # sign(ncs_query_list[[x]]) * 100/ncol(tmpDF) * 
+          # rowSums(abs(tmpDF)  < abs(ncs_query_list[[x]]))
+          sign(ncs_query_list[[x]]) * 100/ncol(tmpDF) * 
+            rowSums(abs(tmpDF) < abs(round(ncs_query_list[[x]], 2))) 
+          # rounded as in ref db
+        } else {
+          NULL
+        }
+      })
+      tau_score <- unlist(tau_score)
+      tau_score <- tau_score[names(ncs_query)]
+      tauRefSize <- vapply(taurefList9264, ncol, 
+                  FUN.VALUE = integer(1))[gsub("^.*?__", "", names(tau_score))]
+      tau_score[tauRefSize < minTauRefSize] <- NA
+      ## Add by YD 
+      rm(taurefList9264); gc()
+    }
+    ## Summary across cell lines (NCSct)
+    ctgrouping <- gsub("__.*__", "__", names(esout))
+    qmax <- tapply(ncs, ctgrouping, function(x) { 
+      q <- quantile(x, probs=c(0.33, 0.67))
+      ifelse(abs(q[2]) >= abs(q[1]), q[2], q[1])
+    })
+    qmax <- qmax[ctgrouping]
+    ## Organize result in data.frame
+    new <- as.data.frame(t(vapply(seq_along(esout), function(i)
+      unlist(strsplit(as.character(names(esout)[i]), "__")),
+      FUN.VALUE = character(3))), stringsAsFactors=FALSE)
+    colnames(new) <- c("pert", "cell", "type")
+    
+    if(tau){
+      resultDF <- data.frame(
+        new, 
+        trend = as.character(ifelse(esout > 0, "up", "down")),
+        WTCS = as.numeric(esout), 
+        WTCS_Pval = WTCS_pval,
+        WTCS_FDR = WTCS_fdr, 
+        NCS = ncs, 
+        Tau = tau_score,
+        TauRefSize=tauRefSize, 
+        NCSct = qmax, 
+        N_upset = length(upset),
+        N_downset = length(downset), stringsAsFactors = FALSE)
+    } else {
+      resultDF <- data.frame(
+        new, 
+        trend = as.character(ifelse(esout > 0, "up", "down")),
+        WTCS = as.numeric(esout), 
+        WTCS_Pval = WTCS_pval,
+        WTCS_FDR = WTCS_fdr, 
+        NCS = ncs, 
+        NCSct = qmax, 
+        N_upset = length(upset),
+        N_downset = length(downset), stringsAsFactors = FALSE)
+    }
+    row.names(resultDF) <- NULL
+    return(resultDF)
 }
 
 
 ## Define enrichment function according to Subramanian et al, 2005
 ## Note: query corresponds to gene set, here Q.
 .enrichScore <- function(sigvec, Q, type) {
-  ## Preprocess arguments
-  L <- names(sigvec)
-  R <- as.numeric(sigvec)
-  N <- length(L)
-  NH <- length(Q)
-  Ns <- N - NH
-  hit_index <- as.numeric(L %in% Q)
-  miss_index <- 1 - hit_index
-  R <- abs(R^type)
-  ## Compute ES
-  NR <- sum(R[hit_index == 1])
-  ESvec <- cumsum((hit_index * R * 1/NR) - (miss_index * 1/Ns)) 
-  ES <- ESvec[which.max(abs(ESvec))]
-  return(ES)
+    ## Preprocess arguments
+    L <- names(sigvec)
+    R <- as.numeric(sigvec)
+    N <- length(L)
+    NH <- length(Q)
+    Ns <- N - NH
+    hit_index <- as.numeric(L %in% Q)
+    miss_index <- 1 - hit_index
+    R <- abs(R^type)
+    ## Compute ES
+    NR <- sum(R[hit_index == 1])
+    if(NR == 0) return(0)
+    ESvec <- cumsum((hit_index * R * 1/NR) - (miss_index * 1/Ns)) 
+    ES <- ESvec[which.max(abs(ESvec))]
+    return(ES)
 }
 
 #' Function computes null distribution of Weighted Connectivity Scores (WTCS) 

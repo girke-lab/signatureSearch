@@ -243,8 +243,8 @@ select_ont <- function(res, ont, GO_DATA){
 #' compound name (e.g. vorinostat) for other functions
 #' @param cell character(1) or character vector of the same length as cmp 
 #' argument. It indicates cell type that the compound treated in
-#' @param refdb character(1), one of "lincs", "lincs_expr", "cmap", or 
-#' "cmap_expr"
+#' @param refdb character(1), one of "lincs", "lincs_expr", "cmap", "cmap_expr",
+#' or path to the HDF5 file built from \code{\link{build_custom_db}} function
 #' @return matrix representing genome-wide GES of the query compound(s) in cell
 #' @examples 
 #' refdb <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
