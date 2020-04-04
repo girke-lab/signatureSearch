@@ -1,5 +1,13 @@
 
-# _signatureSearch_ - Environment for Gene Expression Searching Combined with Functional Enrichment Analysis
+# _signatureSearch_: Environment for Gene Expression Searching and Functional Enrichment Analysis
+
+[![platforms](http://www.bioconductor.org/shields/availability/3.10/signatureSearch.svg)](http://www.bioconductor.org/packages/devel/bioc/html/signatureSearch.html#archives)
+[![rank](http://www.bioconductor.org/shields/downloads/devel/signatureSearch.svg)](http://bioconductor.org/packages/stats/bioc/signatureSearch/)
+[![posts](http://www.bioconductor.org/shields/posts/signatureSearch.svg)](https://support.bioconductor.org/t/signatureSearch/)
+[![Bioc](http://www.bioconductor.org/shields/years-in-bioc/signatureSearch.svg)](http://www.bioconductor.org/packages/devel/bioc/html/signatureSearch.html#since)
+[![build](http://www.bioconductor.org/shields/build/devel/bioc/signatureSearch.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/signatureSearch/)
+[![updated](http://www.bioconductor.org/shields/lastcommit/devel/bioc/signatureSearch.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/signatureSearch/)
+[![dependencies](http://www.bioconductor.org/shields/dependencies/devel/signatureSearch.svg)](http://www.bioconductor.org/packages/devel/bioc/html/signatureSearch.html#since)
 
 # Introduction
 
