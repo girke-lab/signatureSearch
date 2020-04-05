@@ -53,7 +53,7 @@ BiocManager::install("signatureSearch")
 To obtain the most recent updates immediately, one can install it directly from 
 GitHub as follows.
 ```r
-devtools::install_github("yduan004/signatureSearch")
+BiocManager::install("yduan004/signatureSearch", build_vignettes=TRUE)
 ```
 
 After the package is installed, it can be loaded into an R session as follows.
