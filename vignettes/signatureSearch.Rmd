@@ -187,14 +187,14 @@ As Bioconductor package `signatureSearch` can be installed with the
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("signatureSearch")
-BiocManager::install("yduan004/signatureSearch")  # Installs from github
+BiocManager::install("yduan004/signatureSearch", build_vignettes=TRUE)  # Installs from github
 ```
 
 Next the package needs to be loaded into a user's R session.
 ```{r load, eval=TRUE}
 library(signatureSearch)
 library(help = "signatureSearch")  # Lists package info
-browseVignettes("signatureSearch")  # Opens vignette
+vignette("signatureSearch")  # Opens vignette
 ```
 
 ## Reference Databases
