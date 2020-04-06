@@ -1,5 +1,6 @@
 ### Changes in version 1.0.4 (2020-04-02)
 + Added instructions for GESS batch queries in vignette
++ Added runWF function to run entire GESS/FEA workflow
 
 ### Changes in version 1.0.3 (2020-02-07)
 + Supported converting `feaResult` object to `enrichResult` object in the

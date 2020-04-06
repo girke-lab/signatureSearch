@@ -4,7 +4,9 @@
 \name{cell_info}
 \alias{cell_info}
 \title{Cell Type Information}
-\format{A \code{tibble} object with 30 rows and 4 columns.}
+\format{
+A \code{tibble} object with 30 rows and 4 columns.
+}
 \usage{
 cell_info
 }

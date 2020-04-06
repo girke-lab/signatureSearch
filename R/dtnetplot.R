@@ -1,35 +1,35 @@
-##' Functional modules of GESS and FEA results can be rendered as interactive
-##' drug-target networks using the \code{dtnetplot} function form
-##' \code{signatureSearch}. For this, a character vector of drug names along 
-##' with an identifier of a chosen functional category are passed on to the 
-##' drugs and set arguments, respectively. The resulting plot depicts the 
-##' corresponding drug-target interaction network. Its interactive features 
-##' allow the user to zoom in and out of the network, and to select network 
-##' components in the drop-down menu located in the upper left corner of the 
-##' plot.
-##' @title Drug-Target Network Visualization
-##' @param drugs A character vector of drug names
-##' @param set character(1) GO term ID or KEGG pathway ID. Alternatively, a
-##' character vector of gene SYMBOLs can be assigned.
-##' @param ont if `set` is a GO term ID, `ont` is the corresponding ontology 
-##' that GO term belongs to. One of 'BP', 'MF' or 'CC'
-##' @param desc character(1), description of the chosen functional category or 
-##' target set
-##' @param verbose TRUE or FALSE, whether to print messages
-##' @param ... Other arguments passed on to 
-##' \code{\link[visNetwork]{visNetwork}} function.
-##' @return visNetwork plot
-##' @import visNetwork
-##' @importFrom AnnotationDbi select
-##' @importFrom scales cscale
-##' @importFrom scales seq_gradient_pal
-##' @examples 
-##' data(drugs10)
-##' dtnetplot(drugs=drugs10, 
-##'     set=c("HDAC1", "HDAC2", "HDAC3", "HDAC11", "FOX2"),
-##'     desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
-##' @export dtnetplot
-##' 
+#' Functional modules of GESS and FEA results can be rendered as interactive
+#' drug-target networks using the \code{dtnetplot} function form
+#' \code{signatureSearch}. For this, a character vector of drug names along 
+#' with an identifier of a chosen functional category are passed on to the 
+#' drugs and set arguments, respectively. The resulting plot depicts the 
+#' corresponding drug-target interaction network. Its interactive features 
+#' allow the user to zoom in and out of the network, and to select network 
+#' components in the drop-down menu located in the upper left corner of the 
+#' plot.
+#' @title Drug-Target Network Visualization
+#' @param drugs A character vector of drug names
+#' @param set character(1) GO term ID or KEGG pathway ID. Alternatively, a
+#' character vector of gene SYMBOLs can be assigned.
+#' @param ont if `set` is a GO term ID, `ont` is the corresponding ontology 
+#' that GO term belongs to. One of 'BP', 'MF' or 'CC'
+#' @param desc character(1), description of the chosen functional category or 
+#' target set
+#' @param verbose TRUE or FALSE, whether to print messages
+#' @param ... Other arguments passed on to 
+#' \code{\link[visNetwork]{visNetwork}} function.
+#' @return visNetwork plot
+#' @import visNetwork
+#' @importFrom AnnotationDbi select
+#' @importFrom scales cscale
+#' @importFrom scales seq_gradient_pal
+#' @examples 
+#' data(drugs10)
+#' dtnetplot(drugs=drugs10, 
+#'     set=c("HDAC1", "HDAC2", "HDAC3", "HDAC11", "FOX2"),
+#'     desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
+#' @export dtnetplot
+#' 
 dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, verbose=FALSE, ...) {
   if(grepl("GO:\\d{7}",set)[1]){
     ont %<>% toupper
@@ -46,10 +46,9 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, verbose=FALSE, ...) {
     p2e <- get("PATHID2EXTID", envir=KEGG_DATA)
     go_gene_entrez = p2e[[set]]
     # convert Entrez ids in KEGG pathways to gene SYMBOL
-    if (!requireNamespace("org.Hs.eg.db"))
-        stop("Please install 'org.Hs.eg.db' to use this function")
+    OrgDb <- load_OrgDb("org.Hs.eg.db")
     go_gene_map <- suppressMessages(
-      select(org.Hs.eg.db, keys = go_gene_entrez, keytype = "ENTREZID", 
+      select(OrgDb, keys = go_gene_entrez, keytype = "ENTREZID", 
              columns="SYMBOL"))
     go_gene <- unique(go_gene_map$SYMBOL)
   } else {

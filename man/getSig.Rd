@@ -20,8 +20,8 @@ compound name (e.g. vorinostat) for other functions}
 \item{cell}{character(1) or character vector of the same length as cmp 
 argument. It indicates cell type that the compound treated in}
 
-\item{refdb}{character(1), one of "lincs", "lincs_expr", "cmap", or 
-"cmap_expr"}
+\item{refdb}{character(1), one of "lincs", "lincs_expr", "cmap", "cmap_expr",
+or path to the HDF5 file built from \code{\link{build_custom_db}} function}
 
 \item{Nup}{integer(1). Number of most up-regulated genes to be subsetted}
 

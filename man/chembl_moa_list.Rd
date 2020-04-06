@@ -4,7 +4,9 @@
 \name{chembl_moa_list}
 \alias{chembl_moa_list}
 \title{MOA to Gene Mappings}
-\format{An object of class \code{list} of length 1099.}
+\format{
+An object of class \code{list} of length 1099.
+}
 \usage{
 chembl_moa_list
 }

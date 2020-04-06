@@ -4,7 +4,9 @@
 \name{targetList}
 \alias{targetList}
 \title{Target Sample Data Set}
-\format{An object of class \code{numeric} of length 1000.}
+\format{
+An object of class \code{numeric} of length 1000.
+}
 \usage{
 targetList
 }

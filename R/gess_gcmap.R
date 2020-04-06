@@ -147,7 +147,7 @@ induceSMat <- function(mat, lower=NULL, higher=NULL){
   if( ! is.null(lower) && ! is.null(higher) && higher == lower) {
     stop("Please specify two different cutoffs")
   }
-  gss <- lapply( 1:ncol( mat ),
+  gss <- lapply( seq_len(ncol(mat)),
                  function( n ) {
                    if (! is.null( lower )) {
                      down <- as.vector(which( mat[,n] < lower ))
