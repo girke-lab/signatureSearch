@@ -243,8 +243,8 @@ select_ont <- function(res, ont, GO_DATA){
 #' compound name (e.g. vorinostat) for other functions
 #' @param cell character(1) or character vector of the same length as cmp 
 #' argument. It indicates cell type that the compound treated in
-#' @param refdb character(1), one of "lincs", "lincs_expr", "cmap", or 
-#' "cmap_expr"
+#' @param refdb character(1), one of "lincs", "lincs_expr", "cmap", "cmap_expr",
+#' or path to the HDF5 file built from \code{\link{build_custom_db}} function
 #' @return matrix representing genome-wide GES of the query compound(s) in cell
 #' @examples 
 #' refdb <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
@@ -354,4 +354,37 @@ vec_char_redu <- function(vec, Nchar=50){
         } else s
     }, FUN.VALUE=character(1))
     return(res)
+}
+
+#' Show Reduced Targets
+#' 
+#' Reduce number of targets for each element of a character vector by 
+#' replacting the targets that beyond Ntar to '...'.  
+#' @param vec character vector, each element composed by a list of targets 
+#' symbols separated by '; '
+#' @param Ntar integer, for each element in the vec, number of targets to show
+#' @return character vector after reducing
+#' @examples 
+#' vec <- c("t1; t2; t3; t4; t5; t6", "t7; t8")
+#' vec2 <- tarReduce(vec, Ntar=5)
+#' @export
+#' 
+tarReduce <- function(vec, Ntar=5){
+    singleTarShot <- function(s, Ntar){
+        temp <- strsplit(s, ';\\s?')[[1]]
+        if(length(temp)>Ntar){
+            return(paste0(paste(temp[seq_len(Ntar)], collapse = "; "), "; ..."))
+        } else {
+            return(s)
+        }
+    }
+    return(sapply(vec, singleTarShot, Ntar, USE.NAMES = FALSE))
+}
+
+load_OrgDb <- function(OrgDb){
+    if (is(OrgDb, "character")) {
+        require(OrgDb, character.only = TRUE)
+        OrgDb <- eval(parse(text = OrgDb))
+    }
+    return(OrgDb)
 }

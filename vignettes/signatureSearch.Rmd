@@ -7,11 +7,8 @@ date: "Last update: `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     toc: true
-    toc_float:
-        collapsed: true
-        smooth_scroll: true
+    toc_float: true
     toc_depth: 4
-    fig_caption: yes  
     code_folding: show
     number_sections: true
   pdf_document:
@@ -23,6 +20,8 @@ vignette: >
   %\VignetteIndexEntry{signatureSearch}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 <style>
@@ -187,11 +186,14 @@ As Bioconductor package `signatureSearch` can be installed with the
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("signatureSearch")
+BiocManager::install("yduan004/signatureSearch", build_vignettes=TRUE)  # Installs from github
 ```
 
 Next the package needs to be loaded into a user's R session.
 ```{r load, eval=TRUE}
 library(signatureSearch)
+library(help = "signatureSearch")  # Lists package info
+vignette("signatureSearch")  # Opens vignette
 ```
 
 ## Reference Databases
@@ -613,7 +615,141 @@ the `gess_lincs` method. The drugs included here are the 10 top ranking drugs
 of the search result plus 10 cherry-picked drugs that are all HDAC inhibitors. 
 Additional details are provided in the text of this sub-section. </font>
 
+## Batch Processing of GESSs
 
+Multiple GES queries can be processed sequentially or in parallel mode.
+Parallel evaluations can substantially reduce processing times. The
+parallelization techniques covered in this vignette, are based on utilities of
+the `BiocParallel` and `batchtools` packages. For demonstration purposes the
+following example uses a small batch query containing several GESs. First, this
+batch query is processed sequentially without any parallelization using a
+simple `lapply` loop. Next, the same query is processed in parallel mode using
+multiple CPU cores of a single machine. The third option demonstrates how this
+query can be processed in parallel mode on multiple machines of a computer
+cluster with a workload management (queueing) system (_e.g._ such as Slurm or
+Torque). 
+
+### Sequential Processing
+
+The following processes a small toy batch query with the `LINCS` method
+sequentially in an `lapply` loop. The object `batch_queries` is a list
+containing the two sample GESs `q1` and `q2` that are composed of entrez gene
+identifiers. The search results are written to tab-delimited tabular files under
+a directory called `batch_res`. The name and path of this directory can be changed 
+as needed. 
+
+```{r lapply_parallel, eval=FALSE}
+library(readr)
+batch_queries <- list(q1=list(upset=c("23645", "5290"), downset=c("54957", "2767")),
+                      q2=list(upset=c("27101","65083"), downset=c("5813", "84")))
+refdb <- system.file("extdata", "sample_db.h5", package="signatureSearch")
+gess_list <- lapply(seq_along(batch_queries), function(i){
+    qsig_lincs <- qSig(query = batch_queries[[i]], 
+                   gess_method="LINCS", refdb=refdb)
+    lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=TRUE)
+    if(!dir.exists("batch_res")){
+        dir.create("batch_res")
+    }
+    write_tsv(result(lincs), paste0("batch_res/lincs_res_", i, ".tsv"))
+    return(result(lincs))
+})
+```
+
+### Parallelization with Multiple CPU Cores
+
+The GESSs from the previous example can be accelerated by taking advantage of
+multiple CPU cores available on a single computer system. The parallel
+evaluation happens in the below `bplapply` loop defined by the `BiocParallel`
+package. For this approach, all processing instructions are encapsulated in a
+function named `f_bp` that will be executed in the `bplapply` loop. As before, the
+search results are written to tab-delimited tabular files under a directory
+called `batch_res`. The name and path of this directory can be changed as
+needed. For more background information on this and the following
+parallelization options, users want to consult the vignette of the
+`BiocParallel` package.
+
+```{r multicore, eval=FALSE}
+library(BiocParallel)
+f_bp <- function(i){
+    qsig_lincs <- qSig(query = batch_queries[[i]], 
+                   gess_method="LINCS", refdb=refdb)
+    lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=TRUE)
+    if(!dir.exists("batch_res")){
+        dir.create("batch_res")
+    }
+    write_tsv(result(lincs), paste0("batch_res/lincs_res_", i, ".tsv"))
+    return(result(lincs))
+}
+gess_list <- bplapply(seq_along(batch_queries), f_bp, BPPARAM = MulticoreParam(workers = 2))
+```
+
+### Parallelization with Multiple Computer Systems
+
+In addition to utilizing multiple CPU cores of a single machine, one can further
+accelerate the processing by taking advantage of multiple computer systems (nodes)
+available on a computer cluster, where a queueing systems takes care of the
+load balancing.
+
+In the following example, `Njobs` sets the number of independent processes to
+be run on the cluster, and `ncpus` defines the number of CPU cores to be used
+by each process. The chosen example will run 2 processes each utilizing 2 CPU
+cores.  If `batch_queries` contains sufficient GESs and the corresponding computing
+resources are available on a cluster, then the given example process will
+utilize in total 4 CPU cores. Note, the given sample code will work on most
+queueing systems as it is based on utilities from the `batchtools` package. The
+latter supports template files (`*.tmpl`) for defining the run parameters of
+different schedulers. To run this code, one needs to have both a `conf` file (see
+`.batchtools.conf.R` samples [here](https://mllg.github.io/batchtools/)) and a
+`template` file (see `*.tmpl` samples
+[here](https://github.com/mllg/batchtools/tree/master/inst/templates)) for the
+queueing system available on a cluster. The following example uses the sample `conf` and
+`template` files for the Slurm scheduler. 
+
+For additional details on parallelizing computations on clusters, users want to 
+consult the vignettes of the `batchtools` and `BiocParallel` packages.
+
+```{r cluster1, eval=FALSE}
+library(batchtools)
+batch_queries <- list(q1=list(upset=c("23645", "5290"), downset=c("54957", "2767")),
+                      q2=list(upset=c("27101","65083"), downset=c("5813", "84")))
+refdb <- system.file("extdata", "sample_db.h5", package="signatureSearch")
+
+f_bt <- function(i, batch_queries, refdb){
+    library(signatureSearch)
+    library(readr)
+    qsig_lincs <- qSig(query = batch_queries[[i]], 
+                   gess_method="LINCS", refdb=refdb)
+    lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=TRUE)
+    if(!dir.exists("batch_res")){
+        dir.create("batch_res")
+    }
+    write_tsv(result(lincs), paste0("batch_res/lincs_res_", i, ".tsv"))
+    return(result(lincs)) # or return()
+}
+```
+
+Copy the `conf` and `template` files for Slurm to current working directory.
+
+```{r cluster2, eval=FALSE}
+file.copy(system.file("extdata", ".batchtools.conf.R", package="signatureSearch"), ".")
+file.copy(system.file("extdata", "slurm.tmpl", package="signatureSearch"), ".")
+```
+
+Create the registry and submit jobs.
+
+```{r cluster3, eval=FALSE}
+reg <- makeRegistry(file.dir="reg_batch", conf.file=".batchtools.conf.R")
+# reg <- loadRegistry(file.dir="reg_batch", conf.file=".batchtools.conf.R", writeable=TRUE)
+Njobs <- 1:2
+ids <- batchMap(fun=f_bt, Njobs, more.args = list(
+          batch_queries=batch_queries, refdb=refdb))
+done <- submitJobs(ids, reg=reg, resources=list(
+            partition="intel", walltime=120, ntasks=1, ncpus=2, memory=10240))
+getStatus()
+waitForJobs() # Wait until all jobs are completed
+res1 <- loadResult(1)
+unlink(c(".batchtools.conf.R", "slurm.tmpl"))
+```
 
 # Functional Enrichment (FEA)
 

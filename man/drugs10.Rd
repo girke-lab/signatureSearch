@@ -4,7 +4,9 @@
 \name{drugs10}
 \alias{drugs10}
 \title{Drug Names Used in Examples}
-\format{An object of class \code{character} of length 10.}
+\format{
+An object of class \code{character} of length 10.
+}
 \usage{
 drugs10
 }
