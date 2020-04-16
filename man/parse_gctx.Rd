@@ -4,8 +4,13 @@
 \alias{parse_gctx}
 \title{Parse GCTX}
 \usage{
-parse_gctx(fname, rid = NULL, cid = NULL, set_annot_rownames = FALSE,
-  matrix_only = FALSE)
+parse_gctx(
+  fname,
+  rid = NULL,
+  cid = NULL,
+  set_annot_rownames = FALSE,
+  matrix_only = FALSE
+)
 }
 \arguments{
 \item{fname}{character(1), path to the GCTX file on disk}

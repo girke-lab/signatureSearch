@@ -4,9 +4,18 @@
 \alias{tsea_dup_hyperG}
 \title{Target Set Enrichment Analysis (TSEA) with Hypergeometric Test}
 \usage{
-tsea_dup_hyperG(drugs, universe = "Default", type = "GO", ont = "MF",
-  pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.05,
-  minGSSize = 5, maxGSSize = 500, dt_anno = "all")
+tsea_dup_hyperG(
+  drugs,
+  universe = "Default",
+  type = "GO",
+  ont = "MF",
+  pAdjustMethod = "BH",
+  pvalueCutoff = 0.05,
+  qvalueCutoff = 0.05,
+  minGSSize = 5,
+  maxGSSize = 500,
+  dt_anno = "all"
+)
 }
 \arguments{
 \item{drugs}{character vector containing drug identifiers used for functional

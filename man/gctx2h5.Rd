@@ -4,8 +4,7 @@
 \alias{gctx2h5}
 \title{Convert GCTX to HDF5 File}
 \usage{
-gctx2h5(gctx, cid, new_cid = cid, h5file, by_ncol = 5000,
-  overwrite = TRUE)
+gctx2h5(gctx, cid, new_cid = cid, h5file, by_ncol = 5000, overwrite = TRUE)
 }
 \arguments{
 \item{gctx}{character(1), path to gctx file from LINCS}

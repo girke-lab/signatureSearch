@@ -90,13 +90,10 @@ dsea_hyperG <- function(drugs,
     
     if (is.null(res))
       return(res)
-    
-    og(res) <- get_organism(OrgDb="org.Hs.eg.db")
+    res <- select_ont(res, ont, GO_DATA_drug)
+    og(res) <- get_organism(OrgDb = "org.Hs.eg.db")
     ont(res) <- ont
     tg(res) <- NULL
-    if (ont == "ALL") {
-      res <- add_GO_Ontology(res, GO_DATA_drug)
-    }
     return(res)
   }
   if(type == "KEGG"){

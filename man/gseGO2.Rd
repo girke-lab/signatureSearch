@@ -4,9 +4,20 @@
 \alias{gseGO2}
 \title{Modified GSEA with GO Terms}
 \usage{
-gseGO2(geneList, ont = "BP", OrgDb, keyType = "SYMBOL", exponent = 1,
-  nproc = 1, nPerm = 1000, minGSSize = 2, maxGSSize = 500,
-  pvalueCutoff = 0.05, pAdjustMethod = "BH", verbose = TRUE)
+gseGO2(
+  geneList,
+  ont = "BP",
+  OrgDb,
+  keyType = "SYMBOL",
+  exponent = 1,
+  nproc = 1,
+  nPerm = 1000,
+  minGSSize = 2,
+  maxGSSize = 500,
+  pvalueCutoff = 0.05,
+  pAdjustMethod = "BH",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{geneList}{named numeric vector with gene SYMBOLs in the name slot

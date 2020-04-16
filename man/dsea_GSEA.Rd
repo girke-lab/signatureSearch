@@ -4,9 +4,17 @@
 \alias{dsea_GSEA}
 \title{Drug Set Enrichment Analysis (DSEA) with GSEA Algorithm}
 \usage{
-dsea_GSEA(drugList, type = "GO", ont = "BP", exponent = 1,
-  nPerm = 1000, minGSSize = 10, maxGSSize = 500,
-  pvalueCutoff = 0.05, pAdjustMethod = "BH")
+dsea_GSEA(
+  drugList,
+  type = "GO",
+  ont = "BP",
+  exponent = 1,
+  nPerm = 1000,
+  minGSSize = 10,
+  maxGSSize = 500,
+  pvalueCutoff = 0.05,
+  pAdjustMethod = "BH"
+)
 }
 \arguments{
 \item{drugList}{named numeric vector, where the names represent drug labels 

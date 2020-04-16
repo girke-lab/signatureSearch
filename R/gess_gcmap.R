@@ -41,6 +41,9 @@
 #' At least one of 'lower' and 'higher' must be specified.
 #' @param chunk_size number of database entries to process per iteration to 
 #' limit memory usage of search.
+#' @param ref_trts character vector. If users want to search against a subset 
+#' of the reference database, they could set ref_trts as a character vector 
+#' representing column names (treatments) of the subsetted refdb. 
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
@@ -70,7 +73,7 @@
 #' # result(gcmap)
 #' @export
 #' 
-gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
+gess_gcmap <- function(qSig, higher, lower, chunk_size=5000, ref_trts=NULL){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(gm(qSig) != "gCMAP"){
@@ -87,6 +90,12 @@ gess_gcmap <- function(qSig, higher, lower, chunk_size=5000){
   full_mat <- HDF5Array(db_path, "assay")
   rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
   colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+  
+  if(! is.null(ref_trts)){
+      trts_valid <- trts_check(ref_trts, colnames(full_mat))
+      full_mat <- full_mat[, trts_valid]
+  }
+  
   full_dim <- dim(full_mat)
   full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
   ### The blocks in 'full_grid' are made of full columns 
@@ -138,7 +147,7 @@ induceSMat <- function(mat, lower=NULL, higher=NULL){
   if( ! is.null(lower) && ! is.null(higher) && higher == lower) {
     stop("Please specify two different cutoffs")
   }
-  gss <- lapply( 1:ncol( mat ),
+  gss <- lapply( seq_len(ncol(mat)),
                  function( n ) {
                    if (! is.null( lower )) {
                      down <- as.vector(which( mat[,n] < lower ))

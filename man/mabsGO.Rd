@@ -4,9 +4,17 @@
 \alias{mabsGO}
 \title{MeanAbs Enrichment Analysis for GO}
 \usage{
-mabsGO(geneList, ont = "BP", OrgDb, keyType = "SYMBOL", nPerm = 1000,
-  minGSSize = 5, maxGSSize = 500, pvalueCutoff = 0.05,
-  pAdjustMethod = "BH")
+mabsGO(
+  geneList,
+  ont = "BP",
+  OrgDb,
+  keyType = "SYMBOL",
+  nPerm = 1000,
+  minGSSize = 5,
+  maxGSSize = 500,
+  pvalueCutoff = 0.05,
+  pAdjustMethod = "BH"
+)
 }
 \arguments{
 \item{geneList}{named numeric vector with gene SYMBOLs in the name slot 

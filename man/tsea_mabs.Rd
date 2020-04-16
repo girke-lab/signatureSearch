@@ -4,9 +4,17 @@
 \alias{tsea_mabs}
 \title{Target Set Enrichment Analysis (TSEA) with meanAbs}
 \usage{
-tsea_mabs(drugs, type = "GO", ont = "MF", nPerm = 1000,
-  pAdjustMethod = "BH", pvalueCutoff = 0.05, minGSSize = 5,
-  maxGSSize = 500, dt_anno = "all")
+tsea_mabs(
+  drugs,
+  type = "GO",
+  ont = "MF",
+  nPerm = 1000,
+  pAdjustMethod = "BH",
+  pvalueCutoff = 0.05,
+  minGSSize = 5,
+  maxGSSize = 500,
+  dt_anno = "all"
+)
 }
 \arguments{
 \item{drugs}{character vector containing drug identifiers used for functional

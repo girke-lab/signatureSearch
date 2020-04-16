@@ -4,7 +4,7 @@
 \alias{gess_cor}
 \title{Correlation-based Search Method}
 \usage{
-gess_cor(qSig, method, chunk_size = 5000)
+gess_cor(qSig, method, chunk_size = 5000, ref_trts = NULL)
 }
 \arguments{
 \item{qSig}{\code{\link{qSig}} object defining the query signature including
@@ -16,6 +16,10 @@ indicating which correlation coefficient to use.}
 
 \item{chunk_size}{number of database entries to process per iteration to 
 limit memory usage of search.}
+
+\item{ref_trts}{character vector. If users want to search against a subset 
+of the reference database, they could set ref_trts as a character vector 
+representing column names (treatments) of the subsetted refdb.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 

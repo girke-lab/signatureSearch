@@ -4,9 +4,19 @@
 \alias{gseKEGG2}
 \title{Modified GSEA with KEGG}
 \usage{
-gseKEGG2(geneList, organism = "hsa", keyType = "kegg", exponent = 1,
-  nproc = 1, nPerm = 1000, minGSSize = 10, maxGSSize = 500,
-  pvalueCutoff = 0.05, pAdjustMethod = "BH", verbose = TRUE)
+gseKEGG2(
+  geneList,
+  organism = "hsa",
+  keyType = "kegg",
+  exponent = 1,
+  nproc = 1,
+  nPerm = 1000,
+  minGSSize = 10,
+  maxGSSize = 500,
+  pvalueCutoff = 0.05,
+  pAdjustMethod = "BH",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{geneList}{named numeric vector with gene ids in the name slot 

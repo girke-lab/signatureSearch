@@ -144,7 +144,7 @@ tsea_mGSEA <- function(drugs,
     tar_diff_weight <- rep(0, length(tar_diff))
     names(tar_diff_weight) <- tar_diff
     tar_total_weight <- c(tar_weight, tar_diff_weight)
-    gsego <- gseGO2(geneList = tar_total_weight, OrgDb = org.Hs.eg.db, 
+    gsego <- gseGO2(geneList = tar_total_weight, OrgDb = "org.Hs.eg.db", 
                     ont = ont, keyType = "SYMBOL", nPerm = nPerm, 
                     minGSSize = minGSSize, maxGSSize = maxGSSize, 
                     exponent = exponent, nproc=1, verbose=verbose, 
@@ -162,10 +162,9 @@ tsea_mGSEA <- function(drugs,
     universe <- unique(unlist(keggterms))
     
     # convert gnset symbol to entrez
-    if (!requireNamespace("org.Hs.eg.db"))
-        stop("Please install 'org.Hs.eg.db' to use this function")
+    OrgDb <- load_OrgDb("org.Hs.eg.db")
     gnset_entrez <- suppressMessages(
-      AnnotationDbi::select(org.Hs.eg.db, keys = gnset, 
+      AnnotationDbi::select(OrgDb, keys = gnset, 
                             keytype = "SYMBOL", columns = "ENTREZID"))
     gnset_entrez2 <- as.character(na.omit(gnset_entrez$ENTREZID))
     # give scores to gnset_entrez2

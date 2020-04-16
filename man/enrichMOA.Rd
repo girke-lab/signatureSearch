@@ -4,8 +4,7 @@
 \alias{enrichMOA}
 \title{MOA Category Enrichment with Hypergeometric Test}
 \usage{
-enrichMOA(gene, pvalueCutoff = 0.05, pAdjustMethod = "BH",
-  qvalueCutoff = 0.2)
+enrichMOA(gene, pvalueCutoff = 0.05, pAdjustMethod = "BH", qvalueCutoff = 0.2)
 }
 \arguments{
 \item{gene}{a vector of entrez gene ids (here the test set)}

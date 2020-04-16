@@ -4,9 +4,19 @@
 \alias{enrichGO2}
 \title{GO Term Enrichment with Hypergeometric Test}
 \usage{
-enrichGO2(gene, OrgDb, keytype = "SYMBOL", ont = "MF",
-  pvalueCutoff = 0.05, pAdjustMethod = "BH", universe,
-  qvalueCutoff = 0.2, minGSSize = 5, maxGSSize = 500, pool = FALSE)
+enrichGO2(
+  gene,
+  OrgDb,
+  keytype = "SYMBOL",
+  ont = "MF",
+  pvalueCutoff = 0.05,
+  pAdjustMethod = "BH",
+  universe,
+  qvalueCutoff = 0.2,
+  minGSSize = 5,
+  maxGSSize = 500,
+  pool = FALSE
+)
 }
 \arguments{
 \item{gene}{a vector of gene SYMBOL ids (here the test set)}

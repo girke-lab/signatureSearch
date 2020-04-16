@@ -1,1 +1,4 @@
 ^data-raw$
+^.*\.Rproj$
+^\.Rproj\.user$
+^vignettes/signatureSearch\.html$
