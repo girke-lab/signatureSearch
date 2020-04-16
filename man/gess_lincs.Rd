@@ -85,7 +85,14 @@ are described in the help file of the \code{gessResult} object.
   are scored with Tau as a standardized measure ranging from 100 to -100. 
   A Tau of 90 indicates that only 10% of reference perturbations exhibit 
   stronger connectivity to the query. This way one can make more meaningful 
-  comparisons across query results.
+  comparisons across query results. 
+  
+  Note, there are NAs in the Tau score column, the reason is that the number 
+  of signatures in \emph{Qref} that match the cell line of signature \emph{r}
+  (the \code{TauRefSize} column in the GESS result) is less than 500, 
+  Tau will be set as NA since it is redeemed as there are not large enough 
+  samples for computing meaningful Tau scores.
+  
   \item TauRefSize: Size of reference perturbations for computing Tau.
   \item NCSct: NCS summarized across cell types. Given a vector of NCS values
   for perturbagen p, relative to query q, across all cell lines c in which p 

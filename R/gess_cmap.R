@@ -73,8 +73,8 @@ gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL){
                    "if using 'gess_cmap' function!"))
     }
     db_path <- determine_refdb(refdb(qSig))
-    qsig_up <- qr(qSig)[[1]]
-    qsig_dn <- qr(qSig)[[2]]
+    qsig_up <- qr(qSig)$upset
+    qsig_dn <- qr(qSig)$downset
     res <- cmapEnrich(db_path, upset=qsig_up, downset=qsig_dn, 
                       chunk_size=chunk_size, ref_trts=ref_trts)
     res <- sep_pcf(res)

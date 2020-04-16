@@ -22,23 +22,23 @@ setMethod("show", signature(object="gessResult"),
             print(result(object))
             q <- qr(object)
             if(is(q, "list")){
-                if(length(q[[1]])>10){
+                if(length(q$upset)>10){
                    cat("@query", "\t", "up gene set", 
-                        paste0("(", length(q[[1]]), "):"), 
-                        "\t", q[[1]][seq_len(10)], "... \n")
+                        paste0("(", length(q$upset), "):"), 
+                        "\t", q$upset[seq_len(10)], "... \n")
                  } else {
                      cat("@query", "\t", "up gene set", 
-                         paste0("(", length(q[[1]]), "):"), 
-                         "\t", q[[1]], "\n")
+                         paste0("(", length(q$upset), "):"), 
+                         "\t", q$upset, "\n")
                 }
-                if(length(q[[2]])>10){
+                if(length(q$downset)>10){
                     cat("     ", "\t", "down gene set", 
-                        paste0("(", length(q[[2]]), "):"), 
-                        "\t", q[[2]][seq_len(10)], "... \n")
+                        paste0("(", length(q$downset), "):"), 
+                        "\t", q$downset[seq_len(10)], "... \n")
                 } else {
                     cat("     ", "\t", "down gene set", 
-                        paste0("(", length(q[[2]]), "):"), 
-                        "\t", q[[2]], "\n")
+                        paste0("(", length(q$downset), "):"), 
+                        "\t", q$downset, "\n")
                 }
             }
             if(is(q, "matrix")){

@@ -72,39 +72,47 @@ qSig <- function(query, gess_method, refdb){
     }
     if(is(query, "list")){
       if(any(gess_method %in% c("CMAP", "LINCS", "Fisher"))){
-        upset = query[[1]]
-        downset = query[[2]]
+        upset = query$upset
+        downset = query$downset
         refdb = determine_refdb(refdb)
         gid_db <- h5read(refdb, "rownames", drop=TRUE)
         ## Validity checks of upset and downset
         if(all(c(!is.character(upset), !is.null(upset)))) 
-          stop("upset of 'qsig' slot needs to be ID character vector or NULL")
+          stop("upset of 'query' slot needs to be ID character vector or NULL")
         if(all(c(!is.character(downset), !is.null(downset)))) 
-          stop("downset of 'qsig' slot needs to be ID character vector or NULL")
+          stop("downset of 'query' slot needs to be ID character vector or NULL")
         if(is.null(upset) & is.null(downset)) 
-          stop("both or one of the upset and downset in 'qsig' slot need to be 
+          stop("both or one of the upset and downset in 'query' slot need to be 
              assigned query entrez IDs as character vector")
         ## Remove entries in up/down set not present in reference database
         if(!is.null(upset)){
           message(paste(sum(upset %in% gid_db), "/", length(upset), 
                   "genes in up set share identifiers with reference database"))
           upset <- upset[upset %in% gid_db]
-          if(length(upset)==0) 
-            stop("upset shares zero idenifiers with reference database, 
-               please set upset of 'qsig' slot as NULL")
+          if(length(upset)==0){
+              warning("upset shares zero idenifiers with reference database!")
+              upset <- NULL
+          }
         }
         if(!is.null(downset)){
           message(paste(sum(downset %in% gid_db),"/",length(downset), 
                 "genes in down set share identifiers with reference database"))
           downset <- downset[downset %in% gid_db]
-          if(length(downset)==0) 
-            stop("downset shares zero idenifiers with reference database, 
-               please set downset of 'qsig' slot as NULL")
+          if(length(downset)==0){
+              warning("downset shares zero identifiers with reference database!")
+              downset <- NULL
+          }
         }
-        query[[1]] = upset
-        query[[2]] = downset
-      } else {stop("'gess_method' slot must be one of 'CMAP', 'LINCS', or 
-      'Fisher' if 'qsig' is a list of up and down gene labels!")}
+        if(is.null(upset) & is.null(downset)){
+            stop("Both upset and downset share zero identifiers with reference database, 
+          please make sure that at least one share identifiers!")
+        }
+        query$upset = upset
+        query$downset = downset
+      } else {
+          stop("'gess_method' slot must be one of 'CMAP', 'LINCS', or 
+      'Fisher' if 'qsig' is a list of up and down gene labels!")
+      }
       new("qSig", query=query, gess_method=gess_method, refdb=refdb)
     } else if (is(query, "matrix")){
       if(any(gess_method %in% c("gCMAP", "Fisher", "Cor"))){
@@ -138,23 +146,23 @@ setMethod("show", c(object="qSig"),
         cat("#\n# qSig object used for GESS analysis \n#\n")
         q <- qr(object)
         if(is(q, "list")){
-            if(length(q[[1]])>10){
+            if(length(q$upset)>10){
                 cat("@query", "\t", "up gene set", 
-                    paste0("(", length(q[[1]]), "):"), 
-                    "\t", q[[1]][seq_len(10)], "... \n")
+                    paste0("(", length(q$upset), "):"), 
+                    "\t", q$upset[seq_len(10)], "... \n")
             } else {
                 cat("@query", "\t", "up gene set", 
-                    paste0("(", length(q[[1]]), "):"), 
-                    "\t", q[[1]], "\n")
+                    paste0("(", length(q$upset), "):"), 
+                    "\t", q$upset, "\n")
             }
-            if(length(q[[2]])>10){
+            if(length(q$downset)>10){
                 cat("     ", "\t", "down gene set", 
-                    paste0("(", length(q[[2]]), "):"), 
-                    "\t", q[[2]][seq_len(10)], "... \n")
+                    paste0("(", length(q$downset), "):"), 
+                    "\t", q$downset[seq_len(10)], "... \n")
             } else {
                 cat("     ", "\t", "down gene set", 
-                    paste0("(", length(q[[2]]), "):"), 
-                    "\t", q[[2]], "\n")
+                    paste0("(", length(q$downset), "):"), 
+                    "\t", q$downset, "\n")
             }
         }
         if(is(q, "matrix")){
