@@ -1249,7 +1249,9 @@ were provided, the query GES was internally drawn from the reference database.
 The N (defined by the `N_gess_drugs` argument) top ranking hits in the GESS 
 tables were then used for FEA where three different annotation systems were 
 used: GO Molecular Function (GO MF), GO Biological Process (GO BP) and KEGG 
-pathways. The GESS/FEA results will be stored in a list object in R session. 
+pathways. 
+
+The GESS/FEA results will be stored in a list object in R session. 
 A working environment named by the use case will be created under users current 
 working directory or under other directory defined by users. 
 This environment contains a \code{results} folder where the GESS/FEA 
@@ -1260,7 +1262,7 @@ their HTML report by running `rmarkdown::render("GESS_FEA_report.Rmd")` in R
 session or `Rscript -e "rmarkdown::render('GESS_FEA_report.Rmd')"` from bash 
 commandline.
 ```{r runwf, eval=FALSE}
-drug="vorinostat"; cell="SKB"
+drug <- "vorinostat"; cell <- "SKB"
 refdb <- system.file("extdata", "sample_db.h5", package="signatureSearch")
 env_dir <- tempdir()
 wf_list <- runWF(drug, cell, refdb, gess_method="LINCS", 

@@ -78,7 +78,7 @@ indicating which correlation coefficient to use}
 \item{maxGSSize}{integer, maximum size of each gene set in annotation system}
 }
 \value{
-
+list object containing GESS/FEA result tables
 }
 \description{
 This function runs the entire GESS/FEA workflow when providing the query
@@ -88,11 +88,12 @@ the query GES is drawn from the reference database. The N (defined by the
 `N_gess_drugs` argument) top ranking hits in the GESS tables were then used 
 for FEA where three different annotation systems were used: GO Molecular 
 Function (GO MF), GO Biological Process (GO BP) and KEGG pathways. The GESS/FEA 
-results will be stored in a list object in R session. A working environment named
-by the use case will be created under users current working directory.
+results will be stored in a list object in R session. A working environment 
+named by the use case will be created under users current working directory
+or under other directory defined by users.
 This environment contains a \code{results} folder where the GESS/FEA 
-result tables will be written to. The working environment also contains
-a template Rmd vignette as well a rended HTML report, users could make
+result tables were written to. The working environment also contains
+a template Rmd vignette as well as a rended HTML report, users could make
 modifications on the Rmd vignette as they need and re-render it to generate 
 their HTML report.
 }

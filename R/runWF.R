@@ -1,15 +1,17 @@
-#' Run the entire GESS/FEA workflow
+#' Run the Entire GESS/FEA Workflow
 #' 
-#' This function runs the entire GESS/FEA workflow when providing the query
-#' drug and cell type, as well as selecting the reference database (e.g.
-#' "cmap" or "lincs"), defining the specific GESS and FEA methods. In this case,
-#' the query GES is drawn from the reference database. The N (defined by the 
-#' `N_gess_drugs` argument) top ranking hits in the GESS tables were then used 
-#' for FEA where three different annotation systems were used: GO Molecular 
-#' Function (GO MF), GO Biological Process (GO BP) and KEGG pathways. The GESS/FEA 
-#' results will be stored in a list object in R session. A working environment 
-#' named by the use case will be created under users current working directory
-#' or under other directory defined by users.
+#' @description This function runs the entire GESS/FEA workflow when providing 
+#' the query drug and cell type, as well as selecting the reference database 
+#' (e.g. 'cmap' or 'lincs'), defining the specific GESS and FEA methods. 
+#' In this case, the query GES is drawn from the reference database. 
+#' The N (defined by the `N_gess_drugs` argument) top ranking hits in the GESS 
+#' tables were then used for FEA where three different annotation systems were 
+#' used: GO Molecular Function (GO MF), GO Biological Process (GO BP) and 
+#' KEGG pathways. 
+#' 
+#' The GESS/FEA results will be stored in a list object in R session. 
+#' A working environment named by the use case will be created under users 
+#' current working directory or under other directory defined by users.
 #' This environment contains a \code{results} folder where the GESS/FEA 
 #' result tables were written to. The working environment also contains
 #' a template Rmd vignette as well as a rended HTML report, users could make
@@ -55,7 +57,7 @@
 #' @importFrom readr write_tsv
 #' @export
 #' @examples 
-#' drug="vorinostat"; cell="SKB"
+#' drug <- "vorinostat"; cell <- "SKB"
 #' refdb <- system.file("extdata", "sample_db.h5", package="signatureSearch")
 #' env_dir <- tempdir()
 #' wf_list <- runWF(drug, cell, refdb, gess_method="LINCS", 
