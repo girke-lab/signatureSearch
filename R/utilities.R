@@ -382,8 +382,10 @@ tarReduce <- function(vec, Ntar=5){
 }
 
 load_OrgDb <- function(OrgDb){
-    if (is(OrgDb, "character")) {
-        require(OrgDb, character.only = TRUE)
+    if(is(OrgDb, "character")){
+        if(! require(OrgDb, character.only = TRUE)){
+            stop(paste(OrgDb, "package need to be installed to use this function"))
+        }
         OrgDb <- eval(parse(text = OrgDb))
     }
     return(OrgDb)

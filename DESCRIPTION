@@ -13,9 +13,9 @@ Description: This package implements algorithms and data structures for
 Depends: R(>= 3.6.0), Rcpp, SummarizedExperiment
 Imports: AnnotationDbi, ggplot2, data.table, ExperimentHub, HDF5Array,
          magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats, 
-         utils, reshape2, visNetwork, BiocParallel, fastmatch, org.Hs.eg.db,
+         utils, reshape2, visNetwork, BiocParallel, fastmatch,
          Matrix, clusterProfiler, readr, DOSE, rhdf5, GSEABase, DelayedArray
-Suggests: knitr, testthat, rmarkdown, BiocStyle
+Suggests: knitr, testthat, rmarkdown, BiocStyle, org.Hs.eg.db
 License: Artistic-2.0
 SystemRequirements: C++11
 LinkingTo: Rcpp
