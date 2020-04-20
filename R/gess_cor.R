@@ -39,6 +39,8 @@
 #' @param ref_trts character vector. If users want to search against a subset 
 #' of the reference database, they could set ref_trts as a character vector 
 #' representing column names (treatments) of the subsetted refdb. 
+#' @param workers integer(1) number of workers for searching the reference
+#' database parallelly, default is 4
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
@@ -56,7 +58,8 @@
 #' # sp <- gess_cor(qSig=qsig_sp, method="spearman")
 #' # result(sp)
 #' @export
-gess_cor <- function(qSig, method, chunk_size=5000, ref_trts=NULL){
+gess_cor <- function(qSig, method, chunk_size=5000, ref_trts=NULL,
+                     workers=4){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
     #stopifnot(validObject(qSig))
     if(gm(qSig) != "Cor"){
@@ -80,10 +83,10 @@ gess_cor <- function(qSig, method, chunk_size=5000, ref_trts=NULL){
   full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
   ### The blocks in 'full_grid' are made of full columns 
   nblock <- length(full_grid) 
-  resultDF <- lapply(seq_len(nblock), function(b){
+  resultDF <- bplapply(seq_len(nblock), function(b){
     ref_block <- read_block(full_mat, full_grid[[b]])
     cor_res <- cor_sig_search(query=query, refdb=ref_block, method=method)
-    return(data.frame(cor_res))})
+    return(data.frame(cor_res))}, BPPARAM = MulticoreParam(workers = workers))
   resultDF <- do.call(rbind, resultDF)
   
   # mat_dim <- getH5dim(db_path)

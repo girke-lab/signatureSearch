@@ -1,3 +1,10 @@
+### Changes in version 1.0.6 (2020-04-19)
++ Supported searching refdb parallelly by using multiple cores on a single machine
+
+### Changes in version 1.0.5 (2020-04-10)
++ Fix bug: fixed null issue and throw warning messages when up or down gene 
+sets share zero identifiers with refdb for `gess_lincs` method. 
+
 ### Changes in version 1.0.4 (2020-04-02)
 + Added instructions for GESS batch queries in vignette
 + Added runWF function to run entire GESS/FEA workflow

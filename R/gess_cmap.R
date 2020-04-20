@@ -44,6 +44,8 @@
 #' @param ref_trts character vector. If users want to search against a subset 
 #' of the reference database, they could set ref_trts as a character vector 
 #' representing column names (treatments) of the subsetted refdb. 
+#' @param workers integer(1) number of workers for searching the reference
+#' database parallelly, default is 4
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
@@ -65,7 +67,7 @@
 #' # cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 #' # result(cmap)
 #' @export
-gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL){
+gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL, workers=4){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
     # stopifnot(validObject(qSig))
     if(gm(qSig) != "CMAP"){
@@ -76,7 +78,7 @@ gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL){
     qsig_up <- qr(qSig)$upset
     qsig_dn <- qr(qSig)$downset
     res <- cmapEnrich(db_path, upset=qsig_up, downset=qsig_dn, 
-                      chunk_size=chunk_size, ref_trts=ref_trts)
+                      chunk_size=chunk_size, ref_trts=ref_trts, workers=workers)
     res <- sep_pcf(res)
     # add target column
     target <- suppressMessages(get_targets(res$pert))
@@ -103,7 +105,7 @@ rankMatrix <- function(x, decreasing=TRUE) {
 #' @importFrom DelayedArray colGrid
 #' @importFrom DelayedArray read_block
 cmapEnrich <- function(db_path, upset, downset, 
-                       chunk_size=5000, ref_trts=NULL) {
+                       chunk_size=5000, ref_trts=NULL, workers=4) {
   ## calculate raw.score of query to blocks (e.g., 5000 columns) of full refdb
   full_mat <- HDF5Array(db_path, "assay")
   rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
@@ -119,7 +121,7 @@ cmapEnrich <- function(db_path, upset, downset,
   ### The blocks in 'full_grid' are made of full columns 
   nblock <- length(full_grid) 
   
-  raw.score <- unlist(lapply(seq_len(nblock), function(b){
+  raw.score <- unlist(bplapply(seq_len(nblock), function(b){
     ref_block <- read_block(full_mat, full_grid[[b]])
     mat <- ref_block
     rankLup <- lapply(colnames(mat), function(x) sort(rank(-1*mat[,x])[upset]))
@@ -129,7 +131,7 @@ cmapEnrich <- function(db_path, upset, downset,
     raw.score <- vapply(seq_along(rankLup), function(x) 
         .s(rankLup[[x]], rankLdown[[x]], n=nrow(mat)),
         FUN.VALUE=numeric(1))
-    }))
+    }, BPPARAM = MulticoreParam(workers = workers)))
   
   # ## Read in matrix in h5 file by chunks
   # mat_dim <- getH5dim(db_path)

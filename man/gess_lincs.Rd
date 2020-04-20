@@ -9,7 +9,8 @@ gess_lincs(
   tau = FALSE,
   sortby = "NCS",
   chunk_size = 5000,
-  ref_trts = NULL
+  ref_trts = NULL,
+  workers = 4
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ limit memory usage of search.}
 \item{ref_trts}{character vector. If users want to search against a subset 
 of the reference database, they could set ref_trts as a character vector 
 representing column names (treatments) of the subsetted refdb.}
+
+\item{workers}{integer(1) number of workers for searching the reference
+database parallelly, default is 4}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 

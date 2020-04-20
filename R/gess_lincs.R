@@ -74,6 +74,8 @@
 #' @param ref_trts character vector. If users want to search against a subset 
 #' of the reference database, they could set ref_trts as a character vector 
 #' representing column names (treatments) of the subsetted refdb. 
+#' @param workers integer(1) number of workers for searching the reference
+#' database parallelly, default is 4
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
 #' their signature similarity to the query.
@@ -95,7 +97,7 @@
 #' #result(lincs)
 #' @export
 gess_lincs <- function(qSig, tau=FALSE, sortby="NCS", 
-                       chunk_size=5000, ref_trts=NULL){
+                       chunk_size=5000, ref_trts=NULL, workers=4){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(gm(qSig) != "LINCS"){
@@ -106,8 +108,8 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
   downset <- qr(qSig)$downset
   db_path <- determine_refdb(refdb(qSig))
   res <- lincsEnrich(db_path, upset=upset, downset=downset, 
-                     tau=tau, sortby=sortby, 
-                     chunk_size=chunk_size, ref_trts=ref_trts)
+                     tau=tau, sortby=sortby, chunk_size=chunk_size, 
+                     ref_trts=ref_trts, workers=workers)
   # add target column
   target <- suppressMessages(get_targets(res$pert))
   res <- left_join(res, target, by=c("pert"="drug_name"))
@@ -121,7 +123,7 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
 
 lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1, 
                         output="all", tau=FALSE, minTauRefSize=500, 
-                        chunk_size=5000, ref_trts=NULL) {
+                        chunk_size=5000, ref_trts=NULL, workers=4) {
     mycolnames <- c("WTCS", "NCS", "Tau", "NCSct", "N_upset", "N_downset", NA)
     if(!any(mycolnames %in% sortby)) 
         stop("Unsupported value assinged to sortby.")
@@ -141,7 +143,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
     ### The blocks in 'full_grid' are made of full columns 
     nblock <- length(full_grid) 
     
-    ESout <- unlist(lapply(seq_len(nblock), function(b){
+    ESout <- unlist(bplapply(seq_len(nblock), function(b){
       ref_block <- read_block(full_mat, full_grid[[b]])
       mat <- ref_block
       ## Run .enrichScore on upset and downset
@@ -167,7 +169,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
                        Q=downset, type=type))
         ESout1 <- -ESdown
         ## When none are provided (excluded by input validity check already)
-      }}))
+      }}, BPPARAM=MulticoreParam(workers=workers)))
     
     # ## Read in matrix in h5 file by chunks
     # mat_dim <- getH5dim(db_path)

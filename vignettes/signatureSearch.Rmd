@@ -617,8 +617,12 @@ Additional details are provided in the text of this sub-section. </font>
 
 ## Batch Processing of GESSs
 
-Multiple GES queries can be processed sequentially or in parallel mode.
-Parallel evaluations can substantially reduce processing times. The
+The above 5 GESS methods support searching reference database parallelly by 
+defining the `workers` parameter, the default is 4. It means that when submitting
+one query, the parallelization happens on the GES database level where one 
+splits up a single query process into searching several chunks of the database 
+in parallel. Multiple GES queries can also be processed sequentially or 
+in parallel mode. Parallel evaluations can substantially reduce processing times. The
 parallelization techniques covered in this vignette, are based on utilities of
 the `BiocParallel` and `batchtools` packages. For demonstration purposes the
 following example uses a small batch query containing several GESs. First, this
@@ -692,10 +696,10 @@ load balancing.
 
 In the following example, `Njobs` sets the number of independent processes to
 be run on the cluster, and `ncpus` defines the number of CPU cores to be used
-by each process. The chosen example will run 2 processes each utilizing 2 CPU
-cores.  If `batch_queries` contains sufficient GESs and the corresponding computing
+by each process. The chosen example will run 2 processes each utilizing 4 CPU
+cores. If `batch_queries` contains sufficient GESs and the corresponding computing
 resources are available on a cluster, then the given example process will
-utilize in total 4 CPU cores. Note, the given sample code will work on most
+utilize in total 8 CPU cores. Note, the given sample code will work on most
 queueing systems as it is based on utilities from the `batchtools` package. The
 latter supports template files (`*.tmpl`) for defining the run parameters of
 different schedulers. To run this code, one needs to have both a `conf` file (see
@@ -744,7 +748,7 @@ Njobs <- 1:2
 ids <- batchMap(fun=f_bt, Njobs, more.args = list(
           batch_queries=batch_queries, refdb=refdb))
 done <- submitJobs(ids, reg=reg, resources=list(
-            partition="intel", walltime=120, ntasks=1, ncpus=2, memory=10240))
+            partition="intel", walltime=120, ntasks=1, ncpus=4, memory=10240))
 getStatus()
 waitForJobs() # Wait until all jobs are completed
 res1 <- loadResult(1)
