@@ -6,8 +6,8 @@
 \usage{
 gess_gcmap(
   qSig,
-  higher,
-  lower,
+  higher = NULL,
+  lower = NULL,
   chunk_size = 5000,
   ref_trts = NULL,
   workers = 4
@@ -20,11 +20,17 @@ For details see help of \code{qSig} and \code{qSig-class}.}
 
 \item{higher}{The 'upper' threshold. If not 'NULL', genes with a score 
 larger than 'higher' will be included in the gene set with sign +1. 
-At least one of 'lower' and 'higher' must be specified.}
+At least one of 'lower' and 'higher' must be specified. 
+
+\code{higher} argument will be ignored if the \code{refdb} in \code{qSig} 
+is path to the gmt file, which already contains gene sets.}
 
 \item{lower}{The lower threshold. If not 'NULL', genes with a score smaller 
 than 'lower' will be included in the gene set with sign -1. 
-At least one of 'lower' and 'higher' must be specified.}
+At least one of 'lower' and 'higher' must be specified.
+
+\code{lower} argument will be ignored if the \code{refdb} in \code{qSig} 
+is path to the gmt file, which already contains gene sets.}
 
 \item{chunk_size}{number of database entries to process per iteration to 
 limit memory usage of search.}

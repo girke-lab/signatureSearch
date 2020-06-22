@@ -1,3 +1,7 @@
+### Changes in version 1.0.7 (2020-06-22)
++ Supported import gmt file as query gene set or gene set reference database
+for set-based GESS method
+
 ### Changes in version 1.0.6 (2020-04-19)
 + Supported searching refdb parallelly by using multiple cores on a single machine
 

@@ -39,3 +39,5 @@ src/*.o
 src/*.sl
 src/*.so
 .dylib
+
+.DS_Store

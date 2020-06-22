@@ -47,10 +47,15 @@ obtained from the DEG analysis methods of the LINCS project; and with
 'lincs_expr' normalized expression values.
 
 To use a custom signature database, it should be the file path to the HDF5 
-file generated with the \code{\link{build_custom_db}} function. 
-Alternatively, a suitable version of the CMAP/LINCS databases can be used. 
-For details on this, please consult the vignette of the 
-\pkg{signatureSearchData} package.}
+file generated with the \code{\link{build_custom_db}} function, the HDF5
+file needs to have the \code{.h5} extension. 
+
+When the \code{gess_method} is set as 'gCMAP' or 'Fisher', it could also be 
+the file path to the gmt file containing gene sets, 
+for exmaple, gmt files from the MSigDB 
+\url{https://www.gsea-msigdb.org/gsea/msigdb/index.jsp} 
+or GSKB \url{http://ge-lab.org/#/data}. Note, the gmt files also need 
+to have the \code{.gmt} extension.}
 }
 \value{
 \code{qSig} object

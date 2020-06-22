@@ -39,10 +39,16 @@
 ##' 'lincs_expr' normalized expression values.
 ##' 
 ##' To use a custom signature database, it should be the file path to the HDF5 
-##' file generated with the \code{\link{build_custom_db}} function. 
-##' Alternatively, a suitable version of the CMAP/LINCS databases can be used. 
-##' For details on this, please consult the vignette of the 
-##' \pkg{signatureSearchData} package.
+##' file generated with the \code{\link{build_custom_db}} function, the HDF5
+##' file needs to have the \code{.h5} extension. 
+##' 
+##' When the \code{gess_method} is set as 'gCMAP' or 'Fisher', it could also be 
+##' the file path to the gmt file containing gene sets, 
+##' for exmaple, gmt files from the MSigDB 
+##' \url{https://www.gsea-msigdb.org/gsea/msigdb/index.jsp} 
+##' or GSKB \url{http://ge-lab.org/#/data}. Note, the gmt files also need 
+##' to have the \code{.gmt} extension.
+##' 
 ##' @return \code{qSig} object
 ##' @seealso \code{\link{build_custom_db}}, 
 ##' \code{\link[signatureSearchData]{signatureSearchData}}
@@ -66,16 +72,26 @@
 qSig <- function(query, gess_method, refdb){
     ## Validity check of refdb
     if(!any(refdb %in% c("cmap","cmap_expr","lincs","lincs_expr"))){
+      if(grepl("\\.h5", refdb)){
         ref_val <- h5read(refdb, "assay", c(1,1))
         if(!is.numeric(ref_val)) 
-            stop("The matrix value stored in refdb should be numeric!")
+          stop("The matrix value stored in refdb should be numeric!")
+      }
     }
     if(is(query, "list")){
       if(any(gess_method %in% c("CMAP", "LINCS", "Fisher"))){
-        upset = query$upset
-        downset = query$downset
-        refdb = determine_refdb(refdb)
-        gid_db <- h5read(refdb, "rownames", drop=TRUE)
+        upset <- query$upset
+        downset <- query$downset
+        refdb <- determine_refdb(refdb)
+        if(grepl("\\.gmt", refdb)){
+          gene_sets <- suppressWarnings(read_gmt(refdb))
+          # remove invalid gene sets that have 0 length or names are NAs
+          gene_sets <- gene_sets[sapply(gene_sets, length)>0 & !is.na(names(gene_sets))]
+          gid_db <- unique(unlist(gene_sets))
+        } else {
+          gid_db <- h5read(refdb, "rownames", drop=TRUE)
+        }
+        
         ## Validity checks of upset and downset
         if(all(c(!is.character(upset), !is.null(upset)))) 
           stop("upset of 'query' slot needs to be ID character vector or NULL")
@@ -117,7 +133,15 @@ qSig <- function(query, gess_method, refdb){
     } else if (is(query, "matrix")){
       if(any(gess_method %in% c("gCMAP", "Fisher", "Cor"))){
         refdb = determine_refdb(refdb)
-        gid_db <- h5read(refdb, "rownames", drop=TRUE)
+        if(grepl("\\.gmt", refdb)){
+          gene_sets <- suppressWarnings(read_gmt(refdb))
+          # remove invalid gene sets that have 0 length or names are NAs
+          gene_sets <- gene_sets[sapply(gene_sets, length)>0 & !is.na(names(gene_sets))]
+          gid_db <- unique(unlist(gene_sets))
+        } else {
+          gid_db <- h5read(refdb, "rownames", drop=TRUE)
+        }
+        
         if(! is.numeric(query[1,1]) | ncol(query) != 1) 
           stop("The 'query' should be a numeric matrix with one column!")
         if(is.null(rownames(query))) 
@@ -126,7 +150,9 @@ qSig <- function(query, gess_method, refdb){
         if(sum(rownames(query) %in% gid_db)==0) 
           stop("The gene labels in the query matrix share 0 identifiers with 
              reference database!")
-        query <- query[rownames(query) %in% gid_db, 1, drop=FALSE]
+        if(gess_method == "Cor"){
+          query <- query[rownames(query) %in% gid_db, 1, drop=FALSE]
+        }
       } else
         stop("'gess_method' slot must be one of 'gCMAP', 'Fisher' or 'Cor' 
   if 'qsig' is a numeric matrix with gene labels in the row name slot!")
