@@ -33,6 +33,12 @@ pre code, pre, code {
 }
 </style>
 
+```{r global_options, include=FALSE}                                                                                                                                    
+## ThG: chunk added to enable global knitr options. The below turns on                                                                                                  
+## caching qor faster vignette re-build during text editing.                                                                                                            
+knitr::opts_chunk$set(cache=TRUE)                                                                                                                                       
+```            
+
 ```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
 suppressPackageStartupMessages({
   library(signatureSearch)
@@ -192,6 +198,10 @@ BiocManager::install("yduan004/signatureSearch", build_vignettes=TRUE)  # Instal
 Next the package needs to be loaded into a user's R session.
 ```{r load, eval=TRUE}
 library(signatureSearch)
+```
+
+The following lists essential help files and opens the vignette of the package.
+```{r load_help, eval=FALSE}
 library(help = "signatureSearch")  # Lists package info
 vignette("signatureSearch")  # Opens vignette
 ```
@@ -1273,29 +1283,32 @@ wf_list <- runWF(drug, cell, refdb, gess_method="LINCS",
     fea_method="dup_hyperG", N_gess_drugs=10, env_dir=env_dir, tau=FALSE)
 ```
 
-# Gene Sets in gmt File
-The Molecular signatures database (MSigDB) contains well-annotated gene sets 
-representing the universe of the biological processes in human [@Liberzon2011-ta]. 
-The MSigDB is available at its 
-[website](https://www.gsea-msigdb.org/gsea/msigdb/index.jsp). 
-At the time of writing this vignette, the MSigDB version is 7.1. It contains 
-25,724 gene sets divided into 8 collections. 
+# Gene Set Databases
+
+## MSigDB and GSKB
+The [Molecular signatures database
+(MSigDB)](https://www.gsea-msigdb.org/gsea/msigdb/index.jsp) contains
+well-annotated gene sets representing the universe of the biological processes
+in human [@Liberzon2011-ta]. MSigDB Version 7.1 contains 25,724 gene sets 
+that are divided into 8 collections. 
 
 GSKB (Gene Set Knowledgebase) is a gene set database for pathway analysis in 
 mouse [@Lai2016-gh]. It includes more than 40,000 pathways and gene sets 
-compiled from 40 sources such as Gene Ontology, KEGG, GeneSetDB etc in mouse. 
+compiled from 40 sources, such as Gene Ontology, KEGG, GeneSetDB from mouse. 
 
-This package also provides utilities to read in gene sets stored in `gmt` file 
-and uses the imported gene sets as either query set or reference database. The
-gene set query is applicable to the `CMAP`, `LINCS` or `Fisher` GESS methods. 
-The gene set reference database is applicable to the `Fisher` and `gCMAP` 
-methods. The following shows examples of using gene sets stored in `gmt` file
-to the different GESS methods. Since the CMAP/LINCS database contains Entrez IDs
-in human, the following 2 subsections uses gene sets in MSigDB as illustration.
-The third subsection `Gene set in mouse` illustrates how to use the mouse 
-gene set as query or reference database for GESS methods
+_signatureSearch_ provides utilities to import gene sets in `gmt` format from 
+MSigDB, GSKB and related gene set-based resources. The imported gene sets can be used 
+either as set-based queries or reference databases, or both. The gene set queries 
+are compatible with the the `CMAP`, `LINCS` or `Fisher` GESS methods. In addition,
+the gene set reference databases can be used with the `Fisher` and `gCMAP` 
+methods. The following examples illustrates how to import and search `gmt` files 
+in _signatureSearch_ using sample data from MSigDB and GSKB. First, examples are 
+provided how to use the gene sets from both resources as queries (here Entrez IDs from human)
+to search the CMAP2 and LINCS databases. Next, several examples are provided where
+the MSigDB and GSKB collections serve as reference databases that are searched compatible
+GESS methods. 
 
-## Gene set as query
+### Gene S:ets as Queries 
 The gmt files were downloaded from the MSigDB at
 [here](https://www.gsea-msigdb.org/gsea/downloads.jsp#msigdb)
 and imported into R session with `read_gmt` function. The selected gene set 
@@ -1305,6 +1318,10 @@ methods if the gene set were unlabeled. Since
 msig <- read_gmt("msigdb.v7.1.entrez.gmt") # path to the downloaded msigdb gmt file
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 ```
+
+<p style="color:red">[ThG: comment please include in readLines call the setting
+'warn = FALSE' of the read_gmt function. This way there is now iritiating warning
+if gmt has only one entry.]</p>
 
 Gene set that do not have up down labels
 ```{r gene_no_label, eval=FALSE}
@@ -1338,7 +1355,8 @@ fisher_qsig <- qSig(query=list(upset=gene_set_up, downset=gene_set_down),
 fisher_res <- gess_fisher(fisher_qsig, higher=1, lower=-1)
 ```
 
-## Gene set as reference database
+### Gene Sets as Database
+#### MSigDB
 The gene sets stored in the gmt file could also be used as the reference database
 for `gCMAP` and `Fisher` methods. In this case, all gene sets are labeled as
 up-regulated.
@@ -1357,7 +1375,16 @@ fisher_qsig2 <- qSig(query=list(upset=gene_set), gess_method="Fisher",
 fisher_res2 <- gess_fisher(fisher_qsig2)
 ```
 
-## Gene set in mouse
+<p style="color:red">[ThG: I am not able to run any of the gess_ searches
+when the gene sets are used as db on a laptop with 8GB RAM. Usually this is 
+plenty. Reducing the chunk size also doesn't help. The searches also seem to be
+very slow in this case. Not sure are you simply bypassing the HDF5 encoding of the 
+ref database? If so why? For the review this could be a deal breaker if one makes
+the impression that the performance on these relatively small databases is so 
+poor.]</p>
+
+
+#### GSKB 
 The gmt file of the GSKB database for mouse is downloaded from
 [here](http://ge-lab.org/#/data). The following code makes up a query signature
 with Mouse Entrez ids for the `gCMAP` method and uses the mouse gene sets as
@@ -1386,6 +1413,8 @@ fisher_qsig3 <- qSig(query=list(upset=gene_set), gess_method="Fisher",
                     refdb="mGSKB_Entrez.gmt")
 fisher_res3 <- gess_fisher(fisher_qsig3)
 ```
+
+<p style="color:red">[ThG: same problem here. The R session simply crashes.]</p>
 
 # Supplemental Material
 
