@@ -1320,7 +1320,7 @@ db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 ```
 
 <p style="color:red">[ThG: comment please include in readLines call the setting
-'warn = FALSE' of the read_gmt function. This way there is now iritiating warning
+'warn = FALSE' of the read_gmt function. This way there is no irritating warning
 if gmt has only one entry.]</p>
 
 Gene set that do not have up down labels
@@ -1392,6 +1392,12 @@ reference database. The gene sets could also be used as both query and reference
 database for `Fisher` methods. Please note, the mouse gene set could also be 
 used as query set for `CMAP` and `LINCS` methods if the reference database 
 contains mouse genomewide gene expression profiles from various treatments.
+
+
+<p style="color:red">[ThG: the read_gmt call issues warnings which should not be
+the case. Also, why couldn't the second line for removing empty entries be included in
+read_gmt function? This way the user would not need to deal with complex 
+expressions.]</p> 
 
 ```{r gn_ref_mouse, eval=FALSE}
 gskb <- read_gmt("mGSKB_Entrez.gmt")

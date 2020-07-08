@@ -7545,7 +7545,7 @@ wf_list &lt;- runWF(drug, cell, refdb, gess_method=&quot;LINCS&quot;,
 <pre class="r"><code>msig &lt;- read_gmt(&quot;msigdb.v7.1.entrez.gmt&quot;) # path to the downloaded msigdb gmt file
 db_path &lt;- system.file(&quot;extdata&quot;, &quot;sample_db.h5&quot;, package = &quot;signatureSearch&quot;)</code></pre>
 <p style="color:red">
-[ThG: comment please include in readLines call the setting ‘warn = FALSE’ of the read_gmt function. This way there is now iritiating warning if gmt has only one entry.]
+[ThG: comment please include in readLines call the setting ‘warn = FALSE’ of the read_gmt function. This way there is no irritating warning if gmt has only one entry.]
 </p>
 <p>Gene set that do not have up down labels</p>
 <pre class="r"><code>gene_set &lt;- msig[[&quot;GO_GROWTH_HORMONE_RECEPTOR_BINDING&quot;]]
@@ -7598,6 +7598,9 @@ fisher_res2 &lt;- gess_fisher(fisher_qsig2)</code></pre>
 <div id="gskb" class="section level4">
 <h4><span class="header-section-number">7.1.2.2</span> GSKB</h4>
 <p>The gmt file of the GSKB database for mouse is downloaded from <a href="http://ge-lab.org/#/data">here</a>. The following code makes up a query signature with Mouse Entrez ids for the <code>gCMAP</code> method and uses the mouse gene sets as reference database. The gene sets could also be used as both query and reference database for <code>Fisher</code> methods. Please note, the mouse gene set could also be used as query set for <code>CMAP</code> and <code>LINCS</code> methods if the reference database contains mouse genomewide gene expression profiles from various treatments.</p>
+<p style="color:red">
+[ThG: the read_gmt call issues warnings which should not be the case. Also, why couldn’t the second line for removing empty entries be included in read_gmt function? This way the user would not need to deal with complex expressions.]
+</p>
 <pre class="r"><code>gskb &lt;- read_gmt(&quot;mGSKB_Entrez.gmt&quot;)
 gskb &lt;- gskb[sapply(gskb, length)&gt;0 &amp; ! is.na(names(gskb))]
 
