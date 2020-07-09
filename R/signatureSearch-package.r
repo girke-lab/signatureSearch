@@ -237,3 +237,20 @@ NULL
 #' head(clue_moa_list)
 #' @keywords datasets
 "clue_moa_list"
+
+#' LINCS Signature Information
+#' 
+#' It is a tibble of 3 columns containing treatment information of GESs in the
+#' LINCS database. The columns contain the perturbation name, cell
+#' type and perturbation type (all of them are compound treatment, trt_cp).
+#'
+#' @name lincs_sig_info
+#' @aliases lincs_sig_info
+#' @docType data
+#' @format A \code{tibble} object with 45,956 rows and 3 columns.
+#' @examples 
+#' # Load object
+#' data(lincs_sig_info)
+#' head(lincs_sig_info)
+#' @keywords datasets
+"lincs_sig_info"
