@@ -1308,7 +1308,7 @@ to search the CMAP2 and LINCS databases. Next, several examples are provided whe
 the MSigDB and GSKB collections serve as reference databases that are searched compatible
 GESS methods. 
 
-### Gene S:ets as Queries 
+### Gene Sets as Queries 
 The gmt files were downloaded from the MSigDB at
 [here](https://www.gsea-msigdb.org/gsea/downloads.jsp#msigdb)
 and imported into R session with `read_gmt` function. The selected gene set 
@@ -1319,7 +1319,7 @@ msig <- read_gmt("msigdb.v7.1.entrez.gmt") # path to the downloaded msigdb gmt f
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 ```
 
-<p style="color:red">[ThG: comment please include in readLines call the setting
+<p style="color:green">[ThG: comment please include in readLines call the setting
 'warn = FALSE' of the read_gmt function. This way there is no irritating warning
 if gmt has only one entry.]</p>
 
@@ -1401,7 +1401,6 @@ expressions.]</p>
 
 ```{r gn_ref_mouse, eval=FALSE}
 gskb <- read_gmt("mGSKB_Entrez.gmt")
-gskb <- gskb[sapply(gskb, length)>0 & ! is.na(names(gskb))]
 
 # gCMAP method
 ## make up the query matrix

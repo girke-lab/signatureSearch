@@ -41,3 +41,6 @@ src/*.so
 .dylib
 
 .DS_Store
+
+vignettes/mGSKB_Entrez.gmt
+vignettes/msigdb.v7.1.entrez.gmt
