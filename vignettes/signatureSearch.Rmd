@@ -1283,13 +1283,13 @@ wf_list <- runWF(drug, cell, refdb, gess_method="LINCS",
     fea_method="dup_hyperG", N_gess_drugs=10, env_dir=env_dir, tau=FALSE)
 ```
 
-# Gene Set Databases
+# Additional Databases
 
 ## MSigDB and GSKB
 The [Molecular signatures database
 (MSigDB)](https://www.gsea-msigdb.org/gsea/msigdb/index.jsp) contains
 well-annotated gene sets representing the universe of the biological processes
-in human [@Liberzon2011-ta]. MSigDB Version 7.1 contains 25,724 gene sets 
+in human [@Liberzon2011-ta; @Liberzon2015-is; @Culhane2012-aa]. MSigDB Version 7.1 contains 25,724 gene sets 
 that are divided into 8 collections. 
 
 GSKB (Gene Set Knowledgebase) is a gene set database for pathway analysis in 
@@ -1337,7 +1337,7 @@ fisher_qsig <- qSig(query=list(upset=gene_set), gess_method="Fisher", refdb=db_p
 fisher_res <- gess_fisher(fisher_qsig, higher=1, lower=-1)
 ```
 
-Gene set that have up down labels
+Gene set that have both up and down gene labels
 ```{r gene_label, eval=FALSE}
 gene_set_up <- msig[["GSE17721_0.5H_VS_24H_POLYIC_BMDC_UP"]]
 gene_set_down <- msig[["GSE17721_0.5H_VS_24H_POLYIC_BMDC_DN"]]
