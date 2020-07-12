@@ -6765,7 +6765,7 @@ div.tocify {
 
 <h1 class="title toc-ignore"><em>signatureSearch</em>: Environment for Gene Expression Searching Combined with Functional Enrichment Analysis</h1>
 <h4 class="author">Authors: Yuzhu Duan, Dan S Evans, Nicholas J. Schork, Steven R. Cummings and Thomas Girke</h4>
-<h4 class="date">Last update: 07 July, 2020</h4>
+<h4 class="date">Last update: 11 July, 2020</h4>
 
 </div>
 
@@ -7532,19 +7532,19 @@ env_dir &lt;- tempdir()
 wf_list &lt;- runWF(drug, cell, refdb, gess_method=&quot;LINCS&quot;, 
     fea_method=&quot;dup_hyperG&quot;, N_gess_drugs=10, env_dir=env_dir, tau=FALSE)</code></pre>
 </div>
-<div id="gene-set-databases" class="section level1">
-<h1><span class="header-section-number">7</span> Gene Set Databases</h1>
+<div id="additional-databases" class="section level1">
+<h1><span class="header-section-number">7</span> Additional Databases</h1>
 <div id="msigdb-and-gskb" class="section level2">
 <h2><span class="header-section-number">7.1</span> MSigDB and GSKB</h2>
-<p>The <a href="https://www.gsea-msigdb.org/gsea/msigdb/index.jsp">Molecular signatures database (MSigDB)</a> contains well-annotated gene sets representing the universe of the biological processes in human <span class="citation">(Liberzon et al. 2011)</span>. MSigDB Version 7.1 contains 25,724 gene sets that are divided into 8 collections.</p>
+<p>The <a href="https://www.gsea-msigdb.org/gsea/msigdb/index.jsp">Molecular signatures database (MSigDB)</a> contains well-annotated gene sets representing the universe of the biological processes in human <span class="citation">(Liberzon et al. 2011, 2015; Culhane et al. 2012)</span>. MSigDB Version 7.1 contains 25,724 gene sets that are divided into 8 collections.</p>
 <p>GSKB (Gene Set Knowledgebase) is a gene set database for pathway analysis in mouse <span class="citation">(Lai et al. 2016)</span>. It includes more than 40,000 pathways and gene sets compiled from 40 sources, such as Gene Ontology, KEGG, GeneSetDB from mouse.</p>
 <p><em>signatureSearch</em> provides utilities to import gene sets in <code>gmt</code> format from MSigDB, GSKB and related gene set-based resources. The imported gene sets can be used either as set-based queries or reference databases, or both. The gene set queries are compatible with the the <code>CMAP</code>, <code>LINCS</code> or <code>Fisher</code> GESS methods. In addition, the gene set reference databases can be used with the <code>Fisher</code> and <code>gCMAP</code> methods. The following examples illustrates how to import and search <code>gmt</code> files in <em>signatureSearch</em> using sample data from MSigDB and GSKB. First, examples are provided how to use the gene sets from both resources as queries (here Entrez IDs from human) to search the CMAP2 and LINCS databases. Next, several examples are provided where the MSigDB and GSKB collections serve as reference databases that are searched compatible GESS methods.</p>
 <div id="gene-sets-as-queries" class="section level3">
-<h3><span class="header-section-number">7.1.1</span> Gene S:ets as Queries</h3>
+<h3><span class="header-section-number">7.1.1</span> Gene Sets as Queries</h3>
 <p>The gmt files were downloaded from the MSigDB at <a href="https://www.gsea-msigdb.org/gsea/downloads.jsp#msigdb">here</a> and imported into R session with <code>read_gmt</code> function. The selected gene set could be used as up-regulated gene set input for <code>CMAP</code>, <code>LINCS</code> or <code>Fisher</code> methods if the gene set were unlabeled. Since</p>
 <pre class="r"><code>msig &lt;- read_gmt(&quot;msigdb.v7.1.entrez.gmt&quot;) # path to the downloaded msigdb gmt file
 db_path &lt;- system.file(&quot;extdata&quot;, &quot;sample_db.h5&quot;, package = &quot;signatureSearch&quot;)</code></pre>
-<p style="color:red">
+<p style="color:green">
 [ThG: comment please include in readLines call the setting ‘warn = FALSE’ of the read_gmt function. This way there is no irritating warning if gmt has only one entry.]
 </p>
 <p>Gene set that do not have up down labels</p>
@@ -7558,7 +7558,7 @@ lincs_res &lt;- gess_lincs(lincs_qsig)
 # Fisher methods
 fisher_qsig &lt;- qSig(query=list(upset=gene_set), gess_method=&quot;Fisher&quot;, refdb=db_path)
 fisher_res &lt;- gess_fisher(fisher_qsig, higher=1, lower=-1)</code></pre>
-<p>Gene set that have up down labels</p>
+<p>Gene set that have both up and down gene labels</p>
 <pre class="r"><code>gene_set_up &lt;- msig[[&quot;GSE17721_0.5H_VS_24H_POLYIC_BMDC_UP&quot;]]
 gene_set_down &lt;- msig[[&quot;GSE17721_0.5H_VS_24H_POLYIC_BMDC_DN&quot;]]
 # CMAP method
@@ -7602,7 +7602,6 @@ fisher_res2 &lt;- gess_fisher(fisher_qsig2)</code></pre>
 [ThG: the read_gmt call issues warnings which should not be the case. Also, why couldn’t the second line for removing empty entries be included in read_gmt function? This way the user would not need to deal with complex expressions.]
 </p>
 <pre class="r"><code>gskb &lt;- read_gmt(&quot;mGSKB_Entrez.gmt&quot;)
-gskb &lt;- gskb[sapply(gskb, length)&gt;0 &amp; ! is.na(names(gskb))]
 
 # gCMAP method
 ## make up the query matrix
@@ -7767,6 +7766,9 @@ h5ls(&quot;sample_db.h5&quot;)</code></pre>
 <div id="ref-Benjamini1995-vk">
 <p>Benjamini, Y, and Y Hochberg. 1995. “Controlling the false discovery rate - a practical and powerful approach to multiple testing.” <em>J. R. Stat. Soc. Series B Stat. Methodol.</em> 57: 289–300.</p>
 </div>
+<div id="ref-Culhane2012-aa">
+<p>Culhane, Aedín C, Markus S Schröder, Razvan Sultana, Shaita C Picard, Enzo N Martinelli, Caroline Kelly, Benjamin Haibe-Kains, et al. 2012. “GeneSigDB: a manually curated database and resource for analysis of gene expression signatures.” <em>Nucleic Acids Res.</em> 40 (Database issue): D1060–6. <a href="https://doi.org/10.1093/nar/gkr901" class="uri">https://doi.org/10.1093/nar/gkr901</a>.</p>
+</div>
 <div id="ref-Edgar2002-di">
 <p>Edgar, Ron, Michael Domrachev, and Alex E Lash. 2002. “Gene Expression Omnibus: NCBI Gene Expression and Hybridization Array Data Repository.” <em>Nucleic Acids Res.</em> 30 (1): 207–10. <a href="https://www.ncbi.nlm.nih.gov/pubmed/11752295" class="uri">https://www.ncbi.nlm.nih.gov/pubmed/11752295</a>.</p>
 </div>
@@ -7787,6 +7789,9 @@ h5ls(&quot;sample_db.h5&quot;)</code></pre>
 </div>
 <div id="ref-Lamb2006-du">
 <p>Lamb, Justin, Emily D Crawford, David Peck, Joshua W Modell, Irene C Blat, Matthew J Wrobel, Jim Lerner, et al. 2006. “The Connectivity Map: Using Gene-Expression Signatures to Connect Small Molecules, Genes, and Disease.” <em>Science</em> 313 (5795): 1929–35. <a href="http://dx.doi.org/10.1126/science.1132939" class="uri">http://dx.doi.org/10.1126/science.1132939</a>.</p>
+</div>
+<div id="ref-Liberzon2015-is">
+<p>Liberzon, Arthur, Chet Birger, Helga Thorvaldsdóttir, Mahmoud Ghandi, Jill P Mesirov, and Pablo Tamayo. 2015. “The Molecular Signatures Database (MSigDB) hallmark gene set collection.” <em>Cell Syst</em> 1 (6): 417–25. <a href="https://doi.org/10.1016/j.cels.2015.12.004" class="uri">https://doi.org/10.1016/j.cels.2015.12.004</a>.</p>
 </div>
 <div id="ref-Liberzon2011-ta">
 <p>Liberzon, Arthur, Aravind Subramanian, Reid Pinchback, Helga Thorvaldsdóttir, Pablo Tamayo, and Jill P Mesirov. 2011. “Molecular Signatures Database (MSigDB) 3.0.” <em>Bioinformatics</em> 27 (12): 1739–40. <a href="http://dx.doi.org/10.1093/bioinformatics/btr260" class="uri">http://dx.doi.org/10.1093/bioinformatics/btr260</a>.</p>
