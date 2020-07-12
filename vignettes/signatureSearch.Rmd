@@ -1289,7 +1289,8 @@ wf_list <- runWF(drug, cell, refdb, gess_method="LINCS",
 The [Molecular signatures database
 (MSigDB)](https://www.gsea-msigdb.org/gsea/msigdb/index.jsp) contains
 well-annotated gene sets representing the universe of the biological processes
-in human [@Liberzon2011-ta; @Liberzon2015-is; @Culhane2012-aa]. MSigDB Version 7.1 contains 25,724 gene sets 
+in human [@Liberzon2011-ta; @Liberzon2015-is; @Culhane2012-aa]. 
+MSigDB Version 7.1 contains 25,724 gene sets 
 that are divided into 8 collections. 
 
 GSKB (Gene Set Knowledgebase) is a gene set database for pathway analysis in 
