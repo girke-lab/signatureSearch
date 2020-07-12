@@ -23,7 +23,7 @@
 ##' be a matrix with a single numeric column and the gene labels (e.g. Entrez 
 ##' gene IDs) in the row name slot. The values in this matrix can be z-scores 
 ##' or LFCs. In this case, the actual query gene set is obtained according to 
-##' upper and lower cutoffs set by the user.
+##' upper and lower cutoffs in the \code{gess_fisher} function set by the user.
 ##' 
 ##' If 'gess_method' is 'Cor', the query is a matrix with a single numeric 
 ##' column and the gene labels in the row name slot. The numeric column can 
@@ -43,15 +43,16 @@
 ##' file needs to have the \code{.h5} extension. 
 ##' 
 ##' When the \code{gess_method} is set as 'gCMAP' or 'Fisher', it could also be 
-##' the file path to the gmt file containing gene sets, 
-##' for exmaple, gmt files from the MSigDB 
+##' the file path to the HDF5 file converted from the gmt file containing 
+##' gene sets by using \code{gmt2h5} function. For example, the gmt files 
+##' could be from the MSigDB 
 ##' \url{https://www.gsea-msigdb.org/gsea/msigdb/index.jsp} 
-##' or GSKB \url{http://ge-lab.org/#/data}. Note, the gmt files also need 
-##' to have the \code{.gmt} extension.
+##' or GSKB \url{http://ge-lab.org/#/data}.
 ##' 
 ##' @return \code{qSig} object
 ##' @seealso \code{\link{build_custom_db}}, 
-##' \code{\link[signatureSearchData]{signatureSearchData}}
+##' \code{\link[signatureSearchData]{signatureSearchData}},
+##' \code{\link{gmt2h5}}
 ##' @examples 
 ##' db_path <- system.file("extdata", "sample_db.h5", 
 ##'                        package = "signatureSearch")
@@ -83,14 +84,7 @@ qSig <- function(query, gess_method, refdb){
         upset <- query$upset
         downset <- query$downset
         refdb <- determine_refdb(refdb)
-        if(grepl("\\.gmt", refdb)){
-          gene_sets <- suppressWarnings(read_gmt(refdb))
-          # remove invalid gene sets that have 0 length or names are NAs
-          gene_sets <- gene_sets[sapply(gene_sets, length)>0 & !is.na(names(gene_sets))]
-          gid_db <- unique(unlist(gene_sets))
-        } else {
-          gid_db <- h5read(refdb, "rownames", drop=TRUE)
-        }
+        gid_db <- h5read(refdb, "rownames", drop=TRUE)
         
         ## Validity checks of upset and downset
         if(all(c(!is.character(upset), !is.null(upset)))) 
@@ -133,14 +127,7 @@ qSig <- function(query, gess_method, refdb){
     } else if (is(query, "matrix")){
       if(any(gess_method %in% c("gCMAP", "Fisher", "Cor"))){
         refdb = determine_refdb(refdb)
-        if(grepl("\\.gmt", refdb)){
-          gene_sets <- suppressWarnings(read_gmt(refdb))
-          # remove invalid gene sets that have 0 length or names are NAs
-          gene_sets <- gene_sets[sapply(gene_sets, length)>0 & !is.na(names(gene_sets))]
-          gid_db <- unique(unlist(gene_sets))
-        } else {
-          gid_db <- h5read(refdb, "rownames", drop=TRUE)
-        }
+        gid_db <- h5read(refdb, "rownames", drop=TRUE)
         
         if(! is.numeric(query[1,1]) | ncol(query) != 1) 
           stop("The 'query' should be a numeric matrix with one column!")

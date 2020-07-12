@@ -29,7 +29,7 @@ This means the query is performed with an unsigned set. The query can also
 be a matrix with a single numeric column and the gene labels (e.g. Entrez 
 gene IDs) in the row name slot. The values in this matrix can be z-scores 
 or LFCs. In this case, the actual query gene set is obtained according to 
-upper and lower cutoffs set by the user.
+upper and lower cutoffs in the \code{gess_fisher} function set by the user.
 
 If 'gess_method' is 'Cor', the query is a matrix with a single numeric 
 column and the gene labels in the row name slot. The numeric column can 
@@ -51,11 +51,11 @@ file generated with the \code{\link{build_custom_db}} function, the HDF5
 file needs to have the \code{.h5} extension. 
 
 When the \code{gess_method} is set as 'gCMAP' or 'Fisher', it could also be 
-the file path to the gmt file containing gene sets, 
-for exmaple, gmt files from the MSigDB 
+the file path to the HDF5 file converted from the gmt file containing 
+gene sets by using \code{gmt2h5} function. For example, the gmt files 
+could be from the MSigDB 
 \url{https://www.gsea-msigdb.org/gsea/msigdb/index.jsp} 
-or GSKB \url{http://ge-lab.org/#/data}. Note, the gmt files also need 
-to have the \code{.gmt} extension.}
+or GSKB \url{http://ge-lab.org/#/data}.}
 }
 \value{
 \code{qSig} object
@@ -83,5 +83,6 @@ qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
 }
 \seealso{
 \code{\link{build_custom_db}}, 
-\code{\link[signatureSearchData]{signatureSearchData}}
+\code{\link[signatureSearchData]{signatureSearchData}},
+\code{\link{gmt2h5}}
 }

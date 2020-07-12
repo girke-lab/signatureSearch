@@ -30,19 +30,20 @@
 #' @param qSig \code{\link{qSig}} object defining the query signature including
 #' the GESS method (should be 'Fisher') and the path to the reference
 #' database. For details see help of \code{qSig} and \code{qSig-class}.
-#' @param higher The 'higher' threshold. If not 'NULL', genes with a score 
-#' larger than 'higher' will be included in the gene set with sign +1. 
-#' At least one of 'lower' and 'higher' must be specified.
 #' 
-#' \code{higher} argument will be ignored if the \code{refdb} in \code{qSig} 
-#' is path to the gmt file, which already contains gene sets.
+#' @param higher The 'upper' threshold. If not 'NULL', genes with a score 
+#' larger than or equal to 'higher' will be included in the gene set with sign +1. 
+#' At least one of 'lower' and 'higher' must be specified. 
+#' 
+#' \code{higher} argument need to be set as \code{1} if the \code{refdb} in \code{qSig} 
+#' is path to the HDF5 file that were converted from the gmt file.
 #' 
 #' @param lower The lower threshold. If not 'NULL', genes with a score smaller 
-#' than 'lower' will be included in the gene set with sign -1. 
+#' than or equal 'lower' will be included in the gene set with sign -1. 
 #' At least one of 'lower' and 'higher' must be specified.
 #' 
-#' \code{lower} argument will be ignored if the \code{refdb} in \code{qSig} 
-#' is path to the gmt file, which already contains gene sets.
+#' \code{lower} argument need to be set as \code{NULL} if the \code{refdb} in \code{qSig} 
+#' is path to the HDF5 file that were converted from the gmt file.
 #' 
 #' @param chunk_size number of database entries to process per iteration to 
 #' limit memory usage of search.
@@ -94,50 +95,51 @@ gess_fisher <- function(qSig, higher=NULL, lower=NULL, chunk_size=5000,
     query <- induceSMat(qr(qSig), higher=higher, lower=lower)
   }
   db_path <- determine_refdb(refdb(qSig))
-  if(! grepl("\\.gmt", db_path)){
-    ## calculate fisher score of query to blocks (5000 columns) of full refdb
-    full_mat <- HDF5Array(db_path, "assay")
-    rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
-    colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
-    
-    if(! is.null(ref_trts)){
-      trts_valid <- trts_check(ref_trts, colnames(full_mat))
-      full_mat <- full_mat[, trts_valid]
-    }
-    
-    full_dim <- dim(full_mat)
-    full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
-    ### The blocks in 'full_grid' are made of full columns 
-    nblock <- length(full_grid) 
-    resultDF <- bplapply(seq_len(nblock), function(b){
-      ref_block <- read_block(full_mat, full_grid[[b]])
-      cmap <- induceSMat(ref_block, higher=higher, lower=lower)
-      universe <- rownames(cmap)
-      c <- fs(query=query, sets=cmap, universe = universe)
-      return(data.frame(c))}, BPPARAM = MulticoreParam(workers = workers))
-    resultDF <- do.call(rbind, resultDF)
-  } else {
-    gene_sets <- suppressWarnings(read_gmt(db_path))
-    # remove invalid gene sets that have 0 length or names are NAs
-    gene_sets <- gene_sets[sapply(gene_sets, length)>0 & !is.na(names(gene_sets))]
-    # transform gene sets to sparseMatrix
-    gsc <- GeneSetCollection(mapply(function(geneIds, setId) {
-      GeneSet(geneIds, geneIdType=EntrezIdentifier(),
-              setName=setId)
-    }, gene_sets, names(gene_sets)))
-    cmapData <- incidence(gsc)
-    cmapData <- Matrix::t(cmapData)
-    #c <- fs(query=query, sets=cmapData, universe=rownames(cmapData))
-    
-    # Search the refdb by using multiple cores/workers
-    ceil <- ceiling(ncol(cmapData)/chunk_size)
-    res_list <- bplapply(seq_len(ceil), function(i){
-      dgcMat <- cmapData[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(cmapData))]
-      c <- fs(query=query, sets=dgcMat, universe=rownames(dgcMat))
-      return(data.frame(c))
-    }, BPPARAM = MulticoreParam(workers=workers))
-    resultDF <- do.call(rbind, res_list)
+
+  ## calculate fisher score of query to blocks (5000 columns) of full refdb
+  full_mat <- HDF5Array(db_path, "assay")
+  rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
+  colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+  
+  if(! is.null(ref_trts)){
+    trts_valid <- trts_check(ref_trts, colnames(full_mat))
+    full_mat <- full_mat[, trts_valid]
   }
+  
+  full_dim <- dim(full_mat)
+  full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+  ### The blocks in 'full_grid' are made of full columns 
+  nblock <- length(full_grid) 
+  resultDF <- bplapply(seq_len(nblock), function(b){
+    ref_block <- read_block(full_mat, full_grid[[b]])
+    cmap <- induceSMat(ref_block, higher=higher, lower=lower)
+    universe <- rownames(cmap)
+    c <- fs(query=query, sets=cmap, universe = universe)
+    return(data.frame(c))}, BPPARAM = MulticoreParam(workers = workers))
+  resultDF <- do.call(rbind, resultDF)
+
+  # else {
+  #   gene_sets <- suppressWarnings(read_gmt(db_path))
+  #   # remove invalid gene sets that have 0 length or names are NAs
+  #   gene_sets <- gene_sets[sapply(gene_sets, length)>0 & !is.na(names(gene_sets))]
+  #   # transform gene sets to sparseMatrix
+  #   gsc <- GeneSetCollection(mapply(function(geneIds, setId) {
+  #     GeneSet(geneIds, geneIdType=EntrezIdentifier(),
+  #             setName=setId)
+  #   }, gene_sets, names(gene_sets)))
+  #   cmapData <- incidence(gsc)
+  #   cmapData <- Matrix::t(cmapData)
+  #   #c <- fs(query=query, sets=cmapData, universe=rownames(cmapData))
+  #   
+  #   # Search the refdb by using multiple cores/workers
+  #   ceil <- ceiling(ncol(cmapData)/chunk_size)
+  #   res_list <- bplapply(seq_len(ceil), function(i){
+  #     dgcMat <- cmapData[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(cmapData))]
+  #     c <- fs(query=query, sets=dgcMat, universe=rownames(dgcMat))
+  #     return(data.frame(c))
+  #   }, BPPARAM = MulticoreParam(workers=workers))
+  #   resultDF <- do.call(rbind, res_list)
+  # }
   
   # mat_dim <- getH5dim(db_path)
   # mat_ncol <- mat_dim[2]

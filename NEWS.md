@@ -1,6 +1,6 @@
-### Changes in version 1.0.7 (2020-06-22)
-+ Supported import gmt file as query gene set or gene set reference database
-for set-based GESS method
+### Changes in version 1.2.2 (2020-07-11)
++ Supported converting gmt file to HDF5 file (01 matrix) as gene set reference 
+database for gCMAP and Fisher GESS methods
 
 ### Changes in version 1.0.6 (2020-04-19)
 + Supported searching refdb parallelly by using multiple cores on a single machine

@@ -18,7 +18,7 @@
 .Rproj.user/
 
 # produced vignettes
-vignettes/*.html
+#vignettes/*.html
 vignettes/*.pdf
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
@@ -44,3 +44,7 @@ src/*.so
 
 vignettes/mGSKB_Entrez.gmt
 vignettes/msigdb.v7.1.entrez.gmt
+mGSKB_Entrez.gmt
+msigdb.v7.1.entrez.gmt
+mGSKB.h5
+msigdb.h5

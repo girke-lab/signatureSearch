@@ -4,10 +4,15 @@
 \alias{read_gmt}
 \title{Read in gene set information from .gmt files}
 \usage{
-read_gmt(file)
+read_gmt(file, start = 1, end = -1)
 }
 \arguments{
 \item{file}{The .gmt file to be read}
+
+\item{start}{integer(1), read the gmt file from start line}
+
+\item{end}{integer(1), read the gmt file to the end line, the default -1 
+means read to the end}
 }
 \value{
 A list, where each index represents a separate gene set.

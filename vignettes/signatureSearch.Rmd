@@ -1359,23 +1359,34 @@ fisher_res <- gess_fisher(fisher_qsig, higher=1, lower=-1)
 #### MSigDB
 The gene sets stored in the gmt file could also be used as the reference database
 for `gCMAP` and `Fisher` methods. In this case, all gene sets are labeled as
-up-regulated.
+up-regulated. The `gmt2h5` function first convert the gene sets stored in the
+gmt file to a 01 matrix where rows are all combined genes from all gene sets
+and columns are names of the gene sets, 1's and 0's indicating whether genes 
+are in the specific gene set. The 01 matrix was then written to the HDF5 
+file. To avoid overflowing the memory, this function supports reading and writing
+the gene sets in batches by defining the `by_nset` parameter. The generated HDF5
+file was used as the GS-DB for `gCMAP` and `Fisher` methods. Please note, when
+using the HDF5 file converted from the gmt file as `refdb`, the `higher` and
+`lower` parameters of the `gess_gcmap` and `gess_fisher` functions need to be
+set as `1` and `NULL`, respectively.
 ```{r gn_ref, eval=FALSE}
+gmt2h5(gmtfile="./msigdb.v7.1.entrez.gmt", dest_h5="./msigdb.h5", by_nset=5000, 
+       overwrite=TRUE)
+
 # gCMAP method
 query_mat <- getSig(cmp="vorinostat", cell="SKB", refdb=db_path)
-gcmap_qsig2 <- qSig(query=query_mat, gess_method="gCMAP", 
-                    refdb="msigdb.v7.1.entrez.gmt")
-gcmap_res2 <- gess_gcmap(gcmap_qsig2)
+gcmap_qsig2 <- qSig(query=query_mat, gess_method="gCMAP", refdb="./msigdb.h5")
+gcmap_res2 <- gess_gcmap(gcmap_qsig2, higher=1)
 
 # Fisher method
 msig <- read_gmt("msigdb.v7.1.entrez.gmt")
 gene_set <- msig[["GO_GROWTH_HORMONE_RECEPTOR_BINDING"]]
 fisher_qsig2 <- qSig(query=list(upset=gene_set), gess_method="Fisher", 
-                    refdb="msigdb.v7.1.entrez.gmt")
-fisher_res2 <- gess_fisher(fisher_qsig2)
+                    refdb="./msigdb.h5")
+fisher_res2 <- gess_fisher(fisher_qsig2, higher=1)
 ```
 
-<p style="color:red">[ThG: I am not able to run any of the gess_ searches
+<p style="color:green">[ThG: I am not able to run any of the gess_ searches
 when the gene sets are used as db on a laptop with 8GB RAM. Usually this is 
 plenty. Reducing the chunk size also doesn't help. The searches also seem to be
 very slow in this case. Not sure are you simply bypassing the HDF5 encoding of the 
@@ -1391,35 +1402,37 @@ with Mouse Entrez ids for the `gCMAP` method and uses the mouse gene sets as
 reference database. The gene sets could also be used as both query and reference 
 database for `Fisher` methods. Please note, the mouse gene set could also be 
 used as query set for `CMAP` and `LINCS` methods if the reference database 
-contains mouse genomewide gene expression profiles from various treatments.
+contains mouse genome-wide gene expression profiles from various treatments.
 
 
-<p style="color:red">[ThG: the read_gmt call issues warnings which should not be
+<p style="color:green">[ThG: the read_gmt call issues warnings which should not be
 the case. Also, why couldn't the second line for removing empty entries be included in
 read_gmt function? This way the user would not need to deal with complex 
 expressions.]</p> 
 
 ```{r gn_ref_mouse, eval=FALSE}
-gskb <- read_gmt("mGSKB_Entrez.gmt")
+gmt2h5(gmtfile="./mGSKB_Entrez.gmt", dest_h5="./mGSKB.h5", by_nset=5000, 
+       overwrite=TRUE)
 
 # gCMAP method
 ## make up the query matrix
+gskb <- read_gmt("mGSKB_Entrez.gmt")
 mgenes <- unique(unlist(gskb))
 ranks <- rev(seq_along(mgenes))
 mquery <- matrix(ranks, ncol=1)
 rownames(mquery) <- mgenes; colnames(mquery) <- "MAKE_UP"
 gcmap_qsig3 <- qSig(query=mquery, gess_method="gCMAP", 
-                    refdb="mGSKB_Entrez.gmt")
-gcmap_res3 <- gess_gcmap(gcmap_qsig3)
+                    refdb="./mGSKB.h5")
+gcmap_res3 <- gess_gcmap(gcmap_qsig3, higher=1)
 
 # Fisher method
 gene_set <- gskb[["LIT_MM_HOFFMANN_PRE-BI_VS_LARGE-PRE-BII-CELL_DIFF_Entrez"]]
 fisher_qsig3 <- qSig(query=list(upset=gene_set), gess_method="Fisher", 
-                    refdb="mGSKB_Entrez.gmt")
-fisher_res3 <- gess_fisher(fisher_qsig3)
+                    refdb="./mGSKB.h5")
+fisher_res3 <- gess_fisher(fisher_qsig3, higher=1)
 ```
 
-<p style="color:red">[ThG: same problem here. The R session simply crashes.]</p>
+<p style="color:green">[ThG: same problem here. The R session simply crashes.]</p>
 
 # Supplemental Material
 

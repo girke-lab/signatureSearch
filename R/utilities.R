@@ -170,6 +170,69 @@ gctx2h5 <- function(gctx, cid, new_cid=cid, h5file, by_ncol=5000,
     h5ls(h5file)
 }
 
+#' Read gene sets from large gmt file in batches, convert the gene sets to
+#' 01 matrix and write the result to an HDF5 file.
+#' @title Convert GMT to HDF5 File
+#' @param gmtfile character(1), path to gmt file containing gene sets
+#' @param dest_h5 character(1), path of the hdf5 destination file
+#' @param by_nset number of gene sets to import in each iteration to limit 
+#' memory usage
+#' @param overwrite TRUE or FALSE, whether to overwrite or to append to 
+#' existing 'h5file'
+#' @return HDF5 file
+#' @examples 
+#' gmt <- system.file("extdata", "test_gene_sets_n4.gmt", 
+#'         package="signatureSearch")
+#' h5file <- tempfile(fileext=".h5")
+#' gmt2h5(gmtfile=gmt, dest_h5=h5file, overwrite=TRUE)
+#' @export
+gmt2h5 <- function(gmtfile, dest_h5, by_nset=5000, overwrite=FALSE){
+    # get number of lines of gmtfile
+    wc <- system(paste("wc -l", gmtfile), intern = TRUE)
+    nline <- as.numeric(gsub(pattern=gmtfile, "", wc,fixed = TRUE))
+    ceil <- ceiling(nline/by_nset)
+    
+    if(file.exists(dest_h5) & !overwrite){
+        message(paste(dest_h5, "already exists!"))
+    } else {
+        create_empty_h5(dest_h5, delete_existing=TRUE)
+    }
+    
+    # get all gene identifiers in gmtfile
+    all_genes <- NULL
+    for(i in seq_len(ceil)){
+        gene_sets <- suppressWarnings(read_gmt(gmtfile, 
+                            start=by_nset*(i-1)+1, end=by_nset*i))
+        tmp <- unique(unlist(gene_sets))
+        all_genes <- unique(c(all_genes, tmp))
+    }
+            
+    # read in gene sets in batches
+    for(i in seq_len(ceil)){
+        gene_sets <- suppressWarnings(read_gmt(gmtfile, 
+                        start=by_nset*(i-1)+1, end=by_nset*i))
+        # transform gene sets to sparseMatrix
+        mat <- gs2mat(gene_sets)
+        miss_genes <- setdiff(all_genes, rownames(mat))
+        patch <- matrix(0, nrow=length(miss_genes), ncol=ncol(mat))
+        rownames(patch) <- miss_genes
+        colnames(patch) <- colnames(mat)
+        mat <- rbind(mat, patch)
+        append2H5(x=mat[all_genes,], dest_h5, printstatus=FALSE)
+    }
+    h5ls(dest_h5)
+}
+
+gs2mat <- function(gene_sets){
+    gsc <- GeneSetCollection(mapply(function(geneIds, setId) {
+        GeneSet(geneIds, geneIdType=EntrezIdentifier(),
+                setName=setId)
+    }, gene_sets, names(gene_sets)))
+    mat <- incidence(gsc)
+    mat <- Matrix::t(mat)
+    return(mat)
+}
+
 # readHDF5chunk <- function(h5file, colindex=seq_len(10), colnames=NULL) {
 #     if(! is.null(colnames)){
 #         all_trts <- h5read(h5file, "colnames", drop=TRUE)
@@ -404,6 +467,9 @@ load_OrgDb <- function(OrgDb){
 #' \url{http://www.broadinstitute.org/cancer/software/gsea/wiki/index.php/Data_formats}.
 #' 
 #' @param file The .gmt file to be read
+#' @param start integer(1), read the gmt file from start line
+#' @param end integer(1), read the gmt file to the end line, the default -1 
+#' means read to the end 
 #' @return A list, where each index represents a separate gene set.
 #' @section Warning:
 #' The function does not check that the file is correctly formatted, and may 
@@ -415,17 +481,18 @@ load_OrgDb <- function(OrgDb){
 #' # geneSets <- read_gmt("path/to/the/gmt/file")
 #' @export
 #' 
-read_gmt <- function(file){
+read_gmt <- function(file, start=1, end=-1){
     if (!grepl("\\.gmt$", file)[1]) {
         stop("Pathway information must be a .gmt file")
     }
-    geneSetDB = readLines(file, warn=FALSE)
+    geneSetDB = scan(file, what="character", n=end-start+1, skip=start-1, 
+                     sep="\n", quiet=TRUE)
     geneSetDB = suppressWarnings(strsplit(geneSetDB, "\t"))
     names(geneSetDB) = sapply(geneSetDB, "[", 1)
     geneSetDB = lapply(geneSetDB, "[", -1:-2)
     geneSetDB = lapply(geneSetDB, function(x) {
         x[which(x != "")]
     })
-    geneSetDB <- geneSetDB[sapply(geneSetDB, length) > 0 & ! is.na(names(geneSetDB))]
+    geneSetDB <- geneSetDB[sapply(geneSetDB, length)>0 & !is.na(names(geneSetDB))]
     return(geneSetDB)
 }

@@ -19,18 +19,18 @@ the GESS method (should be 'gCMAP') and the path to the reference database.
 For details see help of \code{qSig} and \code{qSig-class}.}
 
 \item{higher}{The 'upper' threshold. If not 'NULL', genes with a score 
-larger than 'higher' will be included in the gene set with sign +1. 
+larger than or equal to 'higher' will be included in the gene set with sign +1. 
 At least one of 'lower' and 'higher' must be specified. 
 
-\code{higher} argument will be ignored if the \code{refdb} in \code{qSig} 
-is path to the gmt file, which already contains gene sets.}
+\code{higher} argument need to be set as \code{1} if the \code{refdb} in \code{qSig} 
+is path to the HDF5 file that were converted from the gmt file.}
 
 \item{lower}{The lower threshold. If not 'NULL', genes with a score smaller 
-than 'lower' will be included in the gene set with sign -1. 
+than or equal 'lower' will be included in the gene set with sign -1. 
 At least one of 'lower' and 'higher' must be specified.
 
-\code{lower} argument will be ignored if the \code{refdb} in \code{qSig} 
-is path to the gmt file, which already contains gene sets.}
+\code{lower} argument need to be set as \code{NULL} if the \code{refdb} in \code{qSig} 
+is path to the HDF5 file that were converted from the gmt file.}
 
 \item{chunk_size}{number of database entries to process per iteration to 
 limit memory usage of search.}
