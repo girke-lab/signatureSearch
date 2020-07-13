@@ -343,7 +343,7 @@ containing 100 GESs composed of z-scores.
 ```{r gess_cmap, eval=TRUE, warning=FALSE}
 qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
                   gess_method="CMAP", refdb=db_path)
-cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
+cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000, workers=1)
 cmap
 result(cmap)
 ```
@@ -390,7 +390,7 @@ exception that "LINCS" needs to be specified under the `gess_method` argument.
 ```{r gess_lincs, eval=TRUE}
 qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
                    gess_method="LINCS", refdb=db_path)
-lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE)
+lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE, workers=1)
 result(lincs)
 ```
 
@@ -463,7 +463,7 @@ and `lower` filter, here set to `1` and `-1`, respectively.
 
 ```{r gess_gcmap, eval=TRUE}
 qsig_gcmap <- qSig(query = query_mat, gess_method = "gCMAP", refdb = db_path)
-gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1)
+gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1, workers=1)
 result(gcmap)
 ```
 
@@ -490,7 +490,7 @@ cutoffs to 1 and -1, respectively.
 
 ```{r gess_fisher, eval=TRUE, message=FALSE}
 qsig_fisher <- qSig(query = query_mat, gess_method = "Fisher", refdb = db_path)
-fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
+fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1, workers=1)
 result(fisher)
 ```
 
@@ -509,7 +509,7 @@ previous example.
 ```{r gess_fisher_set, eval=FALSE, message=FALSE}
 qsig_fisher2 <- qSig(query = list(upset=upset, downset=downset), 
                      gess_method = "Fisher", refdb = db_path)
-fisher2 <- gess_fisher(qSig=qsig_fisher2, higher=1, lower=-1)
+fisher2 <- gess_fisher(qSig=qsig_fisher2, higher=1, lower=-1, workers=1)
 result(fisher2)
 ```
 
@@ -546,7 +546,7 @@ the `method` argument. For details, users want to consult the help file of the
 
 ```{r gess_sp, eval=TRUE}
 qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
-sp <- gess_cor(qSig=qsig_sp, method="spearman")
+sp <- gess_cor(qSig=qsig_sp, method="spearman", workers=1)
 result(sp)
 ```
 
@@ -567,7 +567,7 @@ genes with the 150 highest and lowest z-scores.
 # "vorinostat__SKB__trt_cp" signature.
 query_mat_sub <- as.matrix(query_mat[c(upset, downset),])
 qsig_spsub <- qSig(query = query_mat_sub, gess_method = "Cor", refdb = db_path)
-spsub <- gess_cor(qSig=qsig_spsub, method="spearman")
+spsub <- gess_cor(qSig=qsig_spsub, method="spearman", workers=1)
 result(spsub)
 ```
 
@@ -1329,13 +1329,13 @@ Gene set that do not have up down labels
 gene_set <- msig[["GO_GROWTH_HORMONE_RECEPTOR_BINDING"]]
 # CMAP method
 cmap_qsig <- qSig(query=list(upset=gene_set), gess_method="CMAP", refdb=db_path)
-cmap_res <- gess_cmap(cmap_qsig)
+cmap_res <- gess_cmap(cmap_qsig, workers=1)
 # LINCS method
 lincs_qsig <- qSig(query=list(upset=gene_set), gess_method="LINCS", refdb=db_path)
-lincs_res <- gess_lincs(lincs_qsig)
+lincs_res <- gess_lincs(lincs_qsig, workers=1)
 # Fisher methods
 fisher_qsig <- qSig(query=list(upset=gene_set), gess_method="Fisher", refdb=db_path)
-fisher_res <- gess_fisher(fisher_qsig, higher=1, lower=-1)
+fisher_res <- gess_fisher(fisher_qsig, higher=1, lower=-1, workers=1)
 ```
 
 Gene set that have both up and down gene labels
@@ -1345,15 +1345,15 @@ gene_set_down <- msig[["GSE17721_0.5H_VS_24H_POLYIC_BMDC_DN"]]
 # CMAP method
 cmap_qsig <- qSig(query=list(upset=gene_set_up, downset=gene_set_down), 
                   gess_method="CMAP", refdb=db_path)
-cmap_res <- gess_cmap(cmap_qsig)
+cmap_res <- gess_cmap(cmap_qsig, workers=1)
 # LINCS method
 lincs_qsig <- qSig(query=list(upset=gene_set_up, downset=gene_set_down), 
                    gess_method="LINCS", refdb=db_path)
-lincs_res <- gess_lincs(lincs_qsig)
+lincs_res <- gess_lincs(lincs_qsig, workers=1)
 # Fisher methods
 fisher_qsig <- qSig(query=list(upset=gene_set_up, downset=gene_set_down), 
                     gess_method="Fisher", refdb=db_path)
-fisher_res <- gess_fisher(fisher_qsig, higher=1, lower=-1)
+fisher_res <- gess_fisher(fisher_qsig, higher=1, lower=-1, workers=1)
 ```
 
 ### Gene Sets as Database
@@ -1371,20 +1371,20 @@ using the HDF5 file converted from the gmt file as `refdb`, the `higher` and
 `lower` parameters of the `gess_gcmap` and `gess_fisher` functions need to be
 set as `1` and `NULL`, respectively.
 ```{r gn_ref, eval=FALSE}
-gmt2h5(gmtfile="./msigdb.v7.1.entrez.gmt", dest_h5="./msigdb.h5", by_nset=5000, 
+gmt2h5(gmtfile="./msigdb.v7.1.entrez.gmt", dest_h5="./msigdb.h5", by_nset=1000, 
        overwrite=TRUE)
 
 # gCMAP method
 query_mat <- getSig(cmp="vorinostat", cell="SKB", refdb=db_path)
 gcmap_qsig2 <- qSig(query=query_mat, gess_method="gCMAP", refdb="./msigdb.h5")
-gcmap_res2 <- gess_gcmap(gcmap_qsig2, higher=1)
+gcmap_res2 <- gess_gcmap(gcmap_qsig2, higher=1, workers=1)
 
 # Fisher method
 msig <- read_gmt("msigdb.v7.1.entrez.gmt")
 gene_set <- msig[["GO_GROWTH_HORMONE_RECEPTOR_BINDING"]]
 fisher_qsig2 <- qSig(query=list(upset=gene_set), gess_method="Fisher", 
                     refdb="./msigdb.h5")
-fisher_res2 <- gess_fisher(fisher_qsig2, higher=1)
+fisher_res2 <- gess_fisher(fisher_qsig2, higher=1, workers=1)
 ```
 
 <p style="color:green">[ThG: I am not able to run any of the gess_ searches
@@ -1412,7 +1412,7 @@ read_gmt function? This way the user would not need to deal with complex
 expressions.]</p> 
 
 ```{r gn_ref_mouse, eval=FALSE}
-gmt2h5(gmtfile="./mGSKB_Entrez.gmt", dest_h5="./mGSKB.h5", by_nset=5000, 
+gmt2h5(gmtfile="./mGSKB_Entrez.gmt", dest_h5="./mGSKB.h5", by_nset=1000, 
        overwrite=TRUE)
 
 # gCMAP method
@@ -1424,13 +1424,13 @@ mquery <- matrix(ranks, ncol=1)
 rownames(mquery) <- mgenes; colnames(mquery) <- "MAKE_UP"
 gcmap_qsig3 <- qSig(query=mquery, gess_method="gCMAP", 
                     refdb="./mGSKB.h5")
-gcmap_res3 <- gess_gcmap(gcmap_qsig3, higher=1)
+gcmap_res3 <- gess_gcmap(gcmap_qsig3, higher=1, workers=1)
 
 # Fisher method
 gene_set <- gskb[["LIT_MM_HOFFMANN_PRE-BI_VS_LARGE-PRE-BII-CELL_DIFF_Entrez"]]
 fisher_qsig3 <- qSig(query=list(upset=gene_set), gess_method="Fisher", 
                     refdb="./mGSKB.h5")
-fisher_res3 <- gess_fisher(fisher_qsig3, higher=1)
+fisher_res3 <- gess_fisher(fisher_qsig3, higher=1, workers=1)
 ```
 
 <p style="color:green">[ThG: same problem here. The R session simply crashes.]</p>

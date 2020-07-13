@@ -53,7 +53,7 @@
 #' of the reference database, they could set ref_trts as a character vector 
 #' representing column names (treatments) of the subsetted refdb. 
 #' @param workers integer(1) number of workers for searching the reference
-#' database parallelly, default is 4
+#' database parallelly, default is 1.
 #' 
 #' @return \code{\link{gessResult}} object, the result table contains the 
 #' search results for each perturbagen in the reference database ranked by 
@@ -85,7 +85,7 @@
 #' @export
 #' 
 gess_gcmap <- function(qSig, higher=NULL, lower=NULL, chunk_size=5000, 
-                       ref_trts=NULL, workers=4){
+                       ref_trts=NULL, workers=1){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(gm(qSig) != "gCMAP"){
