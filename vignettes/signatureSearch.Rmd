@@ -1285,29 +1285,37 @@ wf_list <- runWF(drug, cell, refdb, gess_method="LINCS",
 
 # Additional Databases
 
-## MSigDB and GSKB
-The [Molecular signatures database
-(MSigDB)](https://www.gsea-msigdb.org/gsea/msigdb/index.jsp) contains
-well-annotated gene sets representing the universe of the biological processes
-in human [@Liberzon2011-ta; @Liberzon2015-is; @Culhane2012-aa]. 
-MSigDB Version 7.1 contains 25,724 gene sets 
-that are divided into 8 collections. 
+## Gene Set Databases
 
-GSKB (Gene Set Knowledgebase) is a gene set database for pathway analysis in 
-mouse [@Lai2016-gh]. It includes more than 40,000 pathways and gene sets 
-compiled from 40 sources, such as Gene Ontology, KEGG, GeneSetDB from mouse. 
+The GES databases introduced above store quantitative gene expression profiles.
+For the different GESS methods, these profiles are either used in their
+quantitative form or converted to non-quantitative gene sets. Additionally,
+_signatureSearch_ can be used to search GES databases containing gene sets, or
+to use their gene set entries as queries for searching quantitative GES
+databases. Two examples of gene set databases are the [Molecular signatures
+database (MSigDB)](https://www.gsea-msigdb.org/gsea/msigdb/index.jsp) and the
+[Gene Set Knowledgebase (GSKB)](http://ge-lab.org/#/data) [@Liberzon2011-ta; @Liberzon2015-is;
+@Culhane2012-aa; @Lai2016-gh]. MSigDB contains well-annotated gene sets
+representing the universe of the biological processes in human. Version 7.1
+of MSigDB contains 25,724 gene sets that are divided into 8 collections.  GSKB is
+a gene set database for pathway analysis in mouse [@Lai2016-gh]. It includes
+more than 40,000 pathways and gene sets compiled from 40 sources, such as Gene
+Ontology, KEGG, GeneSetDB from mouse. The following introduces how to work with
+these gene set databases in _signatureSearch_.
 
-_signatureSearch_ provides utilities to import gene sets in `gmt` format from 
-MSigDB, GSKB and related gene set-based resources. The imported gene sets can be used 
-either as set-based queries or reference databases, or both. The gene set queries 
-are compatible with the the `CMAP`, `LINCS` or `Fisher` GESS methods. In addition,
-the gene set reference databases can be used with the `Fisher` and `gCMAP` 
-methods. The following examples illustrates how to import and search `gmt` files 
-in _signatureSearch_ using sample data from MSigDB and GSKB. First, examples are 
-provided how to use the gene sets from both resources as queries (here Entrez IDs from human)
-to search the CMAP2 and LINCS databases. Next, several examples are provided where
-the MSigDB and GSKB collections serve as reference databases that are searched compatible
-GESS methods. 
+## Overview
+
+_signatureSearch_ provides utilities to import gene sets in _gmt_ format from
+MSigDB, GSKB and related gene set-based resources. The imported gene sets can
+be used either as set-based queries or reference databases, or both. As queries
+these gene sets can be used in combination with the _CMAP_, _LINCS_ or _Fisher_
+GESSs.  In addition, as set databases they can be used with the _Fisher_ and
+_gCMAP_ GESSs.  The following examples illustrate how to import and search
+_gmt_ files in _signatureSearch_ using sample data from MSigDB and GSKB. First,
+examples are provided how to use the gene sets from both resources as queries
+(here Entrez IDs from human) to search the CMAP2 and LINCS databases. Next,
+several examples are provided where the MSigDB and GSKB collections serve as
+reference databases for queries with compatible GESS methods. 
 
 ### Gene Sets as Queries 
 The gmt files were downloaded from the MSigDB at
@@ -1324,7 +1332,7 @@ db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 'warn = FALSE' of the read_gmt function. This way there is no irritating warning
 if gmt has only one entry.]</p>
 
-Gene set that do not have up down labels
+Gene set that do not have up or down labels
 ```{r gene_no_label, eval=FALSE}
 gene_set <- msig[["GO_GROWTH_HORMONE_RECEPTOR_BINDING"]]
 # CMAP method
@@ -1394,6 +1402,8 @@ very slow in this case. Not sure are you simply bypassing the HDF5 encoding of t
 ref database? If so why? For the review this could be a deal breaker if one makes
 the impression that the performance on these relatively small databases is so 
 poor.]</p>
+
+<p style="color:red">[ThG: the above gives errors starting at gmt2h5().]</p>
 
 
 #### GSKB 
