@@ -4,7 +4,7 @@
 \alias{gess_cmap}
 \title{CMAP Search Method}
 \usage{
-gess_cmap(qSig, chunk_size = 5000, ref_trts = NULL, workers = 4)
+gess_cmap(qSig, chunk_size = 5000, ref_trts = NULL, workers = 1)
 }
 \arguments{
 \item{qSig}{\code{\link{qSig}} object defining the query signature including
@@ -19,7 +19,7 @@ of the reference database, they could set ref_trts as a character vector
 representing column names (treatments) of the subsetted refdb.}
 
 \item{workers}{integer(1) number of workers for searching the reference
-database parallelly, default is 4}
+database parallelly, default is 1.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the 
