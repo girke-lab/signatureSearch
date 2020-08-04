@@ -254,3 +254,21 @@ NULL
 #' head(lincs_sig_info)
 #' @keywords datasets
 "lincs_sig_info"
+
+#' Instance Information of LINCS Expression Database
+#' 
+#' It is a tibble of 3 columns containing compound treatment information of 
+#' GEP instances in the LINCS expression database. 
+#' The columns contain the compound name, cell type and perturbation type 
+#' (all of them are compound treatment, trt_cp).
+#'
+#' @name lincs_expr_inst_info
+#' @aliases lincs_expr_inst_info
+#' @docType data
+#' @format A \code{tibble} object with 38,824 rows and 3 columns.
+#' @examples 
+#' # Load object
+#' data(lincs_expr_inst_info)
+#' head(lincs_expr_inst_info)
+#' @keywords datasets
+"lincs_expr_inst_info"
