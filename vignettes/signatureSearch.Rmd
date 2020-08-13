@@ -35,7 +35,7 @@ pre code, pre, code {
 
 ```{r global_options, include=FALSE}                                                                                                                                    
 ## ThG: chunk added to enable global knitr options. The below turns on                                                                                                  
-## caching qor faster vignette re-build during text editing.                                                                                                            
+## caching for faster vignette re-build during text editing.                                                                                                            
 knitr::opts_chunk$set(cache=TRUE)                                                                                                                                       
 ```            
 
@@ -1300,10 +1300,10 @@ representing the universe of the biological processes in human. Version 7.1
 of MSigDB contains 25,724 gene sets that are divided into 8 collections.  GSKB is
 a gene set database for pathway analysis in mouse [@Lai2016-gh]. It includes
 more than 40,000 pathways and gene sets compiled from 40 sources, such as Gene
-Ontology, KEGG, GeneSetDB from mouse. The following introduces how to work with
+Ontology, KEGG, GeneSetDB, and others. The following introduces how to work with
 these gene set databases in _signatureSearch_.
 
-## Overview
+### Overview
 
 _signatureSearch_ provides utilities to import gene sets in _gmt_ format from
 MSigDB, GSKB and related gene set-based resources. The imported gene sets can
@@ -1318,17 +1318,18 @@ several examples are provided where the MSigDB and GSKB collections serve as
 reference databases for queries with compatible GESS methods. 
 
 ### Gene Sets as Queries 
-The gmt files were downloaded from the MSigDB at
-[here](https://www.gsea-msigdb.org/gsea/downloads.jsp#msigdb)
-and imported into R session with `read_gmt` function. The selected gene set 
-could be used as up-regulated gene set input for `CMAP`, `LINCS` or `Fisher` 
-methods if the gene set were unlabeled. Since 
+The _gmt_ files can be downloaded from MSigDB ([here](https://www.gsea-msigdb.org/gsea/downloads.jsp#msigdb)),
+and then imported into a user's R session with the `read_gmt` function. 
+
 ```{r gmt_query, eval=FALSE}
-msig <- read_gmt("msigdb.v7.1.entrez.gmt") # path to the downloaded msigdb gmt file
+msig <- read_gmt("msigdb.v7.1.entrez.gmt") # Path to the downloaded msigdb gmt file
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 ```
 
-Gene set that do not have up or down labels
+Subsequently, an imported gene set can be used as query for searching a reference database
+with the `CMAP`, `LINCS` or `Fisher` methods. The following example is for unlabeled 
+query gene sets that lack information about up- or down-regulation.
+
 ```{r gene_no_label, eval=FALSE}
 gene_set <- msig[["GO_GROWTH_HORMONE_RECEPTOR_BINDING"]]
 # CMAP method
@@ -1342,7 +1343,8 @@ fisher_qsig <- qSig(query=list(upset=gene_set), gess_method="Fisher", refdb=db_p
 fisher_res <- gess_fisher(fisher_qsig, higher=1, lower=-1, workers=1)
 ```
 
-Gene set that have both up and down gene labels
+Alternatively, query gene sets with up and down labels can be used as shown below.
+
 ```{r gene_label, eval=FALSE}
 gene_set_up <- msig[["GSE17721_0.5H_VS_24H_POLYIC_BMDC_UP"]]
 gene_set_down <- msig[["GSE17721_0.5H_VS_24H_POLYIC_BMDC_DN"]]
@@ -1362,18 +1364,15 @@ fisher_res <- gess_fisher(fisher_qsig, higher=1, lower=-1, workers=1)
 
 ### Gene Sets as Database
 #### MSigDB
-The gene sets stored in the gmt file could also be used as the reference database
-for `gCMAP` and `Fisher` methods. In this case, all gene sets are labeled as
-up-regulated. The `gmt2h5` function first convert the gene sets stored in the
-gmt file to a 01 matrix where rows are all combined genes from all gene sets
-and columns are names of the gene sets, 1's and 0's indicating whether genes 
-are in the specific gene set. The 01 matrix was then written to the HDF5 
-file. To avoid overflowing the memory, this function supports reading and writing
-the gene sets in batches by defining the `by_nset` parameter. The generated HDF5
-file was used as the GS-DB for `gCMAP` and `Fisher` methods. Please note, when
-using the HDF5 file converted from the gmt file as `refdb`, the `higher` and
-`lower` parameters of the `gess_gcmap` and `gess_fisher` functions need to be
-set as `1` and `NULL`, respectively.
+The gene sets stored in the _gmt_ file can also be used as reference database.
+The following examples uses the MSigDB combined with the `gCMAP` and `Fisher`
+GESS methods. For simplicity and compatibility with both GESS methods, unlabeled
+gene sets are provided to the `gmt2h5` function for generating the reference database.
+To cap the memory requirements, this function supports reading and writing the
+gene sets in batches by defining the `by_nset` parameter. Since the example uses the
+full database, the generation of the HDF5 file takes some time, but this needs to be
+done only once.
+
 ```{r gn_ref, eval=FALSE}
 gmt2h5(gmtfile="./msigdb.v7.1.entrez.gmt", dest_h5="./msigdb.h5", by_nset=1000, 
        overwrite=TRUE)
@@ -1381,31 +1380,29 @@ gmt2h5(gmtfile="./msigdb.v7.1.entrez.gmt", dest_h5="./msigdb.h5", by_nset=1000,
 # gCMAP method
 query_mat <- getSig(cmp="vorinostat", cell="SKB", refdb=db_path)
 gcmap_qsig2 <- qSig(query=query_mat, gess_method="gCMAP", refdb="./msigdb.h5")
-gcmap_res2 <- gess_gcmap(gcmap_qsig2, higher=1, workers=1)
+gcmap_res2 <- gess_gcmap(gcmap_qsig2, higher=1, workers=1, chunk_size=2000)
 
 # Fisher method
 msig <- read_gmt("msigdb.v7.1.entrez.gmt")
 gene_set <- msig[["GO_GROWTH_HORMONE_RECEPTOR_BINDING"]]
 fisher_qsig2 <- qSig(query=list(upset=gene_set), gess_method="Fisher", 
                     refdb="./msigdb.h5")
-fisher_res2 <- gess_fisher(fisher_qsig2, higher=1, workers=1)
+fisher_res2 <- gess_fisher(fisher_qsig2, higher=1, workers=1, chunk_size=2000)
 ```
 
 #### GSKB 
-The gmt file of the GSKB database for mouse is downloaded from
-[here](http://ge-lab.org/#/data). The following code makes up a query signature
-with Mouse Entrez ids for the `gCMAP` method and uses the mouse gene sets as
-reference database. The gene sets could also be used as both query and reference 
-database for `Fisher` methods. Please note, the mouse gene set could also be 
-used as query set for `CMAP` and `LINCS` methods if the reference database 
-contains mouse genome-wide gene expression profiles from various treatments.
+To use the GSKB database from mouse, the corresponding _gmt_ file needs to be downloaded 
+from [here](http://ge-lab.org/#/data). The following `gCMAP` GESS uses Entrez IDs from 
+mouse for both the query and the reference database. Since the example uses the
+full database, the generation of the HDF5 file takes some time, but this needs to be
+done only once.
 
 ```{r gn_ref_mouse, eval=FALSE}
 gmt2h5(gmtfile="./mGSKB_Entrez.gmt", dest_h5="./mGSKB.h5", by_nset=1000, 
        overwrite=TRUE)
 
 # gCMAP method
-## make up the query matrix
+## Construct a toy query (here matrix)
 gskb <- read_gmt("mGSKB_Entrez.gmt")
 mgenes <- unique(unlist(gskb))
 ranks <- rev(seq_along(mgenes))
@@ -1413,13 +1410,13 @@ mquery <- matrix(ranks, ncol=1)
 rownames(mquery) <- mgenes; colnames(mquery) <- "MAKE_UP"
 gcmap_qsig3 <- qSig(query=mquery, gess_method="gCMAP", 
                     refdb="./mGSKB.h5")
-gcmap_res3 <- gess_gcmap(gcmap_qsig3, higher=1, workers=1)
+gcmap_res3 <- gess_gcmap(gcmap_qsig3, higher=1, workers=1, chunk_size=2000)
 
 # Fisher method
 gene_set <- gskb[["LIT_MM_HOFFMANN_PRE-BI_VS_LARGE-PRE-BII-CELL_DIFF_Entrez"]]
 fisher_qsig3 <- qSig(query=list(upset=gene_set), gess_method="Fisher", 
                     refdb="./mGSKB.h5")
-fisher_res3 <- gess_fisher(fisher_qsig3, higher=1, workers=1)
+fisher_res3 <- gess_fisher(fisher_qsig3, higher=1, workers=1, chunk_size=2000)
 ```
 
 # Supplemental Material
