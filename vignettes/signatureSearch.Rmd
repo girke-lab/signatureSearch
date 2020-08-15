@@ -1371,7 +1371,9 @@ gene sets are provided to the `gmt2h5` function for generating the reference dat
 To cap the memory requirements, this function supports reading and writing the
 gene sets in batches by defining the `by_nset` parameter. Since the example uses the
 full database, the generation of the HDF5 file takes some time, but this needs to be
-done only once.
+done only once. Please note that for the _gCMAP_ method, this is a specialty case
+for the sake of having a simple gene set database that can be used for both methods. 
+The _gCMAP_ method also supports labeled gene sets represented as 0, 1, -1 matrix.
 
 ```{r gn_ref, eval=FALSE}
 gmt2h5(gmtfile="./msigdb.v7.1.entrez.gmt", dest_h5="./msigdb.h5", by_nset=1000, 
@@ -1395,7 +1397,9 @@ To use the GSKB database from mouse, the corresponding _gmt_ file needs to be do
 from [here](http://ge-lab.org/#/data). The following `gCMAP` GESS uses Entrez IDs from 
 mouse for both the query and the reference database. Since the example uses the
 full database, the generation of the HDF5 file takes some time, but this needs to be
-done only once.
+done only once. Please note that for the _gCMAP_ method, this is a specialty case
+for the sake of having a simple gene set database that can be used for both methods. 
+The _gCMAP_ method also supports labeled gene sets represented as 0, 1, -1 matrix.
 
 ```{r gn_ref_mouse, eval=FALSE}
 gmt2h5(gmtfile="./mGSKB_Entrez.gmt", dest_h5="./mGSKB.h5", by_nset=1000, 
