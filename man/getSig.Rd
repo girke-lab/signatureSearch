@@ -8,7 +8,16 @@
 \usage{
 getSig(cmp, cell, refdb)
 
-getDEGSig(cmp, cell, Nup = 150, Ndown = 150, refdb = "lincs")
+getDEGSig(
+  cmp,
+  cell,
+  Nup = NULL,
+  Ndown = NULL,
+  higher = NULL,
+  lower = NULL,
+  padj = NULL,
+  refdb = "lincs"
+)
 
 getSPsubSig(cmp, cell, Nup = 150, Ndown = 150)
 }
@@ -26,6 +35,19 @@ or path to the HDF5 file built from \code{\link{build_custom_db}} function}
 \item{Nup}{integer(1). Number of most up-regulated genes to be subsetted}
 
 \item{Ndown}{integer(1). Number of most down-regulated genes to be subsetted}
+
+\item{higher}{numeric(1), the upper threshold of defining DEGs. 
+At least one of 'lower' and 'higher' must be specified.
+If \code{Nup} or \code{Ndown} arguments are defined, it will be ignored.}
+
+\item{lower}{numeric(1), the lower threshold of defining DEGs. 
+At least one of 'lower' and 'higher' must be specified.
+If \code{Nup} or \code{Ndown} arguments are defined, it will be ignored.}
+
+\item{padj}{numeric(1), cutoff of adjusted p-value or false discovery rate (FDR)
+of defining DEGs if the reference HDF5 database contains the p-value matrix 
+stored in the dataset named as 'padj'.
+If \code{Nup} or \code{Ndown} arguments are defined, it will be ignored.}
 }
 \value{
 matrix representing genome-wide GES of the query compound(s) in cell
@@ -48,7 +70,8 @@ depending on the data type of \code{refdb} or n top up/down regulated DEGs
 \examples{
 refdb <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 vor_sig <- getSig("vorinostat", "SKB", refdb=refdb)
-vor_degsig <- getDEGSig("vorinostat", "SKB", refdb=refdb)
+vor_degsig <- getDEGSig(cmp="vorinostat", cell="SKB", Nup=150, Ndown=150,
+                        refdb=refdb)
 all_expr <- as.matrix(runif(1000, 0, 10), ncol=1)
 rownames(all_expr) <- paste0('g', sprintf("\%04d", 1:1000))
 colnames(all_expr) <- "drug__cell__trt_cp"

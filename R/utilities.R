@@ -30,6 +30,10 @@ sep_pcf <- function(res){
 #' @param matrix matrix to be written to HDF5 file, row and column name slots 
 #' need to be populated
 #' @param h5file character(1), path to the hdf5 destination file
+#' @param name The name of the dataset in the HDF5 file. The default is write
+#' the score matrix (e.g. z-score, logFC) to the 'assay' dataset, users could 
+#' also write the adjusted p-value or FDR matrix to the 'padj' dataset by 
+#' setting the \code{name} as 'padj'.
 #' @param overwrite TRUE or FALSE, whether to overwrite or append
 #' matrix to an existing 'h5file'
 #' @return HDF5 file containing exported matrix
@@ -39,15 +43,9 @@ sep_pcf <- function(res){
 #' h5file <- tempfile(fileext=".h5")
 #' matrix2h5(matrix=mat, h5file=h5file, overwrite=TRUE)
 #' @export
-matrix2h5 <- function(matrix, h5file, overwrite=TRUE){
-    if(file.exists(h5file)){
-        if(overwrite){
-            create_empty_h5(h5file, delete_existing=TRUE)
-        }
-    } else {
-        create_empty_h5(h5file, delete_existing=FALSE)
-    }
-    append2H5(matrix, h5file)
+matrix2h5 <- function(matrix, h5file, name="assay", overwrite=TRUE){
+    create_empty_h5(h5file, delete_existing=overwrite)
+    append2H5(matrix, h5file, name=name)
 }
 
 #' Create Empty HDF5 File 
@@ -70,13 +68,18 @@ matrix2h5 <- function(matrix, h5file, overwrite=TRUE){
 #' @export
 create_empty_h5 <- function(h5file, delete_existing=FALSE, level=6) {
     if(delete_existing) unlink(h5file)
-    h5createFile(file=h5file)
-    h5createDataset(h5file, "assay", c(0,0), c(H5Sunlimited(), H5Sunlimited()), 
-                    chunk=c(12328,1), level=level)
-    h5createDataset(h5file, "colnames", c(0,1), c(H5Sunlimited(), 1), 
-                    storage.mode='character', size=1000, level=level)
-    h5createDataset(h5file, "rownames", c(0,1), c(H5Sunlimited(), 1), 
-                    storage.mode='character', size=100, level=level)
+    if(! file.exists(h5file)){
+        h5createFile(file=h5file)
+        h5createDataset(h5file, "assay", c(0,0), c(H5Sunlimited(), H5Sunlimited()), 
+                        chunk=c(12328,1), level=level)
+        h5createDataset(h5file, "padj", c(0,0), c(H5Sunlimited(), H5Sunlimited()), 
+                        chunk=c(12328,1), level=level)
+        h5createDataset(h5file, "colnames", c(0,1), c(H5Sunlimited(), 1), 
+                        storage.mode='character', size=200, level=level)
+        h5createDataset(h5file, "rownames", c(0,1), c(H5Sunlimited(), 1), 
+                        storage.mode='character', size=40, level=level)
+    }
+    h5closeAll()
 }
 
 #' Append Matrix to HDF5 File
@@ -90,6 +93,7 @@ create_empty_h5 <- function(h5file, delete_existing=FALSE, level=6) {
 #' existing one.
 #' @param h5file character(1), path to existing HDF5 file that can be empty or
 #' contain matrix data
+#' @param name The name of the dataset in the HDF5 file.
 #' @param printstatus logical, whether to print status
 #' @return HDF5 file storing exported matrix
 #' @examples 
@@ -100,24 +104,29 @@ create_empty_h5 <- function(h5file, delete_existing=FALSE, level=6) {
 #' append2H5(mat, tmp_file)
 #' rhdf5::h5ls(tmp_file)
 #' @export
-append2H5 <- function(x, h5file, printstatus=TRUE) {
+append2H5 <- function(x, h5file, name="assay", printstatus=TRUE) {
     status <- h5ls(h5file)[c("name", "dim")]
     rowstatus <- as.numeric(gsub(" x \\d{1,}$", "", 
-                                 status[status$name=="assay", "dim"]))
+                                 status[status$name==name, "dim"]))
     colstatus <- as.numeric(gsub("^\\d{1,} x ", "", 
-                                 status[status$name=="assay", "dim"]))
+                                 status[status$name==name, "dim"]))
     nrows <- nrow(x) 
     ncols <- colstatus + ncol(x)
-    h5set_extent(h5file, "assay", c(nrows, ncols))
-    h5write(x, h5file, "assay", index=list(seq_len(nrows), (colstatus+1):ncols))
-    h5set_extent(h5file, "colnames", c(ncols,1))
-    h5write(colnames(x), h5file, "colnames", index=list((colstatus+1):ncols, 1))
-    if(any(duplicated(h5read(h5file, "colnames")[,1]))) 
-        warning("Column names contain duplicates!")
-    h5set_extent(h5file, "rownames", c(nrows,1))
-    h5write(rownames(x), h5file, "rownames", index=list(seq_len(nrows), 1))
-    if(any(duplicated(h5read(h5file, "rownames")[,1]))) 
-        warning("Row names contain duplicates!")
+    h5set_extent(h5file, name, c(nrows, ncols))
+    h5write(x, h5file, name, index=list(seq_len(nrows), (colstatus+1):ncols))
+    # only stores rownames and colnames of 'assay' dataset
+    if(name=="assay"){
+        h5set_extent(h5file, "colnames", c(ncols,1))
+        h5write(colnames(x), h5file, "colnames", index=list((colstatus+1):ncols, 1))
+        if(any(duplicated(h5read(h5file, "colnames")[,1]))) 
+            warning("Column names contain duplicates!")
+        
+        h5set_extent(h5file, "rownames", c(nrows,1))
+        h5write(rownames(x), h5file, "rownames", index=list(seq_len(nrows), 1))
+        if(any(duplicated(h5read(h5file, "rownames")[,1]))) 
+            warning("Row names contain duplicates!")
+    }
+    
     if(printstatus) h5ls(h5file, all=TRUE)[c("dim", "maxdim")]
     h5closeAll()
 }
@@ -154,13 +163,7 @@ gctx2h5 <- function(gctx, cid, new_cid=cid, h5file, by_ncol=5000,
     new_cid_list <- suppressWarnings(
         split(new_cid, rep(seq_len(ceiling(length(new_cid)/by_ncol)), 
                            each=by_ncol)))
-    if(file.exists(h5file)){
-        if(overwrite){
-            create_empty_h5(h5file, delete_existing=TRUE)
-        }
-    } else {
-        create_empty_h5(h5file, delete_existing=FALSE)
-    }
+    create_empty_h5(h5file, delete_existing=overwrite)
     lapply(seq_along(cid_list), function(i){
         mat <- parse_gctx(gctx, cid=cid_list[[i]], matrix_only=TRUE)
         mat <- mat@mat
@@ -341,19 +344,76 @@ getSig <- function(cmp, cell, refdb){
 
 #' @rdname getSig
 #' @param Nup integer(1). Number of most up-regulated genes to be subsetted
-#' @param Ndown integer(1). Number of most down-regulated genes to be subsetted 
+#' @param Ndown integer(1). Number of most down-regulated genes to be subsetted
+#' @param higher numeric(1), the upper threshold of defining DEGs. 
+#' At least one of 'lower' and 'higher' must be specified.
+#' If \code{Nup} or \code{Ndown} arguments are defined, it will be ignored. 
+#' @param lower numeric(1), the lower threshold of defining DEGs. 
+#' At least one of 'lower' and 'higher' must be specified.
+#' If \code{Nup} or \code{Ndown} arguments are defined, it will be ignored. 
+#' @param padj numeric(1), cutoff of adjusted p-value or false discovery rate (FDR)
+#' of defining DEGs if the reference HDF5 database contains the p-value matrix 
+#' stored in the dataset named as 'padj'.
+#' If \code{Nup} or \code{Ndown} arguments are defined, it will be ignored. 
 #' @return a list of up- and down-regulated gene label sets 
 #' @examples 
-#' vor_degsig <- getDEGSig("vorinostat", "SKB", refdb=refdb)
+#' vor_degsig <- getDEGSig(cmp="vorinostat", cell="SKB", Nup=150, Ndown=150,
+#'                         refdb=refdb)
 #' @export
-getDEGSig <- function(cmp, cell, Nup=150, Ndown=150, refdb="lincs"){
+getDEGSig <- function(cmp, cell, Nup=NULL, Ndown=NULL, 
+                      higher=NULL, lower=NULL, padj=NULL, refdb="lincs"){
     deprof <- suppressMessages(getSig(cmp, cell, refdb))
     deprof_sort <- apply(deprof, 2, sort, decreasing=TRUE)
-    upset <- head(rownames(deprof_sort), Nup)
-    downset <- tail(rownames(deprof_sort), Ndown)
-    return(list(upset=upset, downset=downset))
+    if(!is.null(Nup) & is.null(Ndown)){
+        Ndown = 0
+    }
+    if(is.null(Nup) & !is.null(Ndown)){
+        Nup = 0
+    }
+    if(! is.null(Nup) & ! is.null(Ndown)){
+        upset <- head(rownames(deprof_sort), Nup)
+        downset <- tail(rownames(deprof_sort), Ndown)
+        return(list(upset=upset, downset=downset))
+    } 
+    if(!is.null(higher) & is.null(lower)){
+        up <- rownames(deprof_sort[deprof_sort >= higher,,drop=FALSE])
+        if(!is.null(padj)){
+            pdegs <- getPCut(cmp, cell, refdb, padj)
+            up <- up[up %in% pdegs]
+        }
+        return(list(upset=up, downset=character()))
+    }
+    if(is.null(higher) & !is.null(lower)){
+        down <- rownames(deprof_sort[deprof_sort <= lower,,drop=FALSE])
+        if(!is.null(padj)){
+            pdegs <- getPCut(cmp, cell, refdb, padj)
+            down <- down[down %in% pdegs]
+        }
+        return(list(upset=character(), downset=down))
+    }
+    if(!is.null(higher) & !is.null(lower)){
+        up <- rownames(deprof_sort[deprof_sort >= higher,,drop=FALSE])
+        down <- rownames(deprof_sort[deprof_sort <= lower,,drop=FALSE])
+        if(!is.null(padj)){
+            pdegs <- getPCut(cmp, cell, refdb, padj)
+            up <- up[up %in% pdegs]
+            down <- down[down %in% pdegs]
+        }
+        return(list(upset=up, downset=down))
+    }
+    stop("You need to either set 'Nup', 'Ndown' as integers or 
+    set 'higher', 'lower', 'padj' as numeric values")
 }
 
+getPCut <- function(cmp, cell, refdb, padj){
+    db_path <- determine_refdb(refdb)
+    pmat <- HDF5Array(db_path, name="padj")
+    rownames(pmat) <- as.character(HDF5Array(db_path, name="rownames"))
+    colnames(pmat) <- as.character(HDF5Array(db_path, name="colnames"))
+    pval <- as.matrix(pmat[, paste(cmp, cell, "trt_cp", sep="__"), drop=FALSE])
+    degs <- rownames(pval[pval <= padj,,drop=FALSE])
+    return(degs)
+}
 #' @rdname getSig
 #' @return a numeric matrix with one column representing gene expression values
 #' drawn from \code{lincs_expr} db of the most up- and down-regulated genes. 

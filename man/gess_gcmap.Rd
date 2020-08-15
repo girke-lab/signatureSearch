@@ -8,6 +8,7 @@ gess_gcmap(
   qSig,
   higher = NULL,
   lower = NULL,
+  padj = NULL,
   chunk_size = 5000,
   ref_trts = NULL,
   workers = 1
@@ -31,6 +32,11 @@ At least one of 'lower' and 'higher' must be specified.
 
 \code{lower} argument need to be set as \code{NULL} if the \code{refdb} in \code{qSig} 
 is path to the HDF5 file that were converted from the gmt file.}
+
+\item{padj}{numeric(1), cutoff of adjusted p-value or false discovery rate (FDR)
+of defining DEGs that is less than or equal to 'padj'. The 'padj' argument is
+valid only if the reference HDF5 file contains the p-value matrix stored in 
+the dataset named as 'padj'.}
 
 \item{chunk_size}{number of database entries to process per iteration to 
 limit memory usage of search.}

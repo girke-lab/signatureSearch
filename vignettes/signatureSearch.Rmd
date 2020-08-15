@@ -1322,7 +1322,7 @@ The _gmt_ files can be downloaded from MSigDB ([here](https://www.gsea-msigdb.or
 and then imported into a user's R session with the `read_gmt` function. 
 
 ```{r gmt_query, eval=FALSE}
-msig <- read_gmt("msigdb.v7.1.entrez.gmt") # Path to the downloaded msigdb gmt file
+msig <- read_gmt("msigdb.v7.1.entrez.gmt") # 25,724
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 ```
 
@@ -1403,7 +1403,7 @@ gmt2h5(gmtfile="./mGSKB_Entrez.gmt", dest_h5="./mGSKB.h5", by_nset=1000,
 
 # gCMAP method
 ## Construct a toy query (here matrix)
-gskb <- read_gmt("mGSKB_Entrez.gmt")
+gskb <- read_gmt("mGSKB_Entrez.gmt") # 41,546
 mgenes <- unique(unlist(gskb))
 ranks <- rev(seq_along(mgenes))
 mquery <- matrix(ranks, ncol=1)

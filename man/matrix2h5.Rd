@@ -4,13 +4,18 @@
 \alias{matrix2h5}
 \title{Write Matrix to HDF5 file}
 \usage{
-matrix2h5(matrix, h5file, overwrite = TRUE)
+matrix2h5(matrix, h5file, name = "assay", overwrite = TRUE)
 }
 \arguments{
 \item{matrix}{matrix to be written to HDF5 file, row and column name slots 
 need to be populated}
 
 \item{h5file}{character(1), path to the hdf5 destination file}
+
+\item{name}{The name of the dataset in the HDF5 file. The default is write
+the score matrix (e.g. z-score, logFC) to the 'assay' dataset, users could 
+also write the adjusted p-value or FDR matrix to the 'padj' dataset by 
+setting the \code{name} as 'padj'.}
 
 \item{overwrite}{TRUE or FALSE, whether to overwrite or append
 matrix to an existing 'h5file'}

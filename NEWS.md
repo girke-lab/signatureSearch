@@ -1,3 +1,7 @@
+### Changes in version 1.2.4 (2020-08-14)
++ Supported defining gene set database from score matrix by setting higher, lower,
+as well as padj cutoffs for gCMAP and Fisher GESS methods
+
 ### Changes in version 1.2.2 (2020-07-11)
 + Supported converting gmt file to HDF5 file (01 matrix) as gene set reference 
 database for gCMAP and Fisher GESS methods

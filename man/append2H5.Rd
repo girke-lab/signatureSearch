@@ -4,7 +4,7 @@
 \alias{append2H5}
 \title{Append Matrix to HDF5 File}
 \usage{
-append2H5(x, h5file, printstatus = TRUE)
+append2H5(x, h5file, name = "assay", printstatus = TRUE)
 }
 \arguments{
 \item{x}{matrix object to write to an HDF5 file. If the HDF5 file is not 
@@ -14,6 +14,8 @@ existing one.}
 
 \item{h5file}{character(1), path to existing HDF5 file that can be empty or
 contain matrix data}
+
+\item{name}{The name of the dataset in the HDF5 file.}
 
 \item{printstatus}{logical, whether to print status}
 }

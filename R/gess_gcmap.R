@@ -47,6 +47,10 @@
 #' \code{lower} argument need to be set as \code{NULL} if the \code{refdb} in \code{qSig} 
 #' is path to the HDF5 file that were converted from the gmt file.
 #' 
+#' @param padj numeric(1), cutoff of adjusted p-value or false discovery rate (FDR)
+#' of defining DEGs that is less than or equal to 'padj'. The 'padj' argument is
+#' valid only if the reference HDF5 file contains the p-value matrix stored in 
+#' the dataset named as 'padj'. 
 #' @param chunk_size number of database entries to process per iteration to 
 #' limit memory usage of search.
 #' @param ref_trts character vector. If users want to search against a subset 
@@ -84,8 +88,8 @@
 #' # result(gcmap)
 #' @export
 #' 
-gess_gcmap <- function(qSig, higher=NULL, lower=NULL, chunk_size=5000, 
-                       ref_trts=NULL, workers=1){
+gess_gcmap <- function(qSig, higher=NULL, lower=NULL, padj=NULL, 
+                       chunk_size=5000, ref_trts=NULL, workers=1){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(gm(qSig) != "gCMAP"){
@@ -110,11 +114,27 @@ gess_gcmap <- function(qSig, higher=NULL, lower=NULL, chunk_size=5000,
   
   full_dim <- dim(full_mat)
   full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+  
+  if(! is.null(padj)){
+      if(! 'padj' %in% h5ls(db_path)$name){
+          stop("The 'refdb' need to be an hdf5 file that contains 'padj' dataset!")
+      }
+      full_pmat <- HDF5Array(db_path, name="padj")
+      rownames(full_pmat) <- as.character(HDF5Array(db_path, name="rownames"))
+      colnames(full_pmat) <- as.character(HDF5Array(db_path, name="colnames"))
+  }
+  
   ### The blocks in 'full_grid' are made of full columns 
   nblock <- length(full_grid) 
   resultDF <- bplapply(seq_len(nblock), function(b){
     ref_block <- read_block(full_mat, full_grid[[b]])
-    cmap <- induceSMat(ref_block, higher=higher, lower=lower)
+    if(! is.null(padj)){
+        pmat <- read_block(full_pmat, full_grid[[b]])
+    } else {
+        pmat = NULL
+    }
+    cmap <- induceSMat(ref_block, higher=higher, lower=lower, 
+                       padj=padj, pmat=pmat)
     c <- connectivity_score_raw(experiment=as.matrix(query), query=cmap)
     return(data.frame(c))}, BPPARAM = MulticoreParam(workers=workers))
   resultDF <- do.call(rbind, resultDF)
@@ -177,10 +197,11 @@ gess_gcmap <- function(qSig, higher=NULL, lower=NULL, chunk_size=5000,
 
 #' @importFrom Matrix sparseMatrix
 #' @importFrom Matrix t
-induceSMat <- function(mat, lower=NULL, higher=NULL){
+induceSMat <- function(mat, lower=NULL, higher=NULL, padj=NULL, pmat){
   if( ! is.null(lower) && ! is.null(higher) && higher == lower) {
     stop("Please specify two different cutoffs")
   }
+        
   gss <- lapply( seq_len(ncol(mat)),
                  function( n ) {
                    if (! is.null( lower )) {
@@ -192,7 +213,12 @@ induceSMat <- function(mat, lower=NULL, higher=NULL){
                      up <- as.vector(which( mat[,n] >= higher ))
                    } else {
                      up <- NULL
-                   }                            
+                   }  
+                   if(! is.null(padj)){
+                       p_index <- as.vector(which(pmat[,n]<=padj))
+                       down <- intersect(down, p_index)
+                       up <- intersect(up, p_index)
+                   }
                    list( j = c(down, up),
                          x = c(rep(-1, length(down)), rep(1, length(up)))
                    )})
