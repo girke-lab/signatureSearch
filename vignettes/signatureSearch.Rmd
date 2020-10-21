@@ -33,10 +33,10 @@ pre code, pre, code {
 }
 </style>
 
-```{r global_options, include=FALSE}                                                                                                                                    
-## ThG: chunk added to enable global knitr options. The below turns on                                                                                                  
-## caching for faster vignette re-build during text editing.                                                                                                            
-knitr::opts_chunk$set(cache=TRUE)                                                                                                                                       
+```{r global_options, include=FALSE}                                            
+## ThG: chunk added to enable global knitr options. The below turns on 
+## caching for faster vignette re-build during text editing.                                      
+knitr::opts_chunk$set(cache=FALSE)                                                  
 ```            
 
 ```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
@@ -50,7 +50,8 @@ suppressPackageStartupMessages({
 
 ## Background
 
-The _signatureSearch_ package implements algorithms and data structures for
+The _signatureSearch_ package is published in @Duan2020-bj. It implements 
+algorithms and data structures for
 performing gene expression signature (GES) searches, and subsequently
 interpreting the results functionally with specialized enrichment methods.
 These utilities are useful for studying the effects of genetic, chemical and
@@ -75,7 +76,7 @@ the final results, _e.g._ in form of drug-target networks. Figure 1 illustrates
 the major steps of a typical signature search workflow. For each GESS and FEA
 step, several alternative methods have been implemented in _signatureSearch_ to
 allow users to choose the best possible workflow configuration for their
-research application.  The individual search and enrichment methods are
+research application. The individual search and enrichment methods are
 introduced in the corresponding sections of this vignette.
 
 <center>
@@ -149,7 +150,7 @@ visualization.</font>
 
 @Lamb2006-du generated one of the first GES databases called CMAP. Initially,
 it included GESs for 164 drugs screened against four mammalian cell lines
-[@Lamb2006-du].  A few years later CMAP was extended to CMAP2 containing GESs
+[@Lamb2006-du]. A few years later CMAP was extended to CMAP2 containing GESs
 for 1,309 drugs and eight cell lines. More recently, a much larger GES database
 was released by the Library of Network-Based Cellular Signatures (LINCS)
 Consortium [@Subramanian2017-fu]. In its initial release, the LINCS database
@@ -172,15 +173,34 @@ molecules.
 
 ## Terminology
 
-In the following text the term Gene Expression Signatures (GESs) can refer to
-at least four different situations of pre-processed gene expression data: (1)
-normalized gene expression intensity values (or counts for RNA-Seq); (2)
-$log_2$ fold changes (LFC), z-scores or p-values obtained from analysis
-routines of differentially expressed genes (DEGs); (3) rank transformed
-versions of the expression values obtained under (1) and (2); and (4) gene
-identifier sets extracted from the top and lowest ranks under (3), such as 
-`n` top up/down regulated DEGs. When unclear the text in this vignette specifies
-which of the four pre-processing states are used and/or the term GES refers to.
+In the following text the term Gene Expression Signatures (GESs) can be composed
+of gene sets (GSs), such as the identifier sets of differentially expressed 
+genes (DEGs), or various types of quantitative gene expression profiles (GEPs) 
+for a subset or all genes measured by a gene expression profiling technology. 
+Some publications refer with the term GES mainly to GSs, or use as extended 
+terminology "qualitative and quantitative GESs" [@Chang2011-vu]. 
+For clarity and consistency, this vignette defines GES as a generic term that 
+comprises both GSs and GEPs [@Lamb2006-du]. This generalization is important, 
+because several GESS algorithms are introduced here that depend on reference 
+databases containing GSs in some and GEPs in the majority of cases generated 
+with various statistical methods. To also distinguish the queries (Q) from the 
+entries in the reference databases (DB), they will be referred to as GES-Q and 
+GES-DB entries in general descriptions, and as GS-Q or GEP-Q, and as GS-DB or 
+GEP-DB in specific cases, respectively.
+
+Depending on the extent the expression data have been pre-processed, the following 
+distinguishes four major levels, where the first three and fourth belong into the 
+GEP and GS categories, respectively. These four levels are: (1) normalized 
+intensity or count values from hybridization- and sequencing-based technologies, 
+respectively; (2) log fold changes (LFC) usually with base 2, Z-scores or 
+p-values obtained from analysis routines of DEGs; (3) rank transformed versions 
+of the GEPs obtained from the results of level 1 or 2; and (4) GSs extracted 
+from the highest and lowest ranks under level 3. Typically, the corresponding 
+GSs are the most up- or down-regulated DEGs observed among two biological states, 
+such as comparisons among untreated *vs.* drug treatment or disease state. 
+The order the DEG identifier labels are stored may reflect their ranks or have no 
+meaning. When unclear, the text specifies which of the four pre-processing levels 
+were used along with additional relevant details.
 
 # Getting Started
 
@@ -374,7 +394,7 @@ negatively connected with the query signature, respectively; `N_upset` or
 @Subramanian2017-fu introduced a more complex GESS algorithm, here referred to
 as *LINCS*. While related to *CMAP*, there are several important differences
 among the two approaches. First, *LINCS* weights the query genes based on the
-corresponding differential expression scores of the GESs in the reference
+corresponding differential expression scores of the GEPs in the reference
 database (_e.g._ LFC or z-scores). Thus, the reference database used by *LINCS*
 needs to store the actual score values rather than their ranks. Another
 relevant difference is that the *LINCS* algorithm uses a bi-directional
@@ -446,13 +466,13 @@ comparisons across query results.
 
 The Bioconductor *gCMAP* [@Sandmann2014-qm] package provides access to a related
 but not identical implementation of the original _CMAP_ algorithm proposed by
-@Lamb2006-du. It uses as query a rank transformed GES and the reference
+@Lamb2006-du. It uses as query a rank transformed GEP and the reference
 database is composed of the labels of up and down regulated DEG sets. This is
 the opposite situation of the *CMAP* method, where the query is composed of the
 labels of up and down regulated DEGs and the database contains rank transformed
 GESs.
 
-In case of the _gCMAP_ GESS method, the query GES is a matrix with a single
+In case of the _gCMAP_ GESS method, the GEP-Q is a matrix with a single
 column representing gene ranks from a biological state of interest, here
 vorinostat treatment in SKB cells. The corresponding gene labels are stored in
 the row name slot of the matrix.  Instead of ranks one can provide scores
@@ -479,12 +499,12 @@ up and down regulated genes when computing scores.
 
 ## Fisher Search Method
 
-Fisher's exact test [@Graham_J_G_Upton1992-pg] can also be used to search a GES
-databases for entries that are similar to a query GES. In this case both the
+Fisher's exact test [@Graham_J_G_Upton1992-pg] can also be used to search a GS-DB
+for entries that are similar to a GS-Q. In this case both the
 query and the database are composed of gene label sets, such as DEG sets.
 
 In the following example, both the `query` and the `refdb` used under the `qSig`
-call are genome-wide signatures, here z-scores. The actual gene sets required 
+call are genome-wide GEPs, here z-scores. The actual gene sets required 
 for the Fisher's exact test are obtained by setting the `higher` and `lower` 
 cutoffs to 1 and -1, respectively. 
 
@@ -499,7 +519,6 @@ following information. `pval`: p-value of the Fisher's exact test; `padj`:
 p-value adjusted for multiple hypothesis testing using R's `p.adjust` function
 with the Benjamini & Hochberg (BH) method; `effect`: z-score based on the
 standard normal distribution; `LOR`: log odds ratio.
-
 
 If the `query` contains the labels of up and down regulated genes then the two 
 sets can be provided as a list. Internally, they will be combined into a single
@@ -528,12 +547,11 @@ slot. For convenience, the correlation-based searches can either be performed
 with the full set of genes represented in the database or a subset of them. 
 The latter can be useful to focus the computation for the correlation values on 
 certain genes of interest such as a DEG set or the genes in a pathway of 
-interest. For comparing the performance of 
-different GESS methods, it can also be advantageous to subset the genes 
-used for a correlation-based search to same set used in a set-based search,
-such as the up/down DEGs used in a _LINCS_ GESS. This way the search results of 
-correlation- and set-based methods can be more comparable because both are 
-provided with equivalent information content. 
+interest. For comparing the performance of different GESS methods, it can also 
+be advantageous to subset the genes used for a correlation-based search to same 
+set used in a set-based search, such as the up/down DEGs used in a _LINCS_ GESS. 
+This way the search results of correlation- and set-based methods can be more 
+comparable because both are provided with equivalent information content. 
 
 ### CORall
 
@@ -628,7 +646,7 @@ Additional details are provided in the text of this sub-section. </font>
 ## Batch Processing of GESSs
 
 The above 5 GESS methods support searching reference database parallelly by 
-defining the `workers` parameter, the default is 4. It means that when submitting
+defining the `workers` parameter, the default is 1. It means that when submitting
 one query, the parallelization happens on the GES database level where one 
 splits up a single query process into searching several chunks of the database 
 in parallel. Multiple GES queries can also be processed sequentially or 
@@ -640,8 +658,7 @@ batch query is processed sequentially without any parallelization using a
 simple `lapply` loop. Next, the same query is processed in parallel mode using
 multiple CPU cores of a single machine. The third option demonstrates how this
 query can be processed in parallel mode on multiple machines of a computer
-cluster with a workload management (queueing) system (_e.g._ such as Slurm or
-Torque). 
+cluster with a workload management (queueing) system (_e.g._ Slurm or Torque). 
 
 ### Sequential Processing
 
@@ -768,7 +785,7 @@ unlink(c(".batchtools.conf.R", "slurm.tmpl"))
 # Functional Enrichment (FEA)
 
 GESS results are lists of perturbagens (here drugs) ranked by their signature
-similarity to a query signature of interest. Interpreting these search results
+similarity to a GES-Q of interest. Interpreting these search results
 with respect to the cellular networks and pathways affected by the top ranking
 drugs is difficult. To overcome this challenge, the knowledge of the target
 proteins of the top ranking drugs can be used to perform functional enrichment
@@ -1255,7 +1272,7 @@ dtnetplot(drugs = drugs, set = "hsa04213",
 pathway*. The details of the plot are given in the legend of Figure 6.</font>
 
 # Run Workflow
-The `runWF` function could run the entire GESS/FEA workflow automatically
+The `runWF` function supports running the entire GESS/FEA workflow automatically
 when providing the query drug and cell type, as well as selecting the 
 reference database (e.g. `lincs` or path to the custom reference database), 
 defining the specific GESS and FEA methods. When the query drug and cell type
@@ -1287,7 +1304,7 @@ wf_list <- runWF(drug, cell, refdb, gess_method="LINCS",
 
 ## Gene Set Databases
 
-The GES databases introduced above store quantitative gene expression profiles.
+The GES-DB introduced above store quantitative gene expression profiles.
 For the different GESS methods, these profiles are either used in their
 quantitative form or converted to non-quantitative gene sets. Additionally,
 _signatureSearch_ can be used to search GES databases containing gene sets, or
