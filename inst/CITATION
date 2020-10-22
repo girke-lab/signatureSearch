@@ -15,10 +15,9 @@ citEntry(entry="article",
          journal = "Nucleic Acids Research",
          doi = "10.1093/nar/gkaa878",
          url = "https://doi.org/10.1093/nar/gkaa878",
-         volume = 17,
-         number = 1,
-         pages = "10--22",
+         volume = "gkaa878",
+         pages = "1--14",
          textVersion = 
          paste("Duan Y, Evans DS, Miller RA, Schork NJ, Cummings SR and Girke T (2020).", 
                "signatureSearch: environment for gene expression signature searching and functional interpretation.",
-                "Nucleic Acids Research, 17(1), 10-22. doi: 10.1093/nar/gkaa878."))
+                "Nucleic Acids Res, gkaa878, 1-14. doi: 10.1093/nar/gkaa878."))
