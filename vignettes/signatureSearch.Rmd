@@ -33,13 +33,13 @@ pre code, pre, code {
 }
 </style>
 
-```{r global_options, include=FALSE}                                            
+```{r global_options, include=FALSE, warning=FALSE}                                            
 ## ThG: chunk added to enable global knitr options. The below turns on 
 ## caching for faster vignette re-build during text editing.                                      
 knitr::opts_chunk$set(cache=FALSE)                                                  
 ```            
 
-```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
+```{r setup, echo=FALSE, messages=FALSE, warning=FALSE}
 suppressPackageStartupMessages({
   library(signatureSearch)
   library(ggplot2)
@@ -216,7 +216,7 @@ BiocManager::install("yduan004/signatureSearch", build_vignettes=TRUE)  # Instal
 ```
 
 Next the package needs to be loaded into a user's R session.
-```{r load, eval=TRUE}
+```{r load, eval=TRUE, message=FALSE}
 library(signatureSearch)
 ```
 
@@ -311,7 +311,7 @@ container (here `sample_db`). In addition, the test query set of up/down DEGs
 (here `upset` and `downset`) is extracted from the vorinostat GES entry in the 
 database.
 
-```{r db_sig, eval=TRUE}
+```{r db_sig, eval=TRUE, message=FALSE}
 db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 # Load sample_db as `SummarizedExperiment` object
 library(SummarizedExperiment); library(HDF5Array)
@@ -322,7 +322,9 @@ colnames(sample_db) <- HDF5Array(db_path, name="colnames")
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 query = as.numeric(query_mat); names(query) = rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
+head(upset)
 downset <- tail(names(query[order(-query)]), 150)
+head(downset)
 ```
 
 ## CMAP Search Method 
@@ -360,7 +362,7 @@ this case they will be transformed to gene ranks during the search. Note, in
 the given example the `db_path` variable stores the path to the toy database
 containing 100 GESs composed of z-scores.
 
-```{r gess_cmap, eval=TRUE, warning=FALSE}
+```{r gess_cmap, eval=TRUE}
 qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
                   gess_method="CMAP", refdb=db_path)
 cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000, workers=1)
@@ -878,7 +880,7 @@ annotation system. If the annotation system is KEGG, the latter will be "KEGG".
 The object also stores the input drugs used for the enrichment test, as well as 
 their target information. 
 
-```{r tsea_dup_hyperG_go, eval=TRUE}
+```{r tsea_dup_hyperG_go, eval=TRUE, message=FALSE}
 drugs <- unique(result(lincs)$pert[1:10])
 dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
                                   type = "GO", ont="MF", pvalueCutoff=0.05, 

@@ -139,7 +139,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
     }
     
     full_dim <- dim(full_mat)
-    full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+    full_grid <- colAutoGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
     ### The blocks in 'full_grid' are made of full columns 
     nblock <- length(full_grid) 
     

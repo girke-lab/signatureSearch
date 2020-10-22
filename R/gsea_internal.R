@@ -1,4 +1,4 @@
-#' @importFrom fgsea fgsea
+#' @importFrom fgsea fgseaSimple
 GSEA_fgsea <- function(geneList,
                        exponent,
                        nPerm,
@@ -18,12 +18,13 @@ GSEA_fgsea <- function(geneList,
     if(verbose)
         message("GSEA analysis...")
 
-    tmp_res <- fgsea(pathways=geneSets,
+    tmp_res <- fgseaSimple(pathways=geneSets,
                  stats=geneList,
                  nperm=nPerm,
                  minSize=minGSSize,
                  maxSize=maxGSSize,
                  gseaParam=exponent,
+                 scoreType = "pos",
                  nproc = 1)
 
     p.adj <- p.adjust(tmp_res$pval, method=pAdjustMethod)

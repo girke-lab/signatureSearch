@@ -112,7 +112,7 @@ gess_fisher <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   }
   
   full_dim <- dim(full_mat)
-  full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+  full_grid <- colAutoGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
   
   if(! is.null(padj)){
       if(! 'padj' %in% h5ls(db_path)$name){

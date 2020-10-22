@@ -102,7 +102,7 @@ rankMatrix <- function(x, decreasing=TRUE) {
   return(rankma)
 }
 
-#' @importFrom DelayedArray colGrid
+#' @importFrom DelayedArray colAutoGrid
 #' @importFrom DelayedArray read_block
 cmapEnrich <- function(db_path, upset, downset, 
                        chunk_size=5000, ref_trts=NULL, workers=4) {
@@ -117,7 +117,7 @@ cmapEnrich <- function(db_path, upset, downset,
   }
   
   full_dim <- dim(full_mat)
-  full_grid <- colGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+  full_grid <- colAutoGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
   ### The blocks in 'full_grid' are made of full columns 
   nblock <- length(full_grid) 
   
