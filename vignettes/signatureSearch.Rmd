@@ -1,7 +1,7 @@
 ---
 title: "_signatureSearch_: Environment for Gene Expression Searching Combined 
        with Functional Enrichment Analysis"
-author: "Authors: Yuzhu Duan, Dan S Evans, Nicholas J. Schork, Steven R. 
+author: "Authors: Yuzhu Duan, Dan S. Evans, Richard A. Miller, Nicholas J. Schork, Steven R. 
         Cummings and Thomas Girke"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
@@ -50,10 +50,9 @@ suppressPackageStartupMessages({
 
 ## Background
 
-The _signatureSearch_ package is published in @Duan2020-bj. It implements 
-algorithms and data structures for
+The _signatureSearch_ package implements algorithms and data structures for
 performing gene expression signature (GES) searches, and subsequently
-interpreting the results functionally with specialized enrichment methods.
+interpreting the results functionally with specialized enrichment methods [@Duan2020-bj].
 These utilities are useful for studying the effects of genetic, chemical and
 environmental perturbations on biological systems. Specifically, in drug
 discovery they can be used for identifying novel modes of action (MOA) of
