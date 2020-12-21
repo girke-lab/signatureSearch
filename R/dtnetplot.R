@@ -18,7 +18,7 @@
 #' @param verbose TRUE or FALSE, whether to print messages
 #' @param ... Other arguments passed on to 
 #' \code{\link[visNetwork]{visNetwork}} function.
-#' @return visNetwork plot
+#' @return visNetwork plot and a list of drugs and targets that have interactions
 #' @import visNetwork
 #' @importFrom AnnotationDbi select
 #' @importFrom scales cscale
