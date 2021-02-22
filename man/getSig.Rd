@@ -4,7 +4,7 @@
 \alias{getSig}
 \alias{getDEGSig}
 \alias{getSPsubSig}
-\title{Drawn Query GES from Reference Database}
+\title{Draw GESs from Reference Database}
 \usage{
 getSig(cmp, cell, refdb)
 

@@ -302,7 +302,7 @@ select_ont <- function(res, ont, GO_DATA){
 #' The GES could be genome-wide differential expression profiles (e.g. log2 
 #' fold changes or z-scores) or normalized gene expression intensity values 
 #' depending on the data type of \code{refdb} or n top up/down regulated DEGs
-#' @title Drawn Query GES from Reference Database 
+#' @title Draw GESs from Reference Database 
 #' @rdname getSig
 #' @param cmp character vector representing a list of compound name available 
 #' in \code{refdb} for \code{getSig} function, or character(1) indicating a

@@ -25,10 +25,10 @@ Internally, drug test sets are translated to the corresponding target protein
 test sets based on the drug-target annotations provided under the 
 \code{dt_anno} argument.}
 
-\item{type}{one of `GO` or `KEGG`}
+\item{type}{one of `GO`, `KEGG` or `Reactome`}
 
 \item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one of
-`BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.}
+`BP`,`MF`, `CC` or `ALL`. If type is `KEGG` or `Reactome`, \code{ont} is ignored.}
 
 \item{nPerm}{integer defining the number of permutation iterations for 
 calculating p-values}
@@ -103,11 +103,11 @@ the weight of this gene will be 1 resulting in an \eqn{ES(S)} close to 1.
 Thus, the original GSEA method will score the gene set \eqn{S} as 
 significantly enriched. However, this is undesirable because in this 
 example only one gene is shared among the target set and the gene set 
-\eqn{S}. Therefore, giving small weights to genes in \eqn{S} that
-have zero scores could decrease the weight of the genes in \eqn{S} that 
-have non-zero scores, thereby decreasing the false positive rate. 
-To favor truly enriched GO terms and KEGG pathways (gene set \eqn{S}) at 
-the top of \eqn{L_tar}, only gene sets with positive \eqn{ES} are selected.
+\eqn{S}. Therefore, giving small weights (lowest non-zero score in \eqn{L_tar}) 
+to genes in \eqn{S} that have zero scores could decrease the weight of the
+genes in \eqn{S} that have non-zero scores, thereby decreasing the false 
+positive rate. To favor truly enriched functional categories (gene set \eqn{S}) 
+at the top of \eqn{L_tar}, only gene sets with positive \eqn{ES} are selected.
 }
 \section{Column description}{
 
@@ -124,9 +124,9 @@ here \code{tibble}. The columns of this \code{tibble} are described below.
     Kolmogorov-Smirnov-like statistic.
     \item NES: Normalized enrichment score. The positive and negative 
     enrichment scores are normalized separately by permutating the 
-    composition of the gene list L nPerm times, and dividing the enrichment 
-    score by the mean of the permutation ES with the same sign.
-    \item pvalue:  The nominal p-value of the ES is calculated using a 
+    composition of the gene list L \code{nPerm} times, and dividing the 
+    enrichment score by the mean of the permutation ES with the same sign.
+    \item pvalue: The nominal p-value of the ES is calculated using a 
     permutation test. Specifically, the composition of the gene list L is 
     permuted and the ES of the gene set is recomputed for the permutated 
     data generating a null distribution for the ES. The p-value of the 
@@ -144,12 +144,15 @@ Additional columns are described under the 'result' slot of the
 \examples{
 data(drugs10)
 ## GO annotation system
-#mgsea_res <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
-#                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
-#result(mgsea_res)
-#mgsea_k_res <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
-#                          nPerm=100, pvalueCutoff=1, minGSSize=5)
-#result(mgsea_k_res)
+#res1 <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
+#                   nPerm=1000, pvalueCutoff=1, minGSSize=5)
+#result(res1)
+#res2 <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
+#                   nPerm=100, pvalueCutoff=1, minGSSize=5)
+#result(res2)
+## Reactome annotation system
+#res3 <- tsea_mGSEA(drugs=drugs10, type="Reactome", pvalueCutoff=1)
+#result(res3)
 }
 \references{
 GSEA algorithm: 

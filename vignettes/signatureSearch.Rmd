@@ -734,8 +734,8 @@ different schedulers. To run this code, one needs to have both a `conf` file (se
 `.batchtools.conf.R` samples [here](https://mllg.github.io/batchtools/)) and a
 `template` file (see `*.tmpl` samples
 [here](https://github.com/mllg/batchtools/tree/master/inst/templates)) for the
-queueing system available on a cluster. The following example uses the sample `conf` and
-`template` files for the Slurm scheduler. 
+queueing system available on a cluster. The following example uses the sample 
+`conf` and `template` files for the Slurm scheduler. 
 
 For additional details on parallelizing computations on clusters, users want to 
 consult the vignettes of the `batchtools` and `BiocParallel` packages.
@@ -775,8 +775,8 @@ reg <- makeRegistry(file.dir="reg_batch", conf.file=".batchtools.conf.R")
 Njobs <- 1:2
 ids <- batchMap(fun=f_bt, Njobs, more.args = list(
           batch_queries=batch_queries, refdb=refdb))
-done <- submitJobs(ids, reg=reg, resources=list(
-            partition="intel", walltime=120, ntasks=1, ncpus=4, memory=10240))
+submitJobs(ids, reg=reg, resources=list(
+      partition="intel", walltime=120, ntasks=1, ncpus=4, memory=10240))
 getStatus()
 waitForJobs() # Wait until all jobs are completed
 res1 <- loadResult(1)
@@ -838,11 +838,11 @@ only the indirect targets of drugs.
 
 ## TSEA
 The following introduces how to perform TSEA on drug-based GESS results using
-as functional annotation systems GO and KEGG pathways. The enrichment tests are
-performed with three widely used algorithms that have been modified in
-`signatureSearch` to take advantage of duplication information present in the
-test sets used for TSEA. The relevance of these target duplications is
-explained above. The specialized enrichment algorithms include *Duplication
+as functional annotation systems GO, KEGG and Reactome pathways. 
+The enrichment tests are performed with three widely used algorithms that have 
+been modified in `signatureSearch` to take advantage of duplication information 
+present in the test sets used for TSEA. The relevance of these target duplications 
+is explained above. The specialized enrichment algorithms include *Duplication
 Adjusted Hypergeometric Test* (`dup_hyperG`), *Modified Gene Set Enrichment
 Analysis* (`mGSEA`) and *MeanAbs* (`mabs`).
 
@@ -925,6 +925,16 @@ result(dup_hyperG_k_res)
 
 The content of the columns extracted from the `feaResult` object is described
 under section 4.1.1.1. 
+
+#### With Reactome 
+
+The same enrichment test can be performed for Reactome pathways as follows.
+
+```{r tsea_dup_hyperG_reactome, eval=TRUE, message=FALSE}
+dup_rct_res <- tsea_dup_hyperG(drugs = drugs, type = "Reactome",
+                               pvalueCutoff=0.5, qvalueCutoff = 0.5)
+result(dup_rct_res)
+```
 
 ### mGSEA Method
 
@@ -1027,6 +1037,14 @@ result(mgsea_k_res)
 The content of the columns extracted from the `feaResult` object is described
 under sections 4.1.1.1 and 4.1.2.1. 
 
+#### With Reactome 
+
+The same enrichment test can be performed for Reactome pathways as follows.
+
+```{r tsea_mgsea_rct, eval=TRUE, message=FALSE}
+mgsea_rct_res <- tsea_mGSEA(drugs=drugs, type="Reactome", pvalueCutoff=1)
+result(mgsea_rct_res)
+```
 
 ### MeanAbs Method
 
@@ -1071,6 +1089,15 @@ The same enrichment test can be performed for KEGG pathways as follows.
 mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
                         pvalueCutoff=0.2, minGSSize=5)
 result(mabs_k_res)
+```
+
+#### With Reactome
+
+The same enrichment test can be performed for Reactome pathways as follows.
+
+```{r tsea_mabs_rct, eval=TRUE, message=FALSE}
+mabs_rct_res <- tsea_mabs(drugs=drugs, type="Reactome", pvalueCutoff=1)
+result(mabs_rct_res)
 ```
 
 ## DSEA

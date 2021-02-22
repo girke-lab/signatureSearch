@@ -23,10 +23,10 @@ Internally, drug test sets are translated to the corresponding target protein
 test sets based on the drug-target annotations provided under the 
 \code{dt_anno} argument.}
 
-\item{type}{one of `GO` or `KEGG`}
+\item{type}{one of `GO`, `KEGG` or `Reactome`}
 
 \item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one of
-`BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.}
+`BP`,`MF`, `CC` or `ALL`. If type is `KEGG` or `Reactome`, \code{ont} is ignored.}
 
 \item{nPerm}{integer, permutation number used to calculate p-values}
 
@@ -90,13 +90,16 @@ Additional columns are described under the 'result' slot of the
 \examples{
 data(drugs10)
 ## GO annotation system
-#mabs_res <- tsea_mabs(drugs=drugs10, type="GO", ont="MF", nPerm=1000, 
-#                      pvalueCutoff=0.05, minGSSize=5)
-#result(mabs_res)
+#res1 <- tsea_mabs(drugs=drugs10, type="GO", ont="MF", nPerm=1000, 
+#                  pvalueCutoff=0.05, minGSSize=5)
+#result(res1)
 ## KEGG annotation system
-#mabs_k_res <- tsea_mabs(drugs=drugs10, type="KEGG", nPerm=1000, 
-#                        pvalueCutoff=0.05, minGSSize=5)
-#result(mabs_k_res)
+#res2 <- tsea_mabs(drugs=drugs10, type="KEGG", nPerm=1000, 
+#                  pvalueCutoff=0.05, minGSSize=5)
+#result(res2)
+## Reactome annotation system
+#res3 <- tsea_mabs(drugs=drugs10, type="Reactome", pvalueCutoff=1)
+#result(res3)
 }
 \references{
 Fang, Z., Tian, W., & Ji, H. (2012). A network-based 

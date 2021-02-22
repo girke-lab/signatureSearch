@@ -41,8 +41,11 @@ drug_cell_ranks <- function(gessResult){
 }
 
 #' Function appends two columns (score_column_grp1, score_column_grp2) to GESS 
-#' result tibble. The appended columns contain summary scores for groups of 
-#' cell types, such as normal and tumor cells.
+#' result tibble. The appended columns contain cell-summarized scores for 
+#' groups of cell types, such as normal and tumor cells. The cell-summarized 
+#' score is obtained the same way as the \code{NCSct} scores, that is using a 
+#' maximum quantile statistic. It compares the 67 and 33 quantiles of scores 
+#' and retains whichever is of higher absolute magnitude. 
 #' @title Summary Scores by Groups of Cell Types
 #' @param tib tibble in gessResult object 
 #' @param grp1 character vector, group 1 of cell types, e.g., tumor cell types
@@ -84,7 +87,7 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
   name_grp1 <- paste0(score_column, "_grp1")
   name_grp2 <- paste0(score_column, "_grp2")
   cname <- colnames(tib)
-  tib %<>% dplyr::mutate(qmax1, qmax2)
+  tib %<>% dplyr::mutate(as.numeric(qmax1), as.numeric(qmax2))
   colnames(tib) <- c(cname, name_grp1, name_grp2)
   return(tib)
 }
@@ -162,7 +165,7 @@ gess_res_vis <- function(gess_tb, drugs, col, cell_group="all", ...){
   colnames(data2) <- c("pert", "tumor", "normal")
   data2 %<>% distinct() %>%
     reshape2::melt(id.vars=c("pert"), variable.name = "cell_class", 
-                   value.name=paste0(col, "_grp"))
+                   value.name=paste0(col, "_grp"), na.rm=TRUE)
   if(cell_group != "all"){
       data1 %<>% filter(cell_type == cell_group)
       data2 %<>% filter(cell_type == cell_group) 

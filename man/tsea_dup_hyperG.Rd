@@ -26,14 +26,14 @@ test sets based on the drug-target annotations provided under the
 
 \item{universe}{character vector defining the universe of genes/proteins. If
 set as 'Default', it uses all genes/proteins present in the corresponding
-annotation system (e.g. GO or KEGG). If 'type' is 'GO', it can be assigned
-a custom vector of gene SYMBOL IDs. If 'type' is 'KEGG', the vector needs
-to contain Entrez gene IDs.}
+annotation system (e.g. GO, KEGG or Reactome). If 'type' is 'GO', it can be assigned
+a custom vector of gene SYMBOL IDs. If 'type' is 'KEGG' or 'Reactome', the 
+vector needs to contain Entrez gene IDs.}
 
-\item{type}{one of `GO` or `KEGG`}
+\item{type}{one of `GO`, `KEGG` or `Reactome`}
 
 \item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one of
-`BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.}
+`BP`,`MF`, `CC` or `ALL`. If type is `KEGG` or `Reactome`, \code{ont} is ignored.}
 
 \item{pAdjustMethod}{p-value adjustment method, 
 one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'}
@@ -61,7 +61,7 @@ the corresponding enrichment statistic.
 }
 \description{
 The \code{tsea_dup_hyperG} function performs Target Set Enrichment Analysis
-(TSEA) based on a modified hypergeomtric test that supports test sets with
+(TSEA) based on a modified hypergeometric test that supports test sets with
 duplications. This is achieved by maintaining the frequency information of
 duplicated items in form of weighting values.
 }
@@ -70,7 +70,7 @@ The classical hypergeometric test assumes uniqueness in its test sets. To
 maintain the duplication information in the test sets used for TSEA, the 
 values of the total number of genes/proteins in the test set and the number 
 of genes/proteins in the test set annotated at a functional category are
-adjusted by maintating their frequency information in the test set rather 
+adjusted by maintaining their frequency information in the test set rather 
 than counting each entry only once. Removing duplications in TSEA would be 
 inappropriate since it would erase one of the most important pieces of 
 information of this approach.
@@ -95,17 +95,20 @@ Additional columns are described under the 'result' slot of the
 \examples{
 data(drugs10)
 ## GO annotation system
-#dup_hyperG_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-#                                 type = "GO", ont="MF", pvalueCutoff=0.05,
-#                                 pAdjustMethod="BH", qvalueCutoff = 0.1, 
-#                                 minGSSize = 10, maxGSSize = 500)
-#result(dup_hyperG_res)
+# res1 <- tsea_dup_hyperG(drugs=drugs10, universe="Default", 
+#                         type="GO", ont="MF", pvalueCutoff=0.05,
+#                         pAdjustMethod="BH", qvalueCutoff=0.1, 
+#                         minGSSize=5, maxGSSize=500)
+# result(res1)
+#
 ## KEGG annotation system
-#dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs10, universe = "Default", 
-#                                    type = "KEGG", pvalueCutoff=0.1, 
-#                                    pAdjustMethod="BH", qvalueCutoff = 0.2, 
-#                                    minGSSize = 10, maxGSSize = 500)
-#result(dup_hyperG_k_res)
+# res2 <- tsea_dup_hyperG(drugs=drugs10, type="KEGG", 
+#                         pvalueCutoff=0.1, qvalueCutoff=0.2, 
+#                         minGSSize=10, maxGSSize=500)
+#
+## Reactome annotation system
+# res3 <- tsea_dup_hyperG(drugs=drugs10, type="Reactome", 
+#                         pvalueCutoff=1, qvalueCutoff=1)
 }
 \seealso{
 \code{\link{feaResult}}, \code{\link{fea}}

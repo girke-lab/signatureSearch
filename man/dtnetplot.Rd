@@ -24,7 +24,7 @@ target set}
 \code{\link[visNetwork]{visNetwork}} function.}
 }
 \value{
-visNetwork plot
+visNetwork plot and a list of drugs and targets that have interactions
 }
 \description{
 Functional modules of GESS and FEA results can be rendered as interactive

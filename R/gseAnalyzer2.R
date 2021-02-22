@@ -38,9 +38,9 @@ gseGO2 <- function(geneList,
 
     ont %<>% toupper
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
-    #GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
-    # download GO_DATA.rds from AnnotationHub to save time by avoiding 
-    # builing GO_DATA from scratch
+    # GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
+    # Download GO_DATA.rds from ExperimentHub and cached to save time by avoiding 
+    # building GO_DATA from scratch
     eh <- suppressMessages(ExperimentHub())
     GO_DATA <- suppressMessages(eh[["EH3231"]])
     
@@ -119,5 +119,56 @@ gseKEGG2 <- function(geneList,
     og(res) <- species
     ont(res) <- "KEGG"
 
+    return(res)
+}
+
+##' This modified Gene Set Enrichment Analysis (GSEA) of Reactome pathways
+##' supports gene test sets with large numbers of zeros.
+##'
+##' @title Modified GSEA with Reactome
+##' @param geneList order ranked geneList
+##' @param organism one of "human", "rat", "mouse", "celegans", "yeast", 
+##' "zebrafish", "fly".
+##' @param exponent integer value used as exponent in GSEA algorithm.
+##' @param minGSSize minimal size of each geneSet for analyzing
+##' @param maxGSSize maximal size of each geneSet for analyzing
+##' @param nPerm integer defining the number of permutation iterations for 
+##' calculating p-values
+##' @param pvalueCutoff pvalue Cutoff
+##' @param pAdjustMethod pvalue adjustment method
+##' @param verbose print message or not
+##' @return feaResult object
+##' @examples 
+##' # Gene Entrez id should be used for Reactome enrichment
+##' data(geneList, package="DOSE")
+##' #geneList[100:length(geneList)]=0
+##' #rc <- gseReactome(geneList=geneList, pvalueCutoff=1)
+##' @export
+gseReactome <- function(geneList,
+                        organism      = "human",
+                        exponent      = 1,
+                        nPerm         = 1000,
+                        minGSSize     = 10,
+                        maxGSSize     = 500,
+                        pvalueCutoff  = 0.05,
+                        pAdjustMethod = "BH",
+                        verbose       = TRUE){
+    Reactome_DATA <- get_Reactome_DATA(organism)
+    
+    res <- GSEA_internal2(geneList = geneList,
+                          exponent = exponent,
+                          nPerm = nPerm,
+                          minGSSize = minGSSize,
+                          maxGSSize = maxGSSize,
+                          pvalueCutoff = pvalueCutoff,
+                          pAdjustMethod = pAdjustMethod,
+                          verbose = verbose,
+                          USER_DATA = Reactome_DATA,
+                          nproc = 1)
+    
+    if (is.null(res))
+        return(res)
+    og(res) <- organism
+    ont(res) <- "Reactome"
     return(res)
 }

@@ -103,3 +103,46 @@ mabsKEGG <- function(geneList,
     return(res)
 }
 
+##' MeanAbs enrichment analysis with Reactome pathways.
+##'
+##' @title MeanAbs Enrichment Analysis for Reactome
+##' @param geneList named numeric vector with gene/target ids in the name slot 
+##' decreasingly ranked by scores in the data slot.
+##' @param organism one of "human", "rat", "mouse", "celegans", "yeast", 
+##' "zebrafish", "fly".
+##' @param nPerm permutation numbers
+##' @param minGSSize integer, minimum size of each gene set in annotation system
+##' @param maxGSSize integer, maximum size of each gene set in annotation system
+##' @param pvalueCutoff pvalue cutoff
+##' @param pAdjustMethod pvalue adjustment method
+##' @return \code{\link{feaResult}} object
+##' @examples 
+##' # Gene Entrez id should be used for Reactome enrichment
+##' data(geneList, package="DOSE")
+##' #geneList[100:length(geneList)]=0
+##' #rc <- mabsReactome(geneList=geneList, pvalueCutoff = 1)
+##' @export
+mabsReactome <- function(geneList, organism='human',
+                         nPerm             = 1000,
+                         minGSSize         = 5,
+                         maxGSSize         = 500,
+                         pvalueCutoff      = 0.05,
+                         pAdjustMethod     = "BH") {
+    Reactome_DATA <- get_Reactome_DATA(organism)
+    
+    res <-  mabs_internal(geneList = geneList,
+                          nPerm = nPerm,
+                          minGSSize = minGSSize,
+                          maxGSSize = maxGSSize,
+                          pvalueCutoff = pvalueCutoff,
+                          pAdjustMethod = pAdjustMethod,
+                          USER_DATA = Reactome_DATA)
+    
+    if (is.null(res))
+        return(res)
+    
+    og(res) <- organism
+    ont(res) <- "Reactome"
+    return(res)
+}
+

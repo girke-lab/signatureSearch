@@ -2,7 +2,7 @@
 ##' @importFrom stats phyper
 ##' @importFrom stats p.adjust
 
-## Interal method for enrichment analysis by using the hypergeometric model, 
+## Internal method for enrichment analysis by using the hypergeometric model, 
 ## which also support query gene set with duplications
 enricher_internal <- function(gene,
                               pvalueCutoff,

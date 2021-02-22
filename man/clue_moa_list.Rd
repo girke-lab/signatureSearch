@@ -5,7 +5,7 @@
 \alias{clue_moa_list}
 \title{MOA to Drug Name Mappings}
 \format{
-An object of class \code{list} of length 345.
+An object of class \code{list} of length 701.
 }
 \usage{
 clue_moa_list

@@ -21,8 +21,11 @@ tibble
 }
 \description{
 Function appends two columns (score_column_grp1, score_column_grp2) to GESS 
-result tibble. The appended columns contain summary scores for groups of 
-cell types, such as normal and tumor cells.
+result tibble. The appended columns contain cell-summarized scores for 
+groups of cell types, such as normal and tumor cells. The cell-summarized 
+score is obtained the same way as the \code{NCSct} scores, that is using a 
+maximum quantile statistic. It compares the 67 and 33 quantiles of scores 
+and retains whichever is of higher absolute magnitude.
 }
 \examples{
 gr <- gessResult(result=dplyr::tibble(pert=c("p1", "p1", "p2", "p3"),

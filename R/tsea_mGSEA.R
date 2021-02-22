@@ -39,11 +39,11 @@
 #' Thus, the original GSEA method will score the gene set \eqn{S} as 
 #' significantly enriched. However, this is undesirable because in this 
 #' example only one gene is shared among the target set and the gene set 
-#' \eqn{S}. Therefore, giving small weights to genes in \eqn{S} that
-#' have zero scores could decrease the weight of the genes in \eqn{S} that 
-#' have non-zero scores, thereby decreasing the false positive rate. 
-#' To favor truly enriched GO terms and KEGG pathways (gene set \eqn{S}) at 
-#' the top of \eqn{L_tar}, only gene sets with positive \eqn{ES} are selected.
+#' \eqn{S}. Therefore, giving small weights (lowest non-zero score in \eqn{L_tar}) 
+#' to genes in \eqn{S} that have zero scores could decrease the weight of the
+#' genes in \eqn{S} that have non-zero scores, thereby decreasing the false 
+#' positive rate. To favor truly enriched functional categories (gene set \eqn{S}) 
+#' at the top of \eqn{L_tar}, only gene sets with positive \eqn{ES} are selected.
 #' @section Column description:
 #' The TSEA results (including \code{tsea_mGSEA}) stored in the \code{feaResult}
 #' object can be returned with the \code{result} method in tabular format, 
@@ -58,9 +58,9 @@
 #'     Kolmogorov-Smirnov-like statistic.
 #'     \item NES: Normalized enrichment score. The positive and negative 
 #'     enrichment scores are normalized separately by permutating the 
-#'     composition of the gene list L nPerm times, and dividing the enrichment 
-#'     score by the mean of the permutation ES with the same sign.
-#'     \item pvalue:  The nominal p-value of the ES is calculated using a 
+#'     composition of the gene list L \code{nPerm} times, and dividing the 
+#'     enrichment score by the mean of the permutation ES with the same sign.
+#'     \item pvalue: The nominal p-value of the ES is calculated using a 
 #'     permutation test. Specifically, the composition of the gene list L is 
 #'     permuted and the ES of the gene set is recomputed for the permutated 
 #'     data generating a null distribution for the ES. The p-value of the 
@@ -80,9 +80,9 @@
 #' Internally, drug test sets are translated to the corresponding target protein
 #' test sets based on the drug-target annotations provided under the 
 #' \code{dt_anno} argument.
-#' @param type one of `GO` or `KEGG`
+#' @param type one of `GO`, `KEGG` or `Reactome`
 #' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of
-#' `BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.
+#' `BP`,`MF`, `CC` or `ALL`. If type is `KEGG` or `Reactome`, \code{ont} is ignored.
 #' @param nPerm integer defining the number of permutation iterations for 
 #' calculating p-values
 #' @param exponent integer value used as exponent in GSEA algorithm. It defines
@@ -114,20 +114,24 @@
 #' @examples 
 #' data(drugs10)
 #' ## GO annotation system
-#' #mgsea_res <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
-#' #                        nPerm=1000, pvalueCutoff=1, minGSSize=5)
-#' #result(mgsea_res)
+#' #res1 <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
+#' #                   nPerm=1000, pvalueCutoff=1, minGSSize=5)
+#' #result(res1)
 #  ## KEGG annotation system
-#' #mgsea_k_res <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
-#' #                          nPerm=100, pvalueCutoff=1, minGSSize=5)
-#' #result(mgsea_k_res)
+#' #res2 <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
+#' #                   nPerm=100, pvalueCutoff=1, minGSSize=5)
+#' #result(res2)
+#' ## Reactome annotation system
+#' #res3 <- tsea_mGSEA(drugs=drugs10, type="Reactome", pvalueCutoff=1)
+#' #result(res3)
 #' @export
-tsea_mGSEA <- function(drugs, 
-                      type="GO", ont="MF", 
-                      nPerm=1000, exponent=1, 
-                      pAdjustMethod="BH", pvalueCutoff=0.05,
-                      minGSSize=5, maxGSSize=500, verbose=FALSE,
-                      dt_anno="all"){
+tsea_mGSEA <- function(drugs, type="GO", ont="MF", nPerm=1000, exponent=1, 
+                       pAdjustMethod="BH", pvalueCutoff=0.05,
+                       minGSSize=5, maxGSSize=500, verbose=FALSE,
+                       dt_anno="all"){
+  if(!any(type %in% c("GO", "KEGG", "Reactome"))){
+    stop('"type" argument needs to be one of "GO", "KEGG" or "Reactome"')
+  }
   drugs <- unique(tolower(drugs))
   targets <- get_targets(drugs, database = dt_anno)
   gnset <- na.omit(unlist(lapply(targets$t_gn_sym, function(i) 
@@ -155,35 +159,53 @@ tsea_mGSEA <- function(drugs,
     return(gsego)
   }
   
+  # convert gnset symbol to entrez
+  OrgDb <- load_OrgDb("org.Hs.eg.db")
+  gnset_map <- suppressMessages(AnnotationDbi::select(OrgDb, keys = gnset, 
+                          keytype = "SYMBOL", columns = "ENTREZID"))
+  gnset_entrez <- as.character(na.omit(gnset_map$ENTREZID))
+  # give scores to gnset_entrez
+  tar_tab <- table(gnset_entrez)
+  tar_dup <- as.numeric(tar_tab); names(tar_dup) <- names(tar_tab)
+  tar_weight <- sort(tar_dup/sum(tar_dup), decreasing = TRUE)
+  
   if(type=="KEGG"){
     # Get universe genes in KEGG annotation system
     KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
     keggterms <- get("PATHID2EXTID", KEGG_DATA)
     universe <- unique(unlist(keggterms))
     
-    # convert gnset symbol to entrez
-    OrgDb <- load_OrgDb("org.Hs.eg.db")
-    gnset_entrez <- suppressMessages(
-      AnnotationDbi::select(OrgDb, keys = gnset, 
-                            keytype = "SYMBOL", columns = "ENTREZID"))
-    gnset_entrez2 <- as.character(na.omit(gnset_entrez$ENTREZID))
-    # give scores to gnset_entrez2
-    tar_tab <- table(gnset_entrez2)
-    tar_dup <- as.numeric(tar_tab); names(tar_dup) <- names(tar_tab)
-    tar_weight <- sort(tar_dup/sum(tar_dup), decreasing = TRUE)
-    
-    tar_diff <- setdiff(universe, gnset_entrez2)
+    tar_diff <- setdiff(universe, gnset_entrez)
     tar_diff_weight <- rep(0, length(tar_diff))
     names(tar_diff_weight) <- tar_diff
     tar_total_weight <- c(tar_weight, tar_diff_weight)
     
-    gsekk <- gseKEGG2(geneList=tar_total_weight, organism='hsa', 
-                      keyType='kegg', nPerm = nPerm, verbose = verbose, 
-                      minGSSize = minGSSize, maxGSSize=maxGSSize, 
-                      pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod)
-    if(is.null(gsekk))
-        return(NULL)
-    drugs(gsekk) <- drugs
-    return(gsekk)
+    gse_res <- gseKEGG2(geneList=tar_total_weight, organism='hsa', keyType='kegg',
+                        nPerm=nPerm, exponent=exponent,
+                        minGSSize = minGSSize, maxGSSize=maxGSSize, 
+                        pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod,
+                        verbose = verbose)
   }
+  
+  if(type=="Reactome"){
+    # Get universe genes in Reactome annotation system
+    Reactome_DATA <- get_Reactome_DATA(organism="human")
+    raterms <- get("PATHID2EXTID", Reactome_DATA)
+    universe <- unique(unlist(raterms))
+    
+    tar_diff <- setdiff(universe, gnset_entrez)
+    tar_diff_weight <- rep(0, length(tar_diff))
+    names(tar_diff_weight) <- tar_diff
+    tar_total_weight <- c(tar_weight, tar_diff_weight)
+    
+    gse_res <- gseReactome(geneList=tar_total_weight, organism='human', 
+                           exponent=exponent, nPerm=nPerm,
+                           minGSSize = minGSSize, maxGSSize=maxGSSize, 
+                           pvalueCutoff=pvalueCutoff, pAdjustMethod= pAdjustMethod,
+                           verbose = verbose)
+  }
+  
+  if(!is.null(gse_res))
+    drugs(gse_res) <- drugs
+  return(gse_res)
 }

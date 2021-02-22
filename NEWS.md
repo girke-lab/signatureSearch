@@ -1,3 +1,6 @@
+### Changes in version 1.5.2 (2021-02-22)
++ Supported 3 enrichment methods in TSEA on Reactome pathway
+
 ### Changes in version 1.2.4 (2020-08-14)
 + Supported defining gene set database from score matrix by setting higher, lower,
 as well as padj cutoffs for gCMAP and Fisher GESS methods

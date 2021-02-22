@@ -34,9 +34,9 @@
 #' Internally, drug test sets are translated to the corresponding target protein
 #' test sets based on the drug-target annotations provided under the 
 #' \code{dt_anno} argument.
-#' @param type one of `GO` or `KEGG`
+#' @param type one of `GO`, `KEGG` or `Reactome`
 #' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of
-#' `BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.
+#' `BP`,`MF`, `CC` or `ALL`. If type is `KEGG` or `Reactome`, \code{ont} is ignored.
 #' @param nPerm integer, permutation number used to calculate p-values
 #' @param pAdjustMethod p-value adjustment method, 
 #' one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'
@@ -60,13 +60,16 @@
 #' @examples 
 #' data(drugs10)
 #' ## GO annotation system
-#' #mabs_res <- tsea_mabs(drugs=drugs10, type="GO", ont="MF", nPerm=1000, 
-#' #                      pvalueCutoff=0.05, minGSSize=5)
-#' #result(mabs_res)
+#' #res1 <- tsea_mabs(drugs=drugs10, type="GO", ont="MF", nPerm=1000, 
+#' #                  pvalueCutoff=0.05, minGSSize=5)
+#' #result(res1)
 #' ## KEGG annotation system
-#' #mabs_k_res <- tsea_mabs(drugs=drugs10, type="KEGG", nPerm=1000, 
-#' #                        pvalueCutoff=0.05, minGSSize=5)
-#' #result(mabs_k_res)
+#' #res2 <- tsea_mabs(drugs=drugs10, type="KEGG", nPerm=1000, 
+#' #                  pvalueCutoff=0.05, minGSSize=5)
+#' #result(res2)
+#' ## Reactome annotation system
+#' #res3 <- tsea_mabs(drugs=drugs10, type="Reactome", pvalueCutoff=1)
+#' #result(res3)
 #' @export
 #' 
 tsea_mabs <- function(drugs, 
@@ -75,6 +78,9 @@ tsea_mabs <- function(drugs,
                       pAdjustMethod="BH", pvalueCutoff=0.05,
                       minGSSize=5, maxGSSize=500, 
                       dt_anno="all"){
+  if(!any(type %in% c("GO", "KEGG", "Reactome"))){
+    stop('"type" argument needs to be one of "GO", "KEGG" or "Reactome"')
+  }
   drugs <- unique(tolower(drugs))
   targets <- get_targets(drugs, database = dt_anno)
   gnset <- na.omit(unlist(lapply(targets$t_gn_sym, function(i) 
@@ -100,35 +106,53 @@ tsea_mabs <- function(drugs,
     drugs(mabsgo) <- drugs
     return(mabsgo)
   }
+
+  # convert gnset symbol to entrez
+  OrgDb <- load_OrgDb("org.Hs.eg.db")
+  gnset_map <- suppressMessages(AnnotationDbi::select(OrgDb, keys = gnset, 
+                                  keytype = "SYMBOL", columns = "ENTREZID"))
+  gnset_entrez <- as.character(na.omit(gnset_map$ENTREZID))
+  # give scores to gnset_entrez
+  tar_tab <- table(gnset_entrez)
+  tar_dup <- as.numeric(tar_tab); names(tar_dup) <- names(tar_tab)
+  tar_weight <- sort(tar_dup/sum(tar_dup), decreasing = TRUE)
   
   if(type=="KEGG"){
     # Get universe genes in KEGG annotation system
     KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
     keggterms <- get("PATHID2EXTID", KEGG_DATA)
     universe <- unique(unlist(keggterms))
-    # convert gnset symbol to entrez
-    OrgDb <- load_OrgDb("org.Hs.eg.db")
-    gnset_entrez <- suppressMessages(
-      AnnotationDbi::select(OrgDb, keys = gnset, 
-                            keytype = "SYMBOL", columns = "ENTREZID"))
-    gnset_entrez2 <- as.character(na.omit(gnset_entrez$ENTREZID))
-    # give scores to gnset_entrez2
-    tar_tab <- table(gnset_entrez2)
-    tar_dup <- as.numeric(tar_tab); names(tar_dup) <- names(tar_tab)
-    tar_weight <- sort(tar_dup/sum(tar_dup), decreasing = TRUE)
     
-    tar_diff <- setdiff(universe, gnset_entrez2)
+    tar_diff <- setdiff(universe, gnset_entrez)
     tar_diff_weight <- rep(0, length(tar_diff))
     names(tar_diff_weight) <- tar_diff
     tar_total_weight <- c(tar_weight, tar_diff_weight)
 
-    mabskk <- mabsKEGG(geneList=tar_total_weight, organism='hsa', 
+    mabs_res <- mabsKEGG(geneList=tar_total_weight, organism='hsa', 
                        keyType='kegg', nPerm = nPerm, 
                        minGSSize = minGSSize, maxGSSize=maxGSSize, 
                        pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod)
-    if(is.null(mabskk))
-      return(NULL)
-    drugs(mabskk) <- drugs
-    return(mabskk)
   }
+  
+  if(type=="Reactome"){
+    # Get universe genes in Reactome annotation system
+    Reactome_DATA <- get_Reactome_DATA(organism="human")
+    raterms <- get("PATHID2EXTID", Reactome_DATA)
+    universe <- unique(unlist(raterms))
+    
+    tar_diff <- setdiff(universe, gnset_entrez)
+    tar_diff_weight <- rep(0, length(tar_diff))
+    names(tar_diff_weight) <- tar_diff
+    tar_total_weight <- c(tar_weight, tar_diff_weight)
+    
+    mabs_res <- mabsReactome(geneList=tar_total_weight, organism='human', 
+                             nPerm = nPerm, 
+                             minGSSize = minGSSize, maxGSSize=maxGSSize, 
+                             pvalueCutoff=pvalueCutoff, pAdjustMethod=pAdjustMethod)
+  }
+  
+  if(is.null(mabs_res))
+    return(NULL)
+  drugs(mabs_res) <- drugs
+  return(mabs_res)
 }

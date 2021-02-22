@@ -26,13 +26,13 @@
 #' to develop novel drug repurposing approaches.
 #' 
 #' Second, specialized functional enrichment analysis (FEA) methods using 
-#' annotations systems, such as Gene Ontologies (GO), pathways or Disease 
-#' Ontologies (DO), have been developed and implemented in this package to 
+#' annotations systems, such as Gene Ontologies (GO), KEGG and Reactome pathways 
+#'  have been developed and implemented in this package to 
 #' efficiently interpret GESS results. The latter are usually composed of lists 
 #' of perturbagens (e.g. drugs) ranked by the similarity metric of the 
 #' corresponding GESS method.
 #' 
-#' Finally, network resconstruction functionalities are integrated for 
+#' Finally, network reconstruction functionalities are integrated for 
 #' visualizing the final results, e.g. in form of drug-target networks.
 #' 
 #' @section Terminology:
