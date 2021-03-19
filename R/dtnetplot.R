@@ -9,10 +9,11 @@
 #' plot.
 #' @title Drug-Target Network Visualization
 #' @param drugs A character vector of drug names
-#' @param set character(1) GO term ID or KEGG pathway ID. Alternatively, a
-#' character vector of gene SYMBOLs can be assigned.
+#' @param set character(1) GO term ID, KEGG or Reactome pathway ID. 
+#' Alternatively, a character vector of gene SYMBOLs can be assigned.
 #' @param ont if `set` is a GO term ID, `ont` is the corresponding ontology 
-#' that GO term belongs to. One of 'BP', 'MF' or 'CC'
+#' that GO term belongs to. One of 'BP', 'MF' or 'CC'. If `set` is anything else,
+#' `ont` is ignored.
 #' @param desc character(1), description of the chosen functional category or 
 #' target set
 #' @param verbose TRUE or FALSE, whether to print messages
@@ -35,25 +36,30 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, verbose=FALSE, ...) {
     ont %<>% toupper
     if(is.null(ont) | !any(ont %in% c("BP","MF","CC"))) 
       stop("The 'set' is a GO term ID, please set 'ont' as one of 
-           BP, MF or CC")
+           'MF', 'BP' or 'CC'")
     # download goAnno.rds and save it to cache
     eh <- suppressMessages(ExperimentHub())
     goAnno <- suppressMessages(eh[["EH3229"]])
     go_gene <- unique(goAnno$SYMBOL[goAnno$ONTOLOGYALL == ont & 
                                       goAnno$GOALL == set])
-  } else if(grepl("hsa\\d{5}",set)[1]){
-    KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
-    p2e <- get("PATHID2EXTID", envir=KEGG_DATA)
-    go_gene_entrez = p2e[[set]]
-    # convert Entrez ids in KEGG pathways to gene SYMBOL
-    OrgDb <- load_OrgDb("org.Hs.eg.db")
-    go_gene_map <- suppressMessages(
-      select(OrgDb, keys = go_gene_entrez, keytype = "ENTREZID", 
-             columns="SYMBOL"))
-    go_gene <- unique(go_gene_map$SYMBOL)
-  } else {
-      go_gene <- set
-  }
+  } else if(length(set) > 1){
+    go_gene <- set
+    } else {
+      if(grepl("hsa\\d{5}",set)[1]){
+        KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
+        p2e <- get("PATHID2EXTID", envir=KEGG_DATA)
+      }
+      if(grepl("R-HSA",set)[1]){
+        Reactome_DATA <- get_Reactome_DATA(organism="human")
+        p2e <- get("PATHID2EXTID", envir=Reactome_DATA)
+      }
+      go_gene_entrez = p2e[[set]]
+      # convert Entrez ids in KEGG pathways to gene SYMBOL
+      OrgDb <- load_OrgDb("org.Hs.eg.db")
+      go_gene_map <- suppressMessages(AnnotationDbi::select(
+        OrgDb, keys = go_gene_entrez, keytype = "ENTREZID", columns="SYMBOL"))
+      go_gene <- unique(go_gene_map$SYMBOL)
+      }
   
   # get drug targets in DrugBank, STITCH, LINCS and calculate targets weight
   dtslash <- get_targets(drugs, database="all")

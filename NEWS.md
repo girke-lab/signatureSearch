@@ -1,3 +1,6 @@
+### Changes in version 1.5.3 (2021-03-18)
++ Supported dtnetplot on Reactome pathway
+
 ### Changes in version 1.5.2 (2021-02-22)
 + Supported 3 enrichment methods in TSEA on Reactome pathway
 

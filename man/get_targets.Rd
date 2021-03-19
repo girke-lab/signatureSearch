@@ -4,7 +4,7 @@
 \alias{get_targets}
 \title{Target Gene/Protein IDs for Query Drugs}
 \usage{
-get_targets(drugs, database = "all", verbose = FALSE)
+get_targets(drugs, database = "all", verbose = TRUE, collapse = FALSE)
 }
 \arguments{
 \item{drugs}{character vector of drug names}
@@ -14,10 +14,16 @@ get_targets(drugs, database = "all", verbose = FALSE)
 and STITCH databases will be combined.}
 
 \item{verbose}{TRUE or FALSE, whether to print messages}
+
+\item{collapse}{TRUE or FALSE. If setting as FALSE, the result is a 
+data.frame of target gene symbols of each drug. If TRUE, the targets are 
+collapsed to be a character vector with duplications if different drugs 
+have the same targets.}
 }
 \value{
 data.frame, one column contains the query drug names and the other 
-target gene symbols.
+target gene symbols if \code{collapse} is FALSE. A character vetor if
+\code{collapse} is TRUE.
 }
 \description{
 This function returns for a set of query drug names/ids the corresponding

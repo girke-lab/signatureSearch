@@ -9,11 +9,12 @@ dtnetplot(drugs, set, ont = NULL, desc = NULL, verbose = FALSE, ...)
 \arguments{
 \item{drugs}{A character vector of drug names}
 
-\item{set}{character(1) GO term ID or KEGG pathway ID. Alternatively, a
-character vector of gene SYMBOLs can be assigned.}
+\item{set}{character(1) GO term ID, KEGG or Reactome pathway ID. 
+Alternatively, a character vector of gene SYMBOLs can be assigned.}
 
 \item{ont}{if `set` is a GO term ID, `ont` is the corresponding ontology 
-that GO term belongs to. One of 'BP', 'MF' or 'CC'}
+that GO term belongs to. One of 'BP', 'MF' or 'CC'. If `set` is anything else,
+`ont` is ignored.}
 
 \item{desc}{character(1), description of the chosen functional category or 
 target set}
