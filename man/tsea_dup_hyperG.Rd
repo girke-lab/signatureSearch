@@ -14,7 +14,8 @@ tsea_dup_hyperG(
   qvalueCutoff = 0.05,
   minGSSize = 5,
   maxGSSize = 500,
-  dt_anno = "all"
+  dt_anno = "all",
+  readable = FALSE
 )
 }
 \arguments{
@@ -53,6 +54,10 @@ recommended to set the 'dt_anno' to 'all' since it provides the most
 complete drug-target annotations. Choosing a single
 annotation source results in sparser drug-target annotations
 (particularly CLUE), and thus less complete enrichment results.}
+
+\item{readable}{TRUE or FALSE, it applies when type is `KEGG` or `Reactome`
+indicating whether to convert gene Entrez ids to gene Symbols in the 'itemID' 
+column in the result table.}
 }
 \value{
 \code{\link{feaResult}} object, the result table contains the

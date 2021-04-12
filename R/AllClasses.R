@@ -12,7 +12,7 @@ setClassUnion("charOrNum", c("character", "numeric", "NULL"))
 ##' @slot query If 'gess_method' is one of 'CMAP' or 'LINCS', 
 ##' this should be a list with two character vectors named \code{upset}
 ##' and \code{downset} for up- and down-regulated gene labels (here Entrez IDs),
-##' repectively.
+##' respectively.
 ##' 
 ##' If 'gess_method' is 'gCMAP', 'Fisher' or 'Cor', a single column matrix with
 ##' gene expression values should be assigned. The corresponding gene labels 

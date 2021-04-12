@@ -1,6 +1,7 @@
 ALLEXTID <- get("ALLEXTID", envir = asNamespace("DOSE"), inherits = FALSE)
 EXTID2TERMID <- get("EXTID2TERMID", envir = asNamespace("DOSE"), 
                     inherits = FALSE)
+EXTID2NAME <- get("EXTID2NAME", envir = asNamespace("DOSE"), inherits = FALSE)
 TERM2NAME <- get("TERM2NAME", envir = asNamespace("DOSE"), inherits = FALSE)
 TERMID2EXTID <- get("TERMID2EXTID", envir = asNamespace("DOSE"), 
                     inherits = FALSE)

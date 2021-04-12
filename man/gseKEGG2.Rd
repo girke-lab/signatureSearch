@@ -15,7 +15,8 @@ gseKEGG2(
   maxGSSize = 500,
   pvalueCutoff = 0.05,
   pAdjustMethod = "BH",
-  verbose = TRUE
+  verbose = TRUE,
+  readable = FALSE
 )
 }
 \arguments{
@@ -43,6 +44,9 @@ workers (default = 1)}
 \item{pAdjustMethod}{pvalue adjustment method}
 
 \item{verbose}{print message or not}
+
+\item{readable}{TRUE or FALSE indicating whether to convert gene Entrez ids
+to gene Symbols in the 'itemID' column in the FEA result table.}
 }
 \value{
 feaResult object

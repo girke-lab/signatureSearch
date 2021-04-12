@@ -81,6 +81,8 @@ gseGO2 <- function(geneList,
 ##' @param pvalueCutoff pvalue cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @param verbose print message or not
+##' @param readable TRUE or FALSE indicating whether to convert gene Entrez ids
+##' to gene Symbols in the 'itemID' column in the FEA result table.
 ##' @return feaResult object
 ##' @examples 
 ##' # Gene Entrez id should be used for KEGG enrichment
@@ -99,7 +101,7 @@ gseKEGG2 <- function(geneList,
                     maxGSSize         = 500,
                     pvalueCutoff      = 0.05,
                     pAdjustMethod     = "BH",
-                    verbose           = TRUE) {
+                    verbose           = TRUE, readable=FALSE) {
     species <- organismMapper(organism)
     KEGG_DATA <- prepare_KEGG(species, "KEGG", keyType)
     res <-  GSEA_internal2(geneList = geneList,
@@ -115,7 +117,7 @@ gseKEGG2 <- function(geneList,
 
     if (is.null(res))
         return(res)
-
+    if(readable) result(res) <- set_readable(result(res), geneCol="leadingEdge")
     og(res) <- species
     ont(res) <- "KEGG"
 
@@ -137,6 +139,10 @@ gseKEGG2 <- function(geneList,
 ##' @param pvalueCutoff pvalue Cutoff
 ##' @param pAdjustMethod pvalue adjustment method
 ##' @param verbose print message or not
+##' TRUE or FALSE indicating whether to convert gene Entrez ids
+##' to gene Symbols in the 'itemID' column in the FEA result table.
+##' @param readable TRUE or FALSE indicating whether to convert gene Entrez ids
+##' to gene Symbols in the 'itemID' column in the FEA result table.
 ##' @return feaResult object
 ##' @examples 
 ##' # Gene Entrez id should be used for Reactome enrichment
@@ -152,7 +158,7 @@ gseReactome <- function(geneList,
                         maxGSSize     = 500,
                         pvalueCutoff  = 0.05,
                         pAdjustMethod = "BH",
-                        verbose       = TRUE){
+                        verbose       = TRUE, readable=FALSE){
     Reactome_DATA <- get_Reactome_DATA(organism)
     
     res <- GSEA_internal2(geneList = geneList,
@@ -168,6 +174,7 @@ gseReactome <- function(geneList,
     
     if (is.null(res))
         return(res)
+    if(readable) result(res) <- set_readable(result(res), geneCol="leadingEdge")
     og(res) <- organism
     ont(res) <- "Reactome"
     return(res)

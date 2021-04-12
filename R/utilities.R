@@ -290,9 +290,9 @@ select_ont <- function(res, ont, GO_DATA){
     tmp_df <- result(res)
     colnames(tmp_df)[1] = "ont"
     tmp_df$ont = as.character(tmp_df$ont)
-    rst(res) <- tmp_df
+    result(res) <- tmp_df
     if(ont != "ALL")
-        rst(res) <- as_tibble(res[res$ont == ont, ])
+        result(res) <- as_tibble(res[res$ont == ont, ])
     return(res)
 }
 
@@ -555,4 +555,47 @@ read_gmt <- function(file, start=1, end=-1){
     })
     geneSetDB <- geneSetDB[sapply(geneSetDB, length)>0 & !is.na(names(geneSetDB))]
     return(geneSetDB)
+}
+
+##' Mapping 'itemID' column in the FEA enrichment result table from Entrez ID
+##' to gene Symbol
+##'
+##' @title Set Readable
+##' @param tb tibble object, enrichment result table
+##' @param OrgDb character(1), 'org.Hs.eg.db' for human
+##' @param keyType character(1), keyType of gene
+##' @param geneCol character(1), name of the column in 'tb' containing gene
+##' Entrez ids separated by '/' to be converted to gene Symbol
+##' @return tibble Object
+##' @importFrom stats setNames
+##' @importFrom AnnotationDbi columns
+##' @examples 
+##' data(drugs10)
+##' res <- tsea_dup_hyperG(drugs=drugs10, type="Reactome", pvalueCutoff=1, 
+##'                        qvalueCutoff=1)
+##' res_tb <- set_readable(result(res))
+##' @export
+set_readable <- function(tb, OrgDb="org.Hs.eg.db", keyType="ENTREZID", geneCol="itemID"){
+    OrgDb <- load_OrgDb(OrgDb)
+    if (!'SYMBOL' %in% columns(OrgDb)) {
+        warning("Fail to convert input geneID to SYMBOL since no SYMBOL information available in the provided OrgDb...")
+    }
+    
+    if(! geneCol %in% colnames(tb)){
+        stop("The column name defined under 'geneCol' must be contained in tb!")
+    }
+    gc <- setNames(strsplit(tb[[geneCol]], "/", fixed=TRUE), tb$ID)
+    genes <- unique(unlist(gc))
+    gn <- EXTID2NAME(OrgDb, genes, keyType)
+    gc <- lapply(gc, function(i) gn[i])
+    geneID <- sapply(gc, paste0, collapse="/")
+    
+    # gc_sym <- sapply(gc, function(genes){
+    #     gn_df <- suppressMessages(select(OrgDb, keys=genes, keytype=keyType, 
+    #                                      columns="SYMBOL"))
+    #     gn_sym <- paste0(na.omit(gn_df$SYMBOL), collapse="/")
+    #     return(gn_sym)})
+    
+    tb[[geneCol]] <- geneID
+    return(tb)
 }

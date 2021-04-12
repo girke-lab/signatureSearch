@@ -67,6 +67,8 @@ mabsGO <- function(geneList,
 ##' @param maxGSSize integer, maximum size of each gene set in annotation system
 ##' @param pvalueCutoff pvalue cutoff
 ##' @param pAdjustMethod pvalue adjustment method
+##' @param readable TRUE or FALSE indicating whether to convert gene Entrez ids
+##' to gene Symbols in the 'itemID' column in the FEA result table.
 ##' @return \code{\link{feaResult}} object
 ##' @examples 
 ##' # Gene Entrez id should be used for KEGG enrichment
@@ -82,7 +84,7 @@ mabsKEGG <- function(geneList,
                     minGSSize         = 5,
                     maxGSSize         = 500,
                     pvalueCutoff      = 0.05,
-                    pAdjustMethod     = "BH") {
+                    pAdjustMethod     = "BH", readable=FALSE) {
 
     species <- organismMapper(organism)
     KEGG_DATA <- prepare_KEGG(species, "KEGG", keyType)
@@ -97,7 +99,7 @@ mabsKEGG <- function(geneList,
 
     if (is.null(res))
         return(res)
-
+    if(readable) result(res) <- set_readable(result(res))
     og(res) <- species
     ont(res) <- "KEGG"
     return(res)
@@ -115,6 +117,8 @@ mabsKEGG <- function(geneList,
 ##' @param maxGSSize integer, maximum size of each gene set in annotation system
 ##' @param pvalueCutoff pvalue cutoff
 ##' @param pAdjustMethod pvalue adjustment method
+##' @param readable TRUE or FALSE indicating whether to convert gene Entrez ids
+##' to gene Symbols in the 'itemID' column in the FEA result table.
 ##' @return \code{\link{feaResult}} object
 ##' @examples 
 ##' # Gene Entrez id should be used for Reactome enrichment
@@ -127,7 +131,7 @@ mabsReactome <- function(geneList, organism='human',
                          minGSSize         = 5,
                          maxGSSize         = 500,
                          pvalueCutoff      = 0.05,
-                         pAdjustMethod     = "BH") {
+                         pAdjustMethod     = "BH", readable=FALSE) {
     Reactome_DATA <- get_Reactome_DATA(organism)
     
     res <-  mabs_internal(geneList = geneList,
@@ -140,7 +144,7 @@ mabsReactome <- function(geneList, organism='human',
     
     if (is.null(res))
         return(res)
-    
+    if(readable) result(res) <- set_readable(result(res))
     og(res) <- organism
     ont(res) <- "Reactome"
     return(res)

@@ -1,3 +1,11 @@
+### Changes in version 1.5.3 (2021-04-12)
++ Created `cellNtestPlot` function to visualize number of compounds tested in 
+cell types along with primary site information
++ Added `get_treat_info` function to get the treatment information in reference database 
+including `pert`, `cell`, `pert_type` columns.
++ Supported `setReadable` function and `readable` argument in TSEA functions to 
+convert Entrez id to gene Symbols in the itemID column in the enrichment result table.
+
 ### Changes in version 1.5.3 (2021-03-18)
 + Supported dtnetplot on Reactome pathway
 

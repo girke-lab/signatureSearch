@@ -120,6 +120,7 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
 #' @importFrom readr read_tsv
 #' @importFrom dplyr mutate
 #' @importFrom dplyr rename
+#' @import ggplot2
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank

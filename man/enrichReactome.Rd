@@ -14,7 +14,8 @@ enrichReactome(
   qvalueCutoff = 0.2,
   universe,
   minGSSize = 5,
-  maxGSSize = 500
+  maxGSSize = 500,
+  readable = FALSE
 )
 }
 \arguments{
@@ -35,6 +36,9 @@ enrichReactome(
 \item{minGSSize}{minimal size of genes annotated by functional term for testing.}
 
 \item{maxGSSize}{maximal size of each gene set for analyzing}
+
+\item{readable}{TRUE or FALSE indicating whether to convert gene Entrez ids
+to gene Symbols in the 'itemID' column in the FEA result table.}
 }
 \value{
 A \code{feaResult} instance.

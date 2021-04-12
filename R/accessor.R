@@ -158,7 +158,7 @@ ont <- function(x) x@ontology
 `ont<-` <- function(x, value){
     x@ontology <- value
     return(x)}
-`rst<-` <- function(x, value){
+`result<-` <- function(x, value){
     x@result <- value
     return(x)}
 

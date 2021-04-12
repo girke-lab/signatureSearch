@@ -45,7 +45,7 @@ drug_moa_df <- unique(drug_moa_df[drug_moa_df$moa != "-666",])
 moa_list <- split(drug_moa_df$drug, drug_moa_df$moa) # 701
 drug2moa <- split(drug_moa_df$moa, drug_moa_df$drug)
 saveRDS(moa_list, "data/clue_ts_moa_list_1.2.rds")
-# moa_list <- readRDS("~/insync/project/application_reproduce/data/clue_ts_moa_list_1.2.rds")
+# moa_list <- readRDS("~/insync/project/discover_paper_analysis/data/clue_ts_moa_list_1.2.rds")
 
 clue_moa_list <- moa_list
 usethis::use_data(clue_moa_list, overwrite=TRUE)

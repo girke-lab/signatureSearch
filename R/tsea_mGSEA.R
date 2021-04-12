@@ -100,6 +100,9 @@
 #' complete drug-target annotations. Choosing a single
 #' annotation source results in sparser drug-target annotations 
 #' (particularly CLUE), and thus less complete enrichment results.
+#' @param readable TRUE or FALSE, it applies when type is `KEGG` or `Reactome`
+#' indicating whether to convert gene Entrez ids to gene Symbols in the 'itemID' 
+#' column in the result table.
 #' @return \code{\link{feaResult}} object, the result table contains the
 #' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
 #' the corresponding enrichment statistic.
@@ -128,7 +131,7 @@
 tsea_mGSEA <- function(drugs, type="GO", ont="MF", nPerm=1000, exponent=1, 
                        pAdjustMethod="BH", pvalueCutoff=0.05,
                        minGSSize=5, maxGSSize=500, verbose=FALSE,
-                       dt_anno="all"){
+                       dt_anno="all", readable=FALSE){
   if(!any(type %in% c("GO", "KEGG", "Reactome"))){
     stop('"type" argument needs to be one of "GO", "KEGG" or "Reactome"')
   }
@@ -184,7 +187,7 @@ tsea_mGSEA <- function(drugs, type="GO", ont="MF", nPerm=1000, exponent=1,
                         nPerm=nPerm, exponent=exponent,
                         minGSSize = minGSSize, maxGSSize=maxGSSize, 
                         pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod,
-                        verbose = verbose)
+                        verbose = verbose, readable=readable)
   }
   
   if(type=="Reactome"){
@@ -202,7 +205,7 @@ tsea_mGSEA <- function(drugs, type="GO", ont="MF", nPerm=1000, exponent=1,
                            exponent=exponent, nPerm=nPerm,
                            minGSSize = minGSSize, maxGSSize=maxGSSize, 
                            pvalueCutoff=pvalueCutoff, pAdjustMethod= pAdjustMethod,
-                           verbose = verbose)
+                           verbose = verbose, readable=readable)
   }
   
   if(!is.null(gse_res))

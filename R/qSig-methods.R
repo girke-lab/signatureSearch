@@ -44,7 +44,7 @@
 ##' 
 ##' When the \code{gess_method} is set as 'gCMAP' or 'Fisher', it could also be 
 ##' the file path to the HDF5 file converted from the gmt file containing 
-##' gene sets by using \code{gmt2h5} function. For example, the gmt files 
+##' gene sets by using \code{\link{gmt2h5}} function. For example, the gmt files 
 ##' could be from the MSigDB 
 ##' \url{https://www.gsea-msigdb.org/gsea/msigdb/index.jsp} 
 ##' or GSKB \url{http://ge-lab.org/#/data}.
@@ -52,7 +52,7 @@
 ##' @return \code{qSig} object
 ##' @seealso \code{\link{build_custom_db}}, 
 ##' \code{\link[signatureSearchData]{signatureSearchData}},
-##' \code{\link{gmt2h5}}
+##' \code{\link{gmt2h5}}, \code{\link{qSig-class}}
 ##' @examples 
 ##' db_path <- system.file("extdata", "sample_db.h5", 
 ##'                        package = "signatureSearch")
@@ -61,7 +61,7 @@
 ##' sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
 ##' rownames(sample_db) <- HDF5Array(db_path, name="rownames")
 ##' colnames(sample_db) <- HDF5Array(db_path, name="colnames")
-##' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
+##' ## get "vorinostat__SKB__trt_cp" signature drawn from sample database
 ##' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
 ##' query = as.numeric(query_mat); names(query) = rownames(query_mat)
 ##' upset <- head(names(query[order(-query)]), 150)

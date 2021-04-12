@@ -81,6 +81,8 @@ enrichGO2 <- function(gene,
 ##' ontology term for testing.
 ##' @param maxGSSize maximal size of genes annotated for testing
 ##' @param qvalueCutoff qvalue cutoff
+##' @param readable TRUE or FALSE indicating whether to convert gene Entrez ids
+##' to gene Symbols in the 'itemID' column in the FEA result table.
 ##' @return A \code{feaResult} instance.
 ##' @importMethodsFrom AnnotationDbi mappedkeys
 ##' @importMethodsFrom AnnotationDbi mget
@@ -100,7 +102,7 @@ enrichKEGG2 <- function(gene,
                         universe,
                         minGSSize         = 5,
                         maxGSSize         = 500,
-                        qvalueCutoff      = 0.2) {
+                        qvalueCutoff      = 0.2, readable=FALSE) {
     
     species <- organismMapper(organism)
     KEGG_DATA <- prepare_KEGG(species, "KEGG", keyType)
@@ -114,6 +116,7 @@ enrichKEGG2 <- function(gene,
                              USER_DATA = KEGG_DATA)
     if (is.null(res))
         return(res)
+    if(readable) result(res) <- set_readable(result(res))
     ont(res) <- "KEGG"
     og(res) <- species
     return(res)
@@ -178,6 +181,8 @@ enrichMOA <- function(gene,
 ##' @param universe background genes
 ##' @param minGSSize minimal size of genes annotated by functional term for testing.
 ##' @param maxGSSize maximal size of each gene set for analyzing
+##' @param readable TRUE or FALSE indicating whether to convert gene Entrez ids
+##' to gene Symbols in the 'itemID' column in the FEA result table.
 ##' @return A \code{feaResult} instance.
 ##' @export
 ##' @seealso \code{\link{feaResult-class}}
@@ -190,7 +195,7 @@ enrichMOA <- function(gene,
 enrichReactome <- function(gene, organism="human",
                            pvalueCutoff=0.05, pAdjustMethod="BH",
                            qvalueCutoff=0.2, universe,
-                           minGSSize=5, maxGSSize=500){
+                           minGSSize=5, maxGSSize=500, readable=FALSE){
     
     Reactome_DATA <- get_Reactome_DATA(organism)
     
@@ -205,6 +210,7 @@ enrichReactome <- function(gene, organism="human",
     
     if (is.null(res))
         return(res)
+    if(readable) result(res) <- set_readable(result(res))
     og(res) <- organism
     ont(res) <- "Reactome"
     return(res)

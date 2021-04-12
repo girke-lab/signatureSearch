@@ -54,6 +54,9 @@
 #' complete drug-target annotations. Choosing a single
 #' annotation source results in sparser drug-target annotations
 #' (particularly CLUE), and thus less complete enrichment results.
+#' @param readable TRUE or FALSE, it applies when type is `KEGG` or `Reactome`
+#' indicating whether to convert gene Entrez ids to gene Symbols in the 'itemID' 
+#' column in the result table.
 #' @return \code{\link{feaResult}} object, the result table contains the
 #' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
 #' the corresponding enrichment statistic.
@@ -81,7 +84,7 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
                             pAdjustMethod="BH", pvalueCutoff=0.05, 
                             qvalueCutoff=0.05, 
                             minGSSize=5, maxGSSize=500,
-                            dt_anno="all"){
+                            dt_anno="all", readable=FALSE){
   # message("The query drugs [", length(drugs),"] are: \n", 
   #         paste0(drugs[seq_len(min(length(drugs), 10))], sep ="  "), "...")
 
@@ -128,7 +131,7 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
     eres <- enrichKEGG2(gene=gnset_entrez, organism="hsa", keyType="kegg", 
                       pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
                       pAdjustMethod=pAdjustMethod, universe=universe, 
-                      minGSSize=minGSSize, maxGSSize=maxGSSize)
+                      minGSSize=minGSSize, maxGSSize=maxGSSize, readable=readable)
   }
   
   if(type=="Reactome"){
@@ -141,7 +144,7 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
     eres <- enrichReactome(gene=gnset_entrez, organism="human",
                            pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff, 
                            pAdjustMethod=pAdjustMethod, universe=universe,
-                           minGSSize=minGSSize, maxGSSize=maxGSSize)
+                           minGSSize=minGSSize, maxGSSize=maxGSSize, readable=readable)
   }
 
   if(!is.null(eres)){

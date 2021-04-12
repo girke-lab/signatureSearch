@@ -13,7 +13,8 @@ enrichKEGG2(
   universe,
   minGSSize = 5,
   maxGSSize = 500,
-  qvalueCutoff = 0.2
+  qvalueCutoff = 0.2,
+  readable = FALSE
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ ontology term for testing.}
 \item{maxGSSize}{maximal size of genes annotated for testing}
 
 \item{qvalueCutoff}{qvalue cutoff}
+
+\item{readable}{TRUE or FALSE indicating whether to convert gene Entrez ids
+to gene Symbols in the 'itemID' column in the FEA result table.}
 }
 \value{
 A \code{feaResult} instance.

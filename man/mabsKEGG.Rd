@@ -12,7 +12,8 @@ mabsKEGG(
   minGSSize = 5,
   maxGSSize = 500,
   pvalueCutoff = 0.05,
-  pAdjustMethod = "BH"
+  pAdjustMethod = "BH",
+  readable = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,9 @@ URL: http://www.genome.jp/kegg/catalog/org_list.html}
 \item{pvalueCutoff}{pvalue cutoff}
 
 \item{pAdjustMethod}{pvalue adjustment method}
+
+\item{readable}{TRUE or FALSE indicating whether to convert gene Entrez ids
+to gene Symbols in the 'itemID' column in the FEA result table.}
 }
 \value{
 \code{\link{feaResult}} object

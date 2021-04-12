@@ -36,7 +36,7 @@ pre code, pre, code {
 ```{r global_options, include=FALSE, warning=FALSE}                                            
 ## ThG: chunk added to enable global knitr options. The below turns on 
 ## caching for faster vignette re-build during text editing.                                      
-knitr::opts_chunk$set(cache=FALSE)                                                  
+knitr::opts_chunk$set(cache=TRUE)                                                  
 ```            
 
 ```{r setup, echo=FALSE, messages=FALSE, warning=FALSE}
@@ -644,6 +644,20 @@ the `gess_lincs` method. The drugs included here are the 10 top ranking drugs
 of the search result plus 10 cherry-picked drugs that are all HDAC inhibitors. 
 Additional details are provided in the text of this sub-section. </font>
 
+The `cellNtestPlot` function allows to summarize the number of
+perturbagens tested in cell types along with cell type primary site information, 
+such as blood or muscle. The following bar plot (Figure 4) show the number of
+tested compounds (along x-axis) in 30 cell types (y-axis), the text in the strips 
+show the primary sites of cells in the LINCS database. 
+```{r cellntest, eval=TRUE}
+# cellNtestPlot(refdb="lincs")
+knitr::include_graphics("images/lincs_cell_ntest.png")
+```
+
+<font size="-2"> Figure 4: Number of tested compounds (along x-axis) in 30 cell 
+types (y-axis) in LINCS database. The text in the strips show the primary sites 
+of cells. </font>
+
 ## Batch Processing of GESSs
 
 The above 5 GESS methods support searching reference database parallelly by 
@@ -931,8 +945,8 @@ under section 4.1.1.1.
 The same enrichment test can be performed for Reactome pathways as follows.
 
 ```{r tsea_dup_hyperG_reactome, eval=TRUE, message=FALSE}
-dup_rct_res <- tsea_dup_hyperG(drugs = drugs, type = "Reactome",
-                               pvalueCutoff=0.5, qvalueCutoff = 0.5)
+dup_rct_res <- tsea_dup_hyperG(drugs=drugs, type="Reactome",
+                               pvalueCutoff=0.5, qvalueCutoff=0.5, readable=TRUE)
 result(dup_rct_res)
 ```
 
@@ -1042,7 +1056,8 @@ under sections 4.1.1.1 and 4.1.2.1.
 The same enrichment test can be performed for Reactome pathways as follows.
 
 ```{r tsea_mgsea_rct, eval=TRUE, message=FALSE}
-mgsea_rct_res <- tsea_mGSEA(drugs=drugs, type="Reactome", pvalueCutoff=1)
+mgsea_rct_res <- tsea_mGSEA(drugs=drugs, type="Reactome", pvalueCutoff=1,
+                            readable=TRUE)
 result(mgsea_rct_res)
 ```
 
@@ -1096,7 +1111,8 @@ result(mabs_k_res)
 The same enrichment test can be performed for Reactome pathways as follows.
 
 ```{r tsea_mabs_rct, eval=TRUE, message=FALSE}
-mabs_rct_res <- tsea_mabs(drugs=drugs, type="Reactome", pvalueCutoff=1)
+mabs_rct_res <- tsea_mabs(drugs=drugs, type="Reactome", pvalueCutoff=1,
+                          readable=TRUE)
 result(mabs_rct_res)
 ```
 
@@ -1205,7 +1221,7 @@ table_list = list("dup_hyperG" = result(dup_hyperG_res),
 comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ```
 
-<font size="-2"> Figure 4: Ranking comparison of top GO terms across FEA
+<font size="-2"> Figure 5: Ranking comparison of top GO terms across FEA
 methods. The dots in the plot represent the p-values of the 20 top ranking MF
 GO terms (y-axis) with heat color coding according to the color gradient in the 
 legend on the right. The GO terms have been ordered from the top to the bottom 
@@ -1221,7 +1237,7 @@ table_list = list("dup_hyperG" = result(dup_hyperG_k_res),
 comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ```
 
-<font size="-2"> Figure 5: Ranking comparison among top KEGG pathways across FEA
+<font size="-2"> Figure 6: Ranking comparison among top KEGG pathways across FEA
 methods. The plot depicts the same information as the previous plot but using 
 KEGG pathways instead of GO terms as functional annotation system. </font>
 
@@ -1259,7 +1275,7 @@ dtnetplot(drugs = drugs(dup_hyperG_res), set = "GO:0032041", ont = "MF",
           desc="NAD-dependent histone deacetylase activity (H3-K14 specific)")
 ```
 
-<font size="-2"> Figure 6: Drug-target network for *NAD-dependent histone
+<font size="-2"> Figure 7: Drug-target network for *NAD-dependent histone
 deacetylase activity*. The given network graph illustrates the interactions
 among drugs and their target proteins in the chosen pathway. Only drugs with at
 least one target protein are included. The nodes in the network represent drugs
@@ -1274,8 +1290,8 @@ dtnetplot(drugs = drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF",
           desc="NF-kappaB binding")
 ```
 
-<font size="-2"> Figure 7: Drug-target network for *NF-kappaB binding*. The 
-details of the plot are given in the legend of Figure 6.</font>
+<font size="-2"> Figure 8: Drug-target network for *NF-kappaB binding*. The 
+details of the plot are given in the legend of Figure 7.</font>
 
 ## With KEGG
 
@@ -1287,8 +1303,8 @@ dtnetplot(drugs = drugs(dup_hyperG_k_res), set = "hsa05034",
           desc="Alcoholism")
 ```
 
-<font size="-2"> Figure 8: Drug-target network for *Alcoholism*. The details of
-the plot are given in the legend of Figure 6.</font>
+<font size="-2"> Figure 9: Drug-target network for *Alcoholism*. The details of
+the plot are given in the legend of Figure 7.</font>
 
 Network for KEGG pathway: *Longevity regulating pathway* (hsa04213)
 ```{r dtnet_kegg_04213, eval=TRUE}
@@ -1296,8 +1312,8 @@ dtnetplot(drugs = drugs, set = "hsa04213",
           desc="Longevity regulating pathway - multiple species")
 ```
 
-<font size="-2"> Figure 9: Drug-target network for *Longevity regulating
-pathway*. The details of the plot are given in the legend of Figure 6.</font>
+<font size="-2"> Figure 10: Drug-target network for *Longevity regulating
+pathway*. The details of the plot are given in the legend of Figure 7.</font>
 
 # Run Workflow
 The `runWF` function supports running the entire GESS/FEA workflow automatically
