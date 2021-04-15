@@ -2,3 +2,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^vignettes/signatureSearch\.html$
+^vignettes/.*_cache$
+^vignettes/.*_files$

@@ -651,12 +651,19 @@ tested compounds (along x-axis) in 30 cell types (y-axis), the text in the strip
 show the primary sites of cells in the LINCS database. 
 ```{r cellntest, eval=TRUE}
 # cellNtestPlot(refdb="lincs")
+# ggsave("vignettes/images/lincs_cell_ntest.png", width=6, height=8)
 knitr::include_graphics("images/lincs_cell_ntest.png")
 ```
 
 <font size="-2"> Figure 4: Number of tested compounds (along x-axis) in 30 cell 
 types (y-axis) in LINCS database. The text in the strips show the primary sites 
 of cells. </font>
+
+The following table shows the LINCS cell information
+```{r cell_info, eval=TRUE}
+data("cell_info")
+DT::datatable(cell_info)
+```
 
 ## Batch Processing of GESSs
 

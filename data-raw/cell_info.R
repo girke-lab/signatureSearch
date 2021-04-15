@@ -15,4 +15,6 @@ cell_info %<>% dplyr::filter(base_cell_id %in% cell_name &
 # replace "primary" as "normal" in sample_type column
 cell_info %<>% mutate(cell_type=gsub("primary","normal",cell_type))
 #write_tsv(cell_info, "~/insync/project/GESS_and_FEA/data/cell_info.tsv")
-usethis::use_data("cell_info")
+# replace -666 as unknown
+cell_info[cell_info == "-666"] <- "unknown"
+usethis::use_data(cell_info, overwrite=TRUE)
