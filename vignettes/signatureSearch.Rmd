@@ -42,7 +42,7 @@ knitr::opts_chunk$set(cache=TRUE)
 ```{r setup, echo=FALSE, messages=FALSE, warning=FALSE}
 suppressPackageStartupMessages({
   library(signatureSearch)
-  library(ggplot2)
+  library(ggplot2); library(DT)
 })
 ```
 

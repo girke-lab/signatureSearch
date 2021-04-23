@@ -113,8 +113,8 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
   # add target column
   target <- suppressMessages(get_targets(res$pert))
   res <- left_join(res, target, by=c("pert"="drug_name"))
-  
-  x <- gessResult(result = as_tibble(res),
+  res <- add_pcid(as_tibble(res))
+  x <- gessResult(result = res,
                   query = qr(qSig),
                   gess_method = gm(qSig),
                   refdb = refdb(qSig))

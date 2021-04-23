@@ -255,6 +255,23 @@ NULL
 #' @keywords datasets
 "lincs_sig_info"
 
+#' LINCS Perturbation Information
+#' 
+#' It is a tibble containing LINCS perturbation information including perturbation
+#' name, type, whether in touchstone database, INCHI key, canonical smiles and 
+#' PubChem CID.
+#'
+#' @name lincs_pert_info
+#' @aliases lincs_pert_info
+#' @docType data
+#' @format A \code{tibble} object with 8,140 rows and 8 columns.
+#' @examples 
+#' # Load object
+#' data(lincs_pert_info)
+#' lincs_pert_info
+#' @keywords datasets
+"lincs_pert_info"
+
 #' Instance Information of LINCS Expression Database
 #' 
 #' It is a tibble of 3 columns containing compound treatment information of 

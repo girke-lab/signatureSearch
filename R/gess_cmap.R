@@ -83,8 +83,8 @@ gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL, workers=1){
     # add target column
     target <- suppressMessages(get_targets(res$pert))
     res <- left_join(res, target, by=c("pert"="drug_name"))
-    
-    x <- gessResult(result = as_tibble(res),
+    res <- add_pcid(as_tibble(res))
+    x <- gessResult(result = res,
                     query = qr(qSig),
                     gess_method = gm(qSig),
                     refdb = refdb(qSig))

@@ -183,8 +183,8 @@ gess_fisher <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
     target <- suppressMessages(get_targets(resultDF$pert))
     resultDF <- left_join(resultDF, target, by=c("pert"="drug_name"))
   }
-  
-  x <- gessResult(result = as_tibble(resultDF),
+  res <- add_pcid(as_tibble(resultDF))
+  x <- gessResult(result = res,
                   query = qr(qSig),
                   gess_method = gm(qSig),
                   refdb = refdb(qSig))

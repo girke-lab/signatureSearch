@@ -106,8 +106,8 @@ gess_cor <- function(qSig, method="spearman", chunk_size=5000, ref_trts=NULL,
   # add target column
   target <- suppressMessages(get_targets(resultDF$pert))
   res <- left_join(resultDF, target, by=c("pert"="drug_name"))
-  
-  x <- gessResult(result = as_tibble(res),
+  res <- add_pcid(as_tibble(res))
+  x <- gessResult(result = res,
                   query = qr(qSig),
                   gess_method = gm(qSig),
                   refdb = refdb(qSig))

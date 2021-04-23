@@ -1,3 +1,22 @@
+## Function to get PubChem CIDs by name
+name2pubchemCID <- function(x) {
+  #print(x)
+  url <- paste0('"https://pubchem.ncbi.nlm.nih.gov/compound/', x, '"')
+  system2("wget", paste(url, '-O tmp_file --quiet'))
+  pc_page <- readLines("tmp_file", warn=FALSE)
+  unlink("tmp_file")
+  cid_line <- pc_page[grepl("meta name=\"pubchem_uid_value\" content=", pc_page)][1]
+  cid <- gsub("(^.*content=\")|\">$", "", cid_line)
+  if(is.na(cid[1])){
+    return("Not Found")
+  } else {
+    return(cid)
+  }
+}
+## Usage:
+# ids <- c("rhodomyrtoxin-b", "SD-169", "not_avail_test", "baccatin-III")
+# vapply(ids, function(i) name2pubchemCID(i), character(1))
+
 getPertInfo <- function(pert_iname, user_key){
   pert_info = NULL
   col = c("canonical_smiles", "description", "inchi_key", "inchi_string", "moa", 

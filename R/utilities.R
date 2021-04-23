@@ -599,3 +599,29 @@ set_readable <- function(tb, OrgDb="org.Hs.eg.db", keyType="ENTREZID", geneCol="
     tb[[geneCol]] <- geneID
     return(tb)
 }
+
+#' Add PCID to GESS results
+#' 
+#' This function can be used to add the \code{PCID} (PubChem CID) column to the
+#' GESS result table.
+#' 
+#' @param gess_tb tibble of GESS result, can be accessed by the `result` method 
+#' on the \code{\link{gessResult}} object 
+#' @return tibble object where the PCID column is added
+#' @importFrom dplyr relocate
+#' @examples 
+#' data("lincs_pert_info")
+#' # gess_tb2 <- add_pcid(gess_tb)
+#' @export
+add_pcid <- function(gess_tb){
+    if(! "PCID" %in% colnames(gess_tb)){
+        data("lincs_pert_info", envir=environment())
+        pert2 <- lincs_pert_info[, c("pert_iname", "pubchem_cid")]
+        gess_tb %<>% left_join(pert2, by=c("pert"="pert_iname")) %>% 
+            dplyr::rename(PCID=pubchem_cid) %>% relocate(PCID, .after="pert")
+    }
+    return(gess_tb)
+}
+
+## get rid of "Undefined global functions or variables" note
+globalVariables(c("PCID", "pubchem_cid", "lincs_pert_info")) 
