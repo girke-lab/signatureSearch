@@ -1,3 +1,12 @@
+### Changes in version 1.5.8 (2021-05-18)
++ Added FDA phase and other information to `lincs_pert_info` from ChEMBL db.
+
+### Changes in version 1.5.7 (2021-05-03)
++ Added `donor_sex` column in cell info 
+
+### Changes in version 1.5.6 (2021-04-24)
++ Added `PCID` column in GESS results
+
 ### Changes in version 1.5.3 (2021-04-12)
 + Created `cellNtestPlot` function to visualize number of compounds tested in 
 cell types along with primary site information

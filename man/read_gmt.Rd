@@ -38,6 +38,6 @@ them in using this function.
 }
 
 \examples{
-library(signatureSearch)
-# geneSets <- read_gmt("path/to/the/gmt/file")
+gmt_path <- system.file("extdata/test_gene_sets_n4.gmt", package="signatureSearch")
+geneSets <- read_gmt(gmt_path)
 }

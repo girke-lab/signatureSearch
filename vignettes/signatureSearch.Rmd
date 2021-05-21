@@ -42,7 +42,7 @@ knitr::opts_chunk$set(cache=TRUE)
 ```{r setup, echo=FALSE, messages=FALSE, warning=FALSE}
 suppressPackageStartupMessages({
   library(signatureSearch)
-  library(ggplot2); library(DT)
+  library(ggplot2)
 })
 ```
 
@@ -662,7 +662,8 @@ of cells. </font>
 The following table shows the LINCS cell information
 ```{r cell_info, eval=TRUE}
 data("cell_info")
-DT::datatable(cell_info)
+library(DT)
+datatable(cell_info)
 ```
 
 ## Batch Processing of GESSs

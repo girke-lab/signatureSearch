@@ -536,9 +536,9 @@ load_OrgDb <- function(OrgDb){
 #' return incorrect or partial gene sets, e.g. if the first two columns are 
 #' omitted. Please make sure that files are correctly formatted before reading 
 #' them in using this function.
-#' @examples 
-#' library(signatureSearch)
-#' # geneSets <- read_gmt("path/to/the/gmt/file")
+#' @examples
+#' gmt_path <- system.file("extdata/test_gene_sets_n4.gmt", package="signatureSearch")
+#' geneSets <- read_gmt(gmt_path)
 #' @export
 #' 
 read_gmt <- function(file, start=1, end=-1){
@@ -621,6 +621,29 @@ add_pcid <- function(gess_tb){
             dplyr::rename(PCID=pubchem_cid) %>% relocate(PCID, .after="pert")
     }
     return(gess_tb)
+}
+
+#' Named list to data frame 
+#' 
+#' Convert a list with names that have one to many mapping relationships to
+#' a data.frame of two columns, one column is names, the other column is the
+#' unlist elements
+#' 
+#' @param list input list with names slot
+#' @param colnames character vector of length 2, indicating the column names
+#' of the returned data.frame
+#' @return data.frame
+#' @examples 
+#' list <- list("n1"=c("e1", "e2", "e4"), "n2"=c("e3", "e5"))
+#' list2df(list, colnames=c("name", "element"))
+#' @export
+list2df <- function(list, colnames){
+    df_list <- lapply(names(list), function(x){
+        return(data.frame(x=x, y=list[[x]]))
+    })
+    df <- do.call(rbind, df_list)
+    colnames(df) <- colnames
+    return(unique(df))
 }
 
 ## get rid of "Undefined global functions or variables" note
