@@ -68,13 +68,6 @@ dsea_hyperG <- function(drugs,
     ont %<>% toupper
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
     
-    # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
-    #                                  ont, keytype="SYMBOL")
-    # download GO_DATA_drug.rds from AnnotationHub to save time by avoiding 
-    # builing it from scratch
-    eh <- suppressMessages(ExperimentHub())
-    GO_DATA_drug <- suppressMessages(eh[["EH3232"]])
-    
     # get all the drugs in the corresponding annotation system as universe
     ext2path <- get("EXTID2PATHID", envir = GO_DATA_drug)
     universe <- names(ext2path)

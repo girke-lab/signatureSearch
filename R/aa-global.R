@@ -25,3 +25,26 @@ organismMapper <- get("organismMapper",
                        envir = asNamespace("clusterProfiler"), inherits = FALSE)
 prepare_KEGG <- get("prepare_KEGG", 
                        envir = asNamespace("clusterProfiler"), inherits = FALSE)
+
+#' @import ExperimentHub
+eh <- tryCatch(suppressMessages(ExperimentHub()), error=function(e){
+    refreshHub(hubClass="ExperimentHub")
+})
+
+#' @importFrom BiocGenerics fileName
+validLoad <- function(ehid){
+    tryCatch(suppressMessages(eh[[ehid]]), 
+             error=function(e){
+                 unlink(fileName(eh[ehid]))
+                 eh[[ehid]]})
+}
+
+# GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
+# download GO_DATA.rds from AnnotationHub to save time by avoiding 
+# building GO_DATA from scratch
+GO_DATA <- validLoad("EH3231")
+# GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
+#                                  ont, keytype="SYMBOL")
+# download GO_DATA_drug.rds 
+GO_DATA_drug <- validLoad("EH3232")
+

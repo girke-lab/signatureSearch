@@ -38,11 +38,6 @@ gseGO2 <- function(geneList,
 
     ont %<>% toupper
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
-    # GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
-    # Download GO_DATA.rds from ExperimentHub and cached to save time by avoiding 
-    # building GO_DATA from scratch
-    eh <- suppressMessages(ExperimentHub())
-    GO_DATA <- suppressMessages(eh[["EH3231"]])
     
     res <- GSEA_internal2(geneList = geneList,
                           exponent = exponent,

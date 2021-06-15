@@ -77,12 +77,6 @@ dsea_GSEA <- function(drugList,
     stop("The names of the query drug list for dsea_GSEA need to be unique!")
   
   if(type=="GO"){
-    # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
-    #                                  ont, keytype="SYMBOL")
-    # download GO_DATA_drug.rds 
-    eh <- suppressMessages(ExperimentHub())
-    GO_DATA_drug <- suppressMessages(eh[["EH3232"]])
-    
     res <-  GSEA_internal(geneList = drugList,
                           exponent = exponent,
                           nPerm = nPerm,
