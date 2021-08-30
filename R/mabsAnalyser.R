@@ -31,12 +31,6 @@ mabsGO <- function(geneList,
 
     ont %<>% toupper
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
-
-    #GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
-    # download GO_DATA.rds from AnnotationHub to save time by avoiding 
-    # builing GO_DATA from scratch
-    eh <- suppressMessages(ExperimentHub())
-    GO_DATA <- suppressMessages(eh[["EH3231"]])
     
     res <-  mabs_internal(geneList = geneList,
                           nPerm = nPerm,

@@ -257,30 +257,30 @@ gs2mat <- function(gene_sets){
 #     return(se)
 # }
 
-#' @importFrom ExperimentHub ExperimentHub
-
 determine_refdb <- function(refdb){
-    eh <- suppressMessages(ExperimentHub())
-    if(refdb=="cmap"){
-        return(eh[["EH3223"]])
-    }
-    if(refdb=="cmap_expr"){
-        return(eh[["EH3224"]])
-    }
-    if(refdb=="lincs"){
-        return(eh[["EH3226"]])
-    }
-    if(refdb=="lincs_expr"){
-        return(eh[["EH3227"]])
-    } else {
-        return(refdb)
-    }
+    if(refdb=="cmap") return(validh5("EH3223"))
+    if(refdb=="cmap_expr") return(validh5("EH3224"))
+    if(refdb=="lincs") return(validh5("EH3226"))
+    if(refdb=="lincs_expr") return(validh5("EH3227"))
+    return(refdb)
 }
 
-load_sqlite <- function(eh_id){
-    eh <- suppressMessages(ExperimentHub())
-    path <- suppressMessages(eh[[eh_id]])
-    conn <- dbConnect(SQLite(), path)
+validh5 <- function(ehid){
+    h5path <- eh[[ehid]]
+    tryCatch(h5ls(h5path), error=function(e){
+        unlink(h5path)
+        h5path <- eh[[ehid]]
+    })
+    return(h5path)
+}
+
+load_sqlite <- function(ehid){
+    path <- suppressMessages(eh[[ehid]])
+    conn <- tryCatch(dbConnect(SQLite(), path), error=function(e){
+        unlink(path)
+        path <- eh[[ehid]]
+        dbConnect(SQLite(), path)
+    })
     return(conn)
 }
 

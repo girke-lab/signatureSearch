@@ -39,11 +39,7 @@ enrichGO2 <- function(gene,
     
     ont %<>% toupper
     ont <- match.arg(ont, c("BP", "CC", "MF", "ALL"))
-    # GO_DATA <- clusterProfiler:::get_GO_data(OrgDb, ont, keytype)
-    # download GO_DATA.rds from AnnotationHub to save time by avoiding 
-    # building GO_DATA from scratch
-    eh <- suppressMessages(ExperimentHub())
-    GO_DATA <- suppressMessages(eh[["EH3231"]])
+    
     if (missing(universe))
         universe <- NULL
     
