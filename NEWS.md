@@ -1,3 +1,6 @@
+### Changes in version 1.7.3 (2021-08-24)
++ Improved `get_targets` function by supporting different output format.
+
 ### Changes in version 1.7.2 (2021-06-14)
 + Supported automatic downloads of ExperimentHub cached files.
 

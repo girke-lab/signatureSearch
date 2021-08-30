@@ -931,7 +931,8 @@ overlapping among test and annotation sets;
 `setSize`: size of the functional category; `GeneRatio`: ratio of genes in the
 test set that are annotated at a specific GO node or KEGG pathway; `BgRatio`:
 ratio of background genes that are annotated at a specific GO node or KEGG
-pathway.
+pathway. `Count`: number of overlapped genes between the test set and the 
+specific functional annotation term.
 
 #### With KEGG 
 
