@@ -939,11 +939,12 @@ specific functional annotation term.
 The same enrichment test can be performed for KEGG pathways as follows.
 
 ```{r tsea_dup_hyperG_kegg, eval=TRUE, message=FALSE}
-dup_hyperG_k_res <- tsea_dup_hyperG(drugs = drugs, universe = "Default", 
-                                    type = "KEGG", pvalueCutoff=0.5, 
-                                    pAdjustMethod="BH", qvalueCutoff = 0.5, 
-                                    minGSSize = 10, maxGSSize = 500)
+dup_hyperG_k_res <- tsea_dup_hyperG(drugs=drugs, universe="Default", type="KEGG",
+                                    pvalueCutoff=0.5, pAdjustMethod="BH", qvalueCutoff=0.5,
+                                    minGSSize=10, maxGSSize=500)
 result(dup_hyperG_k_res)
+## Mapping 'itemID' column in the FEA enrichment result table from Entrez ID to gene Symbol
+set_readable(result(dup_hyperG_k_res))
 ```
 
 The content of the columns extracted from the `feaResult` object is described

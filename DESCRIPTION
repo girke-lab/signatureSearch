@@ -15,7 +15,7 @@ Imports: AnnotationDbi, ggplot2, data.table, ExperimentHub, HDF5Array,
          magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats, 
          utils, reshape2, visNetwork, BiocParallel, fastmatch, reactome.db,
          Matrix, clusterProfiler, readr, DOSE, rhdf5, GSEABase, DelayedArray,
-         BiocGenerics
+         BiocGenerics, tools
 Suggests: knitr, testthat, rmarkdown, BiocStyle, org.Hs.eg.db, 
           signatureSearchData, DT
 License: Artistic-2.0
@@ -23,7 +23,7 @@ SystemRequirements: C++11
 LinkingTo: Rcpp
 Encoding: UTF-8
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 NeedsCompilation: no
 biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment, 
            Sequencing, Coverage, DifferentialExpression

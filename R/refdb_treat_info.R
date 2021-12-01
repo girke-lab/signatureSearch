@@ -30,7 +30,7 @@ getTreats <- function(refdb, sep=TRUE){
 #' cell types are grouped by 'primary site'.
 #' 
 #' @title Number of Tests in Cell Types
-#' @inheritParams get_treat_info
+#' @inheritParams getTreats
 #' @return Faceted bar plot 
 #' @examples
 #' refdb <- system.file("extdata", "sample_db.h5", package="signatureSearch")
@@ -41,7 +41,7 @@ cellNtestPlot <- function(refdb){
     cell_site <- cell_info$primary_site
     names(cell_site) <- cell_info$cell_id
     
-    treat_df <- get_treat_info(refdb)
+    treat_df <- getTreats(refdb)
     ntest <- table(treat_df$cell)
     df <- data.frame(Ntest=as.numeric(ntest), Cell=names(ntest), 
                      PrimarySite=cell_site[names(ntest)])

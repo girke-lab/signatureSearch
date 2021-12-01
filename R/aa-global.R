@@ -27,7 +27,12 @@ prepare_KEGG <- get("prepare_KEGG",
                        envir = asNamespace("clusterProfiler"), inherits = FALSE)
 
 #' @import ExperimentHub
-eh <- tryCatch(suppressMessages(ExperimentHub()), error=function(e){
+eh <- tryCatch({
+    cache <- tools::R_user_dir("ExperimentHub", which="cache")
+    message("The ExperimentHub cache is at ", cache)
+    setExperimentHubOption("CACHE", cache)
+    suppressMessages(ExperimentHub())
+    }, error=function(e){
     refreshHub(hubClass="ExperimentHub")
 })
 

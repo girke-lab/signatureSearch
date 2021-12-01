@@ -9,9 +9,11 @@ get_targets(drugs, database = "all", verbose = TRUE, output = "df")
 \arguments{
 \item{drugs}{character vector of drug names}
 
-\item{database}{drug-target annotation resource; one of 'DrugBank', 'CLUE',
-'STITCH' or 'all'. If 'all', the targets from DrugBank, CLUE 
-and STITCH databases will be combined.}
+\item{database}{drug-target annotation resource; A character vector of any
+combination of 'DrugBank', 'CLUE', STITCH' or 'all'. The target set from
+the selected resources will be combined. If 'all' is contained in the 
+character vector, target sets from all of the annotation databases
+(DrugBank, CLUE and STITCH) will be combined.}
 
 \item{verbose}{TRUE or FALSE, whether to print messages}
 
