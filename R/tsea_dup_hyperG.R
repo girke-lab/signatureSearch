@@ -47,11 +47,10 @@
 #' @param qvalueCutoff double, qvalue cutoff
 #' @param minGSSize integer, minimum size of each gene set in annotation system
 #' @param maxGSSize integer, maximum size of each gene set in annotation system
-#' @param dt_anno drug-target annotation source. Currently, one of 'DrugBank',
-#' 'CLUE', 'STITCH' or 'all'. If 'dt_anno' is 'all', the targets from the
-#' DrugBank, CLUE and STITCH databases will be combined. Usually, it is
-#' recommended to set the 'dt_anno' to 'all' since it provides the most
-#' complete drug-target annotations. Choosing a single
+#' @param dt_anno drug-target annotation source. It is the same argument as the
+#' \code{database} argument of the \code{\link{get_targets}} function.
+#' Usually, it is recommended to set the 'dt_anno' to 'all' since it provides 
+#' the most complete drug-target annotations. Choosing a single
 #' annotation source results in sparser drug-target annotations
 #' (particularly CLUE), and thus less complete enrichment results.
 #' @param readable TRUE or FALSE, it applies when type is `KEGG` or `Reactome`

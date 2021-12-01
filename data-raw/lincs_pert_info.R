@@ -11,6 +11,9 @@
 # fixes this issue by querying PubChem webpage by compound names to get the 
 # corresponding PCID.
 source("getPertInfo.R")
+# The GSE92742_Broad_LINCS_pert_info.txt file was downloaded and unzipped 
+# from https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&format=file&file=GSE92742%5FBroad%5FLINCS%5Fpert%5Finfo%2Etxt%2Egz 
+# to the data folder.
 lincs_pert_info <- read_tsv("data/GSE92742_Broad_LINCS_pert_info.txt")
 pert2 <- lincs_pert_info %>% distinct(pert_iname, .keep_all=TRUE) %>% 
     filter(pert_type == "trt_cp") # 19,811 x 8
@@ -21,9 +24,8 @@ pert_nopcid <- pert2$pert_iname[pert2$pubchem_cid=="-666"]
 pcid_new <- vapply(pert_nopcid, function(i) name2pubchemCID(i), character(1)) # takes long time
 sum(pcid_new=="NotFound") # 84
 pert2$pubchem_cid[pert2$pubchem_cid=="-666"] <- pcid_new
-write_tsv(pert2, "data/broad_lincs_pert_info.tsv")
+write_tsv(pert2, "data/broad_lincs_pert_info_fixed.tsv")
 
-# 
 ##############################################################
 ## Subset Broad LINCS pert info to compounds in LINCS refdb ##
 ##############################################################
@@ -32,7 +34,7 @@ write_tsv(pert2, "data/broad_lincs_pert_info.tsv")
 # all present in the LINCS refdb, so subset the broad pert info to reduce size
 # 
 library(readr)
-broad <- read_tsv("../discover_paper_analysis/data/broad_lincs_pert_info.tsv")
+broad <- read_tsv("../discover_paper_analysis/data/broad_lincs_pert_info_fixed.tsv")
 data("lincs_sig_info")
 lincs_pert_info <- broad[broad$pert_iname %in% lincs_sig_info$pert,] # 8140 x 8
 usethis::use_data(lincs_pert_info, overwrite=TRUE)
@@ -45,7 +47,7 @@ data("lincs_pert_info")
 pcid <- unique(lincs_pert_info$pubchem_cid) 
 pcid <- pcid[pcid != "NotFound"] # 8013
 
-# break pcid into batches of size 200 to add compounds to 
+# Break PCID into batches of size 200 to add compounds to 
 # ChemMine Tools (https://chemminetools.ucr.edu/), and
 # run Drug-Target Search in ChEMBL db by selecting PubChem as input ID, it takes
 # a long time to load and search only 200 compounds, doesn't work well for ~8000 compounds

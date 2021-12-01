@@ -6,14 +6,18 @@
 #' when using the pre-generated CMAP/LINCS databases or path to the HDF5 file
 #' generated with the \code{\link{build_custom_db}} function. The details is 
 #' shown in the 'refdb' argument of the \code{\link{qSig}} function
-#' @return tibble object with 'pert', 'cell', 'pert_type' columns 
+#' @param sep TRUE or FALSE, whether to separate the treatments or column names 
+#' of the reference database into 'pert', 'cell' and 'pert_type'.
+#' @return character vector if \code{sep} argument is set as FALSE. 
+#' Tibble object with 'pert', 'cell', 'pert_type' columns if \code{sep} is TRUE
 #' @examples 
 #' refdb <- system.file("extdata", "sample_db.h5", package="signatureSearch")
-#' treat_info <- get_treat_info(refdb)
+#' treat_info <- getTreats(refdb, sep=TRUE)
 #' @export
-get_treat_info <- function(refdb){
+getTreats <- function(refdb, sep=TRUE){
     db_path <- determine_refdb(refdb)
     treats <- as.character(HDF5Array(db_path, name="colnames"))
+    if(!sep) return(treats)
     treat_df <- as.data.frame(t(vapply(seq_along(treats), function(i)
         unlist(strsplit(as.character(treats[i]), "__")), 
         FUN.VALUE=character(3))), stringsAsFactors=FALSE)

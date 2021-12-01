@@ -6,9 +6,11 @@
 ##'
 ##' @title Target Gene/Protein IDs for Query Drugs
 ##' @param drugs character vector of drug names
-##' @param database drug-target annotation resource; one of 'DrugBank', 'CLUE',
-##' 'STITCH' or 'all'. If 'all', the targets from DrugBank, CLUE 
-##' and STITCH databases will be combined.  
+##' @param database drug-target annotation resource; A character vector of any
+##' combination of 'DrugBank', 'CLUE', STITCH' or 'all'. The target set from
+##' the selected resources will be combined. If 'all' is contained in the 
+##' character vector, target sets from all of the annotation databases
+##' (DrugBank, CLUE and STITCH) will be combined.
 ##' @param verbose TRUE or FALSE, whether to print messages
 ##' @param output one of "df", "list" or "vector". If setting as "df", the result 
 ##' is in a data.frame format containing target gene symbols separated by semicolon
