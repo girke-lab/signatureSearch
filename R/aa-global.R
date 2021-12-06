@@ -26,30 +26,29 @@ organismMapper <- get("organismMapper",
 prepare_KEGG <- get("prepare_KEGG", 
                        envir = asNamespace("clusterProfiler"), inherits = FALSE)
 
-#' @import ExperimentHub
-eh <- tryCatch({
-    cache <- tools::R_user_dir("ExperimentHub", which="cache")
-    message("The ExperimentHub cache is at ", cache)
-    setExperimentHubOption("CACHE", cache)
-    suppressMessages(ExperimentHub())
-    }, error=function(e){
-    refreshHub(hubClass="ExperimentHub")
-})
-
-#' @importFrom BiocGenerics fileName
-validLoad <- function(ehid){
-    tryCatch(suppressMessages(eh[[ehid]]), 
-             error=function(e){
-                 unlink(fileName(eh[ehid]))
-                 eh[[ehid]]})
+validh5 <- function(ehid){
+    h5path <- eh[[ehid]]
+    tryCatch(h5ls(h5path), error=function(e){
+        unlink(h5path)
+        h5path <- eh[[ehid]]
+    })
+    return(h5path)
 }
 
-# GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
-# download GO_DATA.rds from AnnotationHub to save time by avoiding 
-# building GO_DATA from scratch
-GO_DATA <- validLoad("EH3231")
-# GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
-#                                  ont, keytype="SYMBOL")
-# download GO_DATA_drug.rds 
-GO_DATA_drug <- validLoad("EH3232")
+determine_refdb <- function(refdb){
+    if(refdb=="cmap") return(validh5("EH3223"))
+    if(refdb=="cmap_expr") return(validh5("EH3224"))
+    if(refdb=="lincs") return(validh5("EH3226"))
+    if(refdb=="lincs_expr") return(validh5("EH3227"))
+    return(refdb)
+}
 
+load_sqlite <- function(ehid){
+    path <- suppressMessages(eh[[ehid]])
+    conn <- tryCatch(dbConnect(SQLite(), path), error=function(e){
+        unlink(path)
+        path <- eh[[ehid]]
+        dbConnect(SQLite(), path)
+    })
+    return(conn)
+}
