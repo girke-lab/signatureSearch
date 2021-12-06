@@ -1,3 +1,6 @@
+### Changes in version 1.9.2 (2021-12-06)
++ Move `eh` to .onLoad function 
+
 ### Changes in version 1.7.3 (2021-08-24)
 + Improved `get_targets` function by supporting different output format.
 

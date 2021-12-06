@@ -257,33 +257,6 @@ gs2mat <- function(gene_sets){
 #     return(se)
 # }
 
-determine_refdb <- function(refdb){
-    if(refdb=="cmap") return(validh5("EH3223"))
-    if(refdb=="cmap_expr") return(validh5("EH3224"))
-    if(refdb=="lincs") return(validh5("EH3226"))
-    if(refdb=="lincs_expr") return(validh5("EH3227"))
-    return(refdb)
-}
-
-validh5 <- function(ehid){
-    h5path <- eh[[ehid]]
-    tryCatch(h5ls(h5path), error=function(e){
-        unlink(h5path)
-        h5path <- eh[[ehid]]
-    })
-    return(h5path)
-}
-
-load_sqlite <- function(ehid){
-    path <- suppressMessages(eh[[ehid]])
-    conn <- tryCatch(dbConnect(SQLite(), path), error=function(e){
-        unlink(path)
-        path <- eh[[ehid]]
-        dbConnect(SQLite(), path)
-    })
-    return(conn)
-}
-
 select_ont <- function(res, ont, GO_DATA){
     # Add and select ontology in res
     res <- add_GO_Ontology(res, GO_DATA)

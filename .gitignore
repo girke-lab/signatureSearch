@@ -16,9 +16,10 @@
 
 # RStudio files
 .Rproj.user/
+.Rproj
 
 # produced vignettes
-# vignettes/*.html
+vignettes/*.html
 
 vignettes/*.pdf
 vignettes/*_cache/
