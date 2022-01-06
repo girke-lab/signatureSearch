@@ -38,15 +38,15 @@ read counts.}
 
 \item{gess_method}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
 
-\item{refdb}{character(1), can be one of "cmap", "cmap_expr", "lincs", or 
-"lincs_expr" when using the CMAP/LINCS databases from the affiliated
+\item{refdb}{character(1), can be one of "cmap", "cmap_expr", "lincs", 
+"lincs_expr", "lincs2" when using the CMAP/LINCS databases from the affiliated
 \code{signatureSearchData} package. With 'cmap' the database contains
 signatures of LFC scores obtained from DEG analysis routines; with
-'cmap_expr' normalized gene expression values; with 'lincs' z-scores
-obtained from the DEG analysis methods of the LINCS project; and with
+'cmap_expr' normalized gene expression values; with 'lincs' or 'lincs2'
+z-scores obtained from the DEG analysis methods of the LINCS project; and with
 'lincs_expr' normalized expression values.
 
-To use a custom signature database, it should be the file path to the HDF5 
+To use a custom database, it should be the file path to the HDF5 
 file generated with the \code{\link{build_custom_db}} function, the HDF5
 file needs to have the \code{.h5} extension. 
 
@@ -62,24 +62,19 @@ or GSKB \url{http://ge-lab.org/#/data}.}
 }
 \description{
 It builds a `qSig` object to store the query signature, reference database
-and GESS method used for GESS methods
+and GESS method used for GESS methods.
 }
 \examples{
 db_path <- system.file("extdata", "sample_db.h5", 
                        package = "signatureSearch")
-## Load sample_db as `SummarizedExperiment` object
-library(SummarizedExperiment); library(HDF5Array)
-sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
-rownames(sample_db) <- HDF5Array(db_path, name="rownames")
-colnames(sample_db) <- HDF5Array(db_path, name="colnames")
-## get "vorinostat__SKB__trt_cp" signature drawn from sample database
-query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-query = as.numeric(query_mat); names(query) = rownames(query_mat)
-upset <- head(names(query[order(-query)]), 150)
-downset <- tail(names(query[order(-query)]), 150)
-qsig_lincs <- qSig(query=list(upset=upset, downset=downset), 
+qsig_lincs <- qSig(query=list(
+                     upset=c("230", "5357", "2015", "2542", "1759"), 
+                     downset=c("22864", "9338", "54793", "10384", "27000")), 
                    gess_method="LINCS", refdb=db_path)
-qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
+qmat <- matrix(runif(5), nrow=5)
+rownames(qmat) <- c("230", "5357", "2015", "2542", "1759")
+colnames(qmat) <- "treatment"
+qsig_gcmap <- qSig(query=qmat, gess_method="gCMAP", refdb=db_path)
 }
 \seealso{
 \code{\link{build_custom_db}}, 

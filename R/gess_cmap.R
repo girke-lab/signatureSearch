@@ -1,11 +1,12 @@
-#' @title CMAP Search Method
+#' @rdname gess
 #' 
 #' @description 
-#' Implements the original Gene Expression Signature Search (GESS) from 
-#' Lamb et al (2006) known as Connectivity Map (CMap). The method uses as query 
-#' the two label sets of the most up- and down-regulated genes from a 
-#' genome-wide expression experiment, while the reference database is composed 
-#' of rank transformed expression profiles (e.g. ranks of LFC or z-scores).
+#' The CMAP search method implements the original Gene Expression Signature 
+#' Search (GESS) from Lamb et al (2006) known as Connectivity Map (CMap). 
+#' The method uses as query the two label sets of the most up- and 
+#' down-regulated genes from a genome-wide expression experiment, while the 
+#' reference database is composed of rank transformed expression profiles 
+#' (e.g. ranks of LFC or z-scores).
 #' @details 
 #' Lamb et al. (2006) introduced the gene expression-based search method known 
 #' as Connectivity Map (CMap) where a GES database is searched with a query GES 
@@ -23,51 +24,27 @@
 #' software packages including Bioconductor, the implementation provided by
 #' \code{signatureSearch} follows the original description of the authors as 
 #' closely as possible. 
-#' 
-#' @section Column description:
-#' Descriptions of the columns specific to the CMAP method are given below. 
-#' Note, the additional columns, those that are common among the GESS methods, 
-#' are described in the help file of the \code{gessResult} object.
-#' \itemize{
-#'     \item raw_score: bi-directional enrichment score (Kolmogorov-Smirnov 
-#'     statistic) of up and down set in the query siganture
-#'     \item scaled_score: raw_score scaled to valules from 1 to -1 by 
-#'     dividing the positive and negative scores with the maxmum positive score 
-#'     and the absolute value of the minimum negative score, respectively.
-#' }
-#' 
-#' @param qSig \code{\link{qSig}} object defining the query signature including
-#' the GESS method (should be 'CMAP') and the path to the reference database.
-#' For details see help of \code{qSig} and \code{qSig-class}.
-#' @param chunk_size number of database entries to process per iteration to 
-#' limit memory usage of search.
-#' @param ref_trts character vector. If users want to search against a subset 
-#' of the reference database, they could set ref_trts as a character vector 
-#' representing column names (treatments) of the subsetted refdb. 
-#' @param workers integer(1) number of workers for searching the reference
-#' database parallelly, default is 1.
-#' @return \code{\link{gessResult}} object, the result table contains the 
-#' search results for each perturbagen in the reference database ranked by 
-#' their signature similarity to the query.
 #' @import methods
-#' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
-#' @references For detailed description of the CMap method, please refer to: 
-#' Lamb, J., Crawford, E. D., Peck, D., Modell, J. W., Blat, I. C., 
-#' Wrobel, M. J., Golub, T. R. (2006). The Connectivity Map: 
-#' using gene-expression signatures to connect small molecules, genes, and 
-#' disease. Science, 313 (5795), 1929-1935. 
-#' URL: https://doi.org/10.1126/science.1132939
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
-#' # qsig_cmap <- qSig(query = list(
-#' #                   upset=c("230", "5357", "2015", "2542", "1759"),
-#' #                   downset=c("22864", "9338", "54793", "10384", "27000")),
-#' #                   gess_method = "CMAP", refdb = db_path)
+#' # library(SummarizedExperiment); library(HDF5Array)
+#' # sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+#' # rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+#' # colnames(sample_db) <- HDF5Array(db_path, name="colnames")
+#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample database
+#' # query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' 
+#' ############## CMAP method ##############
+#' # qsig_cmap <- qSig(query=list(
+#' #                     upset=c("230", "5357", "2015", "2542", "1759"),
+#' #                     downset=c("22864", "9338", "54793", "10384", "27000")),
+#' #                   gess_method="CMAP", refdb=db_path)
 #' # cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
 #' # result(cmap)
 #' @export
-gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL, workers=1){
+gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL, workers=1,
+                      cmp_annot_tb=NULL, by="pert", cmp_name_col="pert"){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
     # stopifnot(validObject(qSig))
     if(gm(qSig) != "CMAP"){
@@ -80,10 +57,8 @@ gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL, workers=1){
     res <- cmapEnrich(db_path, upset=qsig_up, downset=qsig_dn, 
                       chunk_size=chunk_size, ref_trts=ref_trts, workers=workers)
     res <- sep_pcf(res)
-    # add target column
-    target <- suppressMessages(get_targets(res$pert))
-    res <- left_join(res, target, by=c("pert"="drug_name"))
-    res <- add_pcid(as_tibble(res))
+    # add compound annotations
+    res <- addGESSannot(res, refdb(qSig), cmp_annot_tb, by, cmp_name_col)
     x <- gessResult(result = res,
                     query = qr(qSig),
                     gess_method = gm(qSig),

@@ -1,4 +1,4 @@
-#' @title Fisher Search Method
+#' @rdname gess
 #' @description 
 #' In its iterative form, Fisher's exact test (Upton, 1992) can be used as Gene 
 #' Expression Signature (GES) Search to scan GES databases for entries that 
@@ -7,86 +7,23 @@
 #' When using the Fisher's exact test (Upton, 1992) as GES Search (GESS) method,
 #' both the query and the database are composed of gene label sets, such as 
 #' DEG sets.
-#' 
-#' @section Column description:
-#' Descriptions of the columns specific to the Fisher method are given below. 
-#' Note, the additional columns, those that are common among the GESS methods, 
-#' are described in the help file of the \code{gessResult} object.
-#' 
-#' \itemize{
-#'     \item pval: p-value of the Fisher's exact test.
-#'     \item padj: p-value adjusted for multiple hypothesis testing using
-#'     R's p.adjust function with the Benjamini & Hochberg (BH) method. 
-#'     \item effect: z-score based on the standard normal distribution.
-#'     \item LOR: Log Odds Ratio.
-#'     \item nSet: number of genes in the GES in the reference
-#'     database (gene sets) after setting the higher and lower cutoff.
-#'     \item nFound: number of genes in the GESs of the reference
-#'     database (gene sets) that are also present in the query GES.
-#'     \item signed: whether gene sets in the reference database have signs, 
-#'     representing up and down regulated genes when computing scores.  
-#' }
-#' 
-#' @param qSig \code{\link{qSig}} object defining the query signature including
-#' the GESS method (should be 'Fisher') and the path to the reference
-#' database. For details see help of \code{qSig} and \code{qSig-class}.
-#' 
-#' @param higher The 'upper' threshold. If not 'NULL', genes with a score 
-#' larger than or equal to 'higher' will be included in the gene set with sign +1. 
-#' At least one of 'lower' and 'higher' must be specified. 
-#' 
-#' \code{higher} argument need to be set as \code{1} if the \code{refdb} in \code{qSig} 
-#' is path to the HDF5 file that were converted from the gmt file.
-#' 
-#' @param lower The lower threshold. If not 'NULL', genes with a score smaller 
-#' than or equal 'lower' will be included in the gene set with sign -1. 
-#' At least one of 'lower' and 'higher' must be specified.
-#' 
-#' \code{lower} argument need to be set as \code{NULL} if the \code{refdb} in \code{qSig} 
-#' is path to the HDF5 file that were converted from the gmt file.
-#' 
-#' @param padj numeric(1), cutoff of adjusted p-value or false discovery rate (FDR)
-#' of defining DEGs that is less than or equal to 'padj'. The 'padj' argument is
-#' valid only if the reference HDF5 file contains the p-value matrix stored in 
-#' the dataset named as 'padj'. 
-#' 
-#' @param chunk_size number of database entries to process per iteration to 
-#' limit memory usage of search.
-#' @param ref_trts character vector. If users want to search against a subset 
-#' of the reference database, they could set ref_trts as a character vector 
-#' representing column names (treatments) of the subsetted refdb. 
-#' @param workers integer(1) number of workers for searching the reference
-#' database parallelly, default is 1.
-#' @return \code{\link{gessResult}} object, the result table contains the 
-#' search results for each perturbagen in the reference database ranked by 
-#' their signature similarity to the query.
 #' @importMethodsFrom GSEABase GeneSet
 #' @importMethodsFrom GSEABase GeneSetCollection
 #' @importMethodsFrom GSEABase incidence
 #' @importFrom GSEABase EntrezIdentifier
 #' @importFrom stats dhyper
 #' @importFrom stats qnorm
-#' @seealso \code{\link{qSig}}, \code{\link{gessResult}}, \code{\link{gess}}
-#' @references 
-#' Graham J. G. Upton. 1992. Fisher's Exact Test. J. R. Stat. Soc. Ser. A 
-#' Stat. Soc. 155 (3). [Wiley, Royal Statistical Society]: 395-402. 
-#' URL: http://www.jstor.org/stable/2982890
 #' @examples 
-#' db_path <- system.file("extdata", "sample_db.h5", 
-#'                        package = "signatureSearch")
-#' # library(SummarizedExperiment); library(HDF5Array)
-#' # sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
-#' # rownames(sample_db) <- HDF5Array(db_path, name="rownames")
-#' # colnames(sample_db) <- HDF5Array(db_path, name="colnames")
-#' ## get "vorinostat__SKB__trt_cp" signature drawn from sample databass
-#' # query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' 
+#' ############## Fisher's Exact Test ##########
 #' # qsig_fisher <- qSig(query=query_mat, gess_method="Fisher", refdb=db_path)
 #' # fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1)
 #' # result(fisher)
 #' @export
 #' 
 gess_fisher <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
-                        chunk_size=5000, ref_trts=NULL, workers=1){
+                        chunk_size=5000, ref_trts=NULL, workers=1,
+                        cmp_annot_tb=NULL, by="pert", cmp_name_col="pert"){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(gm(qSig) != "Fisher"){
@@ -177,13 +114,9 @@ gess_fisher <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   
   resultDF <- resultDF[order(resultDF$padj), ]
   row.names(resultDF) <- NULL
-  if(grepl("__.*__", resultDF$set[1])){
-    resultDF <- sep_pcf(resultDF)
-    # add target column
-    target <- suppressMessages(get_targets(resultDF$pert))
-    resultDF <- left_join(resultDF, target, by=c("pert"="drug_name"))
-  }
-  res <- add_pcid(as_tibble(resultDF))
+  res <- sep_pcf(resultDF)
+  # add compound annotations
+  res <- addGESSannot(res, refdb(qSig), cmp_annot_tb, by, cmp_name_col)
   x <- gessResult(result = res,
                   query = qr(qSig),
                   gess_method = gm(qSig),

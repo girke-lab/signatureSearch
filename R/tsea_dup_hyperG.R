@@ -1,8 +1,10 @@
-#' Target Set Enrichment Analysis (TSEA) with Hypergeometric Test
-#' 
-#' The \code{tsea_dup_hyperG} function performs Target Set Enrichment Analysis
-#' (TSEA) based on a modified hypergeometric test that supports test sets with
-#' duplications. This is achieved by maintaining the frequency information of
+#' @title FEA Methods
+#' @rdname fea
+#' @description 
+#' The Target Set Enrichment Analysis (TSEA) with hypergeometric test 
+#' (\code{tsea_dup_hyperG} function) performs TSEA based on a modified 
+#' hypergeometric test that supports test sets with duplications. This is 
+#' achieved by maintaining the frequency information of
 #' duplicated items in form of weighting values. 
 #' @details 
 #' The classical hypergeometric test assumes uniqueness in its test sets. To
@@ -14,19 +16,50 @@
 #' inappropriate since it would erase one of the most important pieces of 
 #' information of this approach.
 #' @section Column description:
-#' The TSEA results (including \code{tsea_dup_hyperG}) stored in the
-#' \code{feaResult} object can be returned with the \code{result} method in
-#' tabular format, here \code{tibble}. The columns of this \code{tibble} are
-#' described below.
+#' Descriptions of the columns in FEA result tables stored in the
+#' \code{feaResult} object that can be accessed with the \code{result} method in
+#' tabular format, here \code{tibble}.
 #' \itemize{
+#'     \item ont: in case of GO, one of BP, MF, CC, or ALL
+#'     \item ID: GO or KEGG IDs
+#'     \item Description: description of functional category
 #'     \item GeneRatio: ratio of genes in the test set that are annotated at a 
 #'     specific GO node or KEGG pathway
 #'     \item BgRatio: ratio of background genes that are annotated
 #'     at a specific GO node or KEGG pathway
-#'     \item pvalue: raw p-value of enrichment test
+#'     \item itemID: IDs of items (genes for TSEA, drugs for DSEA) overlapping 
+#'     among test and annotation sets.
+#'     \item setSize: size of the functional category
+#'     \item pvalue from \code{tsea_dup_hyperG}: raw p-value of enrichment test
+#'     \item p.adjust: p-value adjusted for multiple hypothesis testing based 
+#'     on method specified under pAdjustMethod argument
+#'     \item qvalue: q value calculated with R's qvalue function to control FDR
+#'     \item enrichmentScore: ES from the GSEA algorithm 
+#'     (Subramanian et al., 2005). The score is calculated by walking down the 
+#'     gene list L, increasing a running-sum statistic when we encounter a gene 
+#'     in S and decreasing when it is not. The magnitude of the increment 
+#'     depends on the gene scores. The ES is the maximum deviation from zero 
+#'     encountered in the random walk. It corresponds to a weighted 
+#'     Kolmogorov-Smirnov-like statistic.
+#'     \item NES: Normalized enrichment score. The positive and negative 
+#'     enrichment scores are normalized separately by permutating the 
+#'     composition of the gene list L \code{nPerm} times, and dividing the 
+#'     enrichment score by the mean of the permutation ES with the same sign.
+#'     \item pvalue from \code{tsea_mGSEA}: The nominal p-value of the ES is 
+#'     calculated using a permutation test. Specifically, the composition of 
+#'     the gene list L is permuted and the ES of the gene set is recomputed for 
+#'     the permutated data generating a null distribution for the ES. 
+#'     The p-value of the observed ES is then calculated relative to this 
+#'     null distribution.
+#'     \item leadingEdge: Genes in the gene set S (functional category) that 
+#'     appear in the ranked list L at, or before, the point where the running 
+#'     sum reaches its maximum deviation from zero. It can be interpreted as 
+#'     the core of a gene set that accounts for the enrichment signal.
+#'     \item ledge_rank: Ranks of genes in 'leadingEdge' in gene list L.
+#'     \item mabs: given a scored ranked gene list \eqn{L}, \eqn{mabs(S)}
+#'     represents the mean absolute scores of the genes in set \eqn{S}.
+#'     \item Nmabs: normalized \eqn{mabs(S)}
 #' }
-#' Additional columns are described under the 'result' slot of the
-#' \code{\link{feaResult}} object.
 #' 
 #' @param drugs character vector containing drug identifiers used for functional
 #' enrichment testing. This can be the top ranking drugs from a GESS result. 
@@ -38,15 +71,24 @@
 #' annotation system (e.g. GO, KEGG or Reactome). If 'type' is 'GO', it can be assigned
 #' a custom vector of gene SYMBOL IDs. If 'type' is 'KEGG' or 'Reactome', the 
 #' vector needs to contain Entrez gene IDs.
-#' @param type one of `GO`, `KEGG` or `Reactome`
+#' @param type one of `GO`, `KEGG` or `Reactome` if TSEA methods. \code{type}
+#' can also be set as `MOA` is DSEA methods are used.
 #' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of
 #' `BP`,`MF`, `CC` or `ALL`. If type is `KEGG` or `Reactome`, \code{ont} is ignored.
 #' @param pAdjustMethod p-value adjustment method, 
 #' one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'
-#' @param pvalueCutoff double, p-value cutoff
-#' @param qvalueCutoff double, qvalue cutoff
-#' @param minGSSize integer, minimum size of each gene set in annotation system
-#' @param maxGSSize integer, maximum size of each gene set in annotation system
+#' @param pvalueCutoff double, p-value cutoff to return only enrichment results
+#' for functional categories meeting a user definable confidence threshold
+#' @param qvalueCutoff double, qvalue cutoff, similar to \code{pvalueCutoff}
+#' @param minGSSize integer, minimum size of each gene set in annotation system.
+#' Annotation categories with less than \code{minGSSize} genes/drugs will 
+#' be ignored by enrichment test. If \code{type} is 'MOA', it may be beneficial
+#' to set \code{minGSSize} to lower values (e.g. 2) than for other 
+#' functional annotation systems. This is because certain MOA categories 
+#' contain only 2 drugs.
+#' @param maxGSSize integer, maximum size of each gene set in annotation system.
+#' Annotation categories with more genes/drugs annotated than \code{maxGSSize} 
+#' will be ignored by enrichment test.
 #' @param dt_anno drug-target annotation source. It is the same argument as the
 #' \code{database} argument of the \code{\link{get_targets}} function.
 #' Usually, it is recommended to set the 'dt_anno' to 'all' since it provides 
@@ -56,12 +98,35 @@
 #' @param readable TRUE or FALSE, it applies when type is `KEGG` or `Reactome`
 #' indicating whether to convert gene Entrez ids to gene Symbols in the 'itemID' 
 #' column in the result table.
+#' @param nPerm integer defining the number of permutation iterations for 
+#' calculating p-values
+#' @param drugList named numeric vector, where the names represent drug labels 
+#' and the numeric component scores. This can be all drugs of a GESS result that
+#' are ranked by GESS scores, such as NCS scores from the LINCS method. 
+#' Note, drugs with scores of zero are ignored by this method.
+#' @param exponent integer value used as exponent in GSEA algorithm. It defines
+#' the weight of the items in the item set \emph{S}. Note, in DSEA the items 
+#' are drug labels, while it is gene labels in the original GSEA.
 #' @return \code{\link{feaResult}} object, the result table contains the
 #' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
 #' the corresponding enrichment statistic.
-#' @seealso \code{\link{feaResult}}, \code{\link{fea}}
+#' @seealso \code{\link{feaResult}}, 
+#'          \code{\link[signatureSearchData]{GO_DATA_drug}}
+#' @references 
+#' GSEA algorithm: 
+#' Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
+#' Gillette, M. A., Mesirov, J. P. (2005). Gene set enrichment analysis: a 
+#' knowledge-based approach for interpreting genome-wide expression profiles. 
+#' Proceedings of the National Academy of Sciences of the United States of
+#' America, 102(43), 15545-15550. URL: https://doi.org/10.1073/pnas.0506580102
+#' 
+#' MeanAbs algorithm: 
+#' Fang, Z., Tian, W., & Ji, H. (2012). A network-based 
+#' gene-weighting approach for pathway analysis. Cell Research, 22(3), 
+#' 565-580. URL: https://doi.org/10.1038/cr.2011.149
 #' @examples 
-#' data(drugs10)
+#' 
+#' ############### TSEA dup_hyperG method ########
 #' ## GO annotation system
 #' # res1 <- tsea_dup_hyperG(drugs=drugs10, universe="Default", 
 #' #                         type="GO", ont="MF", pvalueCutoff=0.05,

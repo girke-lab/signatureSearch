@@ -4,8 +4,6 @@
 \name{signatureSearch-package}
 \alias{signatureSearch-package}
 \alias{signatureSearch}
-\alias{gess}
-\alias{fea}
 \title{Environment for Gene Expression Signature Searching Combined with 
 Functional Enrichment Analysis}
 \description{
@@ -157,6 +155,7 @@ Methods for FEA:
 \author{
 \itemize{
   \item Yuzhu Duan (yduan004@ucr.edu)
+  \item Brendan Gongol (bgong001@ucr.edu>)
   \item Thomas Girke (thomas.girke@ucr.edu)
 }
 }

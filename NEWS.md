@@ -1,3 +1,9 @@
+### Changes in version 1.9.3 (2021-12-17)
++ Supported searching against the newest LINCS 2020 beta database in 
+devel version
++ Modified gess_* functions to support adding customized compound annotation 
+table to the GESS result table.
+
 ### Changes in version 1.9.2 (2021-12-06)
 + Move `eh` to .onLoad function 
 

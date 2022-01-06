@@ -7,7 +7,7 @@ GO_DATA_drug <- NULL
     eh <<- tryCatch({
         cache <- tools::R_user_dir("ExperimentHub", which="cache")
         packageStartupMessage("The ExperimentHub cache is at ", cache)
-        setExperimentHubOption("CACHE", cache)
+        # setExperimentHubOption("CACHE", cache)
         suppressMessages(ExperimentHub())
         }, error=function(e){
             stop(

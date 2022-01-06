@@ -25,14 +25,16 @@ methods.}
 
 \item{\code{gess_method}}{one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'}
 
-\item{\code{refdb}}{character(1), can be "cmap", "cmap_expr", "lincs", or 
-"lincs_expr" when using existing CMAP/LINCS databases. 
+\item{\code{refdb}}{character(1), can be "cmap", "cmap_expr", "lincs", "lincs_expr",
+or "lincs2" when using existing CMAP/LINCS databases. 
 
-If users want to use a custom signature database, it should be the file path
+If users want to use a custom database, it should be the file path
 to the HDF5 file generated with the \code{\link{build_custom_db}} function.
 Alternatively, source files of the CMAP/LINCS databases can be used as
 explained in the vignette of the
 \code{\link[signatureSearchData]{signatureSearchData}} package.}
+
+\item{\code{db_path}}{character(1), file path to the \code{refdb}}
 }}
 
 \keyword{classes}

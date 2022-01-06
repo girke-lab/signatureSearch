@@ -2,7 +2,7 @@
 #' Functional Enrichment Analysis
 #'
 #' @name signatureSearch-package
-#' @aliases signatureSearch-package signatureSearch gess fea 
+#' @aliases signatureSearch-package signatureSearch 
 #' @docType package
 #' @useDynLib signatureSearch
 #' @import Rcpp
@@ -131,6 +131,7 @@
 #' @author
 #' \itemize{
 #'   \item Yuzhu Duan (yduan004@ucr.edu)
+#'   \item Brendan Gongol (bgong001@ucr.edu>)
 #'   \item Thomas Girke (thomas.girke@ucr.edu)
 #' } 
 #' 
@@ -255,22 +256,43 @@ NULL
 #' @keywords datasets
 "lincs_sig_info"
 
-#' LINCS Perturbation Information
+#' LINCS 2017 Perturbation Information
 #' 
-#' It is a tibble containing LINCS perturbation information including perturbation
-#' name, type, whether in touchstone database, INCHI key, canonical smiles and 
-#' PubChem CID.
+#' It is a tibble containing annotation information of compounds in LINCS 2017 
+#' database including perturbation name, type, whether in touchstone database, 
+#' INCHI key, canonical smiles, PubChem CID as well as annotations from ChEMBL
+#' database, including ChEMBL ID, DrugBank ID, max FDA phase, therapeutic flag,
+#' first approval, indication class, mechanism of action, disease efficacy et al. 
 #'
 #' @name lincs_pert_info
 #' @aliases lincs_pert_info
 #' @docType data
-#' @format A \code{tibble} object with 8,140 rows and 8 columns.
+#' @format A \code{tibble} object with 8,140 rows and 40 columns.
 #' @examples 
 #' # Load object
 #' data(lincs_pert_info)
 #' lincs_pert_info
 #' @keywords datasets
 "lincs_pert_info"
+
+#' LINCS 2020 Perturbation Information
+#' 
+#' It is a tibble containing annotation information of compounds in LINCS 2020 
+#' beta database including perturbation id, perturbation name, canonical smiles,
+#' Inchi key, compound aliases, target and MOA. The PubChem CID and many other
+#' annotations from ChEMBL database were obtained from 2017 LINCS pert info by
+#' by left joining with pert_iname.
+#'
+#' @name lincs_pert_info2
+#' @aliases lincs_pert_info2
+#' @docType data
+#' @format A \code{tibble} object with 34419 rows and 40 columns.
+#' @examples 
+#' # Load object
+#' data(lincs_pert_info2)
+#' lincs_pert_info2
+#' @keywords datasets
+"lincs_pert_info2"
 
 #' Instance Information of LINCS Expression Database
 #' 

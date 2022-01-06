@@ -40,6 +40,7 @@ determine_refdb <- function(refdb){
     if(refdb=="cmap_expr") return(validh5("EH3224"))
     if(refdb=="lincs") return(validh5("EH3226"))
     if(refdb=="lincs_expr") return(validh5("EH3227"))
+    if(refdb=="lincs2") return(validh5("EH7297"))
     return(refdb)
 }
 

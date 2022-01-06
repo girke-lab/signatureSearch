@@ -3,17 +3,19 @@
 \docType{data}
 \name{lincs_pert_info}
 \alias{lincs_pert_info}
-\title{LINCS Perturbation Information}
+\title{LINCS 2017 Perturbation Information}
 \format{
-A \code{tibble} object with 8,140 rows and 8 columns.
+A \code{tibble} object with 8,140 rows and 40 columns.
 }
 \usage{
 lincs_pert_info
 }
 \description{
-It is a tibble containing LINCS perturbation information including perturbation
-name, type, whether in touchstone database, INCHI key, canonical smiles and 
-PubChem CID.
+It is a tibble containing annotation information of compounds in LINCS 2017 
+database including perturbation name, type, whether in touchstone database, 
+INCHI key, canonical smiles, PubChem CID as well as annotations from ChEMBL
+database, including ChEMBL ID, DrugBank ID, max FDA phase, therapeutic flag,
+first approval, indication class, mechanism of action, disease efficacy et al.
 }
 \examples{
 # Load object

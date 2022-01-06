@@ -2,20 +2,23 @@
 % Please edit documentation in R/utilities.R
 \name{add_pcid}
 \alias{add_pcid}
-\title{Add PCID to GESS results}
+\title{Add PCID to drug data frame}
 \usage{
-add_pcid(gess_tb)
+add_pcid(df, drug_col = "pert")
 }
 \arguments{
-\item{gess_tb}{tibble of GESS result, can be accessed by the `result` method 
-on the \code{\link{gessResult}} object}
+\item{df}{data frame or tibble object}
+
+\item{drug_col}{name of the column that store compound names in df}
 }
 \value{
-tibble object where the PCID column is added
+tibble object with an added PCIDss column
 }
 \description{
-This function can be used to add the \code{PCID} (PubChem CID) column to the
-GESS result table.
+This function can be used to add the \code{PCIDss} (PubChem CID column added
+from signatureSearch package) column to a data frame that have a column 
+store compound names. The compound name to PubChem CID annotation is obtained
+from \code{lincs_pert_info} in 2017.
 }
 \examples{
 data("lincs_pert_info")

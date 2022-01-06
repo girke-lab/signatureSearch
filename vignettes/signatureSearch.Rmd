@@ -1,8 +1,8 @@
 ---
 title: "_signatureSearch_: Environment for Gene Expression Searching Combined 
        with Functional Enrichment Analysis"
-author: "Authors: Yuzhu Duan, Dan S. Evans, Richard A. Miller, Nicholas J. Schork, Steven R. 
-        Cummings and Thomas Girke"
+author: "Authors: Yuzhu Duan, Brendan Gongol, Dan S. Evans, Richard A. Miller, 
+       Nicholas J. Schork, Steven R. Cummings and Thomas Girke"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
   html_document:
@@ -168,7 +168,10 @@ additional genes is imputed from the landmark genes by using as training data a
 collection of 12,063 Affymetrix gene chips [@Edgar2002-di]. The substantial
 scale-up of the LINCS project provides now many new opportunities to explore
 MOAs for a large number of known drugs and experimental drug-like small
-molecules.
+molecules. In 2020, the LINCS 2017 database is expanded to the beta release,
+here refer to as LINCS2. It contains >80k perturbations and >200 cell lines and 
+over 3M gene expression profiles. This represents roughly a 3-fold expansion on 
+the LINCS 2017 database. The datasets can be accessed at https://clue.io/releases/data-dashboard.
 
 ## Terminology
 
@@ -221,14 +224,14 @@ library(signatureSearch)
 
 The following lists essential help files and opens the vignette of the package.
 ```{r load_help, eval=FALSE}
-library(help = "signatureSearch")  # Lists package info
-vignette("signatureSearch")  # Opens vignette
+library(help="signatureSearch")  # Lists package info
+browseVignettes("signatureSearch")  # Opens vignette
 ```
 
 ## Reference Databases
 
 The helper package _signatureSearchData_ provides access to pre-built GES
-databases, including CMAP2 and LINCS, that are stored on Bioconductor's
+databases, including CMAP2, LINCS and LINCS2, that are stored on Bioconductor's
 `ExperimentHub` as HDF5 files. Users can download these databases as follows.
 
 ```{r download_db, eval=FALSE}
@@ -236,6 +239,7 @@ library(ExperimentHub); library(rhdf5)
 eh <- ExperimentHub()
 cmap <- eh[["EH3223"]]; cmap_expr <- eh[["EH3224"]]
 lincs <- eh[["EH3226"]]; lincs_expr <- eh[["EH3227"]]
+lincs2 <- eh[["EH7297"]]
 h5ls(lincs)
 ```
 
@@ -243,18 +247,28 @@ This will store the paths to the downloaded database files in the corresponding
 variables. The reference databases store the following information: (1)
 `lincs` contains moderated z-scores from differential expression (DE) analysis
 of 12,328 genes from 8,140 compound treatments of 30 cell lines corresponding
-to a total of 45,956 signatures;  (2) `lincs_expr` contains gene expression
+to a total of 45,956 signatures; (2) `lincs_expr` contains gene expression
 intensity values from 5,925 compound treatments of 30 cell lines corresponding
 to a total of 38,824 signatures; (3) `cmap` contains $log_2$ fold changes of
 12,437 genes from 1,281 compound treatments of 5 cell lines corresponding to a
-total of 3,478 signatures; and (4) `cmap_expr` contains mean expression values
+total of 3,478 signatures; (4) `cmap_expr` contains mean expression values
 from 1,309 drug treatments of 4 cell lines corresponding to a total of 3,587
 signatures. To minimize redundancy in the `lincs` and `lincs_expr` databases,
 they were assembled from GESs corresponding to a compound dosage and treatment
 time of 10$\mu$M and 24h, respectively. If necessary one can
 create here easily database instances for all LINCS measurements.
 However, this will make the search results overwhelmingly complex which we
-wanted to avoid here. For details how the CMAP2 and LINCS databases were
+wanted to avoid here; (5) `lincs2` contains moderated z-scores from DE analysis
+of 12,328 genes from 30,456 compound treatments of 58 cell lines corresponding
+to a total of 136,460 signatures. To minimize redundancy of perturbagens having
+many signatures in different dosage and treatment time within the same cell line, 
+the 'exemplar' signature for each perturbagen in each cell line was assembled.
+These signatures are annotated from CLUE group and are generally picked based on 
+TAS (Transcriptional Activity Score), such that the signature with the highest 
+TAS is chosen as exemplar. The LINCS2 database is exactly the same as the 
+reference database used for the Query Tool in CLUE website.
+
+For details how the CMAP2, LINCS and LINCS2 databases were
 constructed, please refer to the vignette of the `signatureSearchData` package.
 The command `browseVignettes("signatureSearchData")` will open this vignette
 from R.
@@ -277,7 +291,7 @@ a search method as set-based if at least one of the two data components (query
 and/or database) is composed of an identifier set (_e.g._ gene labels) that may
 be ranked or unranked. In contrast to this, correlation-based methods require
 quantitative values, usually of the same type such as normalized intensities,
-for both the query and the database entries.  An advantage of the set-based
+for both the query and the database entries. An advantage of the set-based
 methods is that their queries can be the highest and lowest ranking gene sets
 derived from a genome-wide profiling technology that may differ from the one
 used to generate the reference database. However, the precision of correlation
@@ -319,7 +333,7 @@ rownames(sample_db) <- HDF5Array(db_path, name="rownames")
 colnames(sample_db) <- HDF5Array(db_path, name="colnames")
 # get "vorinostat__SKB__trt_cp" signature drawn from toy database
 query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-query = as.numeric(query_mat); names(query) = rownames(query_mat)
+query <- as.numeric(query_mat); names(query) <- rownames(query_mat)
 upset <- head(names(query[order(-query)]), 150)
 head(upset)
 downset <- tail(names(query[order(-query)]), 150)
@@ -409,10 +423,27 @@ initialized the same way as the corresponding *CMAP* object above with the
 exception that "LINCS" needs to be specified under the `gess_method` argument.
 
 ```{r gess_lincs, eval=TRUE}
-qsig_lincs <- qSig(query = list(upset=upset, downset=downset), 
+qsig_lincs <- qSig(query=list(upset=upset, downset=downset), 
                    gess_method="LINCS", refdb=db_path)
 lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE, workers=1)
 result(lincs)
+```
+
+The `gess_*` functions also support appending the compound annotation 
+table (if provided) to the GESS result for the `pert` column (`pert_id` column 
+if `refdb` is set as `lincs2`) that stores compounds in the 
+`drug` slot of `<drug>__<cell>__<factor>`
+format of treatments in the reference database. The following uses LINCS method
+searching against the newest LINCS2 database and passing the LINCS2 compound
+information table as an example.
+```{r gess_lincs2, eval=FALSE}
+data("lincs_pert_info2")
+qsig_lincs2 <- qSig(query=list(upset=upset, downset=downset), 
+                   gess_method="LINCS", refdb="lincs2")
+lincs2 <- gess_lincs(qsig_lincs2, tau=FALSE, sortby="NCS", workers=2,
+                     cmp_annot_tb=lincs_pert_info2, by="pert_id", 
+                     cmp_name_col="pert_iname") # takes about 7 minutes
+result(lincs2)
 ```
 
 The search results are stored in a `gessResult` object as under the _CMAP_
@@ -564,7 +595,7 @@ the `method` argument. For details, users want to consult the help file of the
 `gess_cor` function. 
 
 ```{r gess_sp, eval=TRUE}
-qsig_sp <- qSig(query = query_mat, gess_method = "Cor", refdb = db_path)
+qsig_sp <- qSig(query=query_mat, gess_method="Cor", refdb=db_path)
 sp <- gess_cor(qSig=qsig_sp, method="spearman", workers=1)
 result(sp)
 ```

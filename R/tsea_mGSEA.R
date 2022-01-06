@@ -1,9 +1,11 @@
-#' The \code{tsea_mGSEA} function performs a Modified Gene Set Enrichment 
-#' Analysis (mGSEA) that supports test sets (e.g. genes or protein IDs) with 
-#' duplications. The duplication support is 
+#' @rdname fea
+#' @description 
+#' The TSEA with mGSEA algorithm (\code{tsea_mGSEA} function) performs a 
+#' Modified Gene Set Enrichment Analysis (mGSEA) that supports test sets 
+#' (e.g. genes or protein IDs) with duplications. The duplication support is 
 #' achieved by a weighting method for duplicated items, where the weighting is 
 #' proportional to the frequency of the items in the test set.
-#' 
+#' @details 
 #' The original GSEA method proposed by Subramanian et at., 2005 uses 
 #' predefined gene sets \eqn{S} defined by functional annotation systems 
 #' such as GO and KEGG. The goal is to determine whether the genes in \eqn{S}
@@ -44,89 +46,26 @@
 #' genes in \eqn{S} that have non-zero scores, thereby decreasing the false 
 #' positive rate. To favor truly enriched functional categories (gene set \eqn{S}) 
 #' at the top of \eqn{L_tar}, only gene sets with positive \eqn{ES} are selected.
-#' @section Column description:
-#' The TSEA results (including \code{tsea_mGSEA}) stored in the \code{feaResult}
-#' object can be returned with the \code{result} method in tabular format, 
-#' here \code{tibble}. The columns of this \code{tibble} are described below.
-#' \itemize{
-#'     \item enrichmentScore: ES from the GSEA algorithm 
-#'     (Subramanian et al., 2005). The score is calculated by walking down the 
-#'     gene list L, increasing a running-sum statistic when we encounter a gene 
-#'     in S and decreasing when it is not. The magnitude of the increment 
-#'     depends on the gene scores. The ES is the maximum deviation from zero 
-#'     encountered in the random walk. It corresponds to a weighted 
-#'     Kolmogorov-Smirnov-like statistic.
-#'     \item NES: Normalized enrichment score. The positive and negative 
-#'     enrichment scores are normalized separately by permutating the 
-#'     composition of the gene list L \code{nPerm} times, and dividing the 
-#'     enrichment score by the mean of the permutation ES with the same sign.
-#'     \item pvalue: The nominal p-value of the ES is calculated using a 
-#'     permutation test. Specifically, the composition of the gene list L is 
-#'     permuted and the ES of the gene set is recomputed for the permutated 
-#'     data generating a null distribution for the ES. The p-value of the 
-#'     observed ES is then calculated relative to this null distribution.
-#'     \item leadingEdge: Genes in the gene set S (functional category) that 
-#'     appear in the ranked list L at, or before, the point where the running 
-#'     sum reaches its maximum deviation from zero. It can be interpreted as 
-#'     the core of a gene set that accounts for the enrichment signal.
-#'     \item ledge_rank: Ranks of genes in 'leadingEdge' in gene list L.
-#' }
-#' Additional columns are described under the 'result' slot of the
-#' \code{\link{feaResult}} object.
 #' 
-#' @title Target Set Enrichment Analysis (TSEA) with mGSEA Algorithm
-#' @param drugs character vector containing drug identifiers used for functional
-#' enrichment testing. This can be the top ranking drugs from a GESS result. 
-#' Internally, drug test sets are translated to the corresponding target protein
-#' test sets based on the drug-target annotations provided under the 
-#' \code{dt_anno} argument.
-#' @param type one of `GO`, `KEGG` or `Reactome`
-#' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of
-#' `BP`,`MF`, `CC` or `ALL`. If type is `KEGG` or `Reactome`, \code{ont} is ignored.
 #' @param nPerm integer defining the number of permutation iterations for 
 #' calculating p-values
 #' @param exponent integer value used as exponent in GSEA algorithm. It defines
 #' the weight of the items in the item set \eqn{S}.
-#' @param pAdjustMethod p-value adjustment method, 
-#' one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'
-#' @param pvalueCutoff double, p-value cutoff
-#' @param minGSSize integer, minimum size of each gene set in annotation system
-#' @param maxGSSize integer, maximum size of each gene set in annotation system
 #' @param verbose TRUE or FALSE, print message or not
-#' @param dt_anno drug-target annotation source. Currently, one of 'DrugBank',
-#' 'CLUE', 'STITCH' or 'all'. If 'dt_anno' is 'all', the targets from the
-#' DrugBank, CLUE and STITCH databases will be combined. Usually, it is
-#' recommended to set the 'dt_anno' to 'all' since it provides the most
-#' complete drug-target annotations. Choosing a single
-#' annotation source results in sparser drug-target annotations 
-#' (particularly CLUE), and thus less complete enrichment results.
-#' @param readable TRUE or FALSE, it applies when type is `KEGG` or `Reactome`
-#' indicating whether to convert gene Entrez ids to gene Symbols in the 'itemID' 
-#' column in the result table.
-#' @return \code{\link{feaResult}} object, the result table contains the
-#' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
-#' the corresponding enrichment statistic.
-#' @seealso \code{\link{feaResult}}, \code{\link{fea}}
-#' @references 
-#' GSEA algorithm: 
-#' Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert, B. L., 
-#' Gillette, M. A., Mesirov, J. P. (2005). Gene set enrichment analysis: a 
-#' knowledge-based approach for interpreting genome-wide expression profiles. 
-#' Proceedings of the National Academy of Sciences of the United States of
-#' America, 102(43), 15545-15550. URL: https://doi.org/10.1073/pnas.0506580102
 #' @examples 
-#' data(drugs10)
+#' 
+#' ############# TSEA mGSEA method ############
 #' ## GO annotation system
-#' #res1 <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
-#' #                   nPerm=1000, pvalueCutoff=1, minGSSize=5)
-#' #result(res1)
+#' # res1 <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
+#' #                    nPerm=1000, pvalueCutoff=1, minGSSize=5)
+#' # result(res1)
 #  ## KEGG annotation system
-#' #res2 <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
-#' #                   nPerm=100, pvalueCutoff=1, minGSSize=5)
-#' #result(res2)
+#' # res2 <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
+#' #                    nPerm=100, pvalueCutoff=1, minGSSize=5)
+#' # result(res2)
 #' ## Reactome annotation system
-#' #res3 <- tsea_mGSEA(drugs=drugs10, type="Reactome", pvalueCutoff=1)
-#' #result(res3)
+#' # res3 <- tsea_mGSEA(drugs=drugs10, type="Reactome", pvalueCutoff=1)
+#' # result(res3)
 #' @export
 tsea_mGSEA <- function(drugs, type="GO", ont="MF", nPerm=1000, exponent=1, 
                        pAdjustMethod="BH", pvalueCutoff=0.05,

@@ -173,6 +173,56 @@ gctx2h5 <- function(gctx, cid, new_cid=cid, h5file, by_ncol=5000,
     h5ls(h5file)
 }
 
+#' Calculate Mean Expression Values of LINCS Level 3 Data
+#' 
+#' Function calculates mean expression values for replicated samples of LINCS
+#' Level 3 data that have been treated by the same compound in the same cell type
+#' at a chosen concentration and treatment time. Usually, the function is used
+#' after filtering the Level 3 data with \code{inst_filter}. The results (here
+#' matrix with mean expression values) are saved to an HDF5 file. The latter is
+#' referred to as the `lincs_expr` database.
+#' @param gctx character(1), path to the LINCS Level 3 gctx file
+#' @param inst tibble, LINCS Level 3 instances after filtering for specific concentrations and times
+#' @param h5file character(1), path to the destination HDF5 file
+#' @param chunksize number of columns of the matrix to be processed at a time to limit memory usage
+#' @param overwrite TRUE or FALSE, whether to overwrite or append data to an
+#' existing 'h5file'
+#' @return HDF5 file, representing the \code{lincs_expr} database
+#' @examples
+#' gctx <- system.file("extdata", "test_sample_n2x12328.gctx", package="signatureSearch")
+#' h5file <- tempfile(fileext=".h5")
+#' inst <- data.frame(inst_id=c("ASG001_MCF7_24H:BRD-A79768653-001-01-3:10",
+#'                              "CPC012_SKB_24H:BRD-K81418486:10"), 
+#'     pert_cell_factor=c('sirolimus__MCF7__trt_cp', 'vorinostat__SKB__trt_cp'))
+#' meanExpr2h5(gctx, inst, h5file, overwrite=TRUE)
+#' @export
+#' 
+meanExpr2h5 <- function(gctx, inst, h5file, chunksize=2000, overwrite=TRUE){
+    ## Get mean expression values of replicate samples from the same drug treatment in cells
+    pert_cell_list <- split(inst$inst_id, inst$pert_cell_factor)
+    chunk_list <- suppressWarnings(
+        split(pert_cell_list, rep(seq_len(ceiling(length(pert_cell_list)/chunksize)), each=chunksize)))
+    ## Creat an empty h5file
+    if(file.exists(h5file)){
+        if(overwrite){
+            create_empty_h5(h5file, delete_existing=TRUE)
+        }
+    } else {
+        create_empty_h5(h5file, delete_existing=FALSE)
+    }
+    ## append mean expr mat in each chunk to h5file
+    lapply(chunk_list, function(pcl){
+        cid_all <- unlist(pcl)
+        mat_all <- parse_gctx(gctx, cid=cid_all, matrix_only=TRUE)
+        mat_all <- mat_all@mat
+        expr <- vapply(pcl, function(cid, mat_all){
+            rowMeans(as.matrix(mat_all[,cid]))
+        }, mat_all=mat_all, FUN.VALUE=numeric(12328))
+        append2H5(x=expr, h5file, printstatus=FALSE)
+    })
+    h5ls(h5file)
+}
+
 #' Read gene sets from large gmt file in batches, convert the gene sets to
 #' 01 matrix and write the result to an HDF5 file.
 #' @title Convert GMT to HDF5 File
@@ -573,27 +623,140 @@ set_readable <- function(tb, OrgDb="org.Hs.eg.db", keyType="ENTREZID", geneCol="
     return(tb)
 }
 
-#' Add PCID to GESS results
+#' Add PCID to drug data frame
 #' 
-#' This function can be used to add the \code{PCID} (PubChem CID) column to the
-#' GESS result table.
+#' This function can be used to add the \code{PCIDss} (PubChem CID column added
+#' from signatureSearch package) column to a data frame that have a column 
+#' store compound names. The compound name to PubChem CID annotation is obtained
+#' from \code{lincs_pert_info} in 2017.
 #' 
-#' @param gess_tb tibble of GESS result, can be accessed by the `result` method 
-#' on the \code{\link{gessResult}} object 
-#' @return tibble object where the PCID column is added
+#' @param df data frame or tibble object
+#' @param drug_col name of the column that store compound names in df
+#' @return tibble object with an added PCIDss column
 #' @importFrom dplyr relocate
 #' @examples 
 #' data("lincs_pert_info")
 #' # gess_tb2 <- add_pcid(gess_tb)
 #' @export
-add_pcid <- function(gess_tb){
-    if(! "PCID" %in% colnames(gess_tb)){
-        data("lincs_pert_info", envir=environment())
-        pert2 <- lincs_pert_info[, c("pert_iname", "pubchem_cid")]
-        gess_tb %<>% left_join(pert2, by=c("pert"="pert_iname")) %>% 
-            dplyr::rename(PCID=pubchem_cid) %>% relocate(PCID, .after="pert")
+add_pcid <- function(df, drug_col="pert"){
+    data("lincs_pert_info", envir=environment())
+    pert2 <- lincs_pert_info[, c("pert_iname", "pubchem_cid")]
+    colnames(pert2) <- c("pert_iname", "PCIDss")
+    join_cols = "pert_iname"
+    names(join_cols) <- drug_col
+    df %<>% left_join(pert2, by=join_cols)
+    return(df)
+}
+
+#' Add MOA annotation to drug data frame
+#' 
+#' The MOA annotation is a list of MOA name to drug name mappings. 
+#' This functions add the MOA column to data frame when data frame have a 
+#' column with compound names
+#' 
+#' @param df data frame that must contains a column with compound names
+#' @param drug_col character (1), name of the column that stores compound names
+#' @param moa_list a list object of MOA name (e.g. HDAC inhibitor) to compound
+#' name mappings
+#' @return data frame with an added MOAss column  
+#' @examples 
+#' data("clue_moa_list")
+#' df <- data.frame(pert=c("vorinostat", "sirolimus"), annot1=c("a", "b"), 
+#'                  annot2=1:2)
+#' addMOA(df, "pert", clue_moa_list) 
+#' @export
+addMOA <- function(df, drug_col, moa_list){
+    drug2moa <- list_rev(moa_list)
+    d2m_vec <- sapply(drug2moa, paste, collapse="; ")
+    df$MOAss <- d2m_vec[df[[drug_col]]]
+    return(df)
+}
+
+#' Add Compound Annotation Info to GESS Result Table
+#' 
+#' This function supports adding customized compound annotation table to the 
+#' GESS result table if provided. It then automatically adds the target gene
+#' symbols, MOAs and PubChem CID columns (\code{t_gn_sym}, \code{MOAss}, 
+#' \code{PCIDss}) if the table contains a column that stores compound names.
+#'  
+#' @param gess_tb tibble or data.frame object of GESS result, 
+#' can be accessed by the \code{result} method on the \code{gessResult} object 
+#' from \code{gess_*} functions. Or a customized data frame that contains a 
+#' \code{pert} column that stores compound id or name.
+#' @param refdb character(1), reference database that can be accessed by 
+#' the \code{refdb} method on the \code{gessResult} object. If \code{gess_tb}
+#' is a customized table, \code{refdb} can be just set as 'custom'.
+#' @param cmp_annot_tb data.frame or tibble of compound annotation table. 
+#' This table contains annotation information for compounds stored under
+#' \code{pert} column of \code{gess_tb}. Set to \code{NULL} if not available.
+#' @param by character(1), column name in \code{cmp_annot_tb} that can be merged
+#' with \code{pert} column in \code{gess_tb} if \code{refdb} is not set 
+#' as 'lincs2', otherwise, it is the column name in \code{cmp_annot_tb} that can 
+#' be merged with \code{pert_id} column in the GESS result table. 
+#' If \code{cmp_annot_tb} is NULL, \code{by} is ignored.
+#' @param cmp_name_col character(1), column name in \code{gess_tb} or 
+#' \code{cmp_annot_tb} that store compound names. If there is no compound name 
+#' column, set to \code{NULL}. If \code{cmp_name_col} is available, 
+#' three additional columns (t_gn_sym, MOAss, PCIDss) are automatically added 
+#' by using \code{\link{get_targets}}, CLUE touchstone compound MOA annotation, 
+#' and 2017 \code{lincs_pert_info} annotation table, respectively as 
+#' annotation sources. t_gn_sym: target gene symbol, MOAss: MOA annotated from 
+#' signatureSearch, PCIDss: PubChem CID annotated from signatureSearch.
+#' @return tibble of \code{gess_tb} with target, MOA, PubChem CID annotations
+#' and also merged with user provided compound annotation table. 
+#' @importFrom dplyr tibble
+#' @examples 
+#' gess_tb <- data.frame(pert=c("vorinostat", "sirolimus", "estradiol"),
+#'                   cell=c("SKB", "SKB", "MCF7"),
+#'                   NCS=runif(3))
+#' cmp_annot_tb <- data.frame(pert_name=c("vorinostat", "sirolimus", "estradiol"),
+#'                            prop1=c("a", "b", "c"),
+#'                            prop2=1:3)
+#' addGESSannot(gess_tb, "custom", cmp_annot_tb, by="pert_name", 
+#'              cmp_name_col="pert")
+#' @export
+addGESSannot <- function(gess_tb, refdb, cmp_annot_tb=NULL, by="pert", 
+                         cmp_name_col="pert"){
+    names(by) <- "pert"
+    lastcol <- colnames(gess_tb)[ncol(gess_tb)]
+    if(refdb == "lincs2"){
+        # rename 'pert' as 'pert_id'; add 'pert' column
+        data("lincs_pert_info2", envir=environment())
+        gess_tb %<>% left_join(lincs_pert_info2[,c("pert_id", "pert_iname")],
+                               by=c("pert"="pert_id")) %>% 
+            relocate("pert_iname", .after="pert") %>% 
+            dplyr::rename(c("pert_id"="pert", "pert"="pert_iname"))
+        names(by) <- "pert_id"
     }
-    return(gess_tb)
+    if(!is.null(cmp_annot_tb)){
+        if(! by %in% colnames(cmp_annot_tb)){
+            warning("'by' argument needs to be a column name that is in 'cmp_annot_tb' so that 
+  this column can be merged with 'pert' column in GESS results. 
+  Now, the compound annotation table will not be added to GESS result table.")
+        } else {
+            res <- left_join(tibble(gess_tb), cmp_annot_tb, by=by)
+        }
+    } else {
+        res <- gess_tb
+    }
+    
+    if(is.null(cmp_name_col)){
+        return(tibble(res)) 
+    } else if(! cmp_name_col %in% colnames(res)){
+                cmp_name_col <- "pert"
+    }
+    
+    # Add t_gn_sym
+    target <- suppressMessages(get_targets(res[[cmp_name_col]]))
+    join_cols = "drug_name"; names(join_cols) <- cmp_name_col
+    res %<>% left_join(target, by=join_cols)
+    # Add MOAss
+    data("clue_moa_list", envir=environment())
+    res <- addMOA(res, cmp_name_col, clue_moa_list)
+    # Add PCIDss
+    res <- add_pcid(res, cmp_name_col)
+    res %<>% relocate(t_gn_sym:PCIDss, .after=all_of(lastcol))
+    return(tibble(res))
 }
 
 #' Named list to data frame 
@@ -619,5 +782,23 @@ list2df <- function(list, colnames){
     return(unique(df))
 }
 
+#' Reverse list 
+#' 
+#' Reverse list from list names to elements mapping to elements to names mapping.
+#' 
+#' @param list input list with names slot
+#' @return list
+#' @examples 
+#' list <- list("n1"=c("e1", "e2", "e4"), "n2"=c("e1", "e5"))
+#' list_rev(list)
+#' @export
+list_rev <- function(list){
+    df <- list2df(list, colnames=c("name", "ele"))
+    listr <- split(df$name, df$ele)
+    listr2 <- sapply(listr, unique, simplify=FALSE)
+    return(listr2)
+}
+
 ## get rid of "Undefined global functions or variables" note
-globalVariables(c("PCID", "pubchem_cid", "lincs_pert_info")) 
+globalVariables(c("PCID", "pubchem_cid", "lincs_pert_info",
+                  "PCIDss", "all_of", "lincs_pert_info2", "t_gn_sym")) 

@@ -1,7 +1,7 @@
-##' Drug Set Enrichment Analysis (DSEA) with Hypergeometric Test
-##' 
-##' The \code{dsea_hyperG} function performs Drug Set Enrichment Analysis (DSEA)
-##' based on the hypergeomtric distribution. In case of DSEA, the identifiers of
+##' @rdname fea
+##' @description 
+##' The DSEA with Hypergeometric Test (\code{dsea_hyperG}) performs DSEA
+##' based on the hypergeometric distribution. In case of DSEA, the identifiers of
 ##' the top ranking drugs from a GESS result table are used. To use drug 
 ##' instead of gene labels for this test, the former are mapped to functional 
 ##' categories, including GO, KEGG or Mode of Action (MOA) categories, based on 
@@ -9,51 +9,24 @@
 ##' ChEMBL, CLUE or STITCH. Currently, the MOA annotation used by this function 
 ##' are from the CLUE website (https://clue.io).
 ##' 
-##' Compared to the related Target Set Enrichment Analysis (TSEA; see help
-##' \code{tsea_dup_hyperG} or \code{tsea_mGSEA}), the DSEA approach has the
-##' advantage that the drugs in the query test sets are usually unique allowing 
-##' to use them without major modifications to the underlying statistical 
-##' method(s).
-##' 
-##' The DSEA results stored in the \code{feaResult} object can be returned with 
-##' the \code{result} method in tabular format, here \code{tibble}. The columns 
-##' of this \code{tibble} are described in the help of the 
-##' \code{\link{tsea_dup_hyperG}} function.
-##' @param drugs character vector, query drug identifier set used for functional
-##' enrichment testing. This can be the top ranking drugs from a GESS result.
-##' @param type one of 'GO', 'KEGG' or 'MOA'
-##' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one 
-##' of `BP`,`MF`, `CC` or `ALL`. If type is 'KEGG', \code{ont} is ignored.
-##' @param pvalueCutoff double, p-value cutoff to return only enrichment results
-##' for drugs meeting a user definable confidence threshold
-##' @param pAdjustMethod p-value adjustment method, 
-#' one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'
-##' @param qvalueCutoff double, qvalue cutoff, similar to \code{pvalueCutoff}
-##' @param minGSSize integer, annotation categories with less than 
-##' \code{minGSize} drugs annotated will be ignored by enrichment test. If type 
-##' is 'MOA', it may be beneficial to set 'minGSSize' to lower values (e.g. 2) 
-##' than for other functional annotation systems. This is because certain MOA 
-##' categories contain only 2 drugs.
-##' @param maxGSSize integer, annotation categories with more drugs annotated 
-##' than \code{maxGSize} will be ignored by enrichment test.
-##' @return \code{\link{feaResult}} object containing the enrichment results of 
-##' functional categories (e.g. GO terms or KEGG pathways) ranked by the 
-##' corresponding enrichment statistic.
+##' Compared to the related Target Set Enrichment Analysis (TSEA), the DSEA 
+##' approach has the advantage that the drugs in the query test sets are usually
+##' unique allowing to use them without major modifications to the 
+##' underlying statistical method(s).
 ##' @importFrom magrittr %<>%
 ##' @importMethodsFrom AnnotationDbi mappedkeys
 ##' @importMethodsFrom AnnotationDbi mget
-##' @seealso \code{\link{feaResult}}, \code{\link{fea}},
-##'          \code{\link[signatureSearchData]{GO_DATA_drug}}
 ##' @examples 
-##' data(drugs10)
+##' 
+##' ############### DSEA Hypergeometric Test ###########
 ##' ## GO annotation system
-##' # hyperG_res <- dsea_hyperG(drugs = drugs10, type = "GO", ont="MF")
+##' # hyperG_res <- dsea_hyperG(drugs=drugs10, type="GO", ont="MF")
 ##' # result(hyperG_res)
 ##' ## KEGG annotation system
-##' #hyperG_k_res <- dsea_hyperG(drugs = drugs10, type = "KEGG", 
-##' #                            pvalueCutoff = 1, qvalueCutoff = 1, 
-##' #                            minGSSize = 10, maxGSSize = 500)
-##' #result(hyperG_k_res) 
+##' # hyperG_k_res <- dsea_hyperG(drugs=drugs10, type="KEGG", 
+##' #                             pvalueCutoff=1, qvalueCutoff=1, 
+##' #                             minGSSize=10, maxGSSize=500)
+##' # result(hyperG_k_res) 
 ##' @export
 dsea_hyperG <- function(drugs,
                         type="GO",

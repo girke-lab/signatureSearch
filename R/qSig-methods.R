@@ -1,5 +1,5 @@
 ##' It builds a `qSig` object to store the query signature, reference database
-##' and GESS method used for GESS methods
+##' and GESS method used for GESS methods.
 ##' @title Helper Function to Construct a \code{\link{qSig}} Object
 ##' @param query If 'gess_method' is 'CMAP' or 'LINCS', it should be a list with
 ##' two character vectors named \code{upset} and \code{downset} for up- and
@@ -30,15 +30,15 @@
 ##' contain z-scores, LFCs, (normalized) gene expression intensity values or 
 ##' read counts.
 ##' @param gess_method one of 'CMAP', 'LINCS', 'gCMAP', 'Fisher' or 'Cor'
-##' @param refdb character(1), can be one of "cmap", "cmap_expr", "lincs", or 
-##' "lincs_expr" when using the CMAP/LINCS databases from the affiliated
+##' @param refdb character(1), can be one of "cmap", "cmap_expr", "lincs", 
+##' "lincs_expr", "lincs2" when using the CMAP/LINCS databases from the affiliated
 ##' \code{signatureSearchData} package. With 'cmap' the database contains
 ##' signatures of LFC scores obtained from DEG analysis routines; with
-##' 'cmap_expr' normalized gene expression values; with 'lincs' z-scores
-##' obtained from the DEG analysis methods of the LINCS project; and with
+##' 'cmap_expr' normalized gene expression values; with 'lincs' or 'lincs2'
+##' z-scores obtained from the DEG analysis methods of the LINCS project; and with
 ##' 'lincs_expr' normalized expression values.
 ##' 
-##' To use a custom signature database, it should be the file path to the HDF5 
+##' To use a custom database, it should be the file path to the HDF5 
 ##' file generated with the \code{\link{build_custom_db}} function, the HDF5
 ##' file needs to have the \code{.h5} extension. 
 ##' 
@@ -56,21 +56,17 @@
 ##' @examples 
 ##' db_path <- system.file("extdata", "sample_db.h5", 
 ##'                        package = "signatureSearch")
-##' ## Load sample_db as `SummarizedExperiment` object
-##' library(SummarizedExperiment); library(HDF5Array)
-##' sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
-##' rownames(sample_db) <- HDF5Array(db_path, name="rownames")
-##' colnames(sample_db) <- HDF5Array(db_path, name="colnames")
-##' ## get "vorinostat__SKB__trt_cp" signature drawn from sample database
-##' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-##' query = as.numeric(query_mat); names(query) = rownames(query_mat)
-##' upset <- head(names(query[order(-query)]), 150)
-##' downset <- tail(names(query[order(-query)]), 150)
-##' qsig_lincs <- qSig(query=list(upset=upset, downset=downset), 
+##' qsig_lincs <- qSig(query=list(
+##'                      upset=c("230", "5357", "2015", "2542", "1759"), 
+##'                      downset=c("22864", "9338", "54793", "10384", "27000")), 
 ##'                    gess_method="LINCS", refdb=db_path)
-##' qsig_gcmap <- qSig(query=query_mat, gess_method="gCMAP", refdb=db_path)
+##' qmat <- matrix(runif(5), nrow=5)
+##' rownames(qmat) <- c("230", "5357", "2015", "2542", "1759")
+##' colnames(qmat) <- "treatment"
+##' qsig_gcmap <- qSig(query=qmat, gess_method="gCMAP", refdb=db_path)
 ##' @export
 qSig <- function(query, gess_method, refdb){
+    db_path <- determine_refdb(refdb)
     ## Validity check of refdb
     if(!any(refdb %in% c("cmap","cmap_expr","lincs","lincs_expr"))){
       if(grepl("\\.h5", refdb)){
@@ -83,8 +79,7 @@ qSig <- function(query, gess_method, refdb){
       if(any(gess_method %in% c("CMAP", "LINCS", "Fisher"))){
         upset <- query$upset
         downset <- query$downset
-        refdb <- determine_refdb(refdb)
-        gid_db <- h5read(refdb, "rownames", drop=TRUE)
+        gid_db <- h5read(db_path, "rownames", drop=TRUE)
         
         ## Validity checks of upset and downset
         if(all(c(!is.character(upset), !is.null(upset)))) 
@@ -117,17 +112,16 @@ qSig <- function(query, gess_method, refdb){
             stop("Both upset and downset share zero identifiers with reference database, 
           please make sure that at least one share identifiers!")
         }
-        query$upset = upset
-        query$downset = downset
+        query$upset <- upset
+        query$downset <- downset
       } else {
           stop("'gess_method' slot must be one of 'CMAP', 'LINCS', or 
       'Fisher' if 'qsig' is a list of up and down gene labels!")
       }
-      new("qSig", query=query, gess_method=gess_method, refdb=refdb)
+      new("qSig", query=query, gess_method=gess_method, refdb=refdb, db_path=db_path)
     } else if (is(query, "matrix")){
       if(any(gess_method %in% c("gCMAP", "Fisher", "Cor"))){
-        refdb = determine_refdb(refdb)
-        gid_db <- h5read(refdb, "rownames", drop=TRUE)
+        gid_db <- h5read(db_path, "rownames", drop=TRUE)
         
         if(! is.numeric(query[1,1]) | ncol(query) != 1) 
           stop("The 'query' should be a numeric matrix with one column!")
@@ -143,7 +137,7 @@ qSig <- function(query, gess_method, refdb){
       } else
         stop("'gess_method' slot must be one of 'gCMAP', 'Fisher' or 'Cor' 
   if 'qsig' is a numeric matrix with gene labels in the row name slot!")
-      new("qSig", query=query, gess_method=gess_method, refdb=refdb)
+      new("qSig", query=query, gess_method=gess_method, refdb=refdb, db_path=db_path)
     } else {
    stop("'query' needs to be either a list or a matrix with one column") 
     }
@@ -189,5 +183,6 @@ setMethod("show", c(object="qSig"),
         }
         cat("\n@gess_method", "\t", gm(object), "\n")
         cat("\n@refdb", "\t", refdb(object), "\n")
+        cat("\n@db_path", "\t", object@db_path, "\n")
     })
 
