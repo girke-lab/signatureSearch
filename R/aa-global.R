@@ -26,7 +26,9 @@ organismMapper <- get("organismMapper",
 prepare_KEGG <- get("prepare_KEGG", 
                        envir = asNamespace("clusterProfiler"), inherits = FALSE)
 
+#' @import ExperimentHub
 validh5 <- function(ehid){
+    eh <- suppressMessages(ExperimentHub())
     h5path <- eh[[ehid]]
     tryCatch(h5ls(h5path), error=function(e){
         unlink(h5path)
@@ -36,6 +38,7 @@ validh5 <- function(ehid){
 }
 
 determine_refdb <- function(refdb){
+    eh <- suppressMessages(ExperimentHub())
     if(refdb=="cmap") return(validh5("EH3223"))
     if(refdb=="cmap_expr") return(validh5("EH3224"))
     if(refdb=="lincs") return(validh5("EH3226"))
@@ -45,6 +48,7 @@ determine_refdb <- function(refdb){
 }
 
 load_sqlite <- function(ehid){
+    eh <- suppressMessages(ExperimentHub())
     path <- suppressMessages(eh[[ehid]])
     conn <- tryCatch(dbConnect(SQLite(), path), error=function(e){
         unlink(path)
@@ -53,3 +57,22 @@ load_sqlite <- function(ehid){
     })
     return(conn)
 }
+
+#' @importFrom BiocGenerics fileName
+validLoad <- function(ehid){
+    eh <- suppressMessages(ExperimentHub())
+    tryCatch(suppressMessages(eh[[ehid]]), 
+             error=function(e){
+                 unlink(fileName(eh[ehid]))
+                 eh[[ehid]]})
+}
+
+# GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
+# download GO_DATA.rds from AnnotationHub to save time by avoiding 
+# building GO_DATA from scratch
+GO_DATA <- validLoad("EH3231")
+
+# GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
+#                                  ont, keytype="SYMBOL")
+# download GO_DATA_drug.rds 
+GO_DATA_drug <- validLoad("EH3232")

@@ -1,7 +1,7 @@
 Package: signatureSearch
 Title: Environment for Gene Expression Searching Combined with Functional 
        Enrichment Analysis
-Version: 1.9.3
+Version: 1.9.4
 Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
                     role = c("aut")),
              person("Brendan", "Gongol", email = "bgong001@ucr.edu", 
@@ -17,7 +17,7 @@ Imports: AnnotationDbi, ggplot2, data.table, ExperimentHub, HDF5Array,
          magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats, 
          utils, reshape2, visNetwork, BiocParallel, fastmatch, reactome.db,
          Matrix, clusterProfiler, readr, DOSE, rhdf5, GSEABase, DelayedArray,
-         BiocGenerics, tools
+         BiocGenerics
 Suggests: knitr, testthat, rmarkdown, BiocStyle, org.Hs.eg.db, 
           signatureSearchData, DT
 License: Artistic-2.0
