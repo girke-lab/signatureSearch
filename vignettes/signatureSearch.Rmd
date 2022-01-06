@@ -440,6 +440,9 @@ information table as an example.
 data("lincs_pert_info2")
 qsig_lincs2 <- qSig(query=list(upset=upset, downset=downset), 
                    gess_method="LINCS", refdb="lincs2")
+# When the compound annotation table is not provided
+lincs2 <- gess_lincs(qsig_lincs2, tau=FALSE, sortby="NCS", workers=2)
+# When the compound annotation table is provided
 lincs2 <- gess_lincs(qsig_lincs2, tau=FALSE, sortby="NCS", workers=2,
                      cmp_annot_tb=lincs_pert_info2, by="pert_id", 
                      cmp_name_col="pert_iname") # takes about 7 minutes
