@@ -286,7 +286,7 @@ NULL
 #' @name lincs_pert_info2
 #' @aliases lincs_pert_info2
 #' @docType data
-#' @format A \code{tibble} object with 34419 rows and 40 columns.
+#' @format A \code{tibble} object with 34419 rows and 48 columns.
 #' @examples 
 #' # Load object
 #' data(lincs_pert_info2)

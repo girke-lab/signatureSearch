@@ -5,7 +5,7 @@
 \alias{lincs_pert_info2}
 \title{LINCS 2020 Perturbation Information}
 \format{
-A \code{tibble} object with 34419 rows and 40 columns.
+A \code{tibble} object with 34419 rows and 48 columns.
 }
 \usage{
 lincs_pert_info2
