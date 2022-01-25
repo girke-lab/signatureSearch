@@ -193,10 +193,10 @@ NULL
 #' @keywords datasets
 "targetList"
 
-#' Cell Type Information
+#' LINCS 2017 Cell Type Information
 #' 
 #' It contains cell type (tumor or normal), primary site and subtype 
-#' annotations of cells in LINCS database. 
+#' annotations of cells in LINCS 2017 database. 
 #'
 #' @name cell_info
 #' @aliases cell_info
@@ -208,6 +208,22 @@ NULL
 #' head(cell_info)
 #' @keywords datasets
 "cell_info"
+
+#' LINCS 2020 Cell Type Information
+#' 
+#' It contains cell type (tumor or normal), primary site, subtype etc.
+#' annotations of cells in LINCS 2020 database. 
+#'
+#' @name cell_info2
+#' @aliases cell_info2
+#' @docType data
+#' @format A \code{tibble} object with 240 rows and 21 columns.
+#' @examples 
+#' # Load object
+#' data(cell_info2)
+#' head(cell_info2)
+#' @keywords datasets
+"cell_info2"
 
 #' MOA to Gene Mappings
 #' 

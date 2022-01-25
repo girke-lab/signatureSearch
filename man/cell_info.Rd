@@ -3,7 +3,7 @@
 \docType{data}
 \name{cell_info}
 \alias{cell_info}
-\title{Cell Type Information}
+\title{LINCS 2017 Cell Type Information}
 \format{
 A \code{tibble} object with 30 rows and 4 columns.
 }
@@ -12,7 +12,7 @@ cell_info
 }
 \description{
 It contains cell type (tumor or normal), primary site and subtype 
-annotations of cells in LINCS database.
+annotations of cells in LINCS 2017 database.
 }
 \examples{
 # Load object
