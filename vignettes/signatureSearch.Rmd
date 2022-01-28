@@ -443,10 +443,10 @@ qsig_lincs2 <- qSig(query=list(upset=upset, downset=downset),
 # When the compound annotation table is not provided
 lincs2 <- gess_lincs(qsig_lincs2, tau=FALSE, sortby="NCS", workers=2)
 # When the compound annotation table is provided
-lincs2 <- gess_lincs(qsig_lincs2, tau=FALSE, sortby="NCS", workers=2,
+lincs2 <- gess_lincs(qsig_lincs2, tau=TRUE, sortby="NCS", workers=1,
                      cmp_annot_tb=lincs_pert_info2, by="pert_id", 
-                     cmp_name_col="pert_iname") # takes about 7 minutes
-result(lincs2)
+                     cmp_name_col="pert_iname") # takes about 15 minutes
+result(lincs2) %>% print(width=Inf)   
 ```
 
 The search results are stored in a `gessResult` object as under the _CMAP_

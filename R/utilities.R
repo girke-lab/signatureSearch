@@ -748,7 +748,7 @@ addGESSannot <- function(gess_tb, refdb, cmp_annot_tb=NULL, by="pert",
     
     # Add t_gn_sym
     target <- suppressMessages(get_targets(res[[cmp_name_col]]))
-    join_cols = "drug_name"; names(join_cols) <- cmp_name_col
+    join_cols <- "drug_name"; names(join_cols) <- cmp_name_col
     res %<>% left_join(target, by=join_cols)
     # Add MOAss
     data("clue_moa_list", envir=environment())
