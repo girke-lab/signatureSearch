@@ -1,3 +1,9 @@
+### Changes in version 1.9.6 (2022-01-28)
++ Addressed warning for non-ascii in cell_info2
+
+### Changes in version 1.9.5 (2022-01-26)
++ Updated lincs_pert_info2 and cell_info2
+
 ### Changes in version 1.9.3 (2021-12-17)
 + Supported searching against the newest LINCS 2020 beta database in 
 devel version
