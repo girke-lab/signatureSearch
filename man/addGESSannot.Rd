@@ -24,13 +24,17 @@ is a customized table, \code{refdb} can be just set as 'custom'.}
 
 \item{cmp_annot_tb}{data.frame or tibble of compound annotation table. 
 This table contains annotation information for compounds stored under
-\code{pert} column of \code{gess_tb}. Set to \code{NULL} if not available.}
+\code{pert} column of \code{gess_tb}. Set to \code{NULL} if not available.
+This table should not contain columns with names of "t_gn_sym", "MOAss" or 
+"PCIDss", these three columns will be added internally and thus conserved by 
+the function. If they are contained in \code{cmp_annot_tb}, they will be
+overwritten. If users want to maintain these three columns in the provided 
+annotation table, give them different names.}
 
 \item{by}{character(1), column name in \code{cmp_annot_tb} that can be merged
-with \code{pert} column in \code{gess_tb} if \code{refdb} is not set 
-as 'lincs2', otherwise, it is the column name in \code{cmp_annot_tb} that can 
-be merged with \code{pert_id} column in the GESS result table. 
-If \code{cmp_annot_tb} is NULL, \code{by} is ignored.}
+with \code{pert} column in \code{gess_tb}. If \code{refdb} is set 
+as 'lincs2', it will be merged with \code{pert_id} column in the GESS result 
+table. If \code{cmp_annot_tb} is NULL, \code{by} is ignored.}
 
 \item{cmp_name_col}{character(1), column name in \code{gess_tb} or 
 \code{cmp_annot_tb} that store compound names. If there is no compound name 

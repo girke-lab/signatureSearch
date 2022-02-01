@@ -689,11 +689,15 @@ addMOA <- function(df, drug_col, moa_list){
 #' @param cmp_annot_tb data.frame or tibble of compound annotation table. 
 #' This table contains annotation information for compounds stored under
 #' \code{pert} column of \code{gess_tb}. Set to \code{NULL} if not available.
+#' This table should not contain columns with names of "t_gn_sym", "MOAss" or 
+#' "PCIDss", these three columns will be added internally and thus conserved by 
+#' the function. If they are contained in \code{cmp_annot_tb}, they will be
+#' overwritten. If users want to maintain these three columns in the provided 
+#' annotation table, give them different names.
 #' @param by character(1), column name in \code{cmp_annot_tb} that can be merged
-#' with \code{pert} column in \code{gess_tb} if \code{refdb} is not set 
-#' as 'lincs2', otherwise, it is the column name in \code{cmp_annot_tb} that can 
-#' be merged with \code{pert_id} column in the GESS result table. 
-#' If \code{cmp_annot_tb} is NULL, \code{by} is ignored.
+#' with \code{pert} column in \code{gess_tb}. If \code{refdb} is set 
+#' as 'lincs2', it will be merged with \code{pert_id} column in the GESS result 
+#' table. If \code{cmp_annot_tb} is NULL, \code{by} is ignored.
 #' @param cmp_name_col character(1), column name in \code{gess_tb} or 
 #' \code{cmp_annot_tb} that store compound names. If there is no compound name 
 #' column, set to \code{NULL}. If \code{cmp_name_col} is available, 
@@ -731,9 +735,19 @@ addGESSannot <- function(gess_tb, refdb, cmp_annot_tb=NULL, by="pert",
     if(!is.null(cmp_annot_tb)){
         if(! by %in% colnames(cmp_annot_tb)){
             warning("'by' argument needs to be a column name that is in 'cmp_annot_tb' so that 
-  this column can be merged with 'pert' column in GESS results. 
-  Now, the compound annotation table will not be added to GESS result table.")
+  this column can be merged with 'pert' column in GESS results. If the refdb is 'lincs2', 
+  it will be merged with the 'pert_id' column. Now, the compound annotation table will not 
+  be added to GESS result table.")
         } else {
+            # check whether t_gn_sym, MOAss, PCIDss columns in cmp_annot_tb
+            conf_col <- intersect(c("t_gn_sym", "MOAss", "PCIDss"), colnames(cmp_annot_tb))
+            if(length(conf_col) > 0){
+                message(paste(conf_col, collapse=", "), 
+                    " columns exists in cmp_annot_tb, they will be replaced",
+                    " by the internally generated columns, if users want to",
+                    " keep those columns, please rename them.")
+            }
+            cmp_annot_tb %<>% dplyr::select(-all_of(conf_col))
             res <- left_join(tibble(gess_tb), cmp_annot_tb, by=by)
         }
     } else {
