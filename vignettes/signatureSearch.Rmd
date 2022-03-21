@@ -458,7 +458,7 @@ normalized connectivity score; `NCSct`: NCS summarized across cell types;
 included in the result table if `tau=TRUE` in a `gess_lincs` function call. The
 example given is run with `tau=FALSE`, because the tau values are only
 meaningful when the complete LINCS database is used which is not the case for
-the toy database.  
+the toy database. `TauRefSize`: size of reference perturbations for computing Tau.
 
 The following provides a more detailed description of the similarity scores 
 computed by the _LINCS_ method. Additional details are available in the
