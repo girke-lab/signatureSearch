@@ -13,6 +13,7 @@
 #' @importFrom GSEABase EntrezIdentifier
 #' @importFrom stats dhyper
 #' @importFrom stats qnorm
+#' @importFrom tibble tibble
 #' @examples 
 #' 
 #' ############## Fisher's Exact Test ##########
@@ -23,7 +24,8 @@
 #' 
 gess_fisher <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
                         chunk_size=5000, ref_trts=NULL, workers=1,
-                        cmp_annot_tb=NULL, by="pert", cmp_name_col="pert"){
+                        cmp_annot_tb=NULL, by="pert", cmp_name_col="pert",
+                        addAnnotations = TRUE){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(gm(qSig) != "Fisher"){
@@ -114,9 +116,15 @@ gess_fisher <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   
   resultDF <- resultDF[order(resultDF$padj), ]
   row.names(resultDF) <- NULL
+  
+  if(addAnnotations == TRUE){
   res <- sep_pcf(resultDF)
   # add compound annotations
   res <- addGESSannot(res, refdb(qSig), cmp_annot_tb, by, cmp_name_col)
+  } else {
+    res <- tibble:::tibble(resultDF)
+    colnames(res)[1] <- "pert"
+  }
   x <- gessResult(result = res,
                   query = qr(qSig),
                   gess_method = gm(qSig),

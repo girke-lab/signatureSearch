@@ -25,6 +25,7 @@
 #' \code{signatureSearch} follows the original description of the authors as 
 #' closely as possible. 
 #' @import methods
+#' @importFrom tibble tibble
 #' @examples 
 #' db_path <- system.file("extdata", "sample_db.h5", 
 #'                        package = "signatureSearch")
@@ -44,7 +45,8 @@
 #' # result(cmap)
 #' @export
 gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL, workers=1,
-                      cmp_annot_tb=NULL, by="pert", cmp_name_col="pert"){
+                      cmp_annot_tb=NULL, by="pert", cmp_name_col="pert",
+                      addAnnotations = TRUE){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
     # stopifnot(validObject(qSig))
     if(gm(qSig) != "CMAP"){
@@ -56,9 +58,14 @@ gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL, workers=1,
     qsig_dn <- qr(qSig)$downset
     res <- cmapEnrich(db_path, upset=qsig_up, downset=qsig_dn, 
                       chunk_size=chunk_size, ref_trts=ref_trts, workers=workers)
+    if(addAnnotations == TRUE){
     res <- sep_pcf(res)
     # add compound annotations
     res <- addGESSannot(res, refdb(qSig), cmp_annot_tb, by, cmp_name_col)
+    } else {
+      res <- tibble(res)
+      colnames(res)[1] <- "pert"
+    }
     x <- gessResult(result = res,
                     query = qr(qSig),
                     gess_method = gm(qSig),

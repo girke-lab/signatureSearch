@@ -378,7 +378,7 @@ containing 100 GESs composed of z-scores.
 ```{r gess_cmap, eval=TRUE}
 qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
                   gess_method="CMAP", refdb=db_path)
-cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000, workers=1)
+cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000, workers=1, addAnnotations = TRUE)
 cmap
 result(cmap)
 ```
@@ -518,7 +518,7 @@ and `lower` filter, here set to `1` and `-1`, respectively.
 
 ```{r gess_gcmap, eval=TRUE}
 qsig_gcmap <- qSig(query = query_mat, gess_method = "gCMAP", refdb = db_path)
-gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1, workers=1)
+gcmap <- gess_gcmap(qsig_gcmap, higher=1, lower=-1, workers=1, addAnnotations = TRUE)
 result(gcmap)
 ```
 
@@ -545,7 +545,7 @@ cutoffs to 1 and -1, respectively.
 
 ```{r gess_fisher, eval=TRUE, message=FALSE}
 qsig_fisher <- qSig(query = query_mat, gess_method = "Fisher", refdb = db_path)
-fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1, workers=1)
+fisher <- gess_fisher(qSig=qsig_fisher, higher=1, lower=-1, workers=1, addAnnotations = TRUE)
 result(fisher)
 ```
 
@@ -563,7 +563,7 @@ previous example.
 ```{r gess_fisher_set, eval=FALSE, message=FALSE}
 qsig_fisher2 <- qSig(query = list(upset=upset, downset=downset), 
                      gess_method = "Fisher", refdb = db_path)
-fisher2 <- gess_fisher(qSig=qsig_fisher2, higher=1, lower=-1, workers=1)
+fisher2 <- gess_fisher(qSig=qsig_fisher2, higher=1, lower=-1, workers=1, addAnnotations = TRUE)
 result(fisher2)
 ```
 
@@ -599,7 +599,7 @@ the `method` argument. For details, users want to consult the help file of the
 
 ```{r gess_sp, eval=TRUE}
 qsig_sp <- qSig(query=query_mat, gess_method="Cor", refdb=db_path)
-sp <- gess_cor(qSig=qsig_sp, method="spearman", workers=1)
+sp <- gess_cor(qSig=qsig_sp, method="spearman", workers=1, addAnnotations = TRUE)
 result(sp)
 ```
 
@@ -620,7 +620,7 @@ genes with the 150 highest and lowest z-scores.
 # "vorinostat__SKB__trt_cp" signature.
 query_mat_sub <- as.matrix(query_mat[c(upset, downset),])
 qsig_spsub <- qSig(query = query_mat_sub, gess_method = "Cor", refdb = db_path)
-spsub <- gess_cor(qSig=qsig_spsub, method="spearman", workers=1)
+spsub <- gess_cor(qSig=qsig_spsub, method="spearman", workers=1, addAnnotations = TRUE)
 result(spsub)
 ```
 

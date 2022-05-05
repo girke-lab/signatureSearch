@@ -15,6 +15,7 @@
 #' Lamb et al (2006), where the query is composed of the labels of up and down 
 #' regulated DEGs and the database contains rank transformed GESs.
 #' @importFrom HDF5Array HDF5Array
+#' @importFrom tibble tibble
 #' @examples 
 #' 
 #' ############## gCMAP method ##############
@@ -25,7 +26,8 @@
 #' 
 gess_gcmap <- function(qSig, higher=NULL, lower=NULL, padj=NULL, 
                        chunk_size=5000, ref_trts=NULL, workers=1,
-                       cmp_annot_tb=NULL, by="pert", cmp_name_col="pert"){
+                       cmp_annot_tb=NULL, by="pert", cmp_name_col="pert",
+                       addAnnotations = TRUE){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(gm(qSig) != "gCMAP"){
@@ -111,9 +113,15 @@ gess_gcmap <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   resultDF[,"effect"] <-.connnectivity_scale(resultDF$effect)
   resultDF <- resultDF[order(abs(resultDF$effect), decreasing=TRUE), ]
   row.names(resultDF) <- NULL
+  
+  if(addAnnotations == TRUE){
   res <- sep_pcf(resultDF)
   # add compound annotations
   res <- addGESSannot(res, refdb(qSig), cmp_annot_tb, by, cmp_name_col)
+  } else {
+    res <- tibble(resultDF)
+    colnames(res)[1] <- "pert"
+  }
   x <- gessResult(result = res,
                   query = qr(qSig),
                   gess_method = gm(qSig),
