@@ -240,7 +240,7 @@ eh <- ExperimentHub()
 cmap <- eh[["EH3223"]]; cmap_expr <- eh[["EH3224"]]
 lincs <- eh[["EH3226"]]; lincs_expr <- eh[["EH3227"]]
 lincs2 <- eh[["EH7297"]]
-h5ls(lincs)
+h5ls(lincs2)
 ```
 
 This will store the paths to the downloaded database files in the corresponding
