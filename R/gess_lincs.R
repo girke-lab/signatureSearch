@@ -179,7 +179,7 @@
 #' @export
 gess_lincs <- function(qSig, tau=FALSE, sortby="NCS", 
                        chunk_size=5000, ref_trts=NULL, workers=1,
-                       cmp_annot_tb=NULL, by="pert", cmp_name_col="pert"){
+                       cmp_annot_tb=NULL, by="pert", cmp_name_col="pert", addAnnotations = TRUE){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   #stopifnot(validObject(qSig))
   if(gm(qSig) != "LINCS"){
@@ -193,7 +193,12 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
                      tau=tau, sortby=sortby, chunk_size=chunk_size, 
                      ref_trts=ref_trts, workers=workers)
   # add compound annotations
+  if(addAnnotations == TRUE){
   res <- addGESSannot(res, refdb(qSig), cmp_annot_tb, by, cmp_name_col)
+  } else {
+    res <- as_tibble(res)  
+  }
+  
   x <- gessResult(result = res,
                   query = qr(qSig),
                   gess_method = gm(qSig),
