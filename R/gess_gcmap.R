@@ -51,7 +51,7 @@ gess_gcmap <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   }
   
   full_dim <- dim(full_mat)
-  full_grid <- colAutoGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
+  full_grid <- colAutoGrid(full_mat, ncol=min(chunk_size, ncol(full_mat))) # 
   
   if(! is.null(padj)){
       if(! 'padj' %in% h5ls(db_path)$name){
@@ -65,9 +65,9 @@ gess_gcmap <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   ### The blocks in 'full_grid' are made of full columns 
   nblock <- length(full_grid) 
   resultDF <- bplapply(seq_len(nblock), function(b){
-    ref_block <- read_block(full_mat, full_grid[[b]])
+    ref_block <- read_block(full_mat, full_grid[[as.integer(b)]])#full_grid[[b]])
     if(! is.null(padj)){
-        pmat <- read_block(full_pmat, full_grid[[b]])
+        pmat <- read_block(full_pmat, full_grid[[as.integer(b)]])
     } else {
         pmat = NULL
     }
@@ -77,38 +77,6 @@ gess_gcmap <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
     return(data.frame(c))}, BPPARAM = MulticoreParam(workers=workers))
   resultDF <- do.call(rbind, resultDF)
 
-  # else {
-  #   gene_sets <- suppressWarnings(read_gmt(db_path))
-  #   # transform gene sets to sparseMatrix
-  #   gsc <- GeneSetCollection(mapply(function(geneIds, setId) {
-  #     GeneSet(geneIds, geneIdType=EntrezIdentifier(),
-  #             setName=setId)
-  #   }, gene_sets, names(gene_sets)))
-  #   cmapData <- incidence(gsc)
-  #   cmapData <- Matrix::t(cmapData)
-  #   #c <- connectivity_score_raw(experiment=as.matrix(query), query=cmapData)
-  #   # Search the refdb by using multiple cores/workers
-  #   ceil <- ceiling(ncol(cmapData)/chunk_size)
-  #   res_list <- bplapply(seq_len(ceil), function(i){
-  #     dgcMat <- cmapData[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(cmapData))]
-  #     c <- connectivity_score_raw(experiment=as.matrix(query), query=dgcMat)
-  #     return(data.frame(c))
-  #   }, BPPARAM = MulticoreParam(workers=workers))
-  #   resultDF <- do.call(rbind, res_list)
-  # }
-  
-  # mat_dim <- getH5dim(db_path)
-  # mat_ncol <- mat_dim[2]
-  # ceil <- ceiling(mat_ncol/chunk_size)
-  # cs_raw <- function(i){
-  #   mat <- readHDF5mat(db_path,
-  #                   colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-  #   cmap <- gCMAP::induceCMAPCollection(mat, higher=higher, lower=lower)
-  #   c <- connectivity_score_raw(experiment=as.matrix(query), query=cmap)
-  #   return(data.frame(c))
-  # }
-  # resultDF <- do.call(rbind, lapply(seq_len(ceil), cs_raw))
-  
   ## Apply scaling of scores to full data set
   resultDF[,"effect"] <-.connnectivity_scale(resultDF$effect)
   resultDF <- resultDF[order(abs(resultDF$effect), decreasing=TRUE), ]
@@ -117,7 +85,7 @@ gess_gcmap <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   if(addAnnotations == TRUE){
   res <- sep_pcf(resultDF)
   # add compound annotations
-  res <- addGESSannot(res, refdb(qSig), cmp_annot_tb, by, cmp_name_col)
+  res <- addGESSannot(res, refdb(qSig), cmp_annot_tb = cmp_annot_tb[,!colnames(cmp_annot_tb) %in% "t_gn_sym"], by, cmp_name_col)
   } else {
     res <- tibble(resultDF)
     colnames(res)[1] <- "pert"
@@ -171,8 +139,8 @@ induceSMat <- function(mat, lower=NULL, higher=NULL, padj=NULL, pmat){
   cmap <- Matrix::t(sparseMatrix(i=as.integer(i),
                           j=as.integer(j),
                           x=as.integer(x),
-                          dims=list(ncol(mat), nrow(mat)),
-                          dimnames = list(colnames(mat), rownames(mat))))
+                          dims=c(ncol(mat), nrow(mat)), # dims=list(ncol(mat), nrow(mat))
+                          dimnames = list(colnames(mat), rownames(mat)) ) )
   cmap
 }
 

@@ -181,7 +181,6 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
                        chunk_size=5000, ref_trts=NULL, workers=1,
                        cmp_annot_tb=NULL, by="pert", cmp_name_col="pert", addAnnotations = TRUE){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
-  #stopifnot(validObject(qSig))
   if(gm(qSig) != "LINCS"){
     stop(paste("The 'gess_method' slot of 'qSig' should be 'LINCS'",
                "if using 'gess_lincs' function"))
@@ -194,7 +193,7 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
                      ref_trts=ref_trts, workers=workers)
   # add compound annotations
   if(addAnnotations == TRUE){
-  res <- addGESSannot(res, refdb(qSig), cmp_annot_tb, by, cmp_name_col)
+  res <- addGESSannot(res, refdb(qSig), cmp_annot_tb =cmp_annot_tb[,!colnames(cmp_annot_tb) %in% "t_gn_sym"], by, cmp_name_col)
   } else {
     res <- as_tibble(res)  
   }
@@ -205,6 +204,7 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
                   refdb = refdb(qSig))
   return(x)
 }
+
 
 lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1, 
                         output="all", tau=FALSE, minTauRefSize=500, 
@@ -229,7 +229,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
     nblock <- length(full_grid) 
     
     ESout <- unlist(bplapply(seq_len(nblock), function(b){
-      ref_block <- read_block(full_mat, full_grid[[b]])
+      ref_block <- read_block(full_mat, full_grid[[as.integer(b)]])
       mat <- ref_block
       ## Run .enrichScore on upset and downset
       ## When both upset and downset are provided 
@@ -254,7 +254,8 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
                        Q=downset, type=type))
         ESout1 <- -ESdown
         ## When none are provided (excluded by input validity check already)
-      }}, BPPARAM=MulticoreParam(workers=workers)))
+      }
+      }, BPPARAM=MulticoreParam(workers=workers)))
     
     # ## Read in matrix in h5 file by chunks
     # mat_dim <- getH5dim(db_path)
@@ -362,13 +363,21 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
         tmpDF <- taurefList9264[[x]]
         ncs_query_match <- names(ncs_query_list[[x]])[names(ncs_query_list[[x]]) 
                                                       %in% rownames(tmpDF)]
+        
+        # matchQuery <- ncs_query_list[names(ncs_query_list[[x]]) 
+        #   %in% rownames(tmpDF)]
+        # matchQuery <- matchQuery[!is.na(names(matchQuery))]
+        
         if(length(ncs_query_match)>0) {
           tmpDF <- tmpDF[ncs_query_match, , drop=FALSE]
+          # # sign(ncs_query_list[[x]]) * 100/ncol(tmpDF) * 
+          # # rowSums(abs(tmpDF)  < abs(ncs_query_list[[x]]))
           # sign(ncs_query_list[[x]]) * 100/ncol(tmpDF) * 
-          # rowSums(abs(tmpDF)  < abs(ncs_query_list[[x]]))
-          sign(ncs_query_list[[x]]) * 100/ncol(tmpDF) * 
-            rowSums(abs(tmpDF) < abs(round(ncs_query_list[[x]], 2))) 
-          # rounded as in ref db
+          #   rowSums(abs(tmpDF) < abs(round(ncs_query_list[[x]], 2))) 
+          # # rounded as in ref db
+          #### subset to the same length ####
+          sign(ncs_query_list[[x]][names(ncs_query_list[[x]]) %in% rownames(tmpDF)]) * 100/ncol(tmpDF) * 
+            rowSums(abs(tmpDF) < abs(round(ncs_query_list[[x]][names(ncs_query_list[[x]]) %in% rownames(tmpDF)], 2))) 
         } else {
           NULL
         }
@@ -505,3 +514,4 @@ randQuerySets <- function(id_names, N_queries, set_length=150) {
     names(rand_query_list) <- randset_names
     return(rand_query_list)
 }
+

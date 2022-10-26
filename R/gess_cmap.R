@@ -61,7 +61,7 @@ gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL, workers=1,
     if(addAnnotations == TRUE){
     res <- sep_pcf(res)
     # add compound annotations
-    res <- addGESSannot(res, refdb(qSig), cmp_annot_tb, by, cmp_name_col)
+    res <- addGESSannot(res, refdb(qSig), cmp_annot_tb = cmp_annot_tb[,!colnames(cmp_annot_tb) %in% "t_gn_sym"], by, cmp_name_col)
     } else {
       res <- tibble(res)
       colnames(res)[1] <- "pert"
