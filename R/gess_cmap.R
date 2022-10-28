@@ -48,7 +48,6 @@ gess_cmap <- function(qSig, chunk_size=5000, ref_trts=NULL, workers=1,
                       cmp_annot_tb=NULL, by="pert", cmp_name_col="pert",
                       addAnnotations = TRUE){
     if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
-    # stopifnot(validObject(qSig))
     if(gm(qSig) != "CMAP"){
         stop(paste("The 'gess_method' slot of 'qSig' should be 'CMAP'",
                    "if using 'gess_cmap' function!"))
@@ -114,29 +113,6 @@ cmapEnrich <- function(db_path, upset, downset,
         .s(rankLup[[x]], rankLdown[[x]], n=nrow(mat)),
         FUN.VALUE=numeric(1))
     }, BPPARAM = MulticoreParam(workers = workers)))
-  
-  # ## Read in matrix in h5 file by chunks
-  # mat_dim <- getH5dim(db_path)
-  # mat_nrow <- mat_dim[1]
-  # mat_ncol <- mat_dim[2]
-  # ceil <- ceiling(mat_ncol/chunk_size)
-  # ## get ranks of up and down genes in DB
-  # rankLup <- NULL
-  # rankLdown <- NULL
-  # for(i in seq_len(ceil)){
-  #   mat <- readHDF5mat(db_path,
-  #                   colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-  #   rankLup1 <- lapply(colnames(mat), function(x) sort(rank(-1*mat[,x])[upset]))
-  #   rankLdown1 <- lapply(colnames(mat), 
-  #                        function(x) sort(rank(-1*mat[,x])[downset]))
-  #   rankLup <- c(rankLup, rankLup1)
-  #   rankLdown <- c(rankLdown, rankLdown1)
-  # }
-  # 
-  # ## Compute raw and scaled connectivity scores
-  # raw.score <- vapply(seq_along(rankLup), function(x) 
-  #                              .s(rankLup[[x]], rankLdown[[x]], n=mat_nrow),
-  #                     FUN.VALUE=numeric(1))
   
   score <- .S(raw.score)
   

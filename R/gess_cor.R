@@ -31,7 +31,6 @@ gess_cor <- function(qSig, method="spearman",
                      cmp_annot_tb=NULL, by="pert", cmp_name_col="pert",
                      addAnnotations = TRUE){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
-  #stopifnot(validObject(qSig))
   if(gm(qSig) != "Cor"){
       stop("The 'gess_method' slot of 'qSig' should be 'Cor' 
            if using 'gess_cor' function")
@@ -58,17 +57,6 @@ gess_cor <- function(qSig, method="spearman",
     cor_res <- cor_sig_search(query=query, refdb=ref_block, method=method)
     return(data.frame(cor_res))}, BPPARAM = MulticoreParam(workers = workers))
   resultDF <- do.call(rbind, resultDF)
-  
-  # mat_dim <- getH5dim(db_path)
-  # mat_ncol <- mat_dim[2]
-  # ceil <- ceiling(mat_ncol/chunk_size)
-  # resultDF <- data.frame()
-  # for(i in seq_len(ceil)){
-  #   mat <- readHDF5mat(db_path,
-  #                   colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-  #   cor_res <- cor_sig_search(query=query, refdb=mat, method=method)
-  #   resultDF <- rbind(resultDF, data.frame(cor_res))
-  # }
 
   resultDF <- resultDF[order(abs(resultDF$cor_score), decreasing = TRUE), ]
   row.names(resultDF) <- NULL
