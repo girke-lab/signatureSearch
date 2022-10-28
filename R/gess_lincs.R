@@ -139,6 +139,7 @@
 #' (FDR) of defining DEGs that is less than or equal to 'padj'. The 'padj' 
 #' argument is valid only if the reference HDF5 file contains the p-value 
 #' matrix stored in the dataset named as 'padj'. 
+#' @param addAnnotations Logical value.  If \code{TRUE} adds drug annotations to results. 
 #' @inheritParams addGESSannot
 #' 
 #' @return \code{\link{gessResult}} object, the result table contains the 

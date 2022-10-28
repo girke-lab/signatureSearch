@@ -86,7 +86,7 @@ gess_fisher <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   # add compound annotations
   res <- addGESSannot(res, refdb(qSig), cmp_annot_tb = cmp_annot_tb[,!colnames(cmp_annot_tb) %in% "t_gn_sym"], by, cmp_name_col)
   } else {
-    res <- tibble:::tibble(resultDF)
+    res <- tibble::tibble(resultDF)
     colnames(res)[1] <- "pert"
   }
   x <- gessResult(result = res,

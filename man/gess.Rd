@@ -16,7 +16,8 @@ gess_cmap(
   workers = 1,
   cmp_annot_tb = NULL,
   by = "pert",
-  cmp_name_col = "pert"
+  cmp_name_col = "pert",
+  addAnnotations = TRUE
 )
 
 gess_cor(
@@ -27,7 +28,8 @@ gess_cor(
   workers = 1,
   cmp_annot_tb = NULL,
   by = "pert",
-  cmp_name_col = "pert"
+  cmp_name_col = "pert",
+  addAnnotations = TRUE
 )
 
 gess_fisher(
@@ -40,7 +42,8 @@ gess_fisher(
   workers = 1,
   cmp_annot_tb = NULL,
   by = "pert",
-  cmp_name_col = "pert"
+  cmp_name_col = "pert",
+  addAnnotations = TRUE
 )
 
 gess_gcmap(
@@ -53,7 +56,8 @@ gess_gcmap(
   workers = 1,
   cmp_annot_tb = NULL,
   by = "pert",
-  cmp_name_col = "pert"
+  cmp_name_col = "pert",
+  addAnnotations = TRUE
 )
 
 gess_lincs(
@@ -65,7 +69,8 @@ gess_lincs(
   workers = 1,
   cmp_annot_tb = NULL,
   by = "pert",
-  cmp_name_col = "pert"
+  cmp_name_col = "pert",
+  addAnnotations = TRUE
 )
 }
 \arguments{
@@ -105,6 +110,8 @@ by using \code{\link{get_targets}}, CLUE touchstone compound MOA annotation,
 and 2017 \code{lincs_pert_info} annotation table, respectively as 
 annotation sources. t_gn_sym: target gene symbol, MOAss: MOA annotated from 
 signatureSearch, PCIDss: PubChem CID annotated from signatureSearch.}
+
+\item{addAnnotations}{Logical value.  If \code{TRUE} adds drug annotations to results.}
 
 \item{method}{One of 'spearman' (default), 'kendall', or 'pearson',
 indicating which correlation coefficient to use.}
