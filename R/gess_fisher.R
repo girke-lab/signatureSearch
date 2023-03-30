@@ -77,42 +77,6 @@ gess_fisher <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
     c <- fs(query=query, sets=cmap, universe = universe)
     return(data.frame(c))}, BPPARAM = MulticoreParam(workers = workers))
   resultDF <- do.call(rbind, resultDF)
-
-  # else {
-  #   gene_sets <- suppressWarnings(read_gmt(db_path))
-  #   # remove invalid gene sets that have 0 length or names are NAs
-  #   gene_sets <- gene_sets[sapply(gene_sets, length)>0 & !is.na(names(gene_sets))]
-  #   # transform gene sets to sparseMatrix
-  #   gsc <- GeneSetCollection(mapply(function(geneIds, setId) {
-  #     GeneSet(geneIds, geneIdType=EntrezIdentifier(),
-  #             setName=setId)
-  #   }, gene_sets, names(gene_sets)))
-  #   cmapData <- incidence(gsc)
-  #   cmapData <- Matrix::t(cmapData)
-  #   #c <- fs(query=query, sets=cmapData, universe=rownames(cmapData))
-  #   
-  #   # Search the refdb by using multiple cores/workers
-  #   ceil <- ceiling(ncol(cmapData)/chunk_size)
-  #   res_list <- bplapply(seq_len(ceil), function(i){
-  #     dgcMat <- cmapData[,(chunk_size*(i-1)+1):min(chunk_size*i, ncol(cmapData))]
-  #     c <- fs(query=query, sets=dgcMat, universe=rownames(dgcMat))
-  #     return(data.frame(c))
-  #   }, BPPARAM = MulticoreParam(workers=workers))
-  #   resultDF <- do.call(rbind, res_list)
-  # }
-  
-  # mat_dim <- getH5dim(db_path)
-  # mat_ncol <- mat_dim[2]
-  # ceil <- ceiling(mat_ncol/chunk_size)
-  # fs <- function(i){
-  #     mat <- readHDF5mat(db_path,
-  #                colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-  #     cmap <- induceCMAPCollection(mat, higher=higher, lower=lower)
-  #     universe <- featureNames(cmap)
-  #     c <- fisher_score(query=query, sets=cmap, universe = universe)
-  #     cmapTable(c)
-  # }
-  # resultDF <- do.call(rbind, lapply(seq_len(ceil), fs))
   
   resultDF <- resultDF[order(resultDF$padj), ]
   row.names(resultDF) <- NULL
@@ -122,7 +86,7 @@ gess_fisher <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   # add compound annotations
   res <- addGESSannot(res, refdb(qSig), cmp_annot_tb = cmp_annot_tb[,!colnames(cmp_annot_tb) %in% "t_gn_sym"], by, cmp_name_col)
   } else {
-    res <- tibble:::tibble(resultDF)
+    res <- tibble::tibble(resultDF)
     colnames(res)[1] <- "pert"
   }
   x <- gessResult(result = res,
@@ -148,13 +112,6 @@ fs <- function(query, sets, universe) {
     query.common <- abs(matrix(query[common.genes,], nrow=length(common.genes)))
     sets.common <- abs(matrix(sets[common.genes,], nrow=length(common.genes)))
     coincidence <- Matrix::crossprod(query.common, sets.common) 
-    
-    ## 2x2 table
-    ##              query  1         query  0
-    ##   sets 1  query.and.sets  sets.not.query    || sets.all
-    ##   sets 0  query.not.sets      neither 
-    ##   ========================================
-    ##            query.all        query.colsum
     
     query.and.sets <- t(matrix(coincidence, ncol=ncol(sets), 
                         dimnames=list(colnames(query), colnames(sets))))

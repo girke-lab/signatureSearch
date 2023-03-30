@@ -65,7 +65,7 @@ gess_gcmap <- function(qSig, higher=NULL, lower=NULL, padj=NULL,
   ### The blocks in 'full_grid' are made of full columns 
   nblock <- length(full_grid) 
   resultDF <- bplapply(seq_len(nblock), function(b){
-    ref_block <- read_block(full_mat, full_grid[[as.integer(b)]])#full_grid[[b]])
+    ref_block <- read_block(full_mat, full_grid[[as.integer(b)]])
     if(! is.null(padj)){
         pmat <- read_block(full_pmat, full_grid[[as.integer(b)]])
     } else {

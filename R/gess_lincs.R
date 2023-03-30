@@ -139,6 +139,7 @@
 #' (FDR) of defining DEGs that is less than or equal to 'padj'. The 'padj' 
 #' argument is valid only if the reference HDF5 file contains the p-value 
 #' matrix stored in the dataset named as 'padj'. 
+#' @param addAnnotations Logical value.  If \code{TRUE} adds drug annotations to results. 
 #' @inheritParams addGESSannot
 #' 
 #' @return \code{\link{gessResult}} object, the result table contains the 
@@ -364,18 +365,9 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
         ncs_query_match <- names(ncs_query_list[[x]])[names(ncs_query_list[[x]]) 
                                                       %in% rownames(tmpDF)]
         
-        # matchQuery <- ncs_query_list[names(ncs_query_list[[x]]) 
-        #   %in% rownames(tmpDF)]
-        # matchQuery <- matchQuery[!is.na(names(matchQuery))]
-        
         if(length(ncs_query_match)>0) {
           tmpDF <- tmpDF[ncs_query_match, , drop=FALSE]
-          # # sign(ncs_query_list[[x]]) * 100/ncol(tmpDF) * 
-          # # rowSums(abs(tmpDF)  < abs(ncs_query_list[[x]]))
-          # sign(ncs_query_list[[x]]) * 100/ncol(tmpDF) * 
-          #   rowSums(abs(tmpDF) < abs(round(ncs_query_list[[x]], 2))) 
-          # # rounded as in ref db
-          #### subset to the same length ####
+          #### subset to the same length ##### rounded as in ref db
           sign(ncs_query_list[[x]][names(ncs_query_list[[x]]) %in% rownames(tmpDF)]) * 100/ncol(tmpDF) * 
             rowSums(abs(tmpDF) < abs(round(ncs_query_list[[x]][names(ncs_query_list[[x]]) %in% rownames(tmpDF)], 2))) 
         } else {
