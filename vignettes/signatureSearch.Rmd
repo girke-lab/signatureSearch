@@ -214,7 +214,6 @@ As Bioconductor package `signatureSearch` can be installed with the
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("signatureSearch")
-BiocManager::install("yduan004/signatureSearch", build_vignettes=TRUE)  # Installs from github
 BiocManager::install("girke-lab/signatureSearch", build_vignettes=FALSE)  # Installs from github
 ```
 
