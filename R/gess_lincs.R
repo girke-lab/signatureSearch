@@ -199,7 +199,7 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
   db_path <- determine_refdb(refdb(qSig))
   res <- lincsEnrich(db_path, upset=upset, downset=downset,
                      tau=tau, sortby=sortby, chunk_size=chunk_size,
-                     ref_trts=ref_trts, workers=workers)
+                     ref_trts=ref_trts, workers=workers, GeneType=GeneType)
   # add compound annotations
   if(addAnnotations == TRUE){
   res <- addGESSannot(res, refdb(qSig), cmp_annot_tb =cmp_annot_tb[,!colnames(cmp_annot_tb) %in% "t_gn_sym"], by, cmp_name_col)
