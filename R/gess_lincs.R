@@ -140,13 +140,15 @@
 #' argument is valid only if the reference HDF5 file contains the p-value
 #' matrix stored in the dataset named as 'padj'.
 #' @param addAnnotations Logical value.  If \code{TRUE} adds drug annotations to results.
-#' @inheritParams addGESSannot
-#'
-#'#' @param GeneType A character value of either "reference", "not inferred", 
+#' 
+#' @param GeneType A character value of either "reference", "not inferred", 
 #' "best inferred", "landmark" or "inferred" indicating which reference gene set 
 #' query genes should be filtered against. While "reference" filters query genes 
 #' against the reference database, "not inferred", "best inferred", "landmark" or 
-#' "inferred" filter genes against LINCS gene spaces.  
+#' "inferred" filter genes against LINCS gene spaces. 
+#' 
+#' @inheritParams addGESSannot
+#'
 #' 
 #' @return \code{\link{gessResult}} object, the result table contains the
 #' search results for each perturbagen in the reference database ranked by

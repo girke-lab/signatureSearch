@@ -70,6 +70,7 @@ gess_lincs(
   cmp_annot_tb = NULL,
   by = "pert",
   cmp_name_col = "pert",
+  GeneType = "reference",
   addAnnotations = TRUE
 )
 }
@@ -142,6 +143,12 @@ background values are based on.}
 
 \item{sortby}{sort the GESS result table based on one of the following
 statistics: `WTCS`, `NCS`, `Tau`, `NCSct` or `NA`}
+
+\item{GeneType}{A character value of either "reference", "not inferred", 
+"best inferred", "landmark" or "inferred" indicating which reference gene set 
+query genes should be filtered against. While "reference" filters query genes 
+against the reference database, "not inferred", "best inferred", "landmark" or 
+"inferred" filter genes against LINCS gene spaces.}
 }
 \value{
 \code{\link{gessResult}} object, the result table contains the
