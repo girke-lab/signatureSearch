@@ -142,6 +142,12 @@
 #' @param addAnnotations Logical value.  If \code{TRUE} adds drug annotations to results.
 #' @inheritParams addGESSannot
 #'
+#'#' @param GeneType A character value of either "reference", "not inferred", 
+#' "best inferred", "landmark" or "inferred" indicating which reference gene set 
+#' query genes should be filtered against. While "reference" filters query genes 
+#' against the reference database, "not inferred", "best inferred", "landmark" or 
+#' "inferred" filter genes against LINCS gene spaces.  
+#' 
 #' @return \code{\link{gessResult}} object, the result table contains the
 #' search results for each perturbagen in the reference database ranked by
 #' their signature similarity to the query.
@@ -181,6 +187,7 @@
 gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
                        chunk_size=5000, ref_trts=NULL, workers=1,
                        cmp_annot_tb=NULL, by="pert", cmp_name_col="pert",
+                       GeneType = "reference",
                        addAnnotations = TRUE){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   if(gm(qSig) != "LINCS"){
@@ -237,7 +244,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
       ## When both upset and downset are provided
       if(length(upset)>0 & length(downset)>0) {
         ESup <- apply(mat, 2, function(x)
-            .enrichScore(sigvec=sort(x, decreasing = TRUE),
+            .enrichScore(sigvec=sort(x, decreasing = TRUE, GeneType=GeneType),
                          Q=upset, type=type))
         ESdown <- apply(mat, 2, function(x)
             .enrichScore(sigvec=sort(x, decreasing = TRUE),
@@ -246,13 +253,13 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
         ## When only upset is provided
       } else if(length(upset)>0 & length(downset)==0) {
         ESup <- apply(mat, 2, function(x)
-          .enrichScore(sigvec=sort(x, decreasing = TRUE),
+          .enrichScore(sigvec=sort(x, decreasing = TRUE, GeneType=GeneType),
                        Q=upset, type=type))
         ESout1 <- ESup
         ## When only downset is provided
       } else if(length(upset)==0 & length(downset)>0) {
         ESdown <- apply(mat, 2, function(x)
-          .enrichScore(sigvec=sort(x, decreasing = TRUE),
+          .enrichScore(sigvec=sort(x, decreasing = TRUE, GeneType=GeneType),
                        Q=downset, type=type))
         ESout1 <- -ESdown
         ## When none are provided (excluded by input validity check already)
@@ -429,9 +436,16 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 ## Define enrichment function according to Subramanian et al, 2005
 ## Note: query corresponds to gene set, here Q.
 #' @importFrom readr read_tsv
-.enrichScore <- function (sigvec, Q, type){
-  L <- names(sigvec)
-  R <- as.numeric(sigvec)
+.enrichScore <- function (sigvec, Q, type, GeneType){
+  if(filter[1] == "reference"){ 
+    sigvec2 <- sigvec
+  } else{
+    Lspace <- suppressMessages(read_tsv(system.file("extdata", "LINCSGeneSpaceSub.txt", package="signatureSearch")))
+    Lt <- as.character(Lspace[Lspace$Type %in% GeneType,]$`Entrez ID`) #  "best inferred"  "not inferred" "landmark", "inferred
+    sigvec2 <- sigvec[names(sigvec) %in% Lt]
+  }
+  L <- names(sigvec2)
+  R <- as.numeric(sigvec2)
   N <- length(L)
   NH <- length(Q)
   Ns <- N - NH
@@ -507,3 +521,4 @@ randQuerySets <- function(id_names, N_queries, set_length=150) {
     names(rand_query_list) <- randset_names
     return(rand_query_list)
 }
+
