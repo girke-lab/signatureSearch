@@ -219,7 +219,7 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
 
 lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
                         output="all", tau=FALSE, minTauRefSize=500,
-                        chunk_size=5000, ref_trts=NULL, workers=4) {
+                        chunk_size=5000, ref_trts=NULL, workers=4, GeneType) {
     mycolnames <- c("WTCS", "NCS", "Tau", "NCSct", "N_upset", "N_downset", NA)
     if(!any(mycolnames %in% sortby))
         stop("Unsupported value assinged to sortby.")
