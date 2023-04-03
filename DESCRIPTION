@@ -1,33 +1,33 @@
 Package: signatureSearch
-Title: Environment for Gene Expression Searching Combined with Functional 
+Title: Environment for Gene Expression Searching Combined with Functional
        Enrichment Analysis
-Version: 1.11.1
-Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
+Version: 1.11.2
+Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu",
                     role = c("aut")),
-             person("Brendan", "Gongol", email = "bgong001@ucr.edu", 
+             person("Brendan", "Gongol", email = "bgong001@ucr.edu",
                     role = c("cre", "aut")),
-             person("Thomas", "Girke", email = "thomas.girke@ucr.edu", 
+             person("Thomas", "Girke", email = "thomas.girke@ucr.edu",
                     role = "aut"))
-Description: This package implements algorithms and data structures for 
-             performing gene expression signature (GES) searches, and 
-             subsequently interpreting the results functionally with 
+Description: This package implements algorithms and data structures for
+             performing gene expression signature (GES) searches, and
+             subsequently interpreting the results functionally with
              specialized enrichment methods.
-Depends: R(>= 3.6.0), Rcpp, SummarizedExperiment, org.Hs.eg.db
+Depends: R(>= 4.2.0), Rcpp, SummarizedExperiment, org.Hs.eg.db
 Imports: AnnotationDbi, ggplot2, data.table, ExperimentHub, HDF5Array,
-         magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats, 
+         magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats,
          utils, reshape2, visNetwork, BiocParallel, fastmatch, reactome.db,
          Matrix, clusterProfiler, readr, DOSE, rhdf5, GSEABase, DelayedArray,
          BiocGenerics, tibble
-Suggests: knitr, testthat, rmarkdown, BiocStyle,  
+Suggests: knitr, testthat, rmarkdown, BiocStyle,
           signatureSearchData, DT
 License: Artistic-2.0
 SystemRequirements: C++11
 LinkingTo: Rcpp
 Encoding: UTF-8
 VignetteBuilder: knitr
-RoxygenNote: 7.2.0
-biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment, 
+RoxygenNote: 7.2.3
+biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment,
            Sequencing, Coverage, DifferentialExpression
 URL: https://github.com/yduan004/signatureSearch/
 BugReports: https://github.com/yduan004/signatureSearch/issues
-LazyData: true
+LazyData: false

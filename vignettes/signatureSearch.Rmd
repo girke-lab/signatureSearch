@@ -425,7 +425,7 @@ exception that "LINCS" needs to be specified under the `gess_method` argument.
 ```{r gess_lincs, eval=TRUE}
 qsig_lincs <- qSig(query=list(upset=upset, downset=downset), 
                    gess_method="LINCS", refdb=db_path)
-lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE, workers=1, filter = "reference", addAnnotations = TRUE)
+lincs <- gess_lincs(qsig_lincs, sortby="NCS", tau=FALSE, workers=1, addAnnotations = TRUE)
 result(lincs)
 ```
 

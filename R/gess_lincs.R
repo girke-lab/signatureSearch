@@ -140,11 +140,6 @@
 #' argument is valid only if the reference HDF5 file contains the p-value
 #' matrix stored in the dataset named as 'padj'.
 #' @param addAnnotations Logical value.  If \code{TRUE} adds drug annotations to results.
-#' @param filter A character value of either "reference", "not inferred", 
-#' "best inferred", "landmark" or "inferred" indicating which reference gene set 
-#' query genes should be filtered against. While "reference" filters query genes 
-#' against the reference database, "not inferred", "best inferred", "landmark" or 
-#' "inferred" filter genes against LINCS gene spaces.  
 #' @inheritParams addGESSannot
 #'
 #' @return \code{\link{gessResult}} object, the result table contains the
@@ -186,7 +181,7 @@
 gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
                        chunk_size=5000, ref_trts=NULL, workers=1,
                        cmp_annot_tb=NULL, by="pert", cmp_name_col="pert",
-                       filter = "reference", addAnnotations = TRUE){
+                       addAnnotations = TRUE){
   if(!is(qSig, "qSig")) stop("The 'qSig' should be an object of 'qSig' class")
   if(gm(qSig) != "LINCS"){
     stop(paste("The 'gess_method' slot of 'qSig' should be 'LINCS'",
@@ -197,7 +192,7 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
   db_path <- determine_refdb(refdb(qSig))
   res <- lincsEnrich(db_path, upset=upset, downset=downset,
                      tau=tau, sortby=sortby, chunk_size=chunk_size,
-                     ref_trts=ref_trts, workers=workers, filter = filter)
+                     ref_trts=ref_trts, workers=workers)
   # add compound annotations
   if(addAnnotations == TRUE){
   res <- addGESSannot(res, refdb(qSig), cmp_annot_tb =cmp_annot_tb[,!colnames(cmp_annot_tb) %in% "t_gn_sym"], by, cmp_name_col)
@@ -215,7 +210,7 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
 
 lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
                         output="all", tau=FALSE, minTauRefSize=500,
-                        chunk_size=5000, ref_trts=NULL, workers=4, filter) {
+                        chunk_size=5000, ref_trts=NULL, workers=4) {
     mycolnames <- c("WTCS", "NCS", "Tau", "NCSct", "N_upset", "N_downset", NA)
     if(!any(mycolnames %in% sortby))
         stop("Unsupported value assinged to sortby.")
@@ -243,22 +238,22 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
       if(length(upset)>0 & length(downset)>0) {
         ESup <- apply(mat, 2, function(x)
             .enrichScore(sigvec=sort(x, decreasing = TRUE),
-                         Q=upset, type=type, filter = filter))
+                         Q=upset, type=type))
         ESdown <- apply(mat, 2, function(x)
             .enrichScore(sigvec=sort(x, decreasing = TRUE),
-                         Q=downset, type=type, filter = filter))
+                         Q=downset, type=type))
         ESout1 <- ifelse(sign(ESup) != sign(ESdown), (ESup - ESdown)/2, 0)
         ## When only upset is provided
       } else if(length(upset)>0 & length(downset)==0) {
         ESup <- apply(mat, 2, function(x)
           .enrichScore(sigvec=sort(x, decreasing = TRUE),
-                       Q=upset, type=type, filter = filter))
+                       Q=upset, type=type))
         ESout1 <- ESup
         ## When only downset is provided
       } else if(length(upset)==0 & length(downset)>0) {
         ESdown <- apply(mat, 2, function(x)
           .enrichScore(sigvec=sort(x, decreasing = TRUE),
-                       Q=downset, type=type, filter = filter))
+                       Q=downset, type=type))
         ESout1 <- -ESdown
         ## When none are provided (excluded by input validity check already)
       }
@@ -434,31 +429,13 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 ## Define enrichment function according to Subramanian et al, 2005
 ## Note: query corresponds to gene set, here Q.
 #' @importFrom readr read_tsv
-.enrichScore <- function (sigvec, Q, type, filter){
+.enrichScore <- function (sigvec, Q, type){
   L <- names(sigvec)
   R <- as.numeric(sigvec)
   N <- length(L)
   NH <- length(Q)
   Ns <- N - NH
-  if(filter == "reference"){
-    hit_index <- as.numeric(L %in% Q)
-    } else if(filter == "best inferred"){
-    Lspace <- suppressMessages(read_tsv(system.file("extdata", "LINCSGeneSpace.txt", package="signatureSearch")))
-    L <- as.character(Lspace[Lspace$Type == "best inferred",]$`Entrez ID`)
-    hit_index <- as.numeric(L %in% Q)
-  } else if(filter == "not inferred"){
-    Lspace <- suppressMessages(read_tsv(system.file("extdata", "LINCSGeneSpace.txt", package="signatureSearch")))
-    L <- as.character(Lspace[Lspace$Type == "not inferred",]$`Entrez ID`)
-    hit_index <- as.numeric(L %in% Q)
-  } else if(filter == "landmark"){
-    Lspace <- suppressMessages(read_tsv(system.file("extdata", "LINCSGeneSpace.txt", package="signatureSearch")))
-    L <- as.character(Lspace[Lspace$Type == "landmark",]$`Entrez ID`)
-    hit_index <- as.numeric(L %in% Q)
-  } else if(filter == "inferred"){
-    Lspace <- suppressMessages(read_tsv(system.file("extdata", "LINCSGeneSpace.txt", package="signatureSearch")))
-    L <- as.character(Lspace[Lspace$Type == "inferred",]$`Entrez ID`)
-    hit_index <- as.numeric(L %in% Q)
-  }
+  hit_index <- as.numeric(L %in% Q)
   miss_index <- 1 - hit_index
   R <- abs(R^type)
   NR <- sum(R[hit_index == 1], na.rm = TRUE)

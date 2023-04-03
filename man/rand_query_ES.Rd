@@ -18,7 +18,7 @@ reference database}
 File with path assigned to \code{dest}
 }
 \description{
-Function computes null distribution of Weighted Connectivity Scores (WTCS) 
+Function computes null distribution of Weighted Connectivity Scores (WTCS)
 used by the LINCS GESS method for computing nominal P-values.
 }
 \examples{
@@ -27,9 +27,9 @@ rand_query_ES(h5file=db_path, N_queries=5, dest="ES_NULL.txt")
 unlink("ES_NULL.txt")
 }
 \references{
-Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., Natoli, T. E., 
-Lu, X., Golub, T. R. (2017). A Next Generation Connectivity Map: L1000 
-Platform and the First 1,000,000 Profiles. Cell, 171 (6), 1437-1452.e17. 
+Subramanian, A., Narayan, R., Corsello, S. M., Peck, D. D., Natoli, T. E.,
+Lu, X., Golub, T. R. (2017). A Next Generation Connectivity Map: L1000
+Platform and the First 1,000,000 Profiles. Cell, 171 (6), 1437-1452.e17.
 URL: https://doi.org/10.1016/j.cell.2017.10.049
 }
 \seealso{
