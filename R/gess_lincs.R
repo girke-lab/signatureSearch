@@ -217,108 +217,50 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
 }
 
 
-lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
-                        output="all", tau=FALSE, minTauRefSize=500,
-                        chunk_size=5000, ref_trts=NULL, workers=4, GeneType2) {
-    mycolnames <- c("WTCS", "NCS", "Tau", "NCSct", "N_upset", "N_downset", NA)
-    if(!any(mycolnames %in% sortby))
-        stop("Unsupported value assinged to sortby.")
-
-    ## calculate ESout of query to blocks (e.g., 5000 columns) of full refdb
-    full_mat <- HDF5Array(db_path, "assay")
-    rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
-    colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
-
-    if(! is.null(ref_trts)){
-        trts_valid <- trts_check(ref_trts, colnames(full_mat))
-        full_mat <- full_mat[, trts_valid]
+lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1, 
+                         output = "all", tau = FALSE, minTauRefSize = 500, chunk_size = 5000, 
+                         ref_trts = NULL, workers = 4, GeneType2) {
+  mycolnames <- c("WTCS", "NCS", "Tau", "NCSct", "N_upset", "N_downset", NA)
+  if (!any(mycolnames %in% sortby)) 
+    stop("Unsupported value assinged to sortby.")
+  full_mat <- HDF5Array(db_path, "assay")
+  rownames(full_mat) <- as.character(HDF5Array(db_path, "rownames"))
+  colnames(full_mat) <- as.character(HDF5Array(db_path, "colnames"))
+  if (!is.null(ref_trts)) {
+    trts_valid <- trts_check(ref_trts, colnames(full_mat))
+    full_mat <- full_mat[, trts_valid] }
+  full_dim <- dim(full_mat)
+  full_grid <- colAutoGrid(full_mat, ncol = min(chunk_size, ncol(full_mat)))
+  nblock <- length(full_grid)
+  ESout <- unlist(bplapply(seq_len(nblock), function(b) {
+    ref_block <- read_block(full_mat, full_grid[[as.integer(b)]])
+    mat <- ref_block
+    if (length(upset) > 0 & length(downset) > 0) {
+      ESup <- apply(mat, 2, function(x) .enrichScore(sigvec = sort(x,decreasing = TRUE), Q = upset, type = type, GeneType3 = GeneType2))
+      ESdown <- apply(mat, 2, function(x) .enrichScore(sigvec = sort(x,decreasing = TRUE), Q = downset, type = type, GeneType3 = GeneType2))
+      ESout1 <- ifelse(sign(ESup) != sign(ESdown), (ESup -ESdown)/2, 0)
+    } else if (length(upset) > 0 & length(downset) == 0) {
+      ESup <- apply(mat, 2, function(x) .enrichScore(sigvec = sort(x,decreasing = TRUE), Q = upset, type = type, GeneType3 = GeneType2))
+      ESout1 <- ESup
+    } else if (length(upset) == 0 & length(downset) > 0) {
+      ESdown <- apply(mat, 2, function(x) .enrichScore(sigvec = sort(x,decreasing = TRUE), Q = downset, type = type, GeneType3 = GeneType2))
+      ESout1 <- -ESdown
     }
-
-    full_dim <- dim(full_mat)
-    full_grid <- colAutoGrid(full_mat, ncol=min(chunk_size, ncol(full_mat)))
-    ### The blocks in 'full_grid' are made of full columns
-    nblock <- length(full_grid)
-
-    ESout <- unlist(bplapply(seq_len(nblock), function(b){
-      ref_block <- read_block(full_mat, full_grid[[as.integer(b)]])
-      mat <- ref_block
-      ## Run .enrichScore on upset and downset
-      ## When both upset and downset are provided
-      if(length(upset)>0 & length(downset)>0) {
-        ESup <- apply(mat, 2, function(x)
-            .enrichScore(sigvec=sort(x, decreasing = TRUE, GeneType3=GeneType2),
-                         Q=upset, type=type))
-        ESdown <- apply(mat, 2, function(x)
-            .enrichScore(sigvec=sort(x, decreasing = TRUE, GeneType3=GeneType2),
-                         Q=downset, type=type))
-        ESout1 <- ifelse(sign(ESup) != sign(ESdown), (ESup - ESdown)/2, 0)
-        ## When only upset is provided
-      } else if(length(upset)>0 & length(downset)==0) {
-        ESup <- apply(mat, 2, function(x)
-          .enrichScore(sigvec=sort(x, decreasing = TRUE, GeneType3=GeneType2),
-                       Q=upset, type=type))
-        ESout1 <- ESup
-        ## When only downset is provided
-      } else if(length(upset)==0 & length(downset)>0) {
-        ESdown <- apply(mat, 2, function(x)
-          .enrichScore(sigvec=sort(x, decreasing = TRUE, GeneType3=GeneType2),
-                       Q=downset, type=type))
-        ESout1 <- -ESdown
-        ## When none are provided (excluded by input validity check already)
-      }
-      }, BPPARAM=MulticoreParam(workers=workers)))
-
-    # ## Read in matrix in h5 file by chunks
-    # mat_dim <- getH5dim(db_path)
-    # mat_nrow <- mat_dim[1]
-    # mat_ncol <- mat_dim[2]
-    # ceil <- ceiling(mat_ncol/chunk_size)
-    # ESout <- NULL
-    # for(i in seq_len(ceil)){
-    #     mat <- readHDF5mat(db_path,
-    #               colindex=(chunk_size*(i-1)+1):min(chunk_size*i, mat_ncol))
-    #     ## Run .enrichScore on upset and downset
-    #     ## When both upset and downset are provided
-    #     if(length(upset)>0 & length(downset)>0) {
-    #         ESup <- apply(mat, 2, function(x)
-    #             .enrichScore(sigvec=sort(x, decreasing = TRUE),
-    #                          Q=upset, type=type))
-    #         ESdown <- apply(mat, 2, function(x)
-    #             .enrichScore(sigvec=sort(x, decreasing = TRUE),
-    #                          Q=downset, type=type))
-    #         ESout1 <- ifelse(sign(ESup) != sign(ESdown), (ESup - ESdown)/2, 0)
-    #         ## When only upset is provided
-    #     } else if(length(upset)>0 & length(downset)==0) {
-    #         ESup <- apply(mat, 2, function(x)
-    #             .enrichScore(sigvec=sort(x, decreasing = TRUE),
-    #                          Q=upset, type=type))
-    #         ESout1 <- ESup
-    #         ## When only downset is provided
-    #     } else if(length(upset)==0 & length(downset)>0) {
-    #         ESdown <- apply(mat, 2, function(x)
-    #             .enrichScore(sigvec=sort(x, decreasing = TRUE),
-    #                          Q=downset, type=type))
-    #         ESout1 <- -ESdown
-    #         ## When none are provided (excluded by input validity check already)
-    #     }
-    #     ESout <- c(ESout, ESout1)
-    # }
-
-    ## Assmble output
-    if(output=="esonly") {
-        return(ESout)
-    }
-    if(output=="all") {
-        resultDF <- .lincsScores(esout=ESout, upset=upset, downset=downset,
-                                 minTauRefSize=minTauRefSize, tau=tau)
-    }
-    if(!is.na(sortby)) {
-        resultDF <- resultDF[order(abs(resultDF[,sortby]), decreasing=TRUE), ]
-    } else {
-        resultDF <- resultDF
-    }
-    row.names(resultDF) <- NULL
-    return(resultDF)
+  }, BPPARAM = MulticoreParam(workers = workers)))
+  if (output == "esonly") {
+    return(ESout)
+  }
+  if (output == "all") {
+    resultDF <- signatureSearch:::.lincsScores(esout = ESout, upset = upset, downset = downset, minTauRefSize = minTauRefSize, tau = tau)
+  }
+  if (!is.na(sortby)) {
+    resultDF <- resultDF[order(abs(resultDF[, sortby]), decreasing = TRUE), ]
+  }
+  else {
+    resultDF <- resultDF
+  }
+  row.names(resultDF) <- NULL
+  return(resultDF)
 }
 
 #' @importFrom utils read.delim
@@ -443,7 +385,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
     sigvec2 <- sigvec
   } else{
     Lspace <- suppressMessages(read_tsv(system.file("extdata", "LINCSGeneSpaceSub.txt", package="signatureSearch")))
-    Lt <- as.character(Lspace[Lspace$Type %in% GeneType3,]$`Entrez ID`) #  "best inferred"  "not inferred" "landmark", "inferred
+    Lt <- as.character(Lspace[Lspace$Type %in% GeneType3,]$`Entrez ID`)
     sigvec2 <- sigvec[names(sigvec) %in% Lt]
   }
   L <- names(sigvec2)
@@ -454,7 +396,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
   hit_index <- as.numeric(L %in% Q)
   miss_index <- 1 - hit_index
   R <- abs(R^type)
-  NR <- sum(R[hit_index == 1])
+  NR <- sum(R[hit_index == 1]) #### Adjusted here , na.rm = TRUE
   if (NR == 0)
     return(0)
   ESvec <- cumsum((hit_index * R * 1/NR) - (miss_index * 1/Ns))
