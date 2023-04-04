@@ -249,7 +249,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
             .enrichScore(sigvec=sort(x, decreasing = TRUE, GeneType=GeneType),
                          Q=upset, type=type))
         ESdown <- apply(mat, 2, function(x)
-            .enrichScore(sigvec=sort(x, decreasing = TRUE),
+            .enrichScore(sigvec=sort(x, decreasing = TRUE, GeneType=GeneType),
                          Q=downset, type=type))
         ESout1 <- ifelse(sign(ESup) != sign(ESdown), (ESup - ESdown)/2, 0)
         ## When only upset is provided
