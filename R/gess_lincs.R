@@ -439,7 +439,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
 ## Note: query corresponds to gene set, here Q.
 #' @importFrom readr read_tsv
 .enrichScore <- function (sigvec, Q, type, GeneType){
-  if(filter[1] == "reference"){ 
+  if(GeneType[1] == "reference"){ 
     sigvec2 <- sigvec
   } else{
     Lspace <- suppressMessages(read_tsv(system.file("extdata", "LINCSGeneSpaceSub.txt", package="signatureSearch")))
@@ -454,7 +454,7 @@ lincsEnrich <- function(db_path, upset, downset, sortby="NCS", type=1,
   hit_index <- as.numeric(L %in% Q)
   miss_index <- 1 - hit_index
   R <- abs(R^type)
-  NR <- sum(R[hit_index == 1], na.rm = TRUE)
+  NR <- sum(R[hit_index == 1])
   if (NR == 0)
     return(0)
   ESvec <- cumsum((hit_index * R * 1/NR) - (miss_index * 1/Ns))
