@@ -219,7 +219,7 @@ gess_lincs <- function(qSig, tau=FALSE, sortby="NCS",
 
 lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1, 
                          output = "all", tau = FALSE, minTauRefSize = 500, chunk_size = 5000, 
-                         ref_trts = NULL, workers = 4, GeneType2) {
+                         ref_trts = NULL, workers = 4, GeneType2 = "reference") {
   mycolnames <- c("WTCS", "NCS", "Tau", "NCSct", "N_upset", "N_downset", NA)
   if (!any(mycolnames %in% sortby)) 
     stop("Unsupported value assinged to sortby.")
@@ -251,7 +251,7 @@ lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1,
     return(ESout)
   }
   if (output == "all") {
-    resultDF <- signatureSearch:::.lincsScores(esout = ESout, upset = upset, downset = downset, minTauRefSize = minTauRefSize, tau = tau)
+    resultDF <- .lincsScores(esout = ESout, upset = upset, downset = downset, minTauRefSize = minTauRefSize, tau = tau)
   }
   if (!is.na(sortby)) {
     resultDF <- resultDF[order(abs(resultDF[, sortby]), decreasing = TRUE), ]
@@ -380,7 +380,7 @@ lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1,
 ## Define enrichment function according to Subramanian et al, 2005
 ## Note: query corresponds to gene set, here Q.
 #' @importFrom readr read_tsv
-.enrichScore <- function (sigvec, Q, type, GeneType3){
+.enrichScore <- function (sigvec, Q, type, GeneType3 = "reference"){
   if(GeneType3[1] == "reference"){ 
     sigvec2 <- sigvec
   } else{

@@ -379,7 +379,6 @@ containing 100 GESs composed of z-scores.
 qsig_cmap <- qSig(query = list(upset=upset, downset=downset), 
                   gess_method="CMAP", refdb=db_path)
 cmap <- gess_cmap(qSig=qsig_cmap, chunk_size=5000, workers=1, addAnnotations = TRUE)
-cmap
 result(cmap)
 ```
 
