@@ -1,7 +1,7 @@
 Package: signatureSearch
 Title: Environment for Gene Expression Searching Combined with Functional 
        Enrichment Analysis
-Version: 1.13.0
+Version: 1.14.0
 Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu", 
                     role = c("aut")),
              person("Brendan", "Gongol", email = "bgong001@ucr.edu", 
