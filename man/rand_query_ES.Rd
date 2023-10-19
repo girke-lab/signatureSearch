@@ -4,7 +4,7 @@
 \alias{rand_query_ES}
 \title{Generate WTCS Null Distribution with Random Queries}
 \usage{
-rand_query_ES(h5file, N_queries = 1000, dest)
+rand_query_ES(h5file, N_queries = 1000, dest, write = TRUE)
 }
 \arguments{
 \item{h5file}{character(1), path to the HDF5 file representing the
@@ -13,6 +13,8 @@ reference database}
 \item{N_queries}{number of random queries}
 
 \item{dest}{path to the output file (e.g. "ES_NULL.txt")}
+
+\item{write}{Logical value indicating if results should be written to dest.}
 }
 \value{
 File with path assigned to \code{dest}
@@ -23,7 +25,7 @@ used by the LINCS GESS method for computing nominal P-values.
 }
 \examples{
 db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")
-rand_query_ES(h5file=db_path, N_queries=5, dest="ES_NULL.txt")
+rand <- rand_query_ES(h5file=db_path, N_queries=5, dest="ES_NULL.txt", write=FALSE)
 unlink("ES_NULL.txt")
 }
 \references{

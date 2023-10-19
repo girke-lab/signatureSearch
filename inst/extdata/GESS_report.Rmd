@@ -1,0 +1,65 @@
+---
+title: <Drug> GESS/FEA analysis
+author: "Author: Your Name"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  html_document:
+    toc_float: true
+    code_folding: hide
+fontsize: 15pt
+vignette: >
+  %\VignetteIndexEntry{signatureSearch}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+<style>
+pre code, pre, code {
+  white-space: pre !important;
+  overflow-x: auto !important;
+  word-break: keep-all !important;
+  word-wrap: initial !important;
+}
+</style>
+
+```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
+suppressPackageStartupMessages({
+    library(signatureSearch); 
+    library(readr); library(dplyr); library(DT)
+})
+```
+
+# Short Introduction
+This vignette shows the code and results for Gene Expression Signature Searches (GESS) 
+with the downstream Functional Enrichment Analysis (FEA) of the <drug> query
+in <cell> cell. The introduction of GESS and FEA as well as their
+corresponding methods is available at this [vignette](https://bioconductor.org/packages/release/bioc/vignettes/signatureSearch/inst/doc/signatureSearch.html) 
+of the `signatureSearch` package. Here, `<gess_method>` is used as GESS method, 
+The `<N_gess_drugs>` top ranking unique hits in the GESS table were then used 
+for FEA where three different annotation systems were used: GO Molecular 
+Function (GO MF), GO Biological Process (GO BP) and KEGG pathways.
+
+# GESS/FEA workflow
+```{r runWF, eval=FALSE}
+wf_list <- runWF(drug="<drug>", cell="<cell>", refdb="<refdb>", 
+                 gess_method="<gess_method>", fea_method="<fea_method>", 
+                 N_gess_drugs=<N_gess_drugs>)
+```
+
+# GESS/FEA results
+## <gess_method> GESS 
+```{r gess_res, eval=TRUE, message=FALSE, warning=FALSE}
+options(DT.options = list(lengthMenu=c(10, 20, 50), scrollX=TRUE, autoWidth=TRUE))
+gess_tb <- suppressMessages(read_tsv("results/<gess_method>_res.tsv"))
+tar_short <- tarReduce(gess_tb$'t_gn_sym')
+gess_tb$'t_gn_sym' <- tar_short
+datatable(gess_tb[1:100, ], filter = 'top', escape=FALSE) %>%
+        formatSignif(columns=sapply(gess_tb, class)=="numeric", digits=3)
+```
+
+[Full table](results/<gess_method>_res.tsv)
+
+
+

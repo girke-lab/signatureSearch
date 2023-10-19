@@ -21,7 +21,9 @@ runWF(
   pvalueCutoff = 1,
   qvalueCutoff = 1,
   minGSSize = 5,
-  maxGSSize = 500
+  maxGSSize = 500,
+  runFEA = TRUE,
+  GenerateReport = TRUE
 )
 }
 \arguments{
@@ -76,6 +78,10 @@ indicating which correlation coefficient to use}
 \item{minGSSize}{integer, minimum size of each gene set in annotation system}
 
 \item{maxGSSize}{integer, maximum size of each gene set in annotation system}
+
+\item{runFEA}{Logical value indicating if FEA analysis is performed.}
+
+\item{GenerateReport}{Logical value indicating if a report is generated.}
 }
 \value{
 list object containing GESS/FEA result tables
@@ -104,6 +110,7 @@ drug <- "vorinostat"; cell <- "SKB"
 refdb <- system.file("extdata", "sample_db.h5", package="signatureSearch")
 env_dir <- tempdir()
 wf_list <- runWF(drug, cell, refdb, gess_method="LINCS", 
-    fea_method="dup_hyperG", N_gess_drugs=10, env_dir=env_dir, tau=FALSE)
+    fea_method="dup_hyperG", N_gess_drugs=10, env_dir=env_dir, tau=FALSE,
+    runFEA=FALSE, GenerateReport= FALSE)
 
 }

@@ -53,6 +53,8 @@
 #' @param qvalueCutoff double, qvalue cutoff for FEA result
 #' @param minGSSize integer, minimum size of each gene set in annotation system
 #' @param maxGSSize integer, maximum size of each gene set in annotation system
+#' @param runFEA Logical value indicating if FEA analysis is performed.
+#' @param GenerateReport Logical value indicating if a report is generated.
 #' @return list object containing GESS/FEA result tables
 #' @importFrom readr write_tsv
 #' @export
@@ -61,133 +63,155 @@
 #' refdb <- system.file("extdata", "sample_db.h5", package="signatureSearch")
 #' env_dir <- tempdir()
 #' wf_list <- runWF(drug, cell, refdb, gess_method="LINCS", 
-#'     fea_method="dup_hyperG", N_gess_drugs=10, env_dir=env_dir, tau=FALSE)
+#'     fea_method="dup_hyperG", N_gess_drugs=10, env_dir=env_dir, tau=FALSE,
+#'     runFEA=FALSE, GenerateReport= FALSE)
 #'
 runWF <- function(drug, cell, refdb, gess_method, fea_method, N_gess_drugs=100,
-                  env_dir=".", tau=TRUE,
-                  Nup=150, Ndown=150, higher=1, lower=-1, method="spearman",
-                  pvalueCutoff=1, qvalueCutoff=1, minGSSize=5, maxGSSize=500){
-    if(gess_method == "CMAP"){
-        query <- getDEGSig(drug, cell, Nup=Nup, Ndown=Ndown, refdb=refdb)
-        qsig_cmap <- qSig(query = list(upset=query[[1]], downset=query[[2]]), 
-                          gess_method="CMAP", refdb=refdb)
-        gess_res <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
-        score_col <- "scaled_score"
-    }  
-    if(gess_method == "LINCS"){
-        query <- getDEGSig(drug, cell, Nup=Nup, Ndown=Ndown, refdb=refdb)
-        qsig_lincs <- qSig(query = list(upset=query[[1]], downset=query[[2]]), 
-                           gess_method="LINCS", refdb=refdb)
-        gess_res <- gess_lincs(qsig_lincs, sortby="NCS", tau=tau)
-        score_col <- "NCS"
-    }
-    if(gess_method == "gCMAP"){
-        query <- getSig(drug, cell, refdb=refdb)
-        qsig_gcmap <- qSig(query=query, gess_method="gCMAP", refdb=refdb)
-        gess_res <- gess_gcmap(qsig_gcmap, higher=higher, lower=lower)
-        score_col <- "effect"
-    }
-    if(gess_method == "Fisher"){
-        query <- getSig(drug, cell, refdb=refdb)
-        qsig_fisher <- qSig(query=query, gess_method="Fisher", refdb=refdb)
-        gess_res <- gess_fisher(qSig=qsig_fisher, higher=higher, lower=lower)
-        score_col <- "effect"
-    }
-    if(gess_method == "CORsub"){
-        # draw expression value sig from lincs_expr
-        query <- getSPsubSig(drug, cell, Nup=Nup, Ndown=Ndown)
-        qsig_corsub <- qSig(query=query, gess_method="Cor", refdb="lincs_expr")
-        gess_res <- gess_cor(qSig=qsig_corsub, method=method)
-        score_col <- "cor_score"
-    }
-    if(gess_method == "CORall"){
-        query <- getSig(drug, cell, refdb="lincs_expr")
-        qsig_corall <- qSig(query=query, gess_method="Cor", refdb="lincs_expr")
-        gess_res <- gess_cor(qSig=qsig_corall, method=method)
-        score_col <- "cor_score"
-    }
-    gess_tb <- result(gess_res)
-    drugs <- unique(gess_tb$pert)[seq_len(N_gess_drugs)]
+                  env_dir=".", tau=TRUE, Nup=150, Ndown=150, higher=1, lower=-1, 
+                  method="spearman", pvalueCutoff=1, qvalueCutoff=1, minGSSize=5, 
+                  maxGSSize=500, runFEA=TRUE, GenerateReport= TRUE){
+  if(gess_method == "CMAP"){
+    query <- getDEGSig(drug, cell, Nup=Nup, Ndown=Ndown, refdb=refdb)
+    qsig_cmap <- qSig(query = list(upset=query[[1]], downset=query[[2]]), 
+                      gess_method="CMAP", refdb=refdb)
+    gess_res <- gess_cmap(qSig=qsig_cmap, chunk_size=5000)
+    score_col <- "scaled_score"
+  }  
+  if(gess_method == "LINCS"){
+    query <- getDEGSig(drug, cell, Nup=Nup, Ndown=Ndown, refdb=refdb)
+    qsig_lincs <- qSig(query = list(upset=query[[1]], downset=query[[2]]), 
+                       gess_method="LINCS", refdb=refdb)
+    gess_res <- gess_lincs(qsig_lincs, sortby="NCS", tau=tau)
+    score_col <- "NCS"
+  }
+  if(gess_method == "gCMAP"){
+    query <- getSig(drug, cell, refdb=refdb)
+    qsig_gcmap <- qSig(query=query, gess_method="gCMAP", refdb=refdb)
+    gess_res <- gess_gcmap(qsig_gcmap, higher=higher, lower=lower)
+    score_col <- "effect"
+  }
+  if(gess_method == "Fisher"){
+    query <- getSig(drug, cell, refdb=refdb)
+    qsig_fisher <- qSig(query=query, gess_method="Fisher", refdb=refdb)
+    gess_res <- gess_fisher(qSig=qsig_fisher, higher=higher, lower=lower)
+    score_col <- "effect"
+  }
+  if(gess_method == "CORsub"){
+    # draw expression value sig from lincs_expr
+    query <- getSPsubSig(drug, cell, Nup=Nup, Ndown=Ndown)
+    qsig_corsub <- qSig(query=query, gess_method="Cor", refdb="lincs_expr")
+    gess_res <- gess_cor(qSig=qsig_corsub, method=method)
+    score_col <- "cor_score"
+  }
+  if(gess_method == "CORall"){
+    query <- getSig(drug, cell, refdb="lincs_expr")
+    qsig_corall <- qSig(query=query, gess_method="Cor", refdb="lincs_expr")
+    gess_res <- gess_cor(qSig=qsig_corall, method=method)
+    score_col <- "cor_score"
+  }
+  gess_tb <- result(gess_res)
+  drugs <- unique(gess_tb$pert)[seq_len(N_gess_drugs)]
+  if(runFEA){
     if(fea_method == "dup_hyperG"){
-        mf_res <- tsea_dup_hyperG(
-            drugs=drugs, type="GO", ont="MF", 
-            pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-            minGSSize=minGSSize, maxGSSize=maxGSSize)
-        bp_res <- tsea_dup_hyperG(
-            drugs=drugs, type="GO", ont="BP", 
-            pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-            minGSSize=minGSSize, maxGSSize=maxGSSize)
-        kegg_res <- tsea_dup_hyperG(
-            drugs=drugs, type="KEGG",
-            pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-            minGSSize=minGSSize, maxGSSize=maxGSSize)
+      mf_res <- tsea_dup_hyperG(
+        drugs=drugs, type="GO", ont="MF", 
+        pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
+        minGSSize=minGSSize, maxGSSize=maxGSSize)
+      bp_res <- tsea_dup_hyperG(
+        drugs=drugs, type="GO", ont="BP", 
+        pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
+        minGSSize=minGSSize, maxGSSize=maxGSSize)
+      kegg_res <- tsea_dup_hyperG(
+        drugs=drugs, type="KEGG",
+        pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
+        minGSSize=minGSSize, maxGSSize=maxGSSize)
     }
     if(fea_method == "mGSEA"){
-        mf_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
-            nPerm=1000, pvalueCutoff=pvalueCutoff, minGSSize=minGSSize,
-            maxGSSize=maxGSSize)
-        bp_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="BP", 
-            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
-        kegg_res <- tsea_mGSEA(drugs=drugs, type="KEGG", pvalueCutoff=pvalueCutoff, 
-            minGSSize=minGSSize, maxGSSize=maxGSSize)
+      mf_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1, 
+                           nPerm=1000, pvalueCutoff=pvalueCutoff, minGSSize=minGSSize,
+                           maxGSSize=maxGSSize)
+      bp_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="BP", 
+                           pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
+      kegg_res <- tsea_mGSEA(drugs=drugs, type="KEGG", pvalueCutoff=pvalueCutoff, 
+                             minGSSize=minGSSize, maxGSSize=maxGSSize)
     } 
     if(fea_method == "mabs"){
-        mf_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", 
-            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
-        bp_res <- tsea_mabs(drugs=drugs, type="GO", ont="BP", 
-            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
-        kegg_res <- tsea_mabs(drugs=drugs, type="KEGG", 
-            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
+      mf_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF", 
+                          pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
+      bp_res <- tsea_mabs(drugs=drugs, type="GO", ont="BP", 
+                          pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
+      kegg_res <- tsea_mabs(drugs=drugs, type="KEGG", 
+                            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
     }
     if(fea_method == "hyperG"){
-        mf_res <- dsea_hyperG(drugs=drugs, type="GO", ont="MF", 
-            pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-            minGSSize=minGSSize, maxGSSize=maxGSSize)
-        bp_res <- dsea_hyperG(drugs=drugs, type="GO", ont="BP", 
-            pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-            minGSSize=minGSSize, maxGSSize=maxGSSize)
-        kegg_res <- dsea_hyperG(drugs=drugs, type="KEGG", 
-            pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-            minGSSize=minGSSize, maxGSSize=maxGSSize)
+      mf_res <- dsea_hyperG(drugs=drugs, type="GO", ont="MF", 
+                            pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
+                            minGSSize=minGSSize, maxGSSize=maxGSSize)
+      bp_res <- dsea_hyperG(drugs=drugs, type="GO", ont="BP", 
+                            pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
+                            minGSSize=minGSSize, maxGSSize=maxGSSize)
+      kegg_res <- dsea_hyperG(drugs=drugs, type="KEGG", 
+                              pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
+                              minGSSize=minGSSize, maxGSSize=maxGSSize)
     }
     if(fea_method == "GSEA"){
-        dl <- abs(gess_tb[[score_col]])
-        names(dl) <- result(gess_res)$pert
-        dl <- dl[dl>0]; dl <- dl[!duplicated(names(dl))]
-        mf_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
-            nPerm=1000, pvalueCutoff=pvalueCutoff, minGSSize=minGSSize,
-            maxGSSize=maxGSSize)
-        bp_res <- dsea_GSEA(drugList=dl, type="GO", ont="BP",
-            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
-        kegg_res <- dsea_GSEA(drugList=dl, type="KEGG", 
-            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
+      dl <- abs(gess_tb[[score_col]])
+      names(dl) <- result(gess_res)$pert
+      dl <- dl[dl>0]; dl <- dl[!duplicated(names(dl))]
+      mf_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, 
+                          nPerm=1000, pvalueCutoff=pvalueCutoff, minGSSize=minGSSize,
+                          maxGSSize=maxGSSize)
+      bp_res <- dsea_GSEA(drugList=dl, type="GO", ont="BP",
+                          pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
+      kegg_res <- dsea_GSEA(drugList=dl, type="KEGG", 
+                            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
     }
     mf_tb <- result(mf_res)
     bp_tb <- result(bp_res)
     kegg_tb <- result(kegg_res)
-    env_name <- paste0(env_dir, "/", drug, "_", cell, "_wf")
-    res_dir <- paste0(env_name, "/results")
-    if(!dir.exists(env_name)){
-        dir.create(res_dir, recursive=TRUE)
-    }
-    write_tsv(gess_tb, paste0(res_dir, "/", gess_method, "_res.tsv"))
+  }
+  env_name <- paste0(env_dir, "/", drug, "_", cell, "_wf")
+  res_dir <- paste0(env_name, "/results")
+  if(!dir.exists(env_name)){
+    dir.create(res_dir, recursive=TRUE)
+  }
+  write_tsv(gess_tb, paste0(res_dir, "/", gess_method, "_res.tsv"))
+  
+  if(runFEA){
     write_tsv(mf_tb, paste0(res_dir, "/", fea_method, "_mf_res.tsv"))
     write_tsv(bp_tb, paste0(res_dir, "/", fea_method, "_bp_res.tsv"))
     write_tsv(kegg_tb, paste0(res_dir, "/", fea_method, "_kegg_res.tsv"))
     
-    file.copy(system.file("extdata", "GESS_FEA_report.Rmd", package="signatureSearch"),
-              paste0(env_name, "/GESS_FEA_report.Rmd"))
-    Drug <- paste0(toupper(substr(drug, 1, 1)), substr(drug, 2, nchar(drug)))
-    tx <- readLines(paste0(env_name, "/GESS_FEA_report.Rmd"))
-    # replace tags in template rmd, such as drug, cell etc
-    tx %<>% gsub("<Drug>", Drug, .) %>% gsub("<drug>", drug, .) %>%
+    if(GenerateReport){
+      file.copy(system.file("extdata", "GESS_FEA_report.Rmd", package="signatureSearch"),
+                paste0(env_name, "/GESS_FEA_report.Rmd"))
+      Drug <- paste0(toupper(substr(drug, 1, 1)), substr(drug, 2, nchar(drug)))
+      tx <- readLines(paste0(env_name, "/GESS_FEA_report.Rmd"))
+      # replace tags in template rmd, such as drug, cell etc
+      tx %<>% gsub("<Drug>", Drug, .) %>% gsub("<drug>", drug, .) %>%
         gsub("<cell>", cell, .) %>% gsub("<gess_method>", gess_method, .) %>%
         gsub("<fea_method>", fea_method, .) %>% gsub("<refdb>", refdb, .) %>%
         gsub("<N_gess_drugs>", N_gess_drugs, .)
-    writeLines(tx, paste0(env_name, "/GESS_FEA_report.Rmd"))
-    if(requireNamespace("rmarkdown", quietly=TRUE)){
+      writeLines(tx, paste0(env_name, "/GESS_FEA_report.Rmd"))
+      if(requireNamespace("rmarkdown", quietly=TRUE)){
         rmarkdown::render(paste0(env_name, "/GESS_FEA_report.Rmd"), quiet=TRUE)
-    }
+      } }
+  } else {
+    if(GenerateReport){
+      file.copy(system.file("extdata", "GESS_report.Rmd", package="signatureSearch"),
+                paste0(env_name, "/GESS_report.Rmd"))
+      Drug <- paste0(toupper(substr(drug, 1, 1)), substr(drug, 2, nchar(drug)))
+      tx <- readLines(paste0(env_name, "/GESS_report.Rmd"))
+      # replace tags in template rmd, such as drug, cell etc
+      tx %<>% gsub("<Drug>", Drug, .) %>% gsub("<drug>", drug, .) %>%
+        gsub("<cell>", cell, .) %>% gsub("<gess_method>", gess_method, .) %>%
+        # gsub("<fea_method>", fea_method, .) %>% gsub("<refdb>", refdb, .) %>%
+        gsub("<N_gess_drugs>", N_gess_drugs, .)
+      writeLines(tx, paste0(env_name, "/GESS_report.Rmd"))
+      if(requireNamespace("rmarkdown", quietly=TRUE)){
+        rmarkdown::render(paste0(env_name, "/GESS_report.Rmd"), quiet=TRUE)
+      } }
     
-    return(list(gess_tb=gess_tb, mf_tb=mf_tb, bp_tb=bp_tb, kegg_tb=kegg_tb))
+  }
+  return(list(gess_tb=gess_tb, mf_tb=mf_tb, bp_tb=bp_tb, kegg_tb=kegg_tb))
 }

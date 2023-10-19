@@ -412,11 +412,12 @@ lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1,
 #' reference database
 #' @param N_queries number of random queries
 #' @param dest path to the output file (e.g. "ES_NULL.txt")
+#' @param write Logical value indicating if results should be written to dest.
 #' @return File with path assigned to \code{dest}
 #' @importFrom utils write.table
 #' @examples
 #' db_path = system.file("extdata", "sample_db.h5", package="signatureSearch")
-#' rand_query_ES(h5file=db_path, N_queries=5, dest="ES_NULL.txt")
+#' rand <- rand_query_ES(h5file=db_path, N_queries=5, dest="ES_NULL.txt", write=FALSE)
 #' unlink("ES_NULL.txt")
 #' @seealso \code{\link{gess_lincs}}
 #' @references
@@ -426,7 +427,7 @@ lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1,
 #' URL: https://doi.org/10.1016/j.cell.2017.10.049
 #' @export
 
-rand_query_ES <- function(h5file, N_queries=1000, dest) {
+rand_query_ES <- function(h5file, N_queries=1000, dest, write = TRUE) {
   ## Create list of random queries
   idnames <- drop(h5read(h5file, "rownames"))
   query_list <- randQuerySets(id_names=idnames, N_queries=N_queries,
@@ -452,8 +453,10 @@ rand_query_ES <- function(h5file, N_queries=1000, dest) {
   freq <- freq[as.character(esMA[,1])]
   freq[is.na(freq)] <- 0
   esMA[,"Freq"] <- as.numeric(esMA[,"Freq"]) + as.numeric(freq)
-  write.table(esMA, file=dest, quote=FALSE,
-              row.names=FALSE, sep="\t")
+  if(write){
+  write.table(esMA, file=dest, quote=FALSE, row.names=FALSE, sep="\t")
+  } 
+  return(esMA)
 }
 
 randQuerySets <- function(id_names, N_queries, set_length=150) {
