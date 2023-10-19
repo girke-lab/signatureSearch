@@ -213,5 +213,9 @@ runWF <- function(drug, cell, refdb, gess_method, fea_method, N_gess_drugs=100,
       } }
     
   }
+  if(runFEA){
   return(list(gess_tb=gess_tb, mf_tb=mf_tb, bp_tb=bp_tb, kegg_tb=kegg_tb))
+  } else {
+    return(list(gess_tb=gess_tb))
+  }
 }
