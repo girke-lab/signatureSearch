@@ -33,8 +33,10 @@ suppressPackageStartupMessages({
 
 # Short Introduction
 This vignette shows the code and results for Gene Expression Signature Searches (GESS) 
-with the downstream Functional Enrichment Analysis (FEA) of the <drug> query
-in <cell> cell. The introduction of GESS and FEA as well as their
+with the downstream Functional Enrichment Analysis (FEA) of the <drug> query. 
+Rank transformed GESS results grouped by cell type and 
+the level of expression for each gene used in the query signature are illustrated for each result.  
+The introduction of GESS and FEA as well as their
 corresponding methods is available at this [vignette](https://bioconductor.org/packages/release/bioc/vignettes/signatureSearch/inst/doc/signatureSearch.html) 
 of the `signatureSearch` package. Here, `<gess_method>` is used as GESS method, 
 The `<N_gess_drugs>` top ranking unique hits in the GESS table were then used 
@@ -43,7 +45,7 @@ Function (GO MF), GO Biological Process (GO BP) and KEGG pathways.
 
 # GESS/FEA workflow
 ```{r runWF, eval=FALSE}
-wf_list <- runWF(drug="<drug>", cell="<cell>", refdb="<refdb>", 
+wf_list <- runWF(drug="<drug>", refdb="<refdb>", 
                  gess_method="<gess_method>", fea_method="<fea_method>", 
                  N_gess_drugs=<N_gess_drugs>)
 ```
@@ -51,15 +53,32 @@ wf_list <- runWF(drug="<drug>", cell="<cell>", refdb="<refdb>",
 # GESS/FEA results
 ## <gess_method> GESS 
 ```{r gess_res, eval=TRUE, message=FALSE, warning=FALSE}
-options(DT.options = list(lengthMenu=c(10, 20, 50), scrollX=TRUE, autoWidth=TRUE))
-gess_tb <- suppressMessages(read_tsv("results/<gess_method>_res.tsv"))
-tar_short <- tarReduce(gess_tb$'t_gn_sym')
-gess_tb$'t_gn_sym' <- tar_short
-datatable(gess_tb[1:100, ], filter = 'top', escape=FALSE) %>%
-        formatSignif(columns=sapply(gess_tb, class)=="numeric", digits=3)
+gess_tb <- suppressMessages(as.data.frame(fread("results/<gess_method>_res.xls")))
+datatable(gess_tb[1:10, 1:15], colnames=c('No'=1), escape = FALSE, options=list(scrollX=TRUE, autoWidth=TRUE))
 ```
 
 [Full table](results/<gess_method>_res.tsv)
+
+
+# GESS result ranks by cell type
+
+```{r cell, eval=TRUE, message=FALSE}
+Cell_tb <- suppressMessages(as.data.frame(fread("results/ResultRankByCell.xls")))
+datatable(Cell_tb[1:10,], colnames=c('No'=1), escape = FALSE, options=list(scrollX=TRUE, autoWidth=TRUE)) 
+```
+
+[Full table](results/ResultRankByCell.xls)
+
+
+# GES expression level by query
+
+```{r Express, eval=TRUE, message=FALSE}
+Expres_tb <- suppressMessages(as.data.frame(fread("results/GESExpressionLevel.xls")))
+datatable(Expres_tb[1:10,], colnames=c('No'=1), escape = FALSE, options=list(scrollX=TRUE, autoWidth=TRUE)) 
+```
+
+[Full table](results/GESExpressionLevel.xls)
+
 
 
 
