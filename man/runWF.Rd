@@ -5,14 +5,16 @@
 \title{Run the Entire GESS/FEA Workflow}
 \usage{
 runWF(
+  Signature,
+  cellInfo,
+  PertColName = "pert_iname",
   drug,
-  cell,
   refdb,
-  gess_method,
-  fea_method,
-  N_gess_drugs = 100,
+  gess_method = "LINCS",
+  fea_method = "dup_hyperG",
+  N_gess_drugs = 150,
   env_dir = ".",
-  tau = TRUE,
+  tau = FALSE,
   Nup = 150,
   Ndown = 150,
   higher = 1,
@@ -27,13 +29,20 @@ runWF(
 )
 }
 \arguments{
+\item{Signature}{The signature to perform signatureSearching on.}
+
+\item{cellInfo}{A data table containing information about the cell types 
+that make up the signature search database. This table must contain a column
+labeled "cell_id" that contains matching cell type names in the signature 
+search database.  Details about this file  can be found 
+in the \code{cell_info2} table after load the `signatureSearch` package
+and running `data("cell_info2")`}
+
+\item{PertColName}{The name of the column from the signature search results 
+table used to summarize results by.}
+
 \item{drug}{character(1) representing query drug name (e.g. vorinostat). 
 This query drug should be included in the \code{refdb}}
-
-\item{cell}{character(1) indicating the cell type that the query drug
-treated in. Details about cell type options in LINCS database can be found 
-in the \code{cell_info} table after load the `signatureSearch` package
-and running `data("cell_info")`}
 
 \item{refdb}{character(1), one of "lincs", "lincs_expr", "cmap", "cmap_expr",
 or path to the HDF5 file built from \code{\link{build_custom_db}} function}
@@ -106,11 +115,44 @@ modifications on the Rmd vignette as they need and re-render it to generate
 their HTML report.
 }
 \examples{
-drug <- "vorinostat"; cell <- "SKB"
-refdb <- system.file("extdata", "sample_db.h5", package="signatureSearch")
-env_dir <- tempdir()
-wf_list <- runWF(drug, cell, refdb, gess_method="LINCS", 
-    fea_method="dup_hyperG", N_gess_drugs=10, env_dir=env_dir, tau=FALSE,
-    runFEA=FALSE, GenerateReport= FALSE)
-
+library(signatureSearch)
+library(ExperimentHub); library(rhdf5)
+eh <- ExperimentHub()
+cmap <- eh[["EH3223"]]; cmap_expr <- eh[["EH3224"]]
+lincs <- eh[["EH3226"]]; lincs_expr <- eh[["EH3227"]]
+lincs2 <- eh[["EH7297"]]
+h5ls(lincs2)
+db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
+library(SummarizedExperiment);
+library(HDF5Array)
+sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+colnames(sample_db) <- HDF5Array(db_path, name="colnames")
+query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+query <- as.numeric(query_mat); names(query) <- rownames(query_mat)
+upset <- head(names(query[order(-query)]), 150)
+head(upset)
+downset <- tail(names(query[order(-query)]), 150)
+head(downset)
+runWF(Signature = list(upset=upset, downset=downset),
+      cellInfo = cellInfo2,
+      PertColName = "pert_iname",
+      drug = "vorinostat",
+      refdb = lincs2,
+      gess_method="LINCS",
+      fea_method="dup_hyperG",
+      N_gess_drugs=150,
+      env_dir="./GESSWFResults",
+      tau=FALSE,
+      Nup=150,
+      Ndown=150,
+      higher=1,
+      lower=-1,
+      method="spearman",
+      pvalueCutoff=1,
+      qvalueCutoff=1,
+      minGSSize=5,
+      maxGSSize=500,
+      runFEA=TRUE,
+      GenerateReport= TRUE)
 }

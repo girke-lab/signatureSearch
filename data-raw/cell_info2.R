@@ -1,26 +1,27 @@
 ## code to prepare `cell_info2` dataset goes here
-setwd("~/insync/project/discover_paper_analysis/")
-# download.file("https://s3.amazonaws.com/macchiato.clue.io/builds/LINCS2020/cellinfo_beta.txt", 
-#              "downloads/cellinfo_beta.txt")
-library(data.table)
-cellInfo2020 <- fread("downloads/cellinfo_beta.txt")
-head(cellInfo2020, 20)
+# cell_info2 <- fread("/home/bgongol/Downloads/Updatefiles/cell_info2.xls")
+#library(usethis)
+#use_data_raw()
 
-#### Load source data for cell_info file from 2017 version ###
-# download.file("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&format=file&file=GSE92742%5FBroad%5FLINCS%5Fcell%5Finfo%2Etxt%2Egz", 
-#              "downloads/GSE92742_Broad_LINCS_cell_info.txt.gz")
-cellInfo2017 <- fread("downloads/GSE92742_Broad_LINCS_cell_info.txt.gz")
-head(cellInfo2017)
+download.file("https://s3.amazonaws.com/macchiato.clue.io/builds/LINCS2020/cellinfo_beta.txt",
+              "/home/bgongol/Downloads/Updatefiles/cellinfo_beta.txt")
+download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_cell_info.txt.gz",
+              "/home/bgongol/Downloads/Updatefiles/GSE92742_Broad_LINCS_cell_info.txt.gz")
+system("gunzip /home/bgongol/Downloads/Updatefiles/GSE92742_Broad_LINCS_cell_info.txt.gz")
 
-#### create new "cell_info" table ####
-setnames(cellInfo2020, "cell_iname", "cell_id")
-cell_info2020 <- merge(cellInfo2020, cellInfo2017[,c("cell_id", "primary_site")], 
-                       by = "cell_id", all.x = TRUE)
-dim(cell_info2020)
-head(cell_info2020)
-cell_info2020[160, "subtype"] <- "medullary cystic kidney disease (MCKD) type 1"
-library(readr)
-write_tsv(cell_info2020, "data/cell_info2.tsv")
+LINCSCellInfoGen <- function(Fpath2 = cellInfo2Path, Fpath2017 = cellInfo2017Path){
+  cellInfo2 <- fread(Fpath2)
+  cell_info2 <- data.frame(cell_id = cellInfo2$cell_iname,
+                           cell_type = cellInfo2$cell_type,
+                           # primary_site = cellInfo2$
+                           subtype = cellInfo2$subtype,
+                           donor_sex = cellInfo2$donor_sex)
+  cellInfo2017 <- fread(Fpath2017)
+  cell_info2 <- merge(cell_info2, cellInfo2017[,c("cell_id", "primary_site")], by = "cell_id", all.x = TRUE)
+  return(cell_info2)}
 
-cell_info2 <- read_tsv("~/insync/project/discover_paper_analysis/data/cell_info2.tsv")
-usethis::use_data(cell_info2, overwrite=TRUE)
+cell_info2 <- LINCSCellInfoGen(Fpath2 = "/home/bgongol/Downloads/Updatefiles/cellinfo_beta.txt",
+                 Fpath2017 = "/home/bgongol/Downloads/Updatefiles/GSE92742_Broad_LINCS_cell_info.txt")
+cell_info2
+
+usethis::use_data(cell_info2, overwrite = TRUE)

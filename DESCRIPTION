@@ -25,7 +25,7 @@ SystemRequirements: C++11
 LinkingTo: Rcpp
 Encoding: UTF-8
 VignetteBuilder: knitr
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment,
            Sequencing, Coverage, DifferentialExpression
 URL: https://github.com/yduan004/signatureSearch/
