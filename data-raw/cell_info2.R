@@ -3,6 +3,7 @@
 #library(usethis)
 #use_data_raw()
 
+library(data.table)
 download.file("https://s3.amazonaws.com/macchiato.clue.io/builds/LINCS2020/cellinfo_beta.txt",
               "/home/bgongol/Downloads/Updatefiles/cellinfo_beta.txt")
 download.file("ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_cell_info.txt.gz",
