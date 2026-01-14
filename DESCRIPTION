@@ -1,7 +1,7 @@
 Package: signatureSearch
 Title: Environment for Gene Expression Searching Combined with Functional
        Enrichment Analysis
-Version: 1.15.2
+Version: 1.15.4
 Authors@R: c(person("Yuzhu", "Duan", email = "yduan004@ucr.edu",
                     role = c("aut")),
              person("Brendan", "Gongol", email = "bgong001@ucr.edu",
@@ -16,8 +16,8 @@ Depends: R(>= 4.2.0), Rcpp, SummarizedExperiment, org.Hs.eg.db
 Imports: AnnotationDbi, ggplot2, data.table, ExperimentHub, HDF5Array,
          magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats,
          utils, reshape2, visNetwork, BiocParallel, fastmatch, reactome.db,
-         Matrix, clusterProfiler, readr, DOSE, rhdf5, GSEABase, DelayedArray,
-         BiocGenerics, tibble
+         Matrix, readr, rhdf5, GSEABase, DelayedArray,
+         BiocGenerics, tibble, DOSE
 Suggests: knitr, testthat, rmarkdown, BiocStyle,
           signatureSearchData, DT
 License: Artistic-2.0
@@ -25,8 +25,8 @@ SystemRequirements: C++11
 LinkingTo: Rcpp
 Encoding: UTF-8
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
-biocViews: Software, GeneExpression, GO, KEGG, NetworkEnrichment,
+RoxygenNote: 7.3.3
+biocViews: Software, GeneExpression, GO, NetworkEnrichment,
            Sequencing, Coverage, DifferentialExpression
 URL: https://github.com/yduan004/signatureSearch/
 BugReports: https://github.com/yduan004/signatureSearch/issues

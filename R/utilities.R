@@ -307,6 +307,7 @@ gs2mat <- function(gene_sets){
 #     return(se)
 # }
 
+#' @importFrom dplyr as_tibble
 select_ont <- function(res, ont, GO_DATA){
     # Add and select ontology in res
     res <- add_GO_Ontology(res, GO_DATA)
@@ -632,6 +633,7 @@ set_readable <- function(tb, OrgDb="org.Hs.eg.db", keyType="ENTREZID", geneCol="
 #' 
 #' @param df data frame or tibble object
 #' @param drug_col name of the column that store compound names in df
+#' @importFrom dplyr left_join
 #' @return tibble object with an added PCIDss column
 #' @importFrom dplyr relocate
 #' @examples 
@@ -709,6 +711,7 @@ addMOA <- function(df, drug_col, moa_list){
 #' @return tibble of \code{gess_tb} with target, MOA, PubChem CID annotations
 #' and also merged with user provided compound annotation table. 
 #' @importFrom dplyr tibble
+#' @importFrom dplyr left_join
 #' @examples 
 #' gess_tb <- data.frame(pert=c("vorinostat", "sirolimus", "estradiol"),
 #'                   cell=c("SKB", "SKB", "MCF7"),

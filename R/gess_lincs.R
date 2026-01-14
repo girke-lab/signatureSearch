@@ -268,7 +268,6 @@ lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1,
 .lincsScores <- function(esout, upset, downset, minTauRefSize, tau=FALSE) {
     ## P-value and FDR for WTCS based on ESnull from random queries where
     ## p-value = sum(ESrand > ES_obs)/Nrand
-
     # download ES_NULL.txt from AnnotationHub
     WTCSnull <- validLoad("EH3234")
     WTCSnull[WTCSnull[, "Freq"]==0, "Freq"] <- 1
@@ -301,7 +300,6 @@ lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1,
     if(tau){
       # download taurefList.rds
       taurefList9264 <- validLoad("EH3233")
-
       ncs_query <- ncs; names(ncs_query) <- names(esout)
       queryDB_refDB_match <-
           unique(unlist(lapply(taurefList9264, rownames))) %in% names(ncs_query)
@@ -310,13 +308,10 @@ lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1,
           round(100 * sum(!queryDB_refDB_match)/length(queryDB_refDB_match),1),
           "% of their entries.",
           " Accurate tau computation requires close to 0% divergence. \n"))
-      ncs_query_list <- split(ncs_query,
-                              factor(gsub("^.*?__", "", names(ncs_query))))
+      ncs_query_list <- split(ncs_query, factor(gsub("^.*?__", "", names(ncs_query))))
       tau_score <- lapply(names(ncs_query_list), function(x) {
         tmpDF <- taurefList9264[[x]]
-        ncs_query_match <- names(ncs_query_list[[x]])[names(ncs_query_list[[x]])
-                                                      %in% rownames(tmpDF)]
-
+        ncs_query_match <- names(ncs_query_list[[x]])[names(ncs_query_list[[x]]) %in% rownames(tmpDF)]
         if(length(ncs_query_match)>0) {
           tmpDF <- tmpDF[ncs_query_match, , drop=FALSE]
           #### subset to the same length ##### rounded as in ref db
@@ -327,12 +322,18 @@ lincsEnrich <- function (db_path, upset, downset, sortby = "NCS", type = 1,
         }
       })
       tau_score <- unlist(tau_score)
-      tau_score <- tau_score[names(ncs_query)]
       tauRefSize <- vapply(taurefList9264, ncol,
                   FUN.VALUE = integer(1))[gsub("^.*?__", "", names(tau_score))]
       tau_score[tauRefSize < minTauRefSize] <- NA
       ## Add by YD
       rm(taurefList9264); gc()
+      #### Fill any missing scores in with NA ####
+      NotInTauRefDB <- names(ncs)[!names(ncs) %in% names(tau_score)]
+      NAs <- rep(NA, length(NotInTauRefDB)); names(NAs) <- NotInTauRefDB
+      tau_score <- c(tau_score, NAs)
+      tau_score <- tau_score[match(names(ncs), names(tau_score))]
+      tauRefSize <- c(tauRefSize, NAs)
+      tauRefSize <- tauRefSize[match(names(ncs), names(tauRefSize))]
     }
     ## Summary across cell lines (NCSct)
     ctgrouping <- gsub("__.*__", "__", names(esout))

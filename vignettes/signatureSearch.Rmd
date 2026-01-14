@@ -218,7 +218,7 @@ BiocManager::install("girke-lab/signatureSearch", build_vignettes=FALSE)  # Inst
 ```
 
 Next the package needs to be loaded into a user's R session.
-```{r load, eval=TRUE, message=FALSE}
+```{r load, eval=FALSE, message=TRUE} 
 library(signatureSearch)
 ```
 
@@ -446,7 +446,7 @@ lincs2 <- gess_lincs(qsig_lincs2, tau=FALSE, sortby="NCS", workers=2)
 lincs2 <- gess_lincs(qsig_lincs2, tau=TRUE, sortby="NCS", workers=1,
                      cmp_annot_tb=lincs_pert_info2, by="pert_id", 
                      cmp_name_col="pert_iname") # takes about 15 minutes
-result(lincs2) %>% print(width=Inf)   
+result(lincs2) %>% print(width=Inf)
 ```
 
 The search results are stored in a `gessResult` object as under the _CMAP_
@@ -968,22 +968,6 @@ ratio of background genes that are annotated at a specific GO node or KEGG
 pathway. `Count`: number of overlapped genes between the test set and the 
 specific functional annotation term.
 
-#### With KEGG 
-
-The same enrichment test can be performed for KEGG pathways as follows.
-
-```{r tsea_dup_hyperG_kegg, eval=TRUE, message=FALSE}
-dup_hyperG_k_res <- tsea_dup_hyperG(drugs=drugs, universe="Default", type="KEGG",
-                                    pvalueCutoff=0.5, pAdjustMethod="BH", qvalueCutoff=0.5,
-                                    minGSSize=10, maxGSSize=500)
-result(dup_hyperG_k_res)
-## Mapping 'itemID' column in the FEA enrichment result table from Entrez ID to gene Symbol
-set_readable(result(dup_hyperG_k_res))
-```
-
-The content of the columns extracted from the `feaResult` object is described
-under section 4.1.1.1. 
-
 #### With Reactome 
 
 The same enrichment test can be performed for Reactome pathways as follows.
@@ -1082,19 +1066,6 @@ that accounts for the enrichment signal.
 
 `ledge_rank`: Ranks of genes in 'leadingEdge' in gene list $L$.
 
-#### With KEGG 
-
-The same enrichment test can be performed for KEGG pathways as follows.
-
-```{r tsea_mgsea_kegg, eval=TRUE, message=FALSE}
-mgsea_k_res <- tsea_mGSEA(drugs=drugs, type="KEGG", exponent=1, 
-                          nPerm=1000, pvalueCutoff=1, minGSSize=2)
-result(mgsea_k_res)
-```
-
-The content of the columns extracted from the `feaResult` object is described
-under sections 4.1.1.1 and 4.1.2.1. 
-
 #### With Reactome 
 
 The same enrichment test can be performed for Reactome pathways as follows.
@@ -1140,16 +1111,6 @@ absolute score of the genes in set $S$.
 
 `Nmabs`: $mabs(S)$ normalized.
 
-#### With KEGG
-
-The same enrichment test can be performed for KEGG pathways as follows.
-
-```{r tsea_mabs_kegg, eval=TRUE, message=FALSE}
-mabs_k_res <- tsea_mabs(drugs=drugs, type="KEGG", nPerm=1000, 
-                        pvalueCutoff=0.2, minGSSize=5)
-result(mabs_k_res)
-```
-
 #### With Reactome
 
 The same enrichment test can be performed for Reactome pathways as follows.
@@ -1190,20 +1151,6 @@ hyperG_res <- dsea_hyperG(drugs=drugs, type="GO", ont="MF")
 result(hyperG_res)
 ```
 
-#### With KEGG
-
-The same DSEA test can be performed for KEGG pathways as follows.
-
-```{r dsea_hyperG_kegg, eval=TRUE, message=FALSE}
-hyperG_k_res <- dsea_hyperG(drugs = drugs, type = "KEGG", 
-                            pvalueCutoff = 1, qvalueCutoff = 1, 
-                            minGSSize = 10, maxGSSize = 2000)
-result(hyperG_k_res)
-```
-
-The content of the columns extracted from the feaResult object is described
-under section 4.1.1.1.
-
 ### GSEA Method
 
 The following performs DSEA with the *GSEA* method using as test set drug
@@ -1226,19 +1173,6 @@ gsea_res <- dsea_GSEA(drugList=dl, type="GO", ont="MF", exponent=1, nPerm=1000,
                       pvalueCutoff=0.2, minGSSize=5)
 result(gsea_res)
 ```
-
-#### With KEGG
-
-The same DSEA test can be performed for KEGG pathways as follows.
-
-```{r dsea_gsea_kegg, eval=TRUE, message=FALSE}
-gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=1000, 
-                        pvalueCutoff=1, minGSSize=5)
-result(gsea_k_res)
-```
-
-Since the annotation system are drug-to-functional category mappings, the 
-"leadingEdge" column contains identifiers of drugs instead of targets.
 
 ## Comparing FEA Results 
 
@@ -1271,19 +1205,6 @@ GO terms (y-axis) with heat color coding according to the color gradient in the
 legend on the right. The GO terms have been ordered from the top to the bottom 
 of the plot by increasing mean rank values calculated for each GO term across 
 the 5 FEA methods (x-axis).</font>
-
-```{r cmp_enrich_k, eval=TRUE, fig.width=8}
-table_list = list("dup_hyperG" = result(dup_hyperG_k_res), 
-                  "mGSEA" = result(mgsea_k_res), 
-                  "mabs" = result(mabs_k_res), 
-                  "hyperG" = result(hyperG_k_res), 
-                  "GSEA" = result(gsea_k_res))
-comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
-```
-
-<font size="-2"> Figure 6: Ranking comparison among top KEGG pathways across FEA
-methods. The plot depicts the same information as the previous plot but using 
-KEGG pathways instead of GO terms as functional annotation system. </font>
 
 ## Summary of FEA Results
 
@@ -1342,22 +1263,14 @@ details of the plot are given in the legend of Figure 7.</font>
 The same drug-target network plots can be rendered for KEGG pathways as follows.
 
 Network for KEGG pathway: *Alcoholism* (hsa05034)
-```{r dtnet_kegg_05034, eval=TRUE}
-dtnetplot(drugs = drugs(dup_hyperG_k_res), set = "hsa05034", 
-          desc="Alcoholism")
+```{r dtnet_kegg_05034, eval=FALSE}
+# ####
+# dtnetplot(drugs = drugs(dup_hyperG_k_res), set = "hsa05034", 
+#           desc="Alcoholism")
 ```
 
 <font size="-2"> Figure 9: Drug-target network for *Alcoholism*. The details of
 the plot are given in the legend of Figure 7.</font>
-
-Network for KEGG pathway: *Longevity regulating pathway* (hsa04213)
-```{r dtnet_kegg_04213, eval=TRUE}
-dtnetplot(drugs = drugs, set = "hsa04213", 
-          desc="Longevity regulating pathway - multiple species")
-```
-
-<font size="-2"> Figure 10: Drug-target network for *Longevity regulating
-pathway*. The details of the plot are given in the legend of Figure 7.</font>
 
 # Run Workflow
 The `runWF` function supports running the entire GESS/FEA workflow automatically

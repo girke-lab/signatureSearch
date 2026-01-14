@@ -41,7 +41,6 @@
 ##' table_list <- list("method1" = method1, "method2"=method2) 
 ##' comp_fea_res(table_list, rank_stat="pvalue", Nshow=20)
 ##' @export
-
 comp_fea_res <- function(table_list, rank_stat="pvalue", Nshow=20, 
                          Nchar=50, scien=FALSE, ...){
     if(is.null(names(table_list))){

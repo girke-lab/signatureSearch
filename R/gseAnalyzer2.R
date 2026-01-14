@@ -58,67 +58,6 @@ gseGO2 <- function(geneList,
     return(res)
 }
 
-##' This modified Gene Set Enrichment Analysis (GSEA) of KEGG pathways supports
-##' gene test sets with large numbers of zeros.
-##'
-##' @title Modified GSEA with KEGG
-##' @param geneList named numeric vector with gene ids in the name slot 
-##' decreasingly ranked by scores in the data slot.
-##' @param organism supported organism listed in
-##' URL: http://www.genome.jp/kegg/catalog/org_list.html
-##' @param keyType one of "kegg", 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'
-##' @param exponent weight of each step
-##' @param nproc if not equal to zero, sets \code{BPPARAM} to use \code{nproc} 
-##' workers (default = 1)
-##' @param nPerm permutation numbers
-##' @param minGSSize integer, minimum size of each gene set in annotation system
-##' @param maxGSSize integer, maximum size of each gene set in annotation system
-##' @param pvalueCutoff pvalue cutoff
-##' @param pAdjustMethod pvalue adjustment method
-##' @param verbose print message or not
-##' @param readable TRUE or FALSE indicating whether to convert gene Entrez ids
-##' to gene Symbols in the 'itemID' column in the FEA result table.
-##' @return feaResult object
-##' @examples 
-##' # Gene Entrez id should be used for KEGG enrichment
-##' data(geneList, package="DOSE")
-##' #geneList[100:length(geneList)]=0
-##' #gsekk <- gseKEGG2(geneList=geneList, pvalueCutoff = 1)
-##' #head(gsekk)
-##' @export
-gseKEGG2 <- function(geneList,
-                    organism          = 'hsa',
-                    keyType           = 'kegg',
-                    exponent          = 1,
-                    nproc             = 1,
-                    nPerm             = 1000,
-                    minGSSize         = 10,
-                    maxGSSize         = 500,
-                    pvalueCutoff      = 0.05,
-                    pAdjustMethod     = "BH",
-                    verbose           = TRUE, readable=FALSE) {
-    species <- organismMapper(organism)
-    KEGG_DATA <- prepare_KEGG(species, "KEGG", keyType)
-    res <-  GSEA_internal2(geneList = geneList,
-                          exponent = exponent,
-                          nPerm = nPerm,
-                          minGSSize = minGSSize,
-                          maxGSSize = maxGSSize,
-                          pvalueCutoff = pvalueCutoff,
-                          pAdjustMethod = pAdjustMethod,
-                          verbose = verbose,
-                          USER_DATA = KEGG_DATA,
-                          nproc = nproc)
-
-    if (is.null(res))
-        return(res)
-    if(readable) result(res) <- set_readable(result(res), geneCol="leadingEdge")
-    og(res) <- species
-    ont(res) <- "KEGG"
-
-    return(res)
-}
-
 ##' This modified Gene Set Enrichment Analysis (GSEA) of Reactome pathways
 ##' supports gene test sets with large numbers of zeros.
 ##'
@@ -141,7 +80,7 @@ gseKEGG2 <- function(geneList,
 ##' @return feaResult object
 ##' @examples 
 ##' # Gene Entrez id should be used for Reactome enrichment
-##' data(geneList, package="DOSE")
+# ##' data(geneList, package="DOSE")
 ##' #geneList[100:length(geneList)]=0
 ##' #rc <- gseReactome(geneList=geneList, pvalueCutoff=1)
 ##' @export

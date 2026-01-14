@@ -27,6 +27,9 @@
 ##' category
 ##' 
 ##' n_drug: number of drugs in each MOA category
+##' @importFrom dplyr left_join
+##' @importFrom dplyr as_tibble
+##' @importFrom dplyr filter
 ##' @return data.frame 
 ##' @seealso \code{\link{gessResult}}
 ##' @examples 

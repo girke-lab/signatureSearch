@@ -51,7 +51,6 @@ pathways with FDR control from hypergeometric test.
 \examples{
 # This method supports duplicated elements in "gene"
 gene <- c(rep("4312",4), rep("8318",2), "991", "10874")
-#data(geneList, package="DOSE")
 #rc <- enrichReactome(gene=gene, universe=names(geneList))
 #result(rc)
 }

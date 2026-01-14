@@ -43,7 +43,6 @@ MeanAbs enrichment analysis with Reactome pathways.
 }
 \examples{
 # Gene Entrez id should be used for Reactome enrichment
-data(geneList, package="DOSE")
 #geneList[100:length(geneList)]=0
 #rc <- mabsReactome(geneList=geneList, pvalueCutoff = 1)
 }

@@ -48,57 +48,6 @@ mabsGO <- function(geneList,
     return(res)
 }
 
-##' MeanAbs enrichment analysis with KEGG pathways.
-##'
-##' @title MeanAbs Enrichment Analysis for KEGG
-##' @param geneList named numeric vector with gene/target ids in the name slot 
-##' decreasingly ranked by scores in the data slot.
-##' @param organism supported organism listed in 
-##' URL: http://www.genome.jp/kegg/catalog/org_list.html
-##' @param keyType one of 'kegg', 'ncbi-geneid', 'ncib-proteinid' and 'uniprot'
-##' @param nPerm permutation numbers
-##' @param minGSSize integer, minimum size of each gene set in annotation system
-##' @param maxGSSize integer, maximum size of each gene set in annotation system
-##' @param pvalueCutoff pvalue cutoff
-##' @param pAdjustMethod pvalue adjustment method
-##' @param readable TRUE or FALSE indicating whether to convert gene Entrez ids
-##' to gene Symbols in the 'itemID' column in the FEA result table.
-##' @return \code{\link{feaResult}} object
-##' @examples 
-##' # Gene Entrez id should be used for KEGG enrichment
-##' data(geneList, package="DOSE")
-##' #geneList[100:length(geneList)]=0
-##' #mk <- mabsKEGG(geneList=geneList, pvalueCutoff = 1)
-##' #head(mk)
-##' @export
-mabsKEGG <- function(geneList,
-                    organism          = 'hsa',
-                    keyType           = 'kegg',
-                    nPerm             = 1000,
-                    minGSSize         = 5,
-                    maxGSSize         = 500,
-                    pvalueCutoff      = 0.05,
-                    pAdjustMethod     = "BH", readable=FALSE) {
-
-    species <- organismMapper(organism)
-    KEGG_DATA <- prepare_KEGG(species, "KEGG", keyType)
-
-    res <-  mabs_internal(geneList = geneList,
-                          nPerm = nPerm,
-                          minGSSize = minGSSize,
-                          maxGSSize = maxGSSize,
-                          pvalueCutoff = pvalueCutoff,
-                          pAdjustMethod = pAdjustMethod,
-                          USER_DATA = KEGG_DATA)
-
-    if (is.null(res))
-        return(res)
-    if(readable) result(res) <- set_readable(result(res))
-    og(res) <- species
-    ont(res) <- "KEGG"
-    return(res)
-}
-
 ##' MeanAbs enrichment analysis with Reactome pathways.
 ##'
 ##' @title MeanAbs Enrichment Analysis for Reactome
@@ -116,7 +65,7 @@ mabsKEGG <- function(geneList,
 ##' @return \code{\link{feaResult}} object
 ##' @examples 
 ##' # Gene Entrez id should be used for Reactome enrichment
-##' data(geneList, package="DOSE")
+# ##' data(geneList, package="DOSE")
 ##' #geneList[100:length(geneList)]=0
 ##' #rc <- mabsReactome(geneList=geneList, pvalueCutoff = 1)
 ##' @export

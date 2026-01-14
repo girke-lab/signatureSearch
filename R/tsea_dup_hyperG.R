@@ -187,17 +187,17 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
     AnnotationDbi::select(OrgDb, keys = gnset, keytype = "SYMBOL", 
                           columns = "ENTREZID")$ENTREZID))
   
-  if(type=="KEGG"){
-    if(universe=="Default"){
-      KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
-      keggterms <- get("PATHID2EXTID", KEGG_DATA)
-      universe <- unique(unlist(keggterms))
-    }
-    eres <- enrichKEGG2(gene=gnset_entrez, organism="hsa", keyType="kegg", 
-                      pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-                      pAdjustMethod=pAdjustMethod, universe=universe, 
-                      minGSSize=minGSSize, maxGSSize=maxGSSize, readable=readable)
-  }
+  # if(type=="KEGG"){
+  #   if(universe=="Default"){
+  #     KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
+  #     keggterms <- get("PATHID2EXTID", KEGG_DATA)
+  #     universe <- unique(unlist(keggterms))
+  #   }
+  #   eres <- enrichKEGG2(gene=gnset_entrez, organism="hsa", keyType="kegg", 
+  #                     pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
+  #                     pAdjustMethod=pAdjustMethod, universe=universe, 
+  #                     minGSSize=minGSSize, maxGSSize=maxGSSize, readable=readable)
+  # }
   
   if(type=="Reactome"){
     if(universe=="Default"){

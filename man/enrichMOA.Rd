@@ -27,7 +27,6 @@ encoding the target proteins present in the MOA annotation system from the
 ChEMBL database.
 }
 \examples{
-data(geneList, package="DOSE")
 emoa <- enrichMOA(gene = names(geneList)[seq(3)])
 head(emoa)
 }
