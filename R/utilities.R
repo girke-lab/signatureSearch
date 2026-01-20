@@ -530,7 +530,7 @@ tarReduce <- function(vec, Ntar=5){
 
 load_OrgDb <- function(OrgDb){
     if(is(OrgDb, "character")){
-        if(! require(OrgDb, character.only = TRUE)){
+        if(! requireNamespace(OrgDb, quietly = TRUE)){ #require(OrgDb, character.only = TRUE)){
             stop(paste(OrgDb, "package need to be installed to use this function"))
         }
         OrgDb <- eval(parse(text = OrgDb))
@@ -644,7 +644,7 @@ add_pcid <- function(df, drug_col="pert"){
     data("lincs_pert_info", envir=environment())
     pert2 <- lincs_pert_info[, c("pert_iname", "pubchem_cid")]
     colnames(pert2) <- c("pert_iname", "PCIDss")
-    join_cols = "pert_iname"
+    join_cols <- "pert_iname"
     names(join_cols) <- drug_col
     df %<>% left_join(pert2, by=join_cols)
     return(df)

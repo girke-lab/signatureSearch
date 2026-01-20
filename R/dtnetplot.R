@@ -51,7 +51,7 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, verbose=FALSE, ...) {
         Reactome_DATA <- get_Reactome_DATA(organism="human")
         p2e <- get("PATHID2EXTID", envir=Reactome_DATA)
       }
-      go_gene_entrez = p2e[[set]]
+      go_gene_entrez <- p2e[[set]]
       # convert Entrez ids in KEGG pathways to gene SYMBOL
       OrgDb <- load_OrgDb("org.Hs.eg.db")
       go_gene_map <- suppressMessages(AnnotationDbi::select(

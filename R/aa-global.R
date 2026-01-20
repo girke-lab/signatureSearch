@@ -47,7 +47,7 @@ EXTID2NAME <- function(OrgDb, geneID, keytype){
   colnames(gn.df) <- c("GeneID", "SYMBOL")
   unmap_geneID <- geneID[!geneID %in% gn.df$GeneID]
   if (length(unmap_geneID) != 0) {
-    unmap_geneID.df = data.frame(GeneID = unmap_geneID, SYMBOL = unmap_geneID)
+    unmap_geneID.df <- data.frame(GeneID = unmap_geneID, SYMBOL = unmap_geneID)
     gn.df <- rbind(gn.df, unmap_geneID.df)
   }
   gn <- gn.df$SYMBOL

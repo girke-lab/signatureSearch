@@ -285,7 +285,7 @@ methods::setMethod("initialize",
                   col_offset <- 1
                 }
                 else {
-                  if (any(grepl("description", header, ignore.case=T))) {
+                  if (any(grepl("description", header, ignore.case=TRUE))) {
                     # check for presence of description column in v1.2 files
                     col_offset <- 2
                   } else {
