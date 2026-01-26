@@ -75,7 +75,7 @@ enrichGO2 <- function(gene,
 ##' @return A \code{feaResult} instance.
 ##' @seealso \code{\link{feaResult-class}}
 ##' @examples 
-# ##' data(geneList, package="DOSE")
+##' data(geneList, package="DOSE")
 ##' emoa <- enrichMOA(gene = names(geneList)[seq(3)])
 ##' head(emoa)
 ##' @export
@@ -127,9 +127,9 @@ enrichMOA <- function(gene,
 ##' @examples
 ##' # This method supports duplicated elements in "gene"
 ##' gene <- c(rep("4312",4), rep("8318",2), "991", "10874")
-# ##' #data(geneList, package="DOSE")
-##' #rc <- enrichReactome(gene=gene, universe=names(geneList))
-##' #result(rc)
+##' data(geneList, package="DOSE")
+##' rc <- enrichReactome(gene=gene, universe=names(geneList))
+##' result(rc)
 enrichReactome <- function(gene, organism="human",
                            pvalueCutoff=0.05, pAdjustMethod="BH",
                            qvalueCutoff=0.2, universe,
