@@ -87,7 +87,7 @@ are used to search a perturbation-based GES reference database for perturbagens
 such as drugs inducing GESs similar to the query. To interpret the results, the
 GESS results are subjected to functional enrichment analysis (FEA) including
 drug set and target set enrichment analyses (DSEA, TSEA). Both identify
-functional categories (_e.g._ GO terms or KEGG pathways) over-represented in
+functional categories (_e.g._ GO terms) over-represented in
 the GESS results. Subsequently, drug-target networks are reconstructed for
 visualization and interpretation. </font>
 
@@ -847,7 +847,7 @@ with respect to the cellular networks and pathways affected by the top ranking
 drugs is difficult. To overcome this challenge, the knowledge of the target
 proteins of the top ranking drugs can be used to perform functional enrichment
 analysis (FEA) based on community annotation systems, such as Gene Ontologies
-(GO), pathways (e.g.  KEGG, Reactome), drug MOAs or Pfam domains. For this, the
+(GO), pathways (e.g. Reactome), drug MOAs or Pfam domains. For this, the
 ranked drug sets are converted into target gene/protein sets to perform Target
 Set Enrichment Analysis (TSEA) based on a chosen annotation system.
 Alternatively, the functional annotation categories of the targets can be
@@ -873,7 +873,7 @@ obtained from several sources, including DrugBank, ChEMBL, STITCH, and the
 @Gaulton2017-su; @Kuhn2010-hz; @Subramanian2017-fu]. Most drug-target
 annotations provide UniProt identifiers for the target proteins. They can be
 mapped, if necessary via their encoding genes, to the chosen functional
-annotation categories, such as GO or KEGG. To minimize bias in TSEA or DSEA,
+annotation categories, such as GO. To minimize bias in TSEA or DSEA,
 often caused by promiscuous binders, it can be beneficial to remove drugs or
 targets that bind to large numbers of distinct proteins or drugs, respectively.
 To conduct TSEA and DSEA efficiently, `signatureSearch` and its helper package
@@ -894,7 +894,7 @@ only the indirect targets of drugs.
 
 ## TSEA
 The following introduces how to perform TSEA on drug-based GESS results using
-as functional annotation systems GO, KEGG and Reactome pathways. 
+as functional annotation systems GO and Reactome pathways. 
 The enrichment tests are performed with three widely used algorithms that have 
 been modified in `signatureSearch` to take advantage of duplication information 
 present in the test sets used for TSEA. The relevance of these target duplications 
@@ -931,9 +931,8 @@ latter converts the drug set to a target set, and then computes for it
 enrichment scores for each MF GO term based on the hypergeometric distribution. 
 The enrichment results are stored in a `feaResult` object. It contains the 
 organism information of the annotation system, and the ontology type of the GO 
-annotation system. If the annotation system is KEGG, the latter will be "KEGG". 
-The object also stores the input drugs used for the enrichment test, as well as 
-their target information. 
+annotation system. The object also stores the input drugs used for the enrichment 
+test, as well as their target information. 
 
 ```{r tsea_dup_hyperG_go, eval=TRUE, message=FALSE}
 drugs <- unique(result(lincs)$pert[1:10])
@@ -946,7 +945,7 @@ dup_hyperG_res
 
 The `result` accessor function can be used to extract a tabular result from the
 `feaResult` object. The rows of this result table contain the functional
-categories (_e.g._ GO terms or KEGG pathways) ranked by the corresponding
+categories (_e.g._ GO terms) ranked by the corresponding
 enrichment statistic. 
 
 ```{r tsea_dup_hyperG_go_result, eval=TRUE}
@@ -956,16 +955,15 @@ result(dup_hyperG_res)
 The columns in the result table, extracted from the `feaResult` object, contain
 the following information. Note, some columns are only present in the result
 tables of specific FEA methods. `ont`: in case of GO one of BP, MF, CC,
-or ALL; `ID`: GO or KEGG IDs; `Description`: description of functional
+or ALL; `ID`: GO IDs; `Description`: description of functional
 category; `pvalue`: raw p-value of enrichment test; `p.adjust`: p-value
 adjusted for multiple hypothesis testing based on method specified under
 `pAdjustMethod`; `qvalue`: q value calculated with R's `qvalue` function to
 control FDR; `itemID`: IDs of items (genes for TSEA, drugs for DSEA)
 overlapping among test and annotation sets;
 `setSize`: size of the functional category; `GeneRatio`: ratio of genes in the
-test set that are annotated at a specific GO node or KEGG pathway; `BgRatio`:
-ratio of background genes that are annotated at a specific GO node or KEGG
-pathway. `Count`: number of overlapped genes between the test set and the 
+test set that are annotated at a specific GO node; `BgRatio`:
+ratio of background genes that are annotated at a specific GO node. `Count`: number of overlapped genes between the test set and the 
 specific functional annotation term.
 
 #### With Reactome 
@@ -981,7 +979,7 @@ result(dup_rct_res)
 ### mGSEA Method
 
 The original GSEA method proposed by @Subramanian2005-ro uses predefined gene
-sets $S$ defined by functional annotation systems such as GO and KEGG.  The
+sets $S$ defined by functional annotation systems such as GO.  The
 goal is to determine whether the genes in $S$ are randomly distributed
 throughout a ranked test gene list $L$ (*e.g.* all genes ranked by LFC) or
 enriched at the top or bottom of the test list. This is expressed by an
@@ -1021,7 +1019,7 @@ undesirable because in this example only one gene is shared among the target
 set and the gene set $S$. Therefore, giving small weights to genes in $S$ that
 have scores of zero would decrease the weight of the genes in $S$ that have 
 scores other than zero, thereby decreasing the false positive rate. To favor 
-truly enriched GO terms and KEGG pathways (gene set $S$) at the top of 
+truly enriched GO terms (gene set $S$) at the top of 
 $L_{tar}$, only gene sets with positive $ES$ are selected. 
 
 #### With GO
@@ -1208,7 +1206,7 @@ the 5 FEA methods (x-axis).</font>
 
 ## Summary of FEA Results
 
-The enrichment rankings of the functional categories (GO and KEGG) show a
+The enrichment rankings of the functional categories (GO) show a
 reasonable degree of agreement among the five FEA methods. For instance, all
 five showed a high degree of enrichment for histone deacetylase pathways that
 are indeed targeted by one of the query drugs, here vorinostat. Since each 
@@ -1258,19 +1256,6 @@ dtnetplot(drugs = drugs(dup_hyperG_res), set = "GO:0051059", ont = "MF",
 <font size="-2"> Figure 8: Drug-target network for *NF-kappaB binding*. The 
 details of the plot are given in the legend of Figure 7.</font>
 
-## With KEGG
-
-The same drug-target network plots can be rendered for KEGG pathways as follows.
-
-Network for KEGG pathway: *Alcoholism* (hsa05034)
-```{r dtnet_kegg_05034, eval=FALSE}
-# ####
-# dtnetplot(drugs = drugs(dup_hyperG_k_res), set = "hsa05034", 
-#           desc="Alcoholism")
-```
-
-<font size="-2"> Figure 9: Drug-target network for *Alcoholism*. The details of
-the plot are given in the legend of Figure 7.</font>
 
 # Run Workflow
 The `runWF` function supports running the entire GESS/FEA workflow automatically
@@ -1280,8 +1265,7 @@ defining the specific GESS and FEA methods. When the query drug and cell type
 were provided, the query GES was internally drawn from the reference database. 
 The N (defined by the `N_gess_drugs` argument) top ranking hits in the GESS 
 tables were then used for FEA where three different annotation systems were 
-used: GO Molecular Function (GO MF), GO Biological Process (GO BP) and KEGG 
-pathways. 
+used: GO Molecular Function (GO MF), GO Biological Process (GO BP) terms. 
 
 The GESS/FEA results will be stored in a list object in R session. 
 A working environment named by the use case will be created under users current 
@@ -1318,7 +1302,7 @@ representing the universe of the biological processes in human. Version 7.1
 of MSigDB contains 25,724 gene sets that are divided into 8 collections.  GSKB is
 a gene set database for pathway analysis in mouse [@Lai2016-gh]. It includes
 more than 40,000 pathways and gene sets compiled from 40 sources, such as Gene
-Ontology, KEGG, GeneSetDB, and others. The following introduces how to work with
+Ontology, GeneSetDB, and others. The following introduces how to work with
 these gene set databases in _signatureSearch_.
 
 ### Overview

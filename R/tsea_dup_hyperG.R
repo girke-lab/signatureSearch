@@ -21,12 +21,12 @@
 #' tabular format, here \code{tibble}.
 #' \itemize{
 #'     \item ont: in case of GO, one of BP, MF, CC, or ALL
-#'     \item ID: GO or KEGG IDs
+#'     \item ID: GO IDs
 #'     \item Description: description of functional category
 #'     \item GeneRatio: ratio of genes in the test set that are annotated at a 
-#'     specific GO node or KEGG pathway
+#'     specific GO node
 #'     \item BgRatio: ratio of background genes that are annotated
-#'     at a specific GO node or KEGG pathway
+#'     at a specific GO node
 #'     \item itemID: IDs of items (genes for TSEA, drugs for DSEA) overlapping 
 #'     among test and annotation sets.
 #'     \item setSize: size of the functional category
@@ -68,13 +68,13 @@
 #' \code{dt_anno} argument.
 #' @param universe character vector defining the universe of genes/proteins. If
 #' set as 'Default', it uses all genes/proteins present in the corresponding
-#' annotation system (e.g. GO, KEGG or Reactome). If 'type' is 'GO', it can be assigned
-#' a custom vector of gene SYMBOL IDs. If 'type' is 'KEGG' or 'Reactome', the 
+#' annotation system (e.g. GO or Reactome). If 'type' is 'GO', it can be assigned
+#' a custom vector of gene SYMBOL IDs. If 'type' is 'Reactome', the 
 #' vector needs to contain Entrez gene IDs.
-#' @param type one of `GO`, `KEGG` or `Reactome` if TSEA methods. \code{type}
+#' @param type one of `GO`, `Reactome` if TSEA methods. \code{type}
 #' can also be set as `MOA` is DSEA methods are used.
 #' @param ont character(1). If type is `GO`, assign \code{ont} (ontology) one of
-#' `BP`,`MF`, `CC` or `ALL`. If type is `KEGG` or `Reactome`, \code{ont} is ignored.
+#' `BP`,`MF`, `CC` or `ALL`. If type is `Reactome`, \code{ont} is ignored.
 #' @param pAdjustMethod p-value adjustment method, 
 #' one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr'
 #' @param pvalueCutoff double, p-value cutoff to return only enrichment results
@@ -95,7 +95,7 @@
 #' the most complete drug-target annotations. Choosing a single
 #' annotation source results in sparser drug-target annotations
 #' (particularly CLUE), and thus less complete enrichment results.
-#' @param readable TRUE or FALSE, it applies when type is `KEGG` or `Reactome`
+#' @param readable TRUE or FALSE, it applies when type is `Reactome`
 #' indicating whether to convert gene Entrez ids to gene Symbols in the 'itemID' 
 #' column in the result table.
 #' @param nPerm integer defining the number of permutation iterations for 
@@ -108,7 +108,7 @@
 #' the weight of the items in the item set \emph{S}. Note, in DSEA the items 
 #' are drug labels, while it is gene labels in the original GSEA.
 #' @return \code{\link{feaResult}} object, the result table contains the
-#' enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
+#' enriched functional categories (e.g. GO terms) ranked by 
 #' the corresponding enrichment statistic.
 #' @seealso \code{\link{feaResult}}, 
 #'          \code{\link[signatureSearchData]{GO_DATA_drug}}
@@ -135,11 +135,6 @@
 #' #                         minGSSize=5, maxGSSize=500)
 #' # result(res1)
 #' #
-#' ## KEGG annotation system
-#' # res2 <- tsea_dup_hyperG(drugs=drugs10, type="KEGG", 
-#' #                         pvalueCutoff=0.1, qvalueCutoff=0.2, 
-#' #                         minGSSize=10, maxGSSize=500)
-#' #
 #' ## Reactome annotation system
 #' # res3 <- tsea_dup_hyperG(drugs=drugs10, type="Reactome", 
 #' #                         pvalueCutoff=1, qvalueCutoff=1)
@@ -153,8 +148,8 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
   # message("The query drugs [", length(drugs),"] are: \n", 
   #         paste0(drugs[seq_len(min(length(drugs), 10))], sep ="  "), "...")
 
-  if(!any(type %in% c("GO", "KEGG", "Reactome"))){
-    stop('"type" argument needs to be one of "GO", "KEGG" or "Reactome"')
+  if(!any(type %in% c("GO", "Reactome"))){
+    stop('"type" argument needs to be one of "GO" or "Reactome"')
   }
   drugs <- unique(tolower(drugs))
   targets <- get_targets(drugs, database = dt_anno)
@@ -186,18 +181,6 @@ tsea_dup_hyperG <- function(drugs, universe="Default",
   gnset_entrez <- na.omit(suppressMessages(
     AnnotationDbi::select(OrgDb, keys = gnset, keytype = "SYMBOL", 
                           columns = "ENTREZID")$ENTREZID))
-  
-  # if(type=="KEGG"){
-  #   if(universe=="Default"){
-  #     KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
-  #     keggterms <- get("PATHID2EXTID", KEGG_DATA)
-  #     universe <- unique(unlist(keggterms))
-  #   }
-  #   eres <- enrichKEGG2(gene=gnset_entrez, organism="hsa", keyType="kegg", 
-  #                     pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-  #                     pAdjustMethod=pAdjustMethod, universe=universe, 
-  #                     minGSSize=minGSSize, maxGSSize=maxGSSize, readable=readable)
-  # }
   
   if(type=="Reactome"){
     if(universe=="Default"){

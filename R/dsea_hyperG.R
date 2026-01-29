@@ -4,7 +4,7 @@
 ##' based on the hypergeometric distribution. In case of DSEA, the identifiers of
 ##' the top ranking drugs from a GESS result table are used. To use drug 
 ##' instead of gene labels for this test, the former are mapped to functional 
-##' categories, including GO, KEGG or Mode of Action (MOA) categories, based on 
+##' categories, including GO or Mode of Action (MOA) categories, based on 
 ##' drug-target interaction annotations provided by databases such as DrugBank, 
 ##' ChEMBL, CLUE or STITCH. Currently, the MOA annotation used by this function 
 ##' are from the CLUE website (https://clue.io).
@@ -22,8 +22,7 @@
 ##' ## GO annotation system
 ##' # hyperG_res <- dsea_hyperG(drugs=drugs10, type="GO", ont="MF")
 ##' # result(hyperG_res)
-##' ## KEGG annotation system
-##' # hyperG_k_res <- dsea_hyperG(drugs=drugs10, type="KEGG", 
+##' # hyperG_k_res <- dsea_hyperG(drugs=drugs10, type="GO", 
 ##' #                             pvalueCutoff=1, qvalueCutoff=1, 
 ##' #                             minGSSize=10, maxGSSize=500)
 ##' # result(hyperG_k_res) 
@@ -62,27 +61,7 @@ dsea_hyperG <- function(drugs,
     tg(res) <- NULL
     return(res)
   }
-  if(type == "KEGG"){
-    species <- organismMapper("hsa")
-    KEGG_DATA_drug <- prepare_KEGG_drug(species, "KEGG", keyType="kegg")
-    # get all the drugs in the corresponding annotation system as universe
-    ext2path <- get("EXTID2PATHID", envir = KEGG_DATA_drug)
-    universe <- names(ext2path)
-    res <- enricher_internal(drugs,
-                             pvalueCutoff  = pvalueCutoff,
-                             pAdjustMethod = pAdjustMethod,
-                             universe      = universe,
-                             minGSSize     = minGSSize,
-                             maxGSSize     = maxGSSize,
-                             qvalueCutoff  = qvalueCutoff,
-                             USER_DATA = KEGG_DATA_drug)
-    if (is.null(res))
-      return(res)
-    tg(res) <- NULL
-    ont(res) <- "KEGG"
-    og(res) <- species
-    return(res)
-  }
+  
   if(type == "MOA"){
       data("clue_moa_list", envir = environment())
       moa_list <- clue_moa_list

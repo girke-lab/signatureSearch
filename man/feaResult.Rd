@@ -17,8 +17,7 @@ feaResult(
 
 \item{organism}{character(1), organism information of the annotation system}
 
-\item{ontology}{character(1), ontology type of the GO annotation system. 
-If the annotation system is KEGG, it will be 'KEGG'}
+\item{ontology}{character(1), ontology type of the GO annotation system.}
 
 \item{drugs}{character vector, input drug names used for the enrichment test}
 

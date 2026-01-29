@@ -9,7 +9,7 @@
 #' plot.
 #' @title Drug-Target Network Visualization
 #' @param drugs A character vector of drug names
-#' @param set character(1) GO term ID, KEGG or Reactome pathway ID. 
+#' @param set character(1) GO term ID or Reactome pathway ID. 
 #' Alternatively, a character vector of gene SYMBOLs can be assigned.
 #' @param ont if `set` is a GO term ID, `ont` is the corresponding ontology 
 #' that GO term belongs to. One of 'BP', 'MF' or 'CC'. If `set` is anything else,
@@ -43,16 +43,13 @@ dtnetplot <- function(drugs, set, ont=NULL, desc=NULL, verbose=FALSE, ...) {
   } else if(length(set) > 1){
     go_gene <- set
     } else {
-      if(grepl("hsa\\d{5}",set)[1]){
-        KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
-        p2e <- get("PATHID2EXTID", envir=KEGG_DATA)
-      }
+      
       if(grepl("R-HSA",set)[1]){
         Reactome_DATA <- get_Reactome_DATA(organism="human")
         p2e <- get("PATHID2EXTID", envir=Reactome_DATA)
       }
       go_gene_entrez <- p2e[[set]]
-      # convert Entrez ids in KEGG pathways to gene SYMBOL
+      # convert Entrez ids in pathways to gene SYMBOL
       OrgDb <- load_OrgDb("org.Hs.eg.db")
       go_gene_map <- suppressMessages(AnnotationDbi::select(
         OrgDb, keys = go_gene_entrez, keytype = "ENTREZID", columns="SYMBOL"))

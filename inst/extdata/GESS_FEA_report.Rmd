@@ -42,7 +42,7 @@ corresponding methods is available at this [vignette](https://bioconductor.org/p
 of the `signatureSearch` package. Here, `<gess_method>` is used as GESS method,
 The `<N_gess_drugs>` top ranking unique hits in the GESS table were then used
 for FEA where three different annotation systems were used: GO Molecular
-Function (GO MF), GO Biological Process (GO BP) and KEGG pathways.
+Function (GO MF) and GO Biological Process (GO BP) terms.
 
 # GESS/FEA workflow
 ```{r runWF, eval=FALSE}
@@ -95,10 +95,4 @@ datatable(bp_tb[1:50, colnames(bp_tb) != "itemID"], colnames=c('No'=1), escape =
 
 [Full table](results/<fea_method>_bp_res.tsv)
 
-## <fea_method> KEGG
-```{r kegg, eval=TRUE, message=FALSE}
-kegg_tb <- suppressMessages(as.data.frame(fread("results/<fea_method>_kegg_res.xls")))
-datatable(kegg_tb[1:50, colnames(kegg_tb) != "itemID"], colnames=c('No'=1), escape = FALSE, options=list(scrollX=TRUE, autoWidth=TRUE))
-```
 
-[Full table](results/<fea_method>_kegg_res.tsv)

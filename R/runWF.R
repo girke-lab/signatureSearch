@@ -6,8 +6,7 @@
 #' In this case, the query GES is drawn from the reference database. 
 #' The N (defined by the `N_gess_drugs` argument) top ranking hits in the GESS 
 #' tables were then used for FEA where three different annotation systems were 
-#' used: GO Molecular Function (GO MF), GO Biological Process (GO BP) and 
-#' KEGG pathways. 
+#' used: GO Molecular Function (GO MF), and GO Biological Process (GO BP) pathways. 
 #' 
 #' The GESS/FEA results will be stored in a list object in R session. 
 #' A working environment named by the use case will be created under users 
@@ -165,10 +164,6 @@ runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
         drugs=drugs, type="GO", ont="BP",
         pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
         minGSSize=minGSSize, maxGSSize=maxGSSize)
-      kegg_res <- tsea_dup_hyperG(
-        drugs=drugs, type="KEGG",
-        pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-        minGSSize=minGSSize, maxGSSize=maxGSSize)
     }
     if(fea_method == "mGSEA"){
       mf_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="MF", exponent=1,
@@ -176,16 +171,12 @@ runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
                            maxGSSize=maxGSSize)
       bp_res <- tsea_mGSEA(drugs=drugs, type="GO", ont="BP",
                            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
-      kegg_res <- tsea_mGSEA(drugs=drugs, type="KEGG", pvalueCutoff=pvalueCutoff,
-                             minGSSize=minGSSize, maxGSSize=maxGSSize)
     }
     if(fea_method == "mabs"){
       mf_res <- tsea_mabs(drugs=drugs, type="GO", ont="MF",
                           pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
       bp_res <- tsea_mabs(drugs=drugs, type="GO", ont="BP",
                           pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
-      kegg_res <- tsea_mabs(drugs=drugs, type="KEGG",
-                            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
     }
     if(fea_method == "hyperG"){
       mf_res <- dsea_hyperG(drugs=drugs, type="GO", ont="MF",
@@ -194,9 +185,6 @@ runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
       bp_res <- dsea_hyperG(drugs=drugs, type="GO", ont="BP",
                             pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
                             minGSSize=minGSSize, maxGSSize=maxGSSize)
-      kegg_res <- dsea_hyperG(drugs=drugs, type="KEGG",
-                              pvalueCutoff=pvalueCutoff, qvalueCutoff=qvalueCutoff,
-                              minGSSize=minGSSize, maxGSSize=maxGSSize)
     }
     if(fea_method == "GSEA"){
       dl <- abs(gess_tb[[score_col]])
@@ -207,12 +195,9 @@ runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
                           maxGSSize=maxGSSize)
       bp_res <- dsea_GSEA(drugList=dl, type="GO", ont="BP",
                           pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
-      kegg_res <- dsea_GSEA(drugList=dl, type="KEGG",
-                            pvalueCutoff=pvalueCutoff, minGSSize=minGSSize, maxGSSize=maxGSSize)
     }
     mf_tb <- result(mf_res)
     bp_tb <- result(bp_res)
-    kegg_tb <- result(kegg_res)
   }
   
   #### Calculate drug ranking by cell type ####
@@ -239,8 +224,7 @@ runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
   if(runFEA){
     fwrite(mf_tb, paste0(res_dir, "/", fea_method, "_mf_res.xls"), row.names=FALSE, quote=FALSE, sep="\t")
     fwrite(bp_tb, paste0(res_dir, "/", fea_method, "_bp_res.xls"), row.names=FALSE, quote=FALSE, sep="\t")
-    fwrite(kegg_tb, paste0(res_dir, "/", fea_method, "_kegg_res.xls"), row.names=FALSE, quote=FALSE, sep="\t")
-    
+
     if(GenerateReport){
       file.copy(system.file("extdata", "GESS_FEA_report.Rmd", package="signatureSearch"),
                 paste0(env_name, "/GESS_FEA_report.Rmd"))
@@ -276,7 +260,7 @@ runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
   }
   print("Analysis completed")
   if(runFEA){
-    return(list(gess_tb=gess_tb, CellGESS=CellCat, DEG=degMat, mf_tb=mf_tb, bp_tb=bp_tb, kegg_tb=kegg_tb))
+    return(list(gess_tb=gess_tb, CellGESS=CellCat, DEG=degMat, mf_tb=mf_tb, bp_tb=bp_tb))
   } else {
     return(list(gess_tb=gess_tb, CellGESS=CellCat, DEG=degMat))
   }

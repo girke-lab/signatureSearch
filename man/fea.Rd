@@ -80,11 +80,11 @@ and the numeric component scores. This can be all drugs of a GESS result that
 are ranked by GESS scores, such as NCS scores from the LINCS method. 
 Note, drugs with scores of zero are ignored by this method.}
 
-\item{type}{one of `GO`, `KEGG` or `Reactome` if TSEA methods. \code{type}
+\item{type}{one of `GO`, `Reactome` if TSEA methods. \code{type}
 can also be set as `MOA` is DSEA methods are used.}
 
 \item{ont}{character(1). If type is `GO`, assign \code{ont} (ontology) one of
-`BP`,`MF`, `CC` or `ALL`. If type is `KEGG` or `Reactome`, \code{ont} is ignored.}
+`BP`,`MF`, `CC` or `ALL`. If type is `Reactome`, \code{ont} is ignored.}
 
 \item{exponent}{integer value used as exponent in GSEA algorithm. It defines
 the weight of the items in the item set \eqn{S}.}
@@ -119,8 +119,8 @@ test sets based on the drug-target annotations provided under the
 
 \item{universe}{character vector defining the universe of genes/proteins. If
 set as 'Default', it uses all genes/proteins present in the corresponding
-annotation system (e.g. GO, KEGG or Reactome). If 'type' is 'GO', it can be assigned
-a custom vector of gene SYMBOL IDs. If 'type' is 'KEGG' or 'Reactome', the 
+annotation system (e.g. GO or Reactome). If 'type' is 'GO', it can be assigned
+a custom vector of gene SYMBOL IDs. If 'type' is 'Reactome', the 
 vector needs to contain Entrez gene IDs.}
 
 \item{dt_anno}{drug-target annotation source. It is the same argument as the
@@ -130,7 +130,7 @@ the most complete drug-target annotations. Choosing a single
 annotation source results in sparser drug-target annotations
 (particularly CLUE), and thus less complete enrichment results.}
 
-\item{readable}{TRUE or FALSE, it applies when type is `KEGG` or `Reactome`
+\item{readable}{TRUE or FALSE, it applies when type is `Reactome`
 indicating whether to convert gene Entrez ids to gene Symbols in the 'itemID' 
 column in the result table.}
 
@@ -138,7 +138,7 @@ column in the result table.}
 }
 \value{
 \code{\link{feaResult}} object, the result table contains the
-enriched functional categories (e.g. GO terms or KEGG pathways) ranked by 
+enriched functional categories (e.g. GO terms) ranked by 
 the corresponding enrichment statistic.
 }
 \description{
@@ -148,14 +148,14 @@ with the GSEA algorithm from Subramanian et al. (2005). In case of DSEA, drug
 identifiers combined with their ranking scores of an upstream GESS method are
 used, such as the NCS values from the LINCS method. To use drug instead of
 gene labels for GSEA, the former are mapped to functional categories, 
-including GO or KEGG, based on drug-target interaction annotations provided 
+including GO, based on drug-target interaction annotations provided 
 by databases such as DrugBank, ChEMBL, CLUE or STITCH.
 
 The DSEA with Hypergeometric Test (\code{dsea_hyperG}) performs DSEA
 based on the hypergeometric distribution. In case of DSEA, the identifiers of
 the top ranking drugs from a GESS result table are used. To use drug 
 instead of gene labels for this test, the former are mapped to functional 
-categories, including GO, KEGG or Mode of Action (MOA) categories, based on 
+categories, including GO or Mode of Action (MOA) categories, based on 
 drug-target interaction annotations provided by databases such as DrugBank, 
 ChEMBL, CLUE or STITCH. Currently, the MOA annotation used by this function 
 are from the CLUE website (https://clue.io).
@@ -196,7 +196,7 @@ information of this approach.
 
 The original GSEA method proposed by Subramanian et at., 2005 uses 
 predefined gene sets \eqn{S} defined by functional annotation systems 
-such as GO and KEGG. The goal is to determine whether the genes in \eqn{S}
+such as GO. The goal is to determine whether the genes in \eqn{S}
 are randomly distributed throughout a ranked test gene list \eqn{L} 
 (e.g. all genes ranked by log2 fold changes) or enriched at the top or 
 bottom of the test list. This is expressed by an 
@@ -254,12 +254,12 @@ Descriptions of the columns in FEA result tables stored in the
 tabular format, here \code{tibble}.
 \itemize{
     \item ont: in case of GO, one of BP, MF, CC, or ALL
-    \item ID: GO or KEGG IDs
+    \item ID: GO IDs
     \item Description: description of functional category
     \item GeneRatio: ratio of genes in the test set that are annotated at a 
-    specific GO node or KEGG pathway
+    specific GO node
     \item BgRatio: ratio of background genes that are annotated
-    at a specific GO node or KEGG pathway
+    at a specific GO node
     \item itemID: IDs of items (genes for TSEA, drugs for DSEA) overlapping 
     among test and annotation sets.
     \item setSize: size of the functional category
@@ -301,8 +301,7 @@ data(drugs10)
 ############ DSEA GSEA method ############
 dl <- c(rev(seq(0.1, 0.5, by=0.05)), 0)
 names(dl)=drugs10
-## KEGG annotation system
-# gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=100, 
+# gsea_k_res <- dsea_GSEA(drugList=dl, type="GO", exponent=1, nPerm=100, 
 #                         pvalueCutoff=0.5, minGSSize=2)
 # result(gsea_k_res)
 
@@ -310,8 +309,7 @@ names(dl)=drugs10
 ## GO annotation system
 # hyperG_res <- dsea_hyperG(drugs=drugs10, type="GO", ont="MF")
 # result(hyperG_res)
-## KEGG annotation system
-# hyperG_k_res <- dsea_hyperG(drugs=drugs10, type="KEGG", 
+# hyperG_k_res <- dsea_hyperG(drugs=drugs10, type="GO", 
 #                             pvalueCutoff=1, qvalueCutoff=1, 
 #                             minGSSize=10, maxGSSize=500)
 # result(hyperG_k_res) 
@@ -324,11 +322,6 @@ names(dl)=drugs10
 #                         minGSSize=5, maxGSSize=500)
 # result(res1)
 #
-## KEGG annotation system
-# res2 <- tsea_dup_hyperG(drugs=drugs10, type="KEGG", 
-#                         pvalueCutoff=0.1, qvalueCutoff=0.2, 
-#                         minGSSize=10, maxGSSize=500)
-#
 ## Reactome annotation system
 # res3 <- tsea_dup_hyperG(drugs=drugs10, type="Reactome", 
 #                         pvalueCutoff=1, qvalueCutoff=1)
@@ -338,9 +331,6 @@ names(dl)=drugs10
 # res1 <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
 #                    nPerm=1000, pvalueCutoff=1, minGSSize=5)
 # result(res1)
-# res2 <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
-#                    nPerm=100, pvalueCutoff=1, minGSSize=5)
-# result(res2)
 ## Reactome annotation system
 # res3 <- tsea_mGSEA(drugs=drugs10, type="Reactome", pvalueCutoff=1)
 # result(res3)
@@ -350,10 +340,6 @@ names(dl)=drugs10
 # res1 <- tsea_mabs(drugs=drugs10, type="GO", ont="MF", nPerm=1000, 
 #                   pvalueCutoff=0.05, minGSSize=5)
 # result(res1)
-## KEGG annotation system
-# res2 <- tsea_mabs(drugs=drugs10, type="KEGG", nPerm=1000, 
-#                   pvalueCutoff=0.05, minGSSize=5)
-# result(res2)
 ## Reactome annotation system
 # res3 <- tsea_mabs(drugs=drugs10, type="Reactome", pvalueCutoff=1)
 # result(res3)

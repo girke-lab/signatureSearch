@@ -102,8 +102,7 @@ the query drug and cell type, as well as selecting the reference database
 In this case, the query GES is drawn from the reference database. 
 The N (defined by the `N_gess_drugs` argument) top ranking hits in the GESS 
 tables were then used for FEA where three different annotation systems were 
-used: GO Molecular Function (GO MF), GO Biological Process (GO BP) and 
-KEGG pathways. 
+used: GO Molecular Function (GO MF), and GO Biological Process (GO BP) pathways. 
 
 The GESS/FEA results will be stored in a list object in R session. 
 A working environment named by the use case will be created under users 

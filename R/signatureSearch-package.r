@@ -26,7 +26,7 @@
 #' to develop novel drug repurposing approaches.
 #' 
 #' Second, specialized functional enrichment analysis (FEA) methods using 
-#' annotations systems, such as Gene Ontologies (GO), KEGG and Reactome pathways 
+#' annotations systems, such as Gene Ontologies (GO) and Reactome pathways 
 #'  have been developed and implemented in this package to 
 #' efficiently interpret GESS results. The latter are usually composed of lists 
 #' of perturbagens (e.g. drugs) ranked by the similarity metric of the 
@@ -57,7 +57,7 @@
 #' by the top ranking drugs is difficult. To overcome this challenge, the 
 #' knowledge of the target proteins of the top ranking drugs can be used to 
 #' perform functional enrichment analysis (FEA) based on community annotation 
-#' systems, such as Gene Ontologies (GO), pathways (e.g. KEGG, Reactome), drug 
+#' systems, such as Gene Ontologies (GO), pathways (e.g. Reactome), drug 
 #' MOAs or Pfam domains. For this, the ranked drug sets are converted into 
 #' target gene/protein sets to perform Target Set Enrichment Analysis (TSEA) 
 #' based on a chosen annotation system. Alternatively, the functional 
@@ -94,7 +94,7 @@
 #' Touchstone dataset from the LINCS project (https://clue.io/). Most 
 #' drug-target annotations provide UniProt identifiers for the target proteins. 
 #' They can be mapped, if necessary via their encoding genes, to the chosen 
-#' functional annotation categories, such as GO or KEGG. To minimize bias in 
+#' functional annotation categories, such as GO. To minimize bias in 
 #' TSEA or DSEA, often caused by promiscuous binders, it can be beneficial to 
 #' remove drugs or targets that bind to large numbers of distinct proteins or 
 #' drugs, respectively.

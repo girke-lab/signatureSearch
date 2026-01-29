@@ -8,7 +8,7 @@
 #' @details 
 #' The original GSEA method proposed by Subramanian et at., 2005 uses 
 #' predefined gene sets \eqn{S} defined by functional annotation systems 
-#' such as GO and KEGG. The goal is to determine whether the genes in \eqn{S}
+#' such as GO. The goal is to determine whether the genes in \eqn{S}
 #' are randomly distributed throughout a ranked test gene list \eqn{L} 
 #' (e.g. all genes ranked by log2 fold changes) or enriched at the top or 
 #' bottom of the test list. This is expressed by an 
@@ -59,10 +59,6 @@
 #' # res1 <- tsea_mGSEA(drugs=drugs10, type="GO", ont="MF", exponent=1, 
 #' #                    nPerm=1000, pvalueCutoff=1, minGSSize=5)
 #' # result(res1)
-#  ## KEGG annotation system
-#' # res2 <- tsea_mGSEA(drugs=drugs10, type="KEGG", exponent=1, 
-#' #                    nPerm=100, pvalueCutoff=1, minGSSize=5)
-#' # result(res2)
 #' ## Reactome annotation system
 #' # res3 <- tsea_mGSEA(drugs=drugs10, type="Reactome", pvalueCutoff=1)
 #' # result(res3)
@@ -71,8 +67,8 @@ tsea_mGSEA <- function(drugs, type="GO", ont="MF", nPerm=1000, exponent=1,
                        pAdjustMethod="BH", pvalueCutoff=0.05,
                        minGSSize=5, maxGSSize=500, verbose=FALSE,
                        dt_anno="all", readable=FALSE){
-  if(!any(type %in% c("GO", "KEGG", "Reactome"))){
-    stop('"type" argument needs to be one of "GO", "KEGG" or "Reactome"')
+  if(!any(type %in% c("GO", "Reactome"))){
+    stop('"type" argument needs to be one of "GO" or "Reactome"')
   }
   drugs <- unique(tolower(drugs))
   targets <- get_targets(drugs, database = dt_anno)
@@ -110,24 +106,6 @@ tsea_mGSEA <- function(drugs, type="GO", ont="MF", nPerm=1000, exponent=1,
   tar_tab <- table(gnset_entrez)
   tar_dup <- as.numeric(tar_tab); names(tar_dup) <- names(tar_tab)
   tar_weight <- sort(tar_dup/sum(tar_dup), decreasing = TRUE)
-  
-  if(type=="KEGG"){
-    # Get universe genes in KEGG annotation system
-    KEGG_DATA <- prepare_KEGG(species="hsa", "KEGG", keyType="kegg")
-    keggterms <- get("PATHID2EXTID", KEGG_DATA)
-    universe <- unique(unlist(keggterms))
-    
-    tar_diff <- setdiff(universe, gnset_entrez)
-    tar_diff_weight <- rep(0, length(tar_diff))
-    names(tar_diff_weight) <- tar_diff
-    tar_total_weight <- c(tar_weight, tar_diff_weight)
-    
-    gse_res <- gseKEGG2(geneList=tar_total_weight, organism='hsa', keyType='kegg',
-                        nPerm=nPerm, exponent=exponent,
-                        minGSSize = minGSSize, maxGSSize=maxGSSize, 
-                        pvalueCutoff=pvalueCutoff, pAdjustMethod = pAdjustMethod,
-                        verbose = verbose, readable=readable)
-  }
   
   if(type=="Reactome"){
     # Get universe genes in Reactome annotation system

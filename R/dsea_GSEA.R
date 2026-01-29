@@ -6,7 +6,7 @@
 #' identifiers combined with their ranking scores of an upstream GESS method are
 #' used, such as the NCS values from the LINCS method. To use drug instead of
 #' gene labels for GSEA, the former are mapped to functional categories, 
-#' including GO or KEGG, based on drug-target interaction annotations provided 
+#' including GO, based on drug-target interaction annotations provided 
 #' by databases such as DrugBank, ChEMBL, CLUE or STITCH.
 #' @examples 
 #' data(drugs10)
@@ -14,8 +14,7 @@
 #' ############ DSEA GSEA method ############
 #' dl <- c(rev(seq(0.1, 0.5, by=0.05)), 0)
 #' names(dl)=drugs10
-#' ## KEGG annotation system
-#' # gsea_k_res <- dsea_GSEA(drugList=dl, type="KEGG", exponent=1, nPerm=100, 
+#' # gsea_k_res <- dsea_GSEA(drugList=dl, type="GO", exponent=1, nPerm=100, 
 #' #                         pvalueCutoff=0.5, minGSSize=2)
 #' # result(gsea_k_res)
 #' @export
@@ -57,29 +56,7 @@ dsea_GSEA <- function(drugList,
     ont(res) <- ont
     return(res)
   }
-  
-  if(type=="KEGG"){
-    species <- organismMapper("hsa")
-    KEGG_DATA_drug <- prepare_KEGG_drug(species, "KEGG", keyType="kegg")
-    
-    res <-  GSEA_internal(geneList = drugList,
-                          exponent = exponent,
-                          nPerm = nPerm,
-                          minGSSize = minGSSize,
-                          maxGSSize = maxGSSize,
-                          pvalueCutoff = pvalueCutoff,
-                          pAdjustMethod = pAdjustMethod,
-                          USER_DATA = KEGG_DATA_drug,
-                          seed = FALSE)
-    
-    if (is.null(res))
-      return(res)
-    drugs(res) <- names(drugList)
-    tg(res) <- NULL
-    og(res) <- species
-    ont(res) <- "KEGG"
-    return(res)
-  }
+
   if(type == "MOA"){
       data("clue_moa_list", envir = environment())
       moa_list <- clue_moa_list
