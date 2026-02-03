@@ -73,6 +73,7 @@
 #' db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
 #' library(SummarizedExperiment);
 #' library(HDF5Array)
+#' load(system.file("data", "cell_info2.rda", package = "signatureSearch"))
 #' sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
 #' rownames(sample_db) <- HDF5Array(db_path, name="rownames")
 #' colnames(sample_db) <- HDF5Array(db_path, name="colnames")
@@ -83,7 +84,7 @@
 #' downset <- tail(names(query[order(-query)]), 150)
 #' head(downset)
 #' runWF(Signature = list(upset=upset, downset=downset),
-#'       cellInfo = cellInfo2,
+#'       cellInfo = cell_info2,
 #'       PertColName = "pert_iname",
 #'       drug = "vorinostat",
 #'       refdb = lincs2,
