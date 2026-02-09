@@ -80,7 +80,7 @@ gseGO2 <- function(geneList,
 ##' @return feaResult object
 ##' @examples 
 ##' # Gene Entrez id should be used for Reactome enrichment
-# ##' data(geneList, package="DOSE")
+##' data(geneList, package="DOSE")
 ##' #geneList[100:length(geneList)]=0
 ##' #rc <- gseReactome(geneList=geneList, pvalueCutoff=1)
 ##' @export
