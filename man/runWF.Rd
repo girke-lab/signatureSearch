@@ -114,45 +114,45 @@ modifications on the Rmd vignette as they need and re-render it to generate
 their HTML report.
 }
 \examples{
-library(signatureSearch)
-library(ExperimentHub); library(rhdf5)
-eh <- ExperimentHub()
-cmap <- eh[["EH3223"]]; cmap_expr <- eh[["EH3224"]]
-lincs <- eh[["EH3226"]]; lincs_expr <- eh[["EH3227"]]
-lincs2 <- eh[["EH7297"]]
-h5ls(lincs2)
-db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
-library(SummarizedExperiment);
-library(HDF5Array)
-load(system.file("data", "cell_info2.rda", package = "signatureSearch"))
-sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
-rownames(sample_db) <- HDF5Array(db_path, name="rownames")
-colnames(sample_db) <- HDF5Array(db_path, name="colnames")
-query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-query <- as.numeric(query_mat); names(query) <- rownames(query_mat)
-upset <- head(names(query[order(-query)]), 150)
-head(upset)
-downset <- tail(names(query[order(-query)]), 150)
-head(downset)
-runWF(Signature = list(upset=upset, downset=downset),
-      cellInfo = cell_info2,
-      PertColName = "pert_iname",
-      drug = "vorinostat",
-      refdb = lincs2,
-      gess_method="LINCS",
-      fea_method="dup_hyperG",
-      N_gess_drugs=150,
-      env_dir="./GESSWFResults",
-      tau=FALSE,
-      Nup=150,
-      Ndown=150,
-      higher=1,
-      lower=-1,
-      method="spearman",
-      pvalueCutoff=1,
-      qvalueCutoff=1,
-      minGSSize=5,
-      maxGSSize=500,
-      runFEA=TRUE,
-      GenerateReport= TRUE)
+#library(signatureSearch)
+#library(ExperimentHub); library(rhdf5)
+#eh <- ExperimentHub()
+#cmap <- eh[["EH3223"]]; cmap_expr <- eh[["EH3224"]]
+#lincs <- eh[["EH3226"]]; lincs_expr <- eh[["EH3227"]]
+#lincs2 <- eh[["EH7297"]]
+#h5ls(lincs2)
+#db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
+#library(SummarizedExperiment);
+#library(HDF5Array)
+#load(system.file("data", "cell_info2.rda", package = "signatureSearch"))
+#sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+#rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+#colnames(sample_db) <- HDF5Array(db_path, name="colnames")
+#query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#query <- as.numeric(query_mat); names(query) <- rownames(query_mat)
+#upset <- head(names(query[order(-query)]), 150)
+#head(upset)
+#downset <- tail(names(query[order(-query)]), 150)
+#head(downset)
+#runWF(Signature = list(upset=upset, downset=downset),
+#       cellInfo = cell_info2,
+#     PertColName = "pert_iname",
+#     drug = "vorinostat",
+#     refdb = lincs2,
+#     gess_method="LINCS",
+#     fea_method="dup_hyperG",
+#     N_gess_drugs=150,
+#     env_dir="./GESSWFResults",
+#     tau=FALSE,
+#     Nup=150,
+#     Ndown=150,
+#     higher=1,
+#     lower=-1,
+#     method="spearman",
+#     pvalueCutoff=1,
+#     qvalueCutoff=1,
+#     minGSSize=5,
+#     maxGSSize=500,
+#     runFEA=TRUE,
+#     GenerateReport= TRUE)
 }

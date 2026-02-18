@@ -63,47 +63,47 @@
 #' @importFrom readr write_tsv
 #' @export
 #' @examples 
-# #' library(signatureSearch)
-# #' library(ExperimentHub); library(rhdf5)
-# #' eh <- ExperimentHub()
-# #' cmap <- eh[["EH3223"]]; cmap_expr <- eh[["EH3224"]]
-# #' lincs <- eh[["EH3226"]]; lincs_expr <- eh[["EH3227"]]
-# #' lincs2 <- eh[["EH7297"]]
-# #' h5ls(lincs2)
-# #' db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
-# #' library(SummarizedExperiment);
-# #' library(HDF5Array)
-# #' load(system.file("data", "cell_info2.rda", package = "signatureSearch"))
-# #' sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
-# #' rownames(sample_db) <- HDF5Array(db_path, name="rownames")
-# #' colnames(sample_db) <- HDF5Array(db_path, name="colnames")
-# #' query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
-# #' query <- as.numeric(query_mat); names(query) <- rownames(query_mat)
-# #' upset <- head(names(query[order(-query)]), 150)
-# #' head(upset)
-# #' downset <- tail(names(query[order(-query)]), 150)
-# #' head(downset)
-# #' runWF(Signature = list(upset=upset, downset=downset),
-# #'       cellInfo = cell_info2,
-# #'       PertColName = "pert_iname",
-# #'       drug = "vorinostat",
-# #'       refdb = lincs2,
-# #'       gess_method="LINCS",
-# #'       fea_method="dup_hyperG",
-# #'       N_gess_drugs=150,
-# #'       env_dir="./GESSWFResults",
-# #'       tau=FALSE,
-# #'       Nup=150,
-# #'       Ndown=150,
-# #'       higher=1,
-# #'       lower=-1,
-# #'       method="spearman",
-# #'       pvalueCutoff=1,
-# #'       qvalueCutoff=1,
-# #'       minGSSize=5,
-# #'       maxGSSize=500,
-# #'       runFEA=TRUE,
-# #'       GenerateReport= TRUE)
+#' #library(signatureSearch)
+#' #library(ExperimentHub); library(rhdf5)
+#' #eh <- ExperimentHub()
+#' #cmap <- eh[["EH3223"]]; cmap_expr <- eh[["EH3224"]]
+#' #lincs <- eh[["EH3226"]]; lincs_expr <- eh[["EH3227"]]
+#' #lincs2 <- eh[["EH7297"]]
+#' #h5ls(lincs2)
+#' #db_path <- system.file("extdata", "sample_db.h5", package = "signatureSearch")
+#' #library(SummarizedExperiment);
+#' #library(HDF5Array)
+#' #load(system.file("data", "cell_info2.rda", package = "signatureSearch"))
+#' #sample_db <- SummarizedExperiment(HDF5Array(db_path, name="assay"))
+#' #rownames(sample_db) <- HDF5Array(db_path, name="rownames")
+#' #colnames(sample_db) <- HDF5Array(db_path, name="colnames")
+#' #query_mat <- as.matrix(assay(sample_db[,"vorinostat__SKB__trt_cp"]))
+#' #query <- as.numeric(query_mat); names(query) <- rownames(query_mat)
+#' #upset <- head(names(query[order(-query)]), 150)
+#' #head(upset)
+#' #downset <- tail(names(query[order(-query)]), 150)
+#' #head(downset)
+#' #runWF(Signature = list(upset=upset, downset=downset),
+#' #       cellInfo = cell_info2,
+#' #     PertColName = "pert_iname",
+#' #     drug = "vorinostat",
+#' #     refdb = lincs2,
+#' #     gess_method="LINCS",
+#' #     fea_method="dup_hyperG",
+#' #     N_gess_drugs=150,
+#' #     env_dir="./GESSWFResults",
+#' #     tau=FALSE,
+#' #     Nup=150,
+#' #     Ndown=150,
+#' #     higher=1,
+#' #     lower=-1,
+#' #     method="spearman",
+#' #     pvalueCutoff=1,
+#' #     qvalueCutoff=1,
+#' #     minGSSize=5,
+#' #     maxGSSize=500,
+#' #     runFEA=TRUE,
+#' #     GenerateReport= TRUE)
 runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
                   gess_method="LINCS",fea_method="dup_hyperG",N_gess_drugs=150,env_dir=".",
                   tau=FALSE,Nup=150,Ndown=150,higher=1,lower=-1,
@@ -276,6 +276,7 @@ LINCSseLoad <- function(DBpath){
   return(sedb)}
 
 #' @importFrom stringr str_split
+#' @importFrom stats median 
 #' @import SummarizedExperiment
 LINCSSigInfoGen <- function(LINCSSummExp = sedb){
   spl <- str_split(colnames(LINCSSummExp), "__")
@@ -297,7 +298,7 @@ GESSAttributeCatalog <- function(ClasifyDT, RowFeature, ColFeature, ValueCol, me
   cdt <- data.table(table(gess_tb2$cell)) %>% setnames(c("V1", "N"), c("cell", "count"))
   cell_info2Used <- merge(cell_info2Used, cdt, by = "cell")
   gess_tb2 <- merge(gess_tb2, cell_info2Used, by = "cell") # dim(gess_tb2); dim(ClassificationDT)
-  gess_tb2 <- gess_tb2[order(Rank, decreasing = FALSE),]
+  gess_tb2 <- gess_tb2[order(gess_tb2$Rank, decreasing = FALSE),]
   #### Re-score by attribute ####
   if(Rescore){
     tempDT <- data.table()
@@ -305,7 +306,7 @@ GESSAttributeCatalog <- function(ClasifyDT, RowFeature, ColFeature, ValueCol, me
     feat <- feat[!feat == ""]
     for(c in 1:length(feat)){
       t <- gess_tb2[gess_tb2[[ColFeature]] == feat[c],]
-      t <- t[,.SD[which.min(Rank)], by = RowFeature]
+      t <- t[,.SD[which.min(t$Rank)], by = RowFeature]
       t <- t[order(t[[ScoreCol]], decreasing = TRUE),]
       t[,Rank := 1:nrow(t)]
       tempDT <- rbind(tempDT, t)
@@ -363,7 +364,7 @@ getAllSig <- function(refdb, gess_tb, Signature, method){
     #### Obtain expression values ####
     index <- unique(paste(gess_tb$pert_iname))
     expDT <- rbindlist(lapply(seq_along(index), function(x){
-      temp <- gess_tb[pert_iname == index[x],]
+      temp <- gess_tb[gess_tb$pert_iname == index[x],]
       ids <- unique(paste(temp$pert_id, temp$cell, sep ="__"))
       trt2 <- intersect(ids, colnames(refse))
       cmp_mat <- as.matrix(assay(refse[, trt2]))
@@ -374,8 +375,8 @@ getAllSig <- function(refdb, gess_tb, Signature, method){
       return(dt)  }) )
     #### Map ENTREZID to Gene Names ####
     geneOnt <- as.data.table(AnnotationDbi::select(org.Hs.eg.db, keys=colnames(expDT), columns=c("SYMBOL"), keytype="ENTREZID")) # , "ENSEMBL"
-    geneOnt <- geneOnt[match(ENTREZID, colnames(expDT)),]
-    geneOnt[is.na(SYMBOL),]$SYMBOL <- "NoName"
+    geneOnt <- geneOnt[match(geneOnt$ENTREZID, colnames(expDT)),]
+    geneOnt[is.na(geneOnt$SYMBOL),]$SYMBOL <- "NoName"
     setnames(expDT, as.character(geneOnt$ENTREZID), geneOnt$SYMBOL)
     #### Add drug names ####
     cmp_DT <- expDT[, pert := index][,c(ncol(expDT), 1:ncol(expDT)-1), with = FALSE]

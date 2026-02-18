@@ -67,7 +67,7 @@ calcGseaStat2 <- function(stats, selectedStats, gseaParam=1,
 #' @importFrom data.table rbindlist
 #' @importFrom data.table :=
 #' @importFrom utils globalVariables
- 
+#' @importFrom stats na.omit 
 # Runs preranked gene set enrichment analysis.
 fgsea2 <- function(pathways, stats, nperm,
                   minSize=1, maxSize=Inf,

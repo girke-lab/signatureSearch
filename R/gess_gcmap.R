@@ -16,6 +16,7 @@
 #' regulated DEGs and the database contains rank transformed GESs.
 #' @importFrom HDF5Array HDF5Array
 #' @importFrom tibble tibble
+#' @importFrom stats na.omit 
 #' @examples 
 #' 
 #' ############## gCMAP method ##############

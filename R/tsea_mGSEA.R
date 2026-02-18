@@ -52,6 +52,7 @@
 #' @param exponent integer value used as exponent in GSEA algorithm. It defines
 #' the weight of the items in the item set \eqn{S}.
 #' @param verbose TRUE or FALSE, print message or not
+#' @importFrom stats na.omit 
 #' @examples 
 #' 
 #' ############# TSEA mGSEA method ############

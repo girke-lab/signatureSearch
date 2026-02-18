@@ -18,6 +18,7 @@
 #' portion of \eqn{mabs(S,pi)} that is greater than \eqn{mabs(S)} is used as
 #' nominal p-value (Fang et al., 2012). The resulting nominal p-values are
 #' adjusted for multiple hypothesis testing using the Benjamini-Hochberg method.
+#' @importFrom stats na.omit 
 #' @examples 
 #' 
 #' ############# MeanAbs method ##############

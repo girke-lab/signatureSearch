@@ -132,6 +132,7 @@ sim_score_grp <- function(tib, grp1, grp2, score_column){
 #' @importFrom dplyr left_join
 #' @importFrom dplyr filter
 #' @importFrom dplyr distinct
+#' @importFrom stats na.omit 
 #' @examples 
 #' gr <- gessResult(result=dplyr::tibble(pert=c("p1", "p1", "p2", "p3"),
 #'                                       cell=c("MCF7", "SKB", "MCF7", "SKB"),

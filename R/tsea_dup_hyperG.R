@@ -125,6 +125,7 @@
 #' gene-weighting approach for pathway analysis. Cell Research, 22(3), 
 #' 565-580. URL: https://doi.org/10.1038/cr.2011.149
 #' @import org.Hs.eg.db
+#' @importFrom stats na.omit
 #' @examples 
 #' 
 #' ############### TSEA dup_hyperG method ########
