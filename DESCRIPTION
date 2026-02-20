@@ -17,7 +17,7 @@ Imports: AnnotationDbi, ggplot2, data.table, ExperimentHub, HDF5Array,
          magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats,
          utils, reshape2, visNetwork, BiocParallel, fastmatch, reactome.db,
          Matrix, readr, rhdf5, GSEABase, DelayedArray,
-         BiocGenerics, tibble, DOSE, AnnotationHub, stringr
+         BiocGenerics, tibble, DOSE, AnnotationHub, stringr, annotate
 Suggests: knitr, testthat, rmarkdown, BiocStyle,
           signatureSearchData, DT
 License: Artistic-2.0
