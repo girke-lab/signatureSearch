@@ -12,7 +12,7 @@ Description: This package implements algorithms and data structures for
              performing gene expression signature (GES) searches, and
              subsequently interpreting the results functionally with
              specialized enrichment methods.
-Depends: R(>= 4.5.0), Rcpp, SummarizedExperiment, org.Hs.eg.db
+Depends: R(>= 4.5.0), Rcpp, SummarizedExperiment, org.Hs.eg.db 
 Imports: AnnotationDbi, ggplot2, data.table, ExperimentHub, HDF5Array,
          magrittr, RSQLite, dplyr, fgsea, scales, methods, qvalue, stats,
          utils, reshape2, visNetwork, BiocParallel, fastmatch, reactome.db,
