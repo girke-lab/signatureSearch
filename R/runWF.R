@@ -286,7 +286,7 @@ LINCSSigInfoGen <- function(LINCSSummExp = sedb){
   lincs_sig_info2 <- data.frame(pert = pert, cell = cell, pert_type =pert_type)
   return(lincs_sig_info2)}
 
-#' @import data.table
+#' @importFrom data.table data.table
 GESSAttributeCatalog <- function(ClasifyDT, RowFeature, ColFeature, ValueCol, method, addOrderingRow,
                                  Rescore, ScoreCol = "NCS", cellInfo){
   #### summarize results by cell type ####
@@ -353,7 +353,7 @@ GESSAttributeCatalog <- function(ClasifyDT, RowFeature, ColFeature, ValueCol, me
 #' @import AnnotationHub
 #' @import SummarizedExperiment
 #' @import HDF5Array
-#' @import data.table
+#' @importFrom data.table as.data.table
 getAllSig <- function(refdb, gess_tb, Signature, method){
   fullSig <- as.character(unlist(Signature))
   if (is.character(refdb)) {

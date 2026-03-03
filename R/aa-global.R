@@ -34,14 +34,14 @@ EXTID2TERMID <- function (gene, USER_DATA){
   return(qExtID2Path)
 }
 
-#' @import AnnotationDbi
+#' @importFrom AnnotationDbi select
 EXTID2NAME <- function(OrgDb, geneID, keytype){
   OrgDb <- load_OrgDb(OrgDb)
   kt <- keytypes(OrgDb)
   if (!keytype %in% kt) {
     stop("keytype is not supported...")
   }
-  gn.df <- suppressMessages(select(OrgDb, keys = geneID, keytype = keytype, 
+  gn.df <- suppressMessages(AnnotationDbi::select(OrgDb, keys = geneID, keytype = keytype, 
                                    columns = "SYMBOL"))
   gn.df <- unique(gn.df)
   colnames(gn.df) <- c("GeneID", "SYMBOL")
@@ -165,7 +165,7 @@ get_geneSet_index <- function (geneSets, minGSSize, maxGSSize){
   return(idx)
 }
 
-#' @import AnnotationDbi
+#' @importFrom AnnotationDbi species
 get_organism <- function(OrgDb){
   OrgDb <- load_OrgDb(OrgDb)
   AnnotationDbi::species(OrgDb)

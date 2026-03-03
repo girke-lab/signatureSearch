@@ -3,7 +3,7 @@
 #'
 #' @name signatureSearch-package
 #' @aliases signatureSearch-package signatureSearch 
-#' @docType package
+#' @docType _PACKAGE
 #' @useDynLib signatureSearch
 #' @import Rcpp
 #' @description 
