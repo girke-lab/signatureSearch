@@ -3,7 +3,6 @@
 #'
 #' @name signatureSearch-package
 #' @aliases signatureSearch-package signatureSearch 
-#' @docType _PACKAGE
 #' @useDynLib signatureSearch
 #' @import Rcpp
 #' @description 
@@ -156,7 +155,7 @@
 #' Genome-Wide Expression Profiles. Proc. Natl. Acad. Sci. U. S. A. 102 (43): 
 #' 15545-50. http://dx.doi.org/10.1073/pnas.0506580102
 
-NULL
+"_PACKAGE"
 
 
 #' Drug Names Used in Examples
