@@ -21,7 +21,7 @@ Imports: AnnotationDbi, ggplot2, data.table, ExperimentHub, HDF5Array,
 Suggests: knitr, testthat, rmarkdown, BiocStyle,
           signatureSearchData, DT
 License: Artistic-2.0
-SystemRequirements: C++11
+SystemRequirements: C++20
 LinkingTo: Rcpp
 Encoding: UTF-8
 VignetteBuilder: knitr
