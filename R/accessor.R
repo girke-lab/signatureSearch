@@ -115,14 +115,12 @@ setMethod("dim", "feaResult",
 
 # setMethod("[", "feaResult",
 #           function(x, i, j) x@result[i,j])
-#' @export [.feaResult
 `[.feaResult` <- function(x, i, j) {
     x@result[i,j]
 }
 
 # setMethod("$", "feaResult",
 #           function(x, name) x@result[, name])
-#' @export $.feaResult
 `$.feaResult` <-  function(x, name) {
     x@result[, name]
 }
