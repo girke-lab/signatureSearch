@@ -115,12 +115,18 @@ setMethod("dim", "feaResult",
 
 # setMethod("[", "feaResult",
 #           function(x, i, j) x@result[i,j])
+#' @rdname `[.feaResult`
+#' @description 
+#' Returns results from FEA analyses.
 `[.feaResult` <- function(x, i, j) {
     x@result[i,j]
 }
 
 # setMethod("$", "feaResult",
 #           function(x, name) x@result[, name])
+#' @rdname `$.feaResult`
+#' @description 
+#' Returns results from FEA analyses.
 `$.feaResult` <-  function(x, name) {
     x@result[, name]
 }
