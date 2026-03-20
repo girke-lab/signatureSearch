@@ -113,21 +113,38 @@ setMethod("dim", "gessResult",
 setMethod("dim", "feaResult",
           function(x) dim(x@result))
 
-# setMethod("[", "feaResult",
-#           function(x, i, j) x@result[i,j])
-#' @rdname `[.feaResult`
-#' @description 
-#' Returns results from FEA analyses.
+#' Subset a feaResult object by index
+#'
+#' @description
+#' Extract rows and/or columns from the result table of a \code{feaResult}
+#' object using standard \code{[} indexing.
+#'
+#' @param x A \code{feaResult} object.
+#' @param i Row index (integer, logical, or character).
+#' @param j Column index (integer, logical, or character).
+#'
+#' @return A subset of the internal result \code{data.frame}.
+#'
+#' @aliases [,feaResult-method
+#' @export
 `[.feaResult` <- function(x, i, j) {
-    x@result[i,j]
+    x@result[i, j]
 }
 
-# setMethod("$", "feaResult",
-#           function(x, name) x@result[, name])
-#' @rdname `$.feaResult`
-#' @description 
-#' Returns results from FEA analyses.
-`$.feaResult` <-  function(x, name) {
+#' Access a column of a feaResult object by name
+#'
+#' @description
+#' Extract a single column from the result table of a \code{feaResult} object
+#' using the \code{$} operator.
+#'
+#' @param x A \code{feaResult} object.
+#' @param name A character string naming the column to extract.
+#'
+#' @return A vector containing the values of the named column.
+#'
+#' @aliases $,feaResult-method
+#' @export
+`$.feaResult` <- function(x, name) {
     x@result[, name]
 }
 
