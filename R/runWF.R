@@ -61,6 +61,7 @@
 #' @param GenerateReport Logical value indicating if a report is generated.
 #' @return list object containing GESS/FEA result tables
 #' @importFrom readr write_tsv
+#' @importFrom data.table setnames fwrite as.data.table data.table rbindlist
 #' @export
 #' @examples 
 #' #library(signatureSearch)
@@ -152,7 +153,7 @@ runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
   setnames(gess_tb, "pert", "pert_id", skip_absent=TRUE)
   gess_tb <- as.data.table(merge(gess_tb, lincs_pert_info2, by = "pert_id", all.x = TRUE))
   gess_tb <- gess_tb[order(gess_tb[[score_col]], decreasing = TRUE),]
-
+ 
   drugs <- unique(gess_tb[[PertColName]])[seq_len(N_gess_drugs)]
   if(runFEA){
     print("Performing FEA analysis")
@@ -225,7 +226,7 @@ runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
   if(runFEA){
     fwrite(mf_tb, paste0(res_dir, "/", fea_method, "_mf_res.xls"), row.names=FALSE, quote=FALSE, sep="\t")
     fwrite(bp_tb, paste0(res_dir, "/", fea_method, "_bp_res.xls"), row.names=FALSE, quote=FALSE, sep="\t")
-
+ 
     if(GenerateReport){
       file.copy(system.file("extdata", "GESS_FEA_report.Rmd", package="signatureSearch"),
                 paste0(env_name, "/GESS_FEA_report.Rmd"))
@@ -266,7 +267,7 @@ runWF <- function(Signature,cellInfo,PertColName = "pert_iname",drug,refdb,
     return(list(gess_tb=gess_tb, CellGESS=CellCat, DEG=degMat))
   }
 }
-
+ 
 #' @import SummarizedExperiment
 #' @import HDF5Array
 LINCSseLoad <- function(DBpath){
@@ -274,19 +275,21 @@ LINCSseLoad <- function(DBpath){
   rownames(sedb) <- HDF5Array(DBpath, name="rownames")
   colnames(sedb) <- HDF5Array(DBpath, name="colnames")
   return(sedb)}
-
+ 
 #' @importFrom stringr str_split
 #' @importFrom stats median 
 #' @import SummarizedExperiment
-LINCSSigInfoGen <- function(LINCSSummExp = sedb){
+LINCSSigInfoGen <- function(LINCSSummExp){
+  if(missing(LINCSSummExp) || is.null(LINCSSummExp))
+    stop("LINCSSummExp must be provided")
   spl <- str_split(colnames(LINCSSummExp), "__")
   pert <- NULL; for(i in 1:length(spl)){pert[i] <- spl[[i]][1]}
   cell <- NULL; for(i in 1:length(spl)){cell[i] <- spl[[i]][2]}
   pert_type <- NULL; for(i in 1:length(spl)){pert_type[i] <- spl[[i]][3]}
   lincs_sig_info2 <- data.frame(pert = pert, cell = cell, pert_type =pert_type)
   return(lincs_sig_info2)}
-
-#' @importFrom data.table data.table
+ 
+#' @importFrom data.table data.table setnames as.data.table
 GESSAttributeCatalog <- function(ClasifyDT, RowFeature, ColFeature, ValueCol, method, addOrderingRow,
                                  Rescore, ScoreCol = "NCS", cellInfo){
   #### summarize results by cell type ####
@@ -348,16 +351,16 @@ GESSAttributeCatalog <- function(ClasifyDT, RowFeature, ColFeature, ValueCol, me
   df <- as.data.table(df[,c(ncol(df), c(1:(ncol(df) -1)))])
   return(df)
 }
-
+ 
 #' @import org.Hs.eg.db
 #' @import AnnotationHub
 #' @import SummarizedExperiment
 #' @import HDF5Array
-#' @importFrom data.table as.data.table
+#' @importFrom data.table as.data.table setnames rbindlist
 getAllSig <- function(refdb, gess_tb, Signature, method){
   fullSig <- as.character(unlist(Signature))
   if (is.character(refdb)) {
-    refdb <- signatureSearch:::determine_refdb(refdb)
+    refdb <- determine_refdb(refdb)
     refse <- SummarizedExperiment(HDF5Array(refdb, name = "assay"))
     rownames(refse) <- HDF5Array(refdb, name = "rownames")
     colnames(refse) <- gsub("__trt_cp", "", HDF5Array(refdb, name = "colnames"))
@@ -386,5 +389,3 @@ getAllSig <- function(refdb, gess_tb, Signature, method){
             "or path to an HDF5 file representing reference database!")
   }
 }
-
-

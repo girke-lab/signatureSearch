@@ -1,4 +1,5 @@
-
+utils::globalVariables(c(".SD", "Rank", "RowSums", "setnames", "fwrite"))
+ 
 ALLEXTID <- function (USER_DATA){
   if (inherits(USER_DATA, "environment")) {
     PATHID2EXTID <- get("PATHID2EXTID", envir = USER_DATA)
@@ -13,7 +14,7 @@ ALLEXTID <- function (USER_DATA){
   }
   return(res)
 }
-
+ 
 EXTID2TERMID <- function (gene, USER_DATA){
   if (inherits(USER_DATA, "environment")) {
     EXTID2PATHID <- get("EXTID2PATHID", envir = USER_DATA)
@@ -33,8 +34,8 @@ EXTID2TERMID <- function (gene, USER_DATA){
   qExtID2Path <- qExtID2Path[notZero.idx]
   return(qExtID2Path)
 }
-
-#' @importFrom AnnotationDbi select
+ 
+#' @importFrom AnnotationDbi select keytypes
 EXTID2NAME <- function(OrgDb, geneID, keytype){
   OrgDb <- load_OrgDb(OrgDb)
   kt <- keytypes(OrgDb)
@@ -54,7 +55,7 @@ EXTID2NAME <- function(OrgDb, geneID, keytype){
   names(gn) <- gn.df$GeneID
   return(gn)
 }
-
+ 
 TERM2NAME <- function (term, USER_DATA) {
   if (inherits(USER_DATA, "environment")) {
     PATHID2NAME <- get("PATHID2NAME", envir = USER_DATA)
@@ -72,7 +73,7 @@ TERM2NAME <- function (term, USER_DATA) {
   }
   return(as.character(term))
 }
-
+ 
 TERMID2EXTID <- function (term, USER_DATA){
   if (inherits(USER_DATA, "environment")) {
     PATHID2EXTID <- get("PATHID2EXTID", envir = USER_DATA)
@@ -89,7 +90,7 @@ TERMID2EXTID <- function (term, USER_DATA){
   }
   return(res)
 }
-
+ 
 build_Anno <- function (path2gene, path2name){
   if (!exists(".Anno_clusterProfiler_Env", envir = .GlobalEnv)) {
     pos <- 1
@@ -126,7 +127,7 @@ build_Anno <- function (path2gene, path2name){
   }
   return(Anno_clusterProfiler_Env)
 }
-
+ 
 calculate_qvalue <- function(pvals){
   if (length(pvals) == 0) 
     return(numeric(0))
@@ -140,7 +141,7 @@ calculate_qvalue <- function(pvals){
   }
   return(qvalues)
 }
-
+ 
 geneSet_filter <- function (geneSets, geneList, minGSSize, maxGSSize){
   geneSets <- sapply(geneSets, intersect, names(geneList))
   gs.idx <- get_geneSet_index(geneSets, minGSSize, maxGSSize)
@@ -154,7 +155,7 @@ geneSet_filter <- function (geneSets, geneList, minGSSize, maxGSSize){
   }
   geneSets[gs.idx]
 }
-
+ 
 get_geneSet_index <- function (geneSets, minGSSize, maxGSSize){
   if (is.na(minGSSize) || is.null(minGSSize)) 
     minGSSize <- 1
@@ -164,13 +165,13 @@ get_geneSet_index <- function (geneSets, minGSSize, maxGSSize){
   idx <- minGSSize <= geneSet_size & geneSet_size <= maxGSSize
   return(idx)
 }
-
+ 
 #' @importFrom AnnotationDbi species
 get_organism <- function(OrgDb){
   OrgDb <- load_OrgDb(OrgDb)
   AnnotationDbi::species(OrgDb)
 }
-
+ 
 add_GO_Ontology <- function (obj, GO_DATA){
   if (is(obj, "gseaResult")) {
     obj@setType <- "GOALL"
@@ -184,13 +185,13 @@ add_GO_Ontology <- function (obj, GO_DATA){
   obj@result <- df
   return(obj)
 }
-
-#' @import annotate 
+ 
+#' @importFrom annotate get_GOTERM
 get_GO2TERM_table <- function(){
   GOTERM.df <- get_GOTERM()
   GOTERM.df[, c("go_id", "Term")] %>% unique
 }
-
+ 
 get_GO_Env <- function(){
   if (!exists(".GO_clusterProfiler_Env", envir = .GlobalEnv)) {
     pos <- 1
@@ -199,7 +200,7 @@ get_GO_Env <- function(){
   }
   get(".GO_clusterProfiler_Env", envir = .GlobalEnv)
 }
-
+ 
 organismMapper <- function(organism){
   if (organism == "anopheles") {
     species <- "aga"
@@ -244,7 +245,7 @@ organismMapper <- function(organism){
   }
   return(species)
 }
-
+ 
 #' @import ExperimentHub
 validh5 <- function(ehid){
     eh <- suppressMessages(ExperimentHub())
@@ -255,7 +256,7 @@ validh5 <- function(ehid){
     })
     return(h5path)
 }
-
+ 
 determine_refdb <- function(refdb){
     eh <- suppressMessages(ExperimentHub())
     if(refdb=="cmap") return(validh5("EH3223"))
@@ -265,7 +266,7 @@ determine_refdb <- function(refdb){
     if(refdb=="lincs2") return(validh5("EH7297"))
     return(refdb)
 }
-
+ 
 load_sqlite <- function(ehid){
     eh <- suppressMessages(ExperimentHub())
     path <- suppressMessages(eh[[ehid]])
@@ -276,7 +277,7 @@ load_sqlite <- function(ehid){
     })
     return(conn)
 }
-
+ 
 #' @importFrom BiocGenerics fileName
 validLoad <- function(ehid){
     eh <- suppressMessages(ExperimentHub())
@@ -285,12 +286,12 @@ validLoad <- function(ehid){
                  unlink(fileName(eh[ehid]))
                  eh[[ehid]]})
 }
-
+ 
 # GO_DATA <- get_GO_data(OrgDb, ont, keytype="SYMBOL")
 # download GO_DATA.rds from AnnotationHub to save time by avoiding 
 # building GO_DATA from scratch
 GO_DATA <- validLoad("EH3231")
-
+ 
 # GO_DATA_drug <- get_GO_data_drug(OrgDb = "org.Hs.eg.db", 
 #                                  ont, keytype="SYMBOL")
 # download GO_DATA_drug.rds 
