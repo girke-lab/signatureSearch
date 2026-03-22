@@ -185,13 +185,14 @@ add_GO_Ontology <- function (obj, GO_DATA){
   obj@result <- df
   return(obj)
 }
- 
-#' @importFrom annotate get_GOTERM
+
+#' @importFrom AnnotationDbi toTable
+#' @importFrom GO.db GOTERM
 get_GO2TERM_table <- function(){
-  GOTERM.df <- get_GOTERM()
+  GOTERM.df <- toTable(GOTERM)
   GOTERM.df[, c("go_id", "Term")] %>% unique
 }
- 
+
 get_GO_Env <- function(){
   if (!exists(".GO_clusterProfiler_Env", envir = .GlobalEnv)) {
     pos <- 1
